@@ -1,0 +1,133 @@
+{
+  "name": "reagraph",
+  "version": "1.0.0",
+  "description": "WebGL Node-based Graph for React",
+  "scripts": {
+    "build": "rollup -c",
+    "build:watch": "rollup -c -w",
+    "test": "jest",
+    "prettier": "prettier --loglevel warn --write 'src/**/*.{ts,tsx,js,jsx}'",
+    "lint": "eslint --ext js,ts,tsx",
+    "lint:fix": "eslint --ext js,ts,tsx --fix src",
+    "start": "start-storybook -p 9009",
+    "copy": "cp CNAME storybook-static/",
+    "build-storybook": "build-storybook",
+    "prepare": "husky install"
+  },
+  "source": "src/index.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.js",
+  "style": "dist/index.css",
+  "typings": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reaviz/reagraph.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "reactjs",
+    "webgl"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/reaviz/reagraph/issues"
+  },
+  "homepage": "https://github.com/reaviz/reagraph#readme",
+  "dependencies": {
+    "classnames": "^2.3.1"
+  },
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "6.4.20",
+    "@storybook/addon-storysource": "^6.4.20",
+    "@storybook/addons": "6.4.20",
+    "@storybook/react": "6.4.20",
+    "@storybook/theming": "6.4.20",
+    "@testing-library/react": "^13.1.1",
+    "@types/classnames": "^2.3.1",
+    "@types/jest": "^27.0.2",
+    "@types/react": "^18.0.8",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
+    "autoprefixer": "^10.4.5",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-storybook": "^0.5.7",
+    "husky": "^7.0.0",
+    "jest": "^28.0.2",
+    "jest-junit": "^13.2.0",
+    "storybook-css-modules-preset": "^1.1.1",
+    "storybook-dark-mode": "^1.0.9",
+    "lint-staged": "^12.4.1",
+    "postcss-nested": "^4",
+    "postcss-preset-env": "^6.7.0",
+    "prettier": "^2.6.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "rollup": "^2.38.4",
+    "rollup-plugin-bundle-size": "^1.0.3",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "rollup-plugin-peer-deps-external": "2.2.4",
+    "rollup-plugin-postcss": "4.0.0",
+    "rollup-plugin-postcss-modules": "2.0.2",
+    "rollup-plugin-sourcemaps": "0.6.3",
+    "rollup-plugin-typescript2": "0.31.2",
+    "ts-jest": "^27.1.4",
+    "typescript": "^4.1.3"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}"
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/.storybook/",
+      "<rootDir>/storybook-static/",
+      "<rootDir>/dist/",
+      "<rootDir>/node_modules/"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "ts-jest"
+    },
+    "testMatch": [
+      "<rootDir>/src/**/*.(spec|test).ts?(x)"
+    ],
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "./coverage"
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint --ext js,ts,tsx --fix"
+    ],
+    "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  }
+}
