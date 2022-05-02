@@ -7,7 +7,7 @@ export default {
   component: GraphCanvas
 };
 
-export const Center = () => {
+export const All = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
 
   return (

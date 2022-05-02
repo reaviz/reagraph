@@ -164,12 +164,18 @@ export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
       {
         name: 'Zoom In',
         keys: 'command+shift+i',
-        callback: zoomIn
+        callback: event => {
+          event.preventDefault();
+          zoomIn();
+        }
       },
       {
         name: 'Zoom Out',
         keys: 'command+shift+o',
-        callback: zoomOut
+        callback: event => {
+          event.preventDefault();
+          zoomOut();
+        }
       }
     ]);
 

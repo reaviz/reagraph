@@ -34,12 +34,12 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
 
       useImperativeHandle(ref, () => ({
         centerGraph: () => rendererRef.current?.centerGraph(),
-        zoomIn: () => controlsRef.current.zoomIn(),
-        zoomOut: () => controlsRef.current.zoomOut(),
-        panLeft: () => controlsRef.current.panLeft(),
-        panRight: () => controlsRef.current.panRight(),
-        panDown: () => controlsRef.current.panDown(),
-        panUp: () => controlsRef.current.panUp()
+        zoomIn: () => controlsRef.current?.zoomIn(),
+        zoomOut: () => controlsRef.current?.zoomOut(),
+        panLeft: () => controlsRef.current?.panLeft(),
+        panRight: () => controlsRef.current?.panRight(),
+        panDown: () => controlsRef.current?.panDown(),
+        panUp: () => controlsRef.current?.panUp()
       }));
 
       return (
