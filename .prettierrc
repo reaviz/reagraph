@@ -2,6 +2,7 @@
 semi: true
 singleQuote: true
 trailingComma: none
+arrowParens: avoid
 overrides:
 - files: ".prettierrc"
   options:

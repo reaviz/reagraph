@@ -1,10 +1,20 @@
+import { Fragment } from 'react';
+import { Stats } from '@react-three/drei';
 import theme from './theme';
 
 const order = [
-  'docs-intro-',
-  'docs-getting-started-',
-  'docs-api-'
+  'docs-',
+  'demos-'
 ];
+
+const withProvider = (Story, context) => (
+  <Fragment>
+    <Story {...context} />
+    <Stats className='stats' />
+  </Fragment>
+);
+
+export const decorators = [withProvider];
 
 export const parameters = {
   layout: 'centered',
@@ -13,6 +23,7 @@ export const parameters = {
     darkClass: 'dark',
     lightClass: 'light'
   },
+  actions: { argTypesRegex: '^on.*' },
   options: {
     storySort: (a, b) => {
       const aName = a[0];

@@ -5,7 +5,6 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
     "moduleResolution": "node",
-    "typeRoots": ["./types", "./node_modules/@types"],
     "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,
     "declaration": true,
@@ -19,6 +18,7 @@
     "noImplicitThis": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "strict": false,
     "pretty": true,
     "outDir": "./dist",
     "skipLibCheck": true,
@@ -29,6 +29,6 @@
     "emitDecoratorMetadata": true
   },
   "types": ["node"],
-  "include": ["src/**/*", "types/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
