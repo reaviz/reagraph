@@ -12,7 +12,8 @@
     "start": "start-storybook -p 9009",
     "copy": "cp CNAME storybook-static/",
     "build-storybook": "build-storybook",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes"
   },
   "source": "src/index.ts",
   "main": "dist/index.cjs.js",
@@ -80,6 +81,7 @@
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",
     "autoprefixer": "^9",
+    "chromatic": "^6.5.4",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.22.0",
