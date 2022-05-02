@@ -12,7 +12,7 @@ import {
   GraphRendererProps,
   GraphRendererRef
 } from './GraphRenderer';
-import { CameraMode, Controls } from './controls/CameraControls';
+import { CameraMode, Controls, ControlsRef } from './controls/CameraControls';
 import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasProps extends GraphRendererProps {
@@ -21,7 +21,7 @@ export interface GraphCanvasProps extends GraphRendererProps {
   onCanvasClick?: () => void;
 }
 
-export interface GraphCanvasRef extends GraphRendererRef {}
+export type GraphCanvasRef = GraphRendererRef & ControlsRef;
 
 export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
@@ -30,9 +30,16 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       ref: Ref<GraphCanvasRef>
     ) => {
       const rendererRef = useRef<GraphRendererRef | null>(null);
+      const controlsRef = useRef<ControlsRef | null>(null);
 
       useImperativeHandle(ref, () => ({
-        centerGraph: () => rendererRef.current?.centerGraph()
+        centerGraph: () => rendererRef.current?.centerGraph(),
+        zoomIn: () => controlsRef.current.zoomIn(),
+        zoomOut: () => controlsRef.current.zoomOut(),
+        panLeft: () => controlsRef.current.panLeft(),
+        panRight: () => controlsRef.current.panRight(),
+        panDown: () => controlsRef.current.panDown(),
+        panUp: () => controlsRef.current.panUp()
       }));
 
       return (
