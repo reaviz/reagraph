@@ -5,10 +5,12 @@ import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './Sphere';
 import { Label } from './Label';
 import chroma from 'chroma-js';
+import { Icon } from './Icon';
 
 export interface NodeProps {
   id: string;
   position: THREE.Vector3;
+  icon?: string;
   data: any;
   graph: any;
   label?: string;
@@ -24,6 +26,7 @@ export const Node: FC<NodeProps> = ({
   position,
   label,
   graph,
+  icon,
   size,
   onClick,
   labelVisible,
@@ -51,16 +54,28 @@ export const Node: FC<NodeProps> = ({
 
   return (
     <a.group ref={group} position={nodePosition as any}>
-      <Sphere
-        selected={isSelected}
-        active={isActive}
-        size={size}
-        color={color}
-        activeColor={activeColor}
-        opacity={selectionOpacity}
-        onClick={onClick}
-        onActive={setActive}
-      />
+      {icon ? (
+        <Icon
+          image={icon}
+          size={size + 8}
+          opacity={selectionOpacity}
+          selected={isSelected}
+          active={isActive}
+          onClick={onClick}
+          onActive={state => setActive(state)}
+        />
+      ) : (
+        <Sphere
+          selected={isSelected}
+          active={isActive}
+          size={size}
+          color={color}
+          activeColor={activeColor}
+          opacity={selectionOpacity}
+          onClick={onClick}
+          onActive={setActive}
+        />
+      )}
       {(labelVisible || isSelected || isActive) && label && (
         <a.group position={labelPosition as any}>
           <Label text={label} opacity={selectionOpacity} />

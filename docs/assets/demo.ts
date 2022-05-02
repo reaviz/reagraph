@@ -1,12 +1,25 @@
 import { range } from 'd3-array';
-import { GraphEdge, GraphNode } from '../src';
+import { GraphEdge, GraphNode } from '../../src';
+import random from 'lodash/random';
+import demonSvg from './demon.svg';
+import computerSvg from './computer.svg';
 
 export const simpleNodes: GraphNode[] =
   range(5).map(i => ({
     id: `n-${i}`,
     label: `Node ${i}`,
     data: {
-      priority: Math.floor(Math.random() * 10) + 1
+      priority: random(0, 10)
+    }
+  }));
+
+export const iconNodes: GraphNode[] =
+  range(5).map(i => ({
+    id: `n-${i}`,
+    label: `Node ${i}`,
+    icon: i % 2 === 0 ? computerSvg : demonSvg,
+    data: {
+      priority: random(0, 10)
     }
   }));
 
