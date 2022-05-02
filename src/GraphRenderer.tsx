@@ -1,4 +1,11 @@
-import React, { FC, Fragment } from 'react';
+import React, {
+  FC,
+  forwardRef,
+  Fragment,
+  Ref,
+  useImperativeHandle,
+  useRef
+} from 'react';
 import { useGraph } from './utils/graph';
 import { LayoutTypes } from './layout/types';
 import { GraphEdge, GraphNode } from './types';
@@ -17,12 +24,19 @@ export interface GraphRendererProps {
   onNodeClick?: (id: string) => void;
 }
 
-export const GraphRenderer: FC<GraphRendererProps> = ({
-  onNodeClick,
-  ...rest
-}) => {
+export interface GraphRendererRef {
+  centerGraph: () => void;
+}
+
+export const GraphRenderer: FC<
+  GraphRendererProps & { ref?: Ref<GraphRendererRef> }
+> = forwardRef(({ onNodeClick, ...rest }, ref: Ref<GraphRendererRef>) => {
   const { nodes, edges, graph } = useGraph(rest);
   const { centerNodes } = useCenterGraph({ nodes });
+
+  useImperativeHandle(ref, () => ({
+    centerGraph: () => centerNodes(nodes)
+  }));
 
   return (
     <Fragment>
@@ -42,4 +56,4 @@ export const GraphRenderer: FC<GraphRendererProps> = ({
       ))}
     </Fragment>
   );
-};
+});

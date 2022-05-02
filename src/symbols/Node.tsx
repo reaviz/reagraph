@@ -22,15 +22,13 @@ export interface NodeProps {
 }
 
 export const Node: FC<NodeProps> = ({
-  id,
   position,
   label,
-  graph,
   icon,
   size,
-  onClick,
   labelVisible,
-  color
+  color,
+  onClick
 }) => {
   const group = useRef<THREE.Group | null>(null);
   const activeColor = useMemo(() => chroma(color).brighten(0.5).hex(), [color]);
