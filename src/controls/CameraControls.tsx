@@ -180,8 +180,8 @@ export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
     ]);
 
     useImperativeHandle(ref, () => ({
-      zoomIn,
-      zoomOut,
+      zoomIn: () => zoomIn(),
+      zoomOut: () => zoomOut(),
       panLeft: () => panLeft({ deltaTime: 1 }),
       panRight: () => panRight({ deltaTime: 1 }),
       panDown: () => panDown({ deltaTime: 1 }),
