@@ -3,8 +3,9 @@ import { useGraph } from './utils/graph';
 import { LayoutTypes } from './layout/types';
 import { GraphEdge, GraphNode } from './types';
 import { SizingType } from './sizing';
-import { Edge, LabelVisibilityType, Node } from './symbols';
+import { Edge, Node } from './symbols';
 import { useCenterGraph } from './controls/useCenterGraph';
+import { LabelVisibilityType } from './utils/visibility';
 
 export interface GraphRendererProps {
   layoutType?: LayoutTypes;

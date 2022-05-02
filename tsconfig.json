@@ -4,6 +4,7 @@
     "module": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
+    "typeRoots": ["./types", "./node_modules/@types"],
     "moduleResolution": "node",
     "baseUrl": "./src",
     "allowSyntheticDefaultImports": true,
@@ -29,6 +30,9 @@
     "emitDecoratorMetadata": true
   },
   "types": ["node"],
-  "include": ["src/**/*"],
+  "include": [
+    "types",
+    "src/**/*"
+  ],
   "exclude": ["node_modules", "dist"]
 }

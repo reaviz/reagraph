@@ -3,8 +3,7 @@ import { nodeSizeProvider, SizingType } from '../sizing';
 import { LayoutTypes, layoutProvider } from '../layout';
 import ngraph from 'ngraph.graph';
 import { useUpdateEffect } from 'react-use';
-import { LabelVisibilityType } from '../symbols';
-import { calcLabelVisibility } from './visibility';
+import { calcLabelVisibility, LabelVisibilityType } from './visibility';
 import { tick } from '../layout/layoutUtils';
 import { GraphEdge, GraphNode } from '../types';
 
