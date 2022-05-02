@@ -1,7 +1,7 @@
 <div align="center">
   <h1>🕸 reagraph</h1>
   <br />
-  WebGL Node-based Graph for React
+  WebGL Network Graphs for React
   <br /><br />
   <a href="https://github.com/reaviz/reagraph/workflows/build/">
     <img src="https://github.com/reaviz/reagraph/workflows/build/badge.svg?branch=master" />
@@ -28,7 +28,7 @@
 
 ---
 
-reagraph is a modular graph engine built for high performance leveraging WebGL.
+Reagraph is a high-performance network graph visualization built in WebGL for React.
 
 ## 🚀 Quick Links
 
