@@ -6,6 +6,7 @@ import { animationConfig } from '../utils';
 export interface IconProps {
   image: string;
   opacity?: number;
+  animated?: boolean;
   size?: number;
   onActive?: (state: boolean) => void;
   onClick?: () => void;
@@ -16,6 +17,7 @@ export const Icon: FC<IconProps> = ({
   image,
   size,
   opacity,
+  animated,
   onActive,
   onClick,
   onContextMenu
@@ -31,7 +33,10 @@ export const Icon: FC<IconProps> = ({
       scale: [size, size, size],
       spriteOpacity: opacity
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   return (

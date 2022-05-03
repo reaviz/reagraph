@@ -12,6 +12,7 @@ import {
 export interface ArrowProps {
   position: EdgeVectors3;
   color?: string;
+  animated?: boolean;
   opacity?: number;
   size?: number;
   placement?: 'mid' | 'end';
@@ -20,6 +21,7 @@ export interface ArrowProps {
 export const Arrow: FC<ArrowProps> = ({
   position,
   size,
+  animated,
   opacity,
   placement,
   color
@@ -45,7 +47,10 @@ export const Arrow: FC<ArrowProps> = ({
       pos: [endPos.x, endPos.y, endPos.z],
       arrowOpacity: opacity
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   const setQuaternion = useCallback(() => {

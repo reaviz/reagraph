@@ -17,7 +17,6 @@ import {
   ControlsContextProps,
   useControls
 } from './useControls';
-import { useEvent } from 'react-use';
 import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
 
@@ -44,12 +43,13 @@ export type CameraMode = 'pan' | 'rotate';
 export interface ControlsProps {
   mode?: CameraMode;
   children?: React.ReactNode;
+  animated?: boolean;
 }
 
 export type ControlsRef = ControlsContextProps;
 
 export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
-  forwardRef(({ mode, children }, ref: Ref<ControlsRef>) => {
+  forwardRef(({ mode, children, animated }, ref: Ref<ControlsRef>) => {
     const { controls } = useControls();
     const cameraRef = useRef<CameraControls | null>(null);
     const { camera, gl, invalidate } = useThree();
@@ -58,45 +58,71 @@ export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
     useEffect(() => () => cameraRef.current?.dispose(), []);
 
     const zoomIn = useCallback(() => {
-      cameraRef.current?.zoom(camera.zoom / 2, true);
+      cameraRef.current?.zoom(camera.zoom / 2, animated);
       invalidate();
-    }, [camera, invalidate]);
+    }, [animated, camera.zoom, invalidate]);
 
     const zoomOut = useCallback(() => {
-      cameraRef.current?.zoom(-camera.zoom / 2, true);
+      cameraRef.current?.zoom(-camera.zoom / 2, animated);
       invalidate();
-    }, [camera, invalidate]);
+    }, [animated, camera.zoom, invalidate]);
 
     const panRight = useCallback(
       event => {
-        cameraRef.current?.truck(-0.03 * event.deltaTime, 0, true);
+        cameraRef.current?.truck(-0.03 * event.deltaTime, 0, animated);
         invalidate();
       },
-      [invalidate]
+      [animated, invalidate]
     );
 
     const panLeft = useCallback(
       event => {
-        cameraRef.current?.truck(0.03 * event.deltaTime, 0, true);
+        cameraRef.current?.truck(0.03 * event.deltaTime, 0, animated);
         invalidate();
       },
-      [invalidate]
+      [animated, invalidate]
     );
 
     const panUp = useCallback(
       event => {
-        cameraRef.current?.truck(0, 0.03 * event.deltaTime, true);
+        cameraRef.current?.truck(0, 0.03 * event.deltaTime, animated);
         invalidate();
       },
-      [invalidate]
+      [animated, invalidate]
     );
 
     const panDown = useCallback(
       event => {
-        cameraRef.current?.truck(0, -0.03 * event.deltaTime, true);
+        cameraRef.current?.truck(0, -0.03 * event.deltaTime, animated);
         invalidate();
       },
-      [invalidate]
+      [animated, invalidate]
+    );
+
+    const onKeyDown = useCallback(
+      event => {
+        if (event.code === 'Space') {
+          if (mode === 'rotate') {
+            cameraRef.current.mouseButtons.left = CameraControls.ACTION.TRUCK;
+          } else {
+            cameraRef.current.mouseButtons.left = CameraControls.ACTION.ROTATE;
+          }
+        }
+      },
+      [mode]
+    );
+
+    const onKeyUp = useCallback(
+      event => {
+        if (event.code === 'Space') {
+          if (mode === 'rotate') {
+            cameraRef.current.mouseButtons.left = CameraControls.ACTION.ROTATE;
+          } else {
+            cameraRef.current.mouseButtons.left = CameraControls.ACTION.TRUCK;
+          }
+        }
+      },
+      [mode]
     );
 
     useEffect(() => {
@@ -104,14 +130,18 @@ export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
       rightKey.addEventListener('holding', panRight);
       upKey.addEventListener('holding', panUp);
       downKey.addEventListener('holding', panDown);
+      window.addEventListener('keydown', onKeyDown);
+      window.addEventListener('keyup', onKeyUp);
 
       return () => {
         leftKey.removeEventListener('holding', panLeft);
         rightKey.removeEventListener('holding', panRight);
         upKey.removeEventListener('holding', panUp);
         downKey.removeEventListener('holding', panDown);
+        window.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener('keyup', onKeyUp);
       };
-    }, [panDown, panLeft, panRight, panUp]);
+    }, [onKeyDown, onKeyUp, panDown, panLeft, panRight, panUp]);
 
     useEffect(() => {
       const ref = cameraRef.current;
@@ -131,26 +161,6 @@ export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
         }
       };
     }, [cameraRef, invalidate, controls, zoomIn, zoomOut]);
-
-    useEvent('keydown', event => {
-      if (event.code === 'Space') {
-        if (mode === 'rotate') {
-          cameraRef.current.mouseButtons.left = CameraControls.ACTION.TRUCK;
-        } else {
-          cameraRef.current.mouseButtons.left = CameraControls.ACTION.ROTATE;
-        }
-      }
-    });
-
-    useEvent('keyup', event => {
-      if (event.code === 'Space') {
-        if (mode === 'rotate') {
-          cameraRef.current.mouseButtons.left = CameraControls.ACTION.ROTATE;
-        } else {
-          cameraRef.current.mouseButtons.left = CameraControls.ACTION.TRUCK;
-        }
-      }
-    });
 
     useEffect(() => {
       if (mode === 'rotate') {

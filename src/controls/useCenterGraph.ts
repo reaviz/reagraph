@@ -9,15 +9,17 @@ import { InternalGraphNode } from '../types';
 const PADDING = 50;
 
 export interface CenterGraphInput {
+  animated?: boolean;
   nodes: InternalGraphNode[];
 }
 
 export interface CenterGraphOutput {
-  centerNodes: (nodes: InternalGraphNode[]) => void;
+  centerNodes: (nodes?: InternalGraphNode[]) => void;
 }
 
 export const useCenterGraph = ({
-  nodes
+  nodes,
+  animated
 }: CenterGraphInput): CenterGraphOutput => {
   const { invalidate } = useThree();
   const { controls } = useControls();
@@ -34,7 +36,7 @@ export const useCenterGraph = ({
             new THREE.Vector3(minX, minY, minZ + factor),
             new THREE.Vector3(maxX, maxY, maxZ + factor)
           ),
-          true,
+          animated,
           {
             paddingLeft: PADDING,
             paddingRight: PADDING,
@@ -46,7 +48,7 @@ export const useCenterGraph = ({
         invalidate();
       });
     },
-    [invalidate, controls]
+    [invalidate, controls, animated]
   );
 
   // On load of graph, listen for center events and center the graph

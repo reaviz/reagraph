@@ -19,6 +19,7 @@ export interface GraphRendererProps {
   theme: Theme;
   layoutType?: LayoutTypes;
   selections?: string[];
+  animated?: boolean;
   nodes: GraphNode[];
   edges: GraphEdge[];
   sizingType?: SizingType;
@@ -34,9 +35,12 @@ export interface GraphRendererRef {
 export const GraphRenderer: FC<
   GraphRendererProps & { ref?: Ref<GraphRendererRef> }
 > = forwardRef(
-  ({ onNodeClick, theme, selections, ...rest }, ref: Ref<GraphRendererRef>) => {
+  (
+    { onNodeClick, theme, animated, selections, ...rest },
+    ref: Ref<GraphRendererRef>
+  ) => {
     const { nodes, edges, graph } = useGraph(rest);
-    const { centerNodes } = useCenterGraph({ nodes });
+    const { centerNodes } = useCenterGraph({ nodes, animated });
 
     useImperativeHandle(ref, () => ({
       centerGraph: (nodesToCenter?: string[]) => {
@@ -68,13 +72,20 @@ export const GraphRenderer: FC<
             {...n}
             graph={graph}
             key={n.id}
+            animated={animated}
             theme={theme}
             selections={selections}
             onClick={() => onNodeClick?.(n)}
           />
         ))}
         {edges.map(e => (
-          <Edge {...e} theme={theme} key={e.id} selections={selections} />
+          <Edge
+            {...e}
+            theme={theme}
+            key={e.id}
+            selections={selections}
+            animated={animated}
+          />
         ))}
       </Fragment>
     );

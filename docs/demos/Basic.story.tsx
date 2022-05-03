@@ -10,3 +10,7 @@ export default {
 export const Simple = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} />
 );
+
+export const NoAnimation = () => (
+  <GraphCanvas animated={false} nodes={simpleNodes} edges={simpleEdges} />
+);

@@ -1,8 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { nodeSizeProvider, SizingType } from '../sizing';
-import { LayoutTypes, layoutProvider } from '../layout';
+import { LayoutTypes, layoutProvider, LayoutStrategy } from '../layout';
 import ngraph from 'ngraph.graph';
-import { useUpdateEffect } from 'react-use';
 import { calcLabelVisibility, LabelVisibilityType } from './visibility';
 import { tick } from '../layout/layoutUtils';
 import {
@@ -30,7 +29,8 @@ export const useGraph = ({
   edges
 }: GraphInputs) => {
   const graph = useRef<any>(ngraph());
-  const layout = useRef<any | null>(null);
+  const layoutMounted = useRef<boolean>(false);
+  const layout = useRef<LayoutStrategy | null>(null);
   const [internalNodes, setInternalNodes] = useState<InternalGraphNode[]>([]);
   const [internalEdges, setInternalEdges] = useState<InternalGraphEdge[]>([]);
 
@@ -63,17 +63,23 @@ export const useGraph = ({
   useEffect(() => {
     buildGraph(graph.current, nodes, edges);
     updateLayout();
+    layoutMounted.current = true;
     // eslint-disable-next-line
   }, [nodes, edges, graph]);
 
   // Update layout on type changes
-  useUpdateEffect(() => updateLayout(), [graph, layoutType]);
+  useEffect(() => {
+    if (layoutMounted.current) {
+      updateLayout();
+    }
+  }, [graph, layoutType, updateLayout]);
 
   // Update layout on size, label changes
-  useUpdateEffect(
-    () => updateLayout(layout.current),
-    [graph, sizingType, sizingAttribute, labelType]
-  );
+  useEffect(() => {
+    if (layoutMounted.current) {
+      updateLayout(layout.current);
+    }
+  }, [graph, sizingType, sizingAttribute, labelType, updateLayout]);
 
   return {
     graph: graph.current,

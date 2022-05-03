@@ -7,6 +7,7 @@ export interface SphereProps {
   size?: number;
   color?: string;
   opacity?: number;
+  animated?: boolean;
   onActive?: (active: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
@@ -16,6 +17,7 @@ export const Sphere: FC<SphereProps> = ({
   color,
   size,
   opacity,
+  animated,
   onActive,
   onClick,
   onContextMenu
@@ -32,7 +34,10 @@ export const Sphere: FC<SphereProps> = ({
       nodeColor: color,
       nodeOpacity: opacity
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   return (

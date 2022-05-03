@@ -27,7 +27,7 @@ export type GraphCanvasRef = GraphRendererRef & ControlsRef;
 export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
     (
-      { cameraMode, theme, onCanvasClick, ...rest },
+      { cameraMode, theme, onCanvasClick, animated, ...rest },
       ref: Ref<GraphCanvasRef>
     ) => {
       const rendererRef = useRef<GraphRendererRef | null>(null);
@@ -41,7 +41,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         panRight: () => controlsRef.current?.panRight(),
         panDown: () => controlsRef.current?.panDown(),
         panUp: () => controlsRef.current?.panUp(),
-        controls: controlsRef.current as any
+        controls: controlsRef.current?.controls
       }));
 
       return (
@@ -51,9 +51,14 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 75 }}
             onPointerMissed={onCanvasClick}
           >
-            <Controls mode={cameraMode} ref={controlsRef}>
+            <Controls mode={cameraMode} ref={controlsRef} animated={animated}>
               <Suspense>
-                <GraphRenderer ref={rendererRef} theme={theme} {...rest} />
+                <GraphRenderer
+                  ref={rendererRef}
+                  theme={theme}
+                  animated={animated}
+                  {...rest}
+                />
               </Suspense>
             </Controls>
             <color attach="background" args={[theme.backgroundColor]} />
@@ -69,5 +74,6 @@ GraphCanvas.defaultProps = {
   layoutType: 'forceDirected2d',
   sizingType: 'none',
   labelType: 'auto',
-  theme: lightTheme
+  theme: lightTheme,
+  animated: true
 };

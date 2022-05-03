@@ -14,11 +14,13 @@ export interface NodeProps extends InternalGraphNode {
   graph: any;
   selections?: string[];
   onClick?: () => void;
+  animated?: boolean;
 }
 
 export const Node: FC<NodeProps> = ({
   position,
   label,
+  animated,
   icon,
   graph,
   size,
@@ -63,7 +65,10 @@ export const Node: FC<NodeProps> = ({
       nodePosition: position ? [position.x, position.y, position.z] : [0, 0, 0],
       labelPosition: [0, -labelOffset, 2]
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   return (
@@ -73,6 +78,7 @@ export const Node: FC<NodeProps> = ({
           image={icon}
           size={size + 8}
           opacity={selectionOpacity}
+          animated={animated}
           onClick={onClick}
           onActive={setActive}
         />
@@ -85,6 +91,7 @@ export const Node: FC<NodeProps> = ({
               : fill || theme.node.fill
           }
           opacity={selectionOpacity}
+          animated={animated}
           onClick={onClick}
           onActive={setActive}
         />
@@ -92,6 +99,7 @@ export const Node: FC<NodeProps> = ({
       <Ring
         opacity={isPrimarySelection ? 0.5 : 0}
         size={size}
+        animated={animated}
         color={isSelected || isActive ? theme.ring.activeFill : theme.ring.fill}
       />
       {(labelVisible || isSelected || isActive) && label && (

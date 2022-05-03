@@ -6,11 +6,18 @@ import * as THREE from 'three';
 export interface LineProps {
   color?: string;
   size?: number;
+  animated?: boolean;
   opacity?: number;
   points: EdgeVectors3;
 }
 
-export const Line: FC<LineProps> = ({ color, size, opacity, points }) => {
+export const Line: FC<LineProps> = ({
+  color,
+  size,
+  opacity,
+  points,
+  animated
+}) => {
   const tubeRef = useRef<THREE.TubeBufferGeometry | null>(null);
 
   // Do opacity seperate from vertices for perf
@@ -21,7 +28,10 @@ export const Line: FC<LineProps> = ({ color, size, opacity, points }) => {
     to: {
       lineOpacity: opacity
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   useSpring({
@@ -45,7 +55,10 @@ export const Line: FC<LineProps> = ({ color, size, opacity, points }) => {
         new THREE.TubeBufferGeometry(t, 20, size / 2, 5, false)
       );
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   const curve = useMemo(

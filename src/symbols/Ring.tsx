@@ -6,11 +6,12 @@ import { Billboard } from '@react-three/drei';
 
 export interface RingProps {
   color?: string;
+  animated?: boolean;
   size?: number;
   opacity?: number;
 }
 
-export const Ring: FC<RingProps> = ({ color, size, opacity }) => {
+export const Ring: FC<RingProps> = ({ color, size, opacity, animated }) => {
   const { ringSize, ringOpacity } = useSpring({
     from: {
       ringOpacity: 0,
@@ -20,7 +21,10 @@ export const Ring: FC<RingProps> = ({ color, size, opacity }) => {
       ringOpacity: opacity,
       ringSize: [size / 2, size / 2, 1]
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   return (

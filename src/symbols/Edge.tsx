@@ -9,12 +9,14 @@ import { InternalGraphEdge } from '../types';
 
 export interface EdgeProps extends InternalGraphEdge {
   theme: Theme;
+  animated?: boolean;
   selections?: string[];
 }
 
 export const Edge: FC<EdgeProps> = ({
   from,
   to,
+  animated,
   position,
   label,
   theme,
@@ -46,7 +48,10 @@ export const Edge: FC<EdgeProps> = ({
     to: {
       labelPosition: [midPoint.x, midPoint.y, 2]
     },
-    config: animationConfig
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
   });
 
   return (
@@ -56,12 +61,14 @@ export const Edge: FC<EdgeProps> = ({
         opacity={selectionOpacity}
         points={points}
         size={size}
+        animated={animated}
       />
       <Arrow
         position={realPoints}
         color={isSelected ? theme.arrow.activeFill : theme.arrow.fill}
         opacity={selectionOpacity}
         size={arrowSize}
+        animated={animated}
       />
       {labelVisible && label && (
         <a.group position={labelPosition as any}>
