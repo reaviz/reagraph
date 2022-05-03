@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
-import { simpleEdges, simpleNodes } from '../assets/demo';
+import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Layouts',
@@ -8,15 +8,15 @@ export default {
 };
 
 export const ForceDirected2d = () => (
-  <GraphCanvas layoutType="forceDirected2d" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas layoutType="forceDirected2d" nodes={complexNodes} edges={complexEdges} />
 );
 
 export const ForceDirected3d = () => (
-  <GraphCanvas layoutType="forceDirected3d" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas layoutType="forceDirected3d" nodes={complexNodes} edges={complexEdges} />
 );
 
 export const Circular2d = () => (
-  <GraphCanvas layoutType="circular2d" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas layoutType="circular2d" nodes={complexNodes} edges={complexEdges} />
 );
 
 /*

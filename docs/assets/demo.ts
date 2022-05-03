@@ -67,7 +67,7 @@ export const simpleEdges: GraphEdge[] = [
   }
 ];
 
-export const [complexNodes, complexEdges] = transformGenerator(generators.balancedBinTree(2));
+export const [complexNodes, complexEdges] = transformGenerator(generators.balancedBinTree(3));
 
 export function transformGenerator(g) {
   const nodes = [];
