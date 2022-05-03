@@ -10,11 +10,3 @@ export default {
 export const Simple = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} />
 );
-
-export const DarkTheme = () => (
-  <GraphCanvas
-    theme={darkTheme}
-    nodes={simpleNodes}
-    edges={simpleEdges}
-  />
-);
