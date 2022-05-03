@@ -4,8 +4,7 @@ module.exports = {
     'storybook-css-modules-preset',
     '@storybook/addon-storysource',
     '@storybook/addon-docs/preset',
-    '@storybook/addon-essentials',
-    'storybook-dark-mode'
+    '@storybook/addon-essentials'
   ],
   webpackFinal: async (config, { configType }) => {
     config.module.rules.push({

@@ -3,6 +3,9 @@ import { Stats } from '@react-three/drei';
 import theme from './theme';
 
 const order = [
+  'docs-intro--page',
+  'docs-getting-started-installing--page',
+  'docs-getting-started-basics--page',
   'docs-',
   'demos-'
 ];
@@ -18,11 +21,6 @@ export const decorators = [withProvider];
 
 export const parameters = {
   layout: 'centered',
-  darkMode: {
-    stylePreview: true,
-    darkClass: 'dark',
-    lightClass: 'light'
-  },
   actions: { argTypesRegex: '^on.*' },
   options: {
     storySort: (a, b) => {

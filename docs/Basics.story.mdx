@@ -1,0 +1,56 @@
+import { Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Docs/Getting Started/Basics" />
+
+# Basics
+
+## Graph
+Let's build our first graph by defining some `nodes` and `edges`.
+Nodes are the blocks and edges are the relationships between the blocks.
+
+The data shapes require one property of `id` but you can pass `label`
+or `icon` to them to show some sort of indication what it represents.
+
+```js
+const nodes = [
+  {
+    id: '1',
+    label: 'Node 1'
+  },
+  {
+    id: '2',
+    label: 'Node 2'
+  }
+];
+
+const edges = [
+  {
+    label: 'Edge 1-2',
+    id: '1-2',
+    from: '1',
+    to: '2'
+  }
+];
+```
+
+These shapes above will create two elements `1` and `2` and create
+a relationship between them. Once we have this defined, we can simply
+pass these properties to the `Canvas` and it will do the rest!
+
+```jsx
+import React from 'react';
+import { GraphCanvas } from 'reagraph';
+
+export const MyDiagram = () => (
+  <GraphCanvas
+    nodes={nodes}
+    edges={edges}
+  />
+);
+```
+
+This will render a graph like this:
+
+<div style={{ height: 500, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
+  <Story id="demos-basic--simple" />
+</div>
