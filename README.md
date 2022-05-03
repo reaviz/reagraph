@@ -3,25 +3,25 @@
   <br />
   WebGL Network Graphs for React
   <br /><br />
-  <a href="https://github.com/reaviz/reagraph/workflows/build/">
+  <a href="https://github.com/reaviz/reagraph/workflows/build/" target="_blank">
     <img src="https://github.com/reaviz/reagraph/workflows/build/badge.svg?branch=master" />
   </a>
-  <a href="https://npm.im/reagraph">
+  <a href="https://npm.im/reagraph" target="_blank">
     <img src="https://img.shields.io/npm/v/reagraph.svg" />
   </a>
-  <a href="https://npm.im/reagraph">
+  <a href="https://npm.im/reagraph" target="_blank">
     <img src="https://badgen.net/npm/dw/reagraph" />
   </a>
-  <a href="https://github.com/reaviz/reagraph/blob/master/LICENSE">
+  <a href="https://github.com/reaviz/reagraph/blob/master/LICENSE" target="_blank">
     <img src="https://badgen.now.sh/badge/license/apache2" />
   </a>
-  <a href="https://bundlephobia.com/result?p=reagraph">
+  <a href="https://bundlephobia.com/result?p=reagraph" target="_blank">
     <img src="https://badgen.net/bundlephobia/minzip/reagraph">
   </a>
-  <a href="https://discord.gg/tt8wGExq35">
+  <a href="https://discord.gg/tt8wGExq35" target="_blank">
     <img src="https://img.shields.io/discord/773948315037073409?label=discord">
   </a>
-  <a href="https://opencollective.com/reaviz">
+  <a href="https://opencollective.com/reaviz" target="_blank">
     <img alt="Open Collective backers and sponsors" src="https://img.shields.io/opencollective/all/reaviz?label=backers">
   </a>
 </div>
