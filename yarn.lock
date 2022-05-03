@@ -9204,6 +9204,14 @@ ngraph.fromdot@^6.0.1:
     dotparser "^1.0.0"
     ngraph.graph "^19.1.0"
 
+ngraph.generators@^20.0.0:
+  version "20.0.0"
+  resolved "https://registry.yarnpkg.com/ngraph.generators/-/ngraph.generators-20.0.0.tgz#92accbc5aa3f5d075ae4dcc9dfd57b3dbb7a005c"
+  integrity sha512-tKbJiWfi9mQDMYYtJr91SLcA6Pc1Xrh92kPTa/0CNfwolvjZJHevojO8E74QZSCcXPlRlIYFz/SEIEP0joHFqA==
+  dependencies:
+    ngraph.graph "^20.0.0"
+    ngraph.random "^1.0.0"
+
 ngraph.graph@^19.1.0:
   version "19.1.0"
   resolved "https://registry.yarnpkg.com/ngraph.graph/-/ngraph.graph-19.1.0.tgz#88910ed53f6b4bc374f1b67296f4f81aab814e24"
@@ -9224,6 +9232,11 @@ ngraph.pagerank@^2.1.0:
   integrity sha512-KBF0fQ5wyBCkk5yHLFVni0qouTyS4bBckoO8JN1aFbZ0owTYqfpM4EY/CEPUinA2I16gqUCm75c8oEZpG61/Dw==
   dependencies:
     ngraph.fromdot "^6.0.1"
+
+ngraph.random@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/ngraph.random/-/ngraph.random-1.1.0.tgz#5345c4bb63865c85d98ee6f13eab1395d8545a90"
+  integrity sha512-h25UdUN/g8U7y29TzQtRm/GvGr70lK37yQPvPKXXuVfs7gCm82WipYFZcksQfeKumtOemAzBIcT7lzzyK/edLw==
 
 nice-try@^1.0.4:
   version "1.0.5"

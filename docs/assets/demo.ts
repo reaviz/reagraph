@@ -65,3 +65,26 @@ export const simpleEdges: GraphEdge[] = [
     label: 'Edge 0-4'
   }
 ];
+
+export function transformGenerator(g) {
+  const nodes = [];
+  const edges = [];
+
+  g.forEachNode(node => {
+    nodes.push({
+      id: node.id,
+      label: node.id
+    });
+
+    node.links.forEach(link => {
+      edges.push({
+        id: `${node.id}->${link.toId}`,
+        source: link.fromId,
+        target: link.toId,
+        label: `${link.fromId}->${link.toId}`
+      });
+    });
+  });
+
+  return [nodes, edges];
+}

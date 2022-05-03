@@ -90,6 +90,7 @@
     "jest-junit": "^13.2.0",
     "lint-staged": "^12.4.1",
     "lodash": "^4.17.21",
+    "ngraph.generators": "^20.0.0",
     "postcss-nested": "^4",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.6.2",
