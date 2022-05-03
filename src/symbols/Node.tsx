@@ -6,8 +6,10 @@ import { Sphere } from './Sphere';
 import { Label } from './Label';
 import chroma from 'chroma-js';
 import { Icon } from './Icon';
+import { Theme } from '../utils/themes';
 
 export interface NodeProps {
+  theme: Theme;
   id: string;
   position: THREE.Vector3;
   icon?: string;
@@ -15,7 +17,6 @@ export interface NodeProps {
   graph: any;
   label?: string;
   size?: number;
-  color?: string;
   selectedNodes?: string[];
   labelVisible?: boolean;
   onClick?: () => void;
@@ -27,11 +28,12 @@ export const Node: FC<NodeProps> = ({
   icon,
   size,
   labelVisible,
-  color,
+  theme,
   onClick
 }) => {
+  const fill = theme.node.fill;
   const group = useRef<THREE.Group | null>(null);
-  const activeColor = useMemo(() => chroma(color).brighten(0.5).hex(), [color]);
+  const activeColor = useMemo(() => chroma(fill).brighten(0.5).hex(), [fill]);
   const [isActive, setActive] = useState<boolean>(false);
 
   const selectionOpacity = 1;
@@ -67,7 +69,7 @@ export const Node: FC<NodeProps> = ({
           selected={isSelected}
           active={isActive}
           size={size}
-          color={color}
+          color={fill}
           activeColor={activeColor}
           opacity={selectionOpacity}
           onClick={onClick}
@@ -76,7 +78,11 @@ export const Node: FC<NodeProps> = ({
       )}
       {(labelVisible || isSelected || isActive) && label && (
         <a.group position={labelPosition as any}>
-          <Label text={label} opacity={selectionOpacity} />
+          <Label
+            text={label}
+            opacity={selectionOpacity}
+            color={theme.node.color}
+          />
         </a.group>
       )}
     </a.group>
@@ -85,6 +91,5 @@ export const Node: FC<NodeProps> = ({
 
 Node.defaultProps = {
   size: 7,
-  labelVisible: true,
-  color: '#AACBD2'
+  labelVisible: true
 };

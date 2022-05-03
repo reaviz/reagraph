@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphCanvas } from '../src';
+import { darkTheme, GraphCanvas } from '../src';
 import { simpleEdges, simpleNodes } from './assets/demo';
 
 export default {
@@ -9,4 +9,12 @@ export default {
 
 export const Simple = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} />
+);
+
+export const DarkTheme = () => (
+  <GraphCanvas
+    theme={darkTheme}
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );

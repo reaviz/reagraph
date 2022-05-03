@@ -14,9 +14,10 @@ import {
 } from './GraphRenderer';
 import { CameraMode, Controls, ControlsRef } from './controls/CameraControls';
 import css from './GraphCanvas.module.css';
+import { Theme, lightTheme } from './utils/themes';
 
-export interface GraphCanvasProps extends GraphRendererProps {
-  backgroundColor?: string;
+export interface GraphCanvasProps extends Omit<GraphRendererProps, 'theme'> {
+  theme?: Theme;
   cameraMode?: CameraMode;
   onCanvasClick?: () => void;
 }
@@ -26,7 +27,7 @@ export type GraphCanvasRef = GraphRendererRef & ControlsRef;
 export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
     (
-      { cameraMode, backgroundColor, onCanvasClick, ...rest },
+      { cameraMode, theme, onCanvasClick, ...rest },
       ref: Ref<GraphCanvasRef>
     ) => {
       const rendererRef = useRef<GraphRendererRef | null>(null);
@@ -53,10 +54,10 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           >
             <Controls mode={cameraMode} ref={controlsRef}>
               <Suspense>
-                <GraphRenderer ref={rendererRef} {...rest} />
+                <GraphRenderer ref={rendererRef} theme={theme} {...rest} />
               </Suspense>
             </Controls>
-            <color attach="background" args={[backgroundColor]} />
+            <color attach="background" args={[theme.backgroundColor]} />
             <ambientLight intensity={0.5} />
           </Canvas>
         </div>
@@ -65,9 +66,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   );
 
 GraphCanvas.defaultProps = {
-  backgroundColor: '#FFF',
   cameraMode: 'pan',
   layoutType: 'forceDirected2d',
   sizingType: 'none',
-  labelType: 'auto'
+  labelType: 'auto',
+  theme: lightTheme
 };

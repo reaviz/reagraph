@@ -10,10 +10,11 @@ import {
   EdgeVector
 } from '../utils';
 import { Line } from './Line';
+import { Theme } from '../utils/themes';
 
 export interface EdgeProps {
+  theme: Theme;
   id: string;
-  color?: string;
   label?: string;
   size?: number;
   position: EdgeVector;
@@ -27,8 +28,8 @@ export const Edge: FC<EdgeProps> = ({
   to,
   position,
   label,
+  theme,
   labelVisible,
-  color,
   size
 }) => {
   const arrowSize = Math.max(size * 0.3, 1);
@@ -57,21 +58,22 @@ export const Edge: FC<EdgeProps> = ({
   return (
     <group>
       <Line
-        color={color}
+        color={theme.edge.fill}
         opacity={selectionOpacity}
         points={points}
         size={size}
       />
       <Arrow
         position={realPoints}
+        color={theme.arrow.fill}
         opacity={selectionOpacity}
         size={arrowSize}
-        color={color}
       />
       {labelVisible && label && (
         <a.group position={labelPosition as any}>
           <Label
             text={label}
+            color={theme.edge.color}
             opacity={selectionOpacity}
             rotation={rotation}
             padding={80}
@@ -85,6 +87,5 @@ export const Edge: FC<EdgeProps> = ({
 
 Edge.defaultProps = {
   labelVisible: false,
-  color: '#D8E6EA',
   size: 1
 };
