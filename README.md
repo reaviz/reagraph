@@ -30,6 +30,8 @@
 
 Reagraph is a high-performance network graph visualization built in WebGL for React.
 
+If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
+
 ## 🚀 Quick Links
 
 - Checkout the [**docs and demos**](https://reagraph.dev)
