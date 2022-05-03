@@ -15,6 +15,7 @@ export interface CenterGraphInput {
 
 export interface CenterGraphOutput {
   centerNodes: (nodes?: InternalGraphNode[]) => void;
+  centerNodesById: (ids?: string[]) => void;
 }
 
 export const useCenterGraph = ({
@@ -25,7 +26,7 @@ export const useCenterGraph = ({
   const { controls } = useControls();
 
   const centerNodes = useCallback(
-    (centerNodes: any[], factor: number = 0) => {
+    (centerNodes: InternalGraphNode[], factor: number = 0) => {
       requestAnimationFrame(() => {
         // Centers the graph based on the central most node
         const { minX, maxX, minY, maxY, minZ, maxZ } =
@@ -51,6 +52,30 @@ export const useCenterGraph = ({
     [invalidate, controls, animated]
   );
 
+  const centerNodesById = useCallback(
+    (nodeIds?: string[]) => {
+      let mappedNodes: InternalGraphNode[] | null = null;
+
+      if (nodeIds?.length) {
+        mappedNodes = nodeIds.reduce((acc, id) => {
+          const node = nodes.find(n => n.id === id);
+          if (node) {
+            acc.push(node);
+          } else {
+            throw new Error(
+              `Attempted to center ${id} but it was not found in the nodes`
+            );
+          }
+
+          return acc;
+        }, []);
+      }
+
+      centerNodes(mappedNodes || nodes);
+    },
+    [centerNodes, nodes]
+  );
+
   // On load of graph, listen for center events and center the graph
   useEffect(() => {
     if (controls && nodes?.length) {
@@ -66,5 +91,5 @@ export const useCenterGraph = ({
     }
   ]);
 
-  return { centerNodes };
+  return { centerNodes, centerNodesById };
 };

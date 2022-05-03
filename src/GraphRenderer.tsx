@@ -40,29 +40,10 @@ export const GraphRenderer: FC<
     ref: Ref<GraphRendererRef>
   ) => {
     const { nodes, edges, graph } = useGraph(rest);
-    const { centerNodes } = useCenterGraph({ nodes, animated });
+    const { centerNodesById } = useCenterGraph({ nodes, animated });
 
     useImperativeHandle(ref, () => ({
-      centerGraph: (nodesToCenter?: string[]) => {
-        let mappedNodes: InternalGraphNode[] | null = null;
-
-        if (nodesToCenter?.length) {
-          mappedNodes = nodesToCenter.reduce((acc, id) => {
-            const node = nodes.find(n => n.id === id);
-            if (node) {
-              acc.push(node);
-            } else {
-              throw new Error(
-                `Attempted to center ${id} but it was not found in the nodes`
-              );
-            }
-
-            return acc;
-          }, []);
-        }
-
-        centerNodes(mappedNodes || nodes);
-      }
+      centerGraph: centerNodesById
     }));
 
     return (
