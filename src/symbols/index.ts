@@ -5,3 +5,4 @@ export * from './Arrow';
 export * from './Edge';
 export * from './Line';
 export * from './Icon';
+export * from './Ring';

@@ -28,3 +28,7 @@ export const All = () => {
     </div>
   );
 };
+
+export const Rotate = () => (
+  <GraphCanvas cameraMode="rotate" nodes={simpleNodes} edges={simpleEdges} />
+);

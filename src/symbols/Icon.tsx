@@ -7,8 +7,6 @@ export interface IconProps {
   image: string;
   opacity?: number;
   size?: number;
-  selected?: boolean;
-  active?: boolean;
   onActive?: (state: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;

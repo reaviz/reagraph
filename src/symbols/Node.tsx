@@ -4,15 +4,16 @@ import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './Sphere';
 import { Label } from './Label';
-import chroma from 'chroma-js';
 import { Icon } from './Icon';
 import { Theme } from '../utils/themes';
+import { Ring } from './Ring';
 
 export interface NodeProps {
   theme: Theme;
   id: string;
   position: THREE.Vector3;
   icon?: string;
+  selections?: string[];
   data: any;
   graph: any;
   label?: string;
@@ -26,18 +27,37 @@ export const Node: FC<NodeProps> = ({
   position,
   label,
   icon,
+  graph,
   size,
+  id,
+  selections,
   labelVisible,
   theme,
   onClick
 }) => {
-  const fill = theme.node.fill;
   const group = useRef<THREE.Group | null>(null);
-  const activeColor = useMemo(() => chroma(fill).brighten(0.5).hex(), [fill]);
   const [isActive, setActive] = useState<boolean>(false);
 
-  const selectionOpacity = 1;
-  const isSelected = false;
+  const hasSelections = selections?.length > 0;
+  const isPrimarySelection = selections?.includes(id);
+
+  const isSelected = useMemo(() => {
+    if (isPrimarySelection) {
+      return true;
+    }
+
+    if (selections?.length) {
+      return selections.some(selection => graph.hasLink(selection, id));
+    }
+
+    return false;
+  }, [selections, id, graph, isPrimarySelection]);
+
+  const selectionOpacity = hasSelections
+    ? isSelected || isActive
+      ? 1
+      : 0.2
+    : 1;
 
   const labelOffset = size + 7;
   const { nodePosition, labelPosition } = useSpring({
@@ -59,29 +79,33 @@ export const Node: FC<NodeProps> = ({
           image={icon}
           size={size + 8}
           opacity={selectionOpacity}
-          selected={isSelected}
-          active={isActive}
           onClick={onClick}
-          onActive={state => setActive(state)}
+          onActive={setActive}
         />
       ) : (
         <Sphere
-          selected={isSelected}
-          active={isActive}
           size={size}
-          color={fill}
-          activeColor={activeColor}
+          color={
+            isSelected || isActive ? theme.node.activeFill : theme.node.fill
+          }
           opacity={selectionOpacity}
           onClick={onClick}
           onActive={setActive}
         />
       )}
+      <Ring
+        opacity={isPrimarySelection ? 0.5 : 0}
+        size={size}
+        color={isSelected || isActive ? theme.ring.activeFill : theme.ring.fill}
+      />
       {(labelVisible || isSelected || isActive) && label && (
         <a.group position={labelPosition as any}>
           <Label
             text={label}
             opacity={selectionOpacity}
-            color={theme.node.color}
+            color={
+              isSelected || isActive ? theme.node.activeColor : theme.node.color
+            }
           />
         </a.group>
       )}

@@ -51,9 +51,3 @@ export function getQuaternion(positions: EdgeVector) {
   const axis = new THREE.Vector3(0, 1, 0);
   return [axis, dir.clone().normalize()];
 }
-
-export function getRotation(positions: EdgeVector) {
-  const [fromVector, toVector] = getVectors(positions);
-  const { x, y } = new THREE.Vector3().subVectors(toVector, fromVector);
-  return Math.atan(y / x);
-}

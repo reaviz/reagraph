@@ -3,6 +3,7 @@ import { GraphEdge, GraphNode } from '../../src';
 import random from 'lodash/random';
 import demonSvg from './demon.svg';
 import computerSvg from './computer.svg';
+import generators from 'ngraph.generators';
 
 export const simpleNodes: GraphNode[] =
   range(5).map(i => ({
@@ -65,6 +66,8 @@ export const simpleEdges: GraphEdge[] = [
     label: 'Edge 0-4'
   }
 ];
+
+export const [complexNodes, complexEdges] = transformGenerator(generators.balancedBinTree(2));
 
 export function transformGenerator(g) {
   const nodes = [];

@@ -2,13 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { Arrow } from './Arrow';
 import { Label } from './Label';
-import {
-  animationConfig,
-  getMidPoint,
-  getRotation,
-  getPoints,
-  EdgeVector
-} from '../utils';
+import { animationConfig, getMidPoint, getPoints, EdgeVector } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../utils/themes';
 
@@ -17,6 +11,7 @@ export interface EdgeProps {
   id: string;
   label?: string;
   size?: number;
+  selections?: string[];
   position: EdgeVector;
   labelVisible?: boolean;
   from: any;
@@ -29,6 +24,7 @@ export const Edge: FC<EdgeProps> = ({
   position,
   label,
   theme,
+  selections,
   labelVisible,
   size
 }) => {
@@ -41,10 +37,14 @@ export const Edge: FC<EdgeProps> = ({
   const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
   const midPoint = useMemo(() => getMidPoint(position), [position]);
 
-  // TODO: Improve this
-  const rotation = useMemo(() => getRotation(position), [position]);
+  const hasSelections = selections?.length > 0;
+  const isSelected = selections?.includes(from.id);
+  const selectionOpacity = hasSelections
+    ? isSelected && selections?.length === 1
+      ? 0.5
+      : 0.1
+    : 0.5;
 
-  const selectionOpacity = 0.5;
   const { labelPosition } = useSpring({
     from: {
       labelPosition: [0, 0, 2]
@@ -58,14 +58,14 @@ export const Edge: FC<EdgeProps> = ({
   return (
     <group>
       <Line
-        color={theme.edge.fill}
+        color={isSelected ? theme.edge.activeFill : theme.edge.fill}
         opacity={selectionOpacity}
         points={points}
         size={size}
       />
       <Arrow
         position={realPoints}
-        color={theme.arrow.fill}
+        color={isSelected ? theme.arrow.activeFill : theme.arrow.fill}
         opacity={selectionOpacity}
         size={arrowSize}
       />
@@ -73,10 +73,8 @@ export const Edge: FC<EdgeProps> = ({
         <a.group position={labelPosition as any}>
           <Label
             text={label}
-            color={theme.edge.color}
+            color={isSelected ? theme.edge.activeColor : theme.edge.color}
             opacity={selectionOpacity}
-            rotation={rotation}
-            padding={80}
             fontSize={6}
           />
         </a.group>

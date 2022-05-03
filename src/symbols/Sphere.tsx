@@ -6,10 +6,7 @@ import * as THREE from 'three';
 export interface SphereProps {
   size?: number;
   color?: string;
-  activeColor?: string;
   opacity?: number;
-  selected?: boolean;
-  active?: boolean;
   onActive?: (active: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
@@ -18,10 +15,7 @@ export interface SphereProps {
 export const Sphere: FC<SphereProps> = ({
   color,
   size,
-  activeColor,
   opacity,
-  active,
-  selected,
   onActive,
   onClick,
   onContextMenu
@@ -35,7 +29,7 @@ export const Sphere: FC<SphereProps> = ({
     },
     to: {
       scale: [size, size, size],
-      nodeColor: selected || active ? activeColor : color,
+      nodeColor: color,
       nodeOpacity: opacity
     },
     config: animationConfig
@@ -53,11 +47,11 @@ export const Sphere: FC<SphereProps> = ({
           }
         }}
         onPointerOver={() => {
-          onActive(true);
+          onActive?.(true);
           document.body.style['cursor'] = 'pointer';
         }}
         onPointerOut={() => {
-          onActive(false);
+          onActive?.(false);
           document.body.style['cursor'] = 'inherit';
         }}
       >
