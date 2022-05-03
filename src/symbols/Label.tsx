@@ -34,7 +34,7 @@ export const Label: FC<LabelProps> = ({
 
 Label.defaultProps = {
   opacity: 1,
-  fontSize: 12,
+  fontSize: 7,
   fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
-  color: '#000'
+  color: '#2A6475'
 };

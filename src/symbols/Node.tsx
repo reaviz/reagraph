@@ -86,5 +86,5 @@ export const Node: FC<NodeProps> = ({
 Node.defaultProps = {
   size: 7,
   labelVisible: true,
-  color: '#11cff7'
+  color: '#AACBD2'
 };

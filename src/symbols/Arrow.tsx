@@ -19,10 +19,10 @@ export interface ArrowProps {
 
 export const Arrow: FC<ArrowProps> = ({
   position,
-  size = 1,
-  opacity = 0.5,
-  placement = 'end',
-  color = '#0078FF'
+  size,
+  opacity,
+  placement,
+  color
 }) => {
   const meshRef = useRef<THREE.Mesh | null>(null);
   const quaternion = useMemo(() => getQuaternion(position), [position]);
@@ -70,4 +70,11 @@ export const Arrow: FC<ArrowProps> = ({
       />
     </a.mesh>
   );
+};
+
+Arrow.defaultProps = {
+  size: 1,
+  opacity: 0.5,
+  placement: 'end',
+  color: '#D8E6EA'
 };

@@ -75,7 +75,7 @@ export const Edge: FC<EdgeProps> = ({
             opacity={selectionOpacity}
             rotation={rotation}
             padding={80}
-            fontSize={10}
+            fontSize={6}
           />
         </a.group>
       )}
@@ -85,6 +85,6 @@ export const Edge: FC<EdgeProps> = ({
 
 Edge.defaultProps = {
   labelVisible: false,
-  color: '#000',
+  color: '#D8E6EA',
   size: 1
 };
