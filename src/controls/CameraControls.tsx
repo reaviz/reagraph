@@ -5,12 +5,18 @@ import React, {
   useCallback,
   forwardRef,
   Ref,
-  useImperativeHandle
+  useImperativeHandle,
+  Fragment,
+  useMemo
 } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
 import * as THREE from 'three';
 import CameraControls from 'camera-controls';
-import { useControls } from './useControls';
+import {
+  ControlsContext,
+  ControlsContextProps,
+  useControls
+} from './useControls';
 import { useEvent } from 'react-use';
 import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
@@ -37,20 +43,14 @@ export type CameraMode = 'pan' | 'rotate';
 
 export interface ControlsProps {
   mode?: CameraMode;
+  children?: any;
 }
 
-export interface ControlsRef {
-  zoomIn: () => void;
-  zoomOut: () => void;
-  panLeft: () => void;
-  panRight: () => void;
-  panUp: () => void;
-  panDown: () => void;
-}
+export type ControlsRef = ControlsContextProps;
 
 export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
-  forwardRef(({ mode }, ref: Ref<ControlsRef>) => {
-    const { controls, setControls } = useControls();
+  forwardRef(({ mode, children }, ref: Ref<ControlsRef>) => {
+    const { controls } = useControls();
     const cameraRef = useRef<CameraControls | null>(null);
     const { camera, gl, invalidate } = useThree();
 
@@ -114,23 +114,23 @@ export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
     }, [panDown, panLeft, panRight, panUp]);
 
     useEffect(() => {
-      if (!controls) {
-        setControls(cameraRef.current);
-        cameraRef.current.addEventListener('update', invalidate);
-        cameraRef.current.addEventListener('control', invalidate);
+      const ref = cameraRef.current;
+      if (!ref) {
+        ref.addEventListener('update', invalidate);
+        ref.addEventListener('control', invalidate);
         // ref.current.addEventListener('zoomIn', zoomIn);
         // ref.current.addEventListener('zoomOut', zoomOut);
       }
 
       return () => {
         if (controls) {
-          controls.removeEventListener('update', invalidate);
-          controls.removeEventListener('control', invalidate);
+          ref.removeEventListener('update', invalidate);
+          ref.removeEventListener('control', invalidate);
           // controls.removeEventListener('zoomIn', zoomIn);
           // controls.removeEventListener('zoomOut', zoomOut);
         }
       };
-    }, [cameraRef, invalidate, setControls, controls, zoomIn, zoomOut]);
+    }, [cameraRef, invalidate, controls, zoomIn, zoomOut]);
 
     useEvent('keydown', event => {
       if (event.code === 'Space') {
@@ -179,16 +179,28 @@ export const Controls: FC<ControlsProps & { ref?: Ref<ControlsRef> }> =
       }
     ]);
 
-    useImperativeHandle(ref, () => ({
-      zoomIn: () => zoomIn(),
-      zoomOut: () => zoomOut(),
-      panLeft: () => panLeft({ deltaTime: 1 }),
-      panRight: () => panRight({ deltaTime: 1 }),
-      panDown: () => panDown({ deltaTime: 1 }),
-      panUp: () => panUp({ deltaTime: 1 })
-    }));
+    const values = useMemo(
+      () => ({
+        controls: cameraRef.current,
+        zoomIn: () => zoomIn(),
+        zoomOut: () => zoomOut(),
+        panLeft: () => panLeft({ deltaTime: 1 }),
+        panRight: () => panRight({ deltaTime: 1 }),
+        panDown: () => panDown({ deltaTime: 1 }),
+        panUp: () => panUp({ deltaTime: 1 })
+      }),
+      // eslint-disable-next-line
+      [zoomIn, zoomOut, panLeft, panRight, panDown, panUp, cameraRef.current]
+    );
 
-    return <cameraControls ref={cameraRef} args={[camera, gl.domElement]} />;
+    useImperativeHandle(ref, () => values);
+
+    return (
+      <ControlsContext.Provider value={values}>
+        <cameraControls ref={cameraRef} args={[camera, gl.domElement]} />
+        {children}
+      </ControlsContext.Provider>
+    );
   });
 
 Controls.defaultProps = {

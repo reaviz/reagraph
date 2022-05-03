@@ -33,13 +33,14 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       const controlsRef = useRef<ControlsRef | null>(null);
 
       useImperativeHandle(ref, () => ({
-        centerGraph: () => rendererRef.current?.centerGraph(),
+        centerGraph: (n?: string[]) => rendererRef.current?.centerGraph(n),
         zoomIn: () => controlsRef.current?.zoomIn(),
         zoomOut: () => controlsRef.current?.zoomOut(),
         panLeft: () => controlsRef.current?.panLeft(),
         panRight: () => controlsRef.current?.panRight(),
         panDown: () => controlsRef.current?.panDown(),
-        panUp: () => controlsRef.current?.panUp()
+        panUp: () => controlsRef.current?.panUp(),
+        controls: controlsRef.current as any
       }));
 
       return (
@@ -50,12 +51,13 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 75 }}
             onPointerMissed={onCanvasClick}
           >
-            <Controls mode={cameraMode} />
+            <Controls mode={cameraMode} ref={controlsRef}>
+              <Suspense>
+                <GraphRenderer ref={rendererRef} {...rest} />
+              </Suspense>
+            </Controls>
             <color attach="background" args={[backgroundColor]} />
             <ambientLight intensity={0.5} />
-            <Suspense>
-              <GraphRenderer ref={rendererRef} {...rest} />
-            </Suspense>
           </Canvas>
         </div>
       );

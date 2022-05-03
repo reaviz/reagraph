@@ -25,7 +25,7 @@ export interface GraphRendererProps {
 }
 
 export interface GraphRendererRef {
-  centerGraph: () => void;
+  centerGraph: (nodes?: string[]) => void;
 }
 
 export const GraphRenderer: FC<
@@ -35,7 +35,24 @@ export const GraphRenderer: FC<
   const { centerNodes } = useCenterGraph({ nodes });
 
   useImperativeHandle(ref, () => ({
-    centerGraph: () => centerNodes(nodes)
+    centerGraph: (nodesToCenter?: string[]) => {
+      if (nodesToCenter?.length) {
+        nodesToCenter = nodesToCenter.reduce((acc, id) => {
+          const node = nodes.find(n => n.id === id);
+          if (node) {
+            acc.push(node);
+          } else {
+            throw new Error(
+              `Attempted to center ${id} but it was not found in the nodes`
+            );
+          }
+
+          return acc;
+        }, []);
+      }
+
+      centerNodes(nodesToCenter || nodes);
+    }
   }));
 
   return (

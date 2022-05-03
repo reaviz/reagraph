@@ -1,12 +1,34 @@
 import CameraControls from 'camera-controls';
-import create from 'zustand';
+import { createContext, useContext } from 'react';
 
-interface ControlsState {
+export interface ControlsContextProps {
   controls: CameraControls | null;
-  setControls: (controls: CameraControls | null) => void;
+  zoomIn: () => void;
+  zoomOut: () => void;
+  panLeft: () => void;
+  panRight: () => void;
+  panUp: () => void;
+  panDown: () => void;
 }
 
-export const useControls = create<ControlsState>(set => ({
+export const ControlsContext = createContext<ControlsContextProps>({
   controls: null,
-  setControls: controls => set({ controls })
-}));
+  zoomIn: () => undefined,
+  zoomOut: () => undefined,
+  panLeft: () => undefined,
+  panRight: () => undefined,
+  panUp: () => undefined,
+  panDown: () => undefined
+});
+
+export const useControls = () => {
+  const context = useContext(ControlsContext);
+
+  if (context === undefined) {
+    throw new Error(
+      '`useControls` hook must be used within a `ControlsProvider` component'
+    );
+  }
+
+  return context;
+};
