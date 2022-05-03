@@ -21,14 +21,23 @@ export const CustomTheme = () => (
       backgroundColor: 'gray',
       node: {
         fill: 'blue',
-        color: 'white'
+        color: 'white',
+        activeFill: '#1DE9AC',
+        activeColor: '#1DE9AC'
       },
       edge: {
         fill: 'yellow',
-        color: 'white'
+        color: 'white',
+        activeFill: '#1DE9AC',
+        activeColor: '#1DE9AC'
+      },
+      ring: {
+        fill: 'green',
+        activeFill: '#1DE9AC'
       },
       arrow: {
-        fill: 'green'
+        fill: 'green',
+        activeFill: '#1DE9AC'
       }
     }}
     nodes={simpleNodes}
