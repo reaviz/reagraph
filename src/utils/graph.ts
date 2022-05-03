@@ -123,7 +123,7 @@ function transformGraph({
   graph.forEachNode((node: InternalGraphNode) => {
     if (node.data) {
       const position = layout.getNodePosition(node.id);
-      const { data, color, icon, label, size, ...rest } = node.data;
+      const { data, fill, icon, label, size, ...rest } = node.data;
       const nodeSize = sizes.getSizeForNode(node.id, size);
       const labelVisible = checkVisibility('node', nodeSize);
 
@@ -133,7 +133,7 @@ function transformGraph({
         labelVisible,
         label,
         icon,
-        color,
+        fill,
         data: {
           ...rest,
           ...(data || {})

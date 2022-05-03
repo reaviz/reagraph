@@ -22,6 +22,7 @@ export const Node: FC<NodeProps> = ({
   icon,
   graph,
   size,
+  fill,
   id,
   selections,
   labelVisible,
@@ -79,7 +80,9 @@ export const Node: FC<NodeProps> = ({
         <Sphere
           size={size}
           color={
-            isSelected || isActive ? theme.node.activeFill : theme.node.fill
+            isSelected || isActive
+              ? theme.node.activeFill
+              : fill || theme.node.fill
           }
           opacity={selectionOpacity}
           onClick={onClick}

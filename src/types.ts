@@ -8,7 +8,7 @@ export interface GraphElementBaseAttributes<T = any> {
 
 export interface GraphNode extends GraphElementBaseAttributes {
   icon?: string;
-  color?: string;
+  fill?: string;
 }
 
 export interface GraphEdge extends GraphElementBaseAttributes {

@@ -18,7 +18,7 @@ export const simpleNodesColors: GraphNode[] =
   range(5).map(i => ({
     id: `n-${i}`,
     label: `Node ${i}`,
-    color: `hsl(${random(0, 360)}, 100%, 50%)`,
+    fill: `hsl(${random(0, 360)}, 100%, 50%)`,
   }));
 
 export const iconNodes: GraphNode[] =
