@@ -1,4 +1,6 @@
-export function getLayoutCenter(nodes: any[]) {
+import { InternalGraphNode } from '../types';
+
+export function getLayoutCenter(nodes: InternalGraphNode[]) {
   let minX = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;

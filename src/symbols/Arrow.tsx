@@ -6,11 +6,11 @@ import {
   animationConfig,
   getMidPoint,
   getEndPoint,
-  EdgeVector
+  EdgeVectors3
 } from '../utils';
 
 export interface ArrowProps {
-  position: EdgeVector;
+  position: EdgeVectors3;
   color?: string;
   opacity?: number;
   size?: number;

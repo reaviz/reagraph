@@ -43,7 +43,7 @@ export type CameraMode = 'pan' | 'rotate';
 
 export interface ControlsProps {
   mode?: CameraMode;
-  children?: any;
+  children?: React.ReactNode;
 }
 
 export type ControlsRef = ControlsContextProps;

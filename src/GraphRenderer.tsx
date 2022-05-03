@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { useGraph } from './utils/graph';
 import { LayoutTypes } from './layout/types';
-import { GraphEdge, GraphNode } from './types';
+import { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { SizingType } from './sizing';
 import { Edge, Node } from './symbols';
 import { useCenterGraph } from './controls/useCenterGraph';
@@ -24,7 +24,7 @@ export interface GraphRendererProps {
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
-  onNodeClick?: (id: string) => void;
+  onNodeClick?: (node: InternalGraphNode) => void;
 }
 
 export interface GraphRendererRef {
@@ -40,8 +40,10 @@ export const GraphRenderer: FC<
 
     useImperativeHandle(ref, () => ({
       centerGraph: (nodesToCenter?: string[]) => {
+        let mappedNodes: InternalGraphNode[] | null = null;
+
         if (nodesToCenter?.length) {
-          nodesToCenter = nodesToCenter.reduce((acc, id) => {
+          mappedNodes = nodesToCenter.reduce((acc, id) => {
             const node = nodes.find(n => n.id === id);
             if (node) {
               acc.push(node);
@@ -55,7 +57,7 @@ export const GraphRenderer: FC<
           }, []);
         }
 
-        centerNodes(nodesToCenter || nodes);
+        centerNodes(mappedNodes || nodes);
       }
     }));
 
@@ -68,10 +70,7 @@ export const GraphRenderer: FC<
             key={n.id}
             theme={theme}
             selections={selections}
-            onClick={() => {
-              onNodeClick?.(n.id);
-              centerNodes([n]);
-            }}
+            onClick={() => onNodeClick?.(n)}
           />
         ))}
         {edges.map(e => (

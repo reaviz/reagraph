@@ -5,7 +5,12 @@ import ngraph from 'ngraph.graph';
 import { useUpdateEffect } from 'react-use';
 import { calcLabelVisibility, LabelVisibilityType } from './visibility';
 import { tick } from '../layout/layoutUtils';
-import { GraphEdge, GraphNode } from '../types';
+import {
+  GraphEdge,
+  GraphNode,
+  InternalGraphEdge,
+  InternalGraphNode
+} from '../types';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -26,8 +31,8 @@ export const useGraph = ({
 }: GraphInputs) => {
   const graph = useRef<any>(ngraph());
   const layout = useRef<any | null>(null);
-  const [internalNodes, setInternalNodes] = useState<any[]>([]);
-  const [internalEdges, setInternalEdges] = useState<any[]>([]);
+  const [internalNodes, setInternalNodes] = useState<InternalGraphNode[]>([]);
+  const [internalEdges, setInternalEdges] = useState<InternalGraphEdge[]>([]);
 
   const updateLayout = useCallback(
     (curLayout?: any) => {
@@ -109,12 +114,13 @@ function transformGraph({
 }: TransformGraphInput) {
   const nodes = [];
   const edges = [];
-  const sizes = nodeSizeProvider(graph, sizingType, sizingAttribute);
   const map = new Map();
+
+  const sizes = nodeSizeProvider(graph, sizingType, sizingAttribute);
   const nodeCount = graph.getNodesCount();
   const checkVisibility = calcLabelVisibility(nodeCount, labelType);
 
-  graph.forEachNode((node: any) => {
+  graph.forEachNode((node: InternalGraphNode) => {
     if (node.data) {
       const position = layout.getNodePosition(node.id);
       const { data, color, icon, label, size, ...rest } = node.data;
@@ -143,7 +149,7 @@ function transformGraph({
     }
   });
 
-  graph.forEachLink((link: any) => {
+  graph.forEachLink((link: InternalGraphEdge) => {
     const from = map.get(link.fromId);
     const to = map.get(link.toId);
 

@@ -1,6 +1,6 @@
 import React, { Fragment, useMemo } from 'react';
-import { GraphCanvas } from '../src';
-import { transformGenerator } from './assets/demo';
+import { GraphCanvas } from '../../src';
+import { transformGenerator } from '../assets/demo';
 import generators from 'ngraph.generators';
 
 export default {

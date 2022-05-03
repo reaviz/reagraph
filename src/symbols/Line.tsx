@@ -1,13 +1,13 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { animationConfig, EdgeVector } from '../utils';
+import { animationConfig, EdgeVectors3 } from '../utils';
 import * as THREE from 'three';
 
 export interface LineProps {
   color?: string;
   size?: number;
   opacity?: number;
-  points: EdgeVector;
+  points: EdgeVectors3;
 }
 
 export const Line: FC<LineProps> = ({ color, size, opacity, points }) => {

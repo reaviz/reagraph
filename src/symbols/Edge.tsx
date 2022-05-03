@@ -2,20 +2,14 @@ import React, { FC, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { Arrow } from './Arrow';
 import { Label } from './Label';
-import { animationConfig, getMidPoint, getPoints, EdgeVector } from '../utils';
+import { animationConfig, getMidPoint, getPoints } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../utils/themes';
+import { InternalGraphEdge } from '../types';
 
-export interface EdgeProps {
+export interface EdgeProps extends InternalGraphEdge {
   theme: Theme;
-  id: string;
-  label?: string;
-  size?: number;
   selections?: string[];
-  position: EdgeVector;
-  labelVisible?: boolean;
-  from: any;
-  to: any;
 }
 
 export const Edge: FC<EdgeProps> = ({

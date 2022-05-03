@@ -1,6 +1,6 @@
 import React from 'react';
-import { GraphCanvas } from '../src';
-import { iconNodes, manyNodes, simpleEdges, simpleNodesColors } from './assets/demo';
+import { GraphCanvas } from '../../src';
+import { iconNodes, manyNodes, simpleEdges, simpleNodesColors } from '../assets/demo';
 
 export default {
   title: 'Demos/Nodes',

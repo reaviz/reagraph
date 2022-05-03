@@ -19,7 +19,7 @@ import { Theme, lightTheme } from './utils/themes';
 export interface GraphCanvasProps extends Omit<GraphRendererProps, 'theme'> {
   theme?: Theme;
   cameraMode?: CameraMode;
-  onCanvasClick?: () => void;
+  onCanvasClick?: (event: MouseEvent) => void;
 }
 
 export type GraphCanvasRef = GraphRendererRef & ControlsRef;
@@ -47,7 +47,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       return (
         <div className={css.canvas}>
           <Canvas
-            invalidateFrameloop={true}
             gl={{ alpha: true, antialias: true }}
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 75 }}
             onPointerMissed={onCanvasClick}

@@ -7,19 +7,12 @@ import { Label } from './Label';
 import { Icon } from './Icon';
 import { Theme } from '../utils/themes';
 import { Ring } from './Ring';
+import { InternalGraphNode } from '../types';
 
-export interface NodeProps {
+export interface NodeProps extends InternalGraphNode {
   theme: Theme;
-  id: string;
-  position: THREE.Vector3;
-  icon?: string;
-  selections?: string[];
-  data: any;
   graph: any;
-  label?: string;
-  size?: number;
-  selectedNodes?: string[];
-  labelVisible?: boolean;
+  selections?: string[];
   onClick?: () => void;
 }
 

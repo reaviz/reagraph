@@ -1,13 +1,20 @@
 import * as THREE from 'three';
+import { InternalGraphNode, InternalVector3 } from '../types';
 
-export interface EdgeVector {
-  from: THREE.Vector3;
-  to: THREE.Vector3;
+export interface EdgeVectors3 {
+  from: InternalVector3;
+  to: InternalVector3;
 }
 
-function pointAtLine(from: THREE.Vector3, to: THREE.Vector3, size: number) {
+function pointAtLine(
+  from: InternalVector3,
+  to: InternalVector3,
+  size: number
+): THREE.Vector3 {
   const { distance, fromVector, toVector } = calcDistance({ from, to });
   if (distance < size) {
+    // NOTE: This is a hacky way to get the from position - we should not do this long term
+    // @ts-ignore
     return from;
   }
 
@@ -16,12 +23,12 @@ function pointAtLine(from: THREE.Vector3, to: THREE.Vector3, size: number) {
   );
 }
 
-const getVectors = ({ from, to }: EdgeVector) => [
+const getVectors = ({ from, to }: EdgeVectors3) => [
   new THREE.Vector3(from.x, from.y || 0, from.z || 0),
   new THREE.Vector3(to.x, to.y || 0, to.z || 0)
 ];
 
-function calcDistance({ from, to }) {
+function calcDistance({ from, to }: EdgeVectors3) {
   const [fromVector, toVector] = getVectors({ from, to });
   return {
     distance: fromVector.distanceTo(toVector),
@@ -30,22 +37,27 @@ function calcDistance({ from, to }) {
   };
 }
 
-export const getPoints = ({ from, to }) => ({
+export interface GetPointsInput {
+  from: InternalGraphNode;
+  to: InternalGraphNode;
+}
+
+export const getPoints = ({ from, to }: GetPointsInput) => ({
   from: pointAtLine(from.position, to.position, from.size),
   to: pointAtLine(to.position, from.position, to.size)
 });
 
-export function getMidPoint(positions: EdgeVector) {
+export function getMidPoint(positions: EdgeVectors3) {
   const [fromVector, toVector] = getVectors(positions);
   return new THREE.Vector3().addVectors(fromVector, toVector).divideScalar(2);
 }
 
-export function getEndPoint(positions: EdgeVector) {
+export function getEndPoint(positions: EdgeVectors3) {
   const { fromVector, toVector, distance } = calcDistance(positions);
   return toVector.add(fromVector.sub(toVector).multiplyScalar(3 / distance));
 }
 
-export function getQuaternion(positions: EdgeVector) {
+export function getQuaternion(positions: EdgeVectors3) {
   const [fromVector, toVector] = getVectors(positions);
   const dir = new THREE.Vector3().subVectors(toVector, fromVector);
   const axis = new THREE.Vector3(0, 1, 0);

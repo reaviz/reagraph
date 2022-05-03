@@ -4,14 +4,21 @@ import { useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
+import { InternalGraphNode } from '../types';
 
 const PADDING = 50;
 
 export interface CenterGraphInput {
-  nodes: any[];
+  nodes: InternalGraphNode[];
 }
 
-export const useCenterGraph = ({ nodes }: CenterGraphInput) => {
+export interface CenterGraphOutput {
+  centerNodes: (nodes: InternalGraphNode[]) => void;
+}
+
+export const useCenterGraph = ({
+  nodes
+}: CenterGraphInput): CenterGraphOutput => {
   const { invalidate } = useThree();
   const { controls } = useControls();
 
