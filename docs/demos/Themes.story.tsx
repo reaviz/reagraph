@@ -12,6 +12,16 @@ export const DarkTheme = () => (
     theme={darkTheme}
     nodes={simpleNodes}
     edges={simpleEdges}
+    contextMenuItems={[
+      {
+        label: 'Add Node',
+        onClick: () => alert('Add a node')
+      },
+      {
+        label: 'Remove Node',
+        onClick: () => alert('Remove the node')
+      }
+    ]}
   />
 );
 
@@ -24,6 +34,13 @@ export const CustomTheme = () => (
         color: 'white',
         activeFill: '#1DE9AC',
         activeColor: '#1DE9AC'
+      },
+      menu: {
+        background: '#FFF',
+        border: '#AACBD2',
+        color: '#000',
+        activeBackground: '#1DE9AC',
+        activeColor: '#FFF'
       },
       edge: {
         fill: 'yellow',
@@ -42,5 +59,15 @@ export const CustomTheme = () => (
     }}
     nodes={simpleNodes}
     edges={simpleEdges}
+    contextMenuItems={[
+      {
+        label: 'Add Node',
+        onClick: () => alert('Add a node')
+      },
+      {
+        label: 'Remove Node',
+        onClick: () => alert('Remove the node')
+      }
+    ]}
   />
 );

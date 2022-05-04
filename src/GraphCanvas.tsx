@@ -12,7 +12,11 @@ import {
   GraphRendererProps,
   GraphRendererRef
 } from './GraphRenderer';
-import { CameraMode, Controls, ControlsRef } from './controls/CameraControls';
+import {
+  CameraMode,
+  Controls,
+  ControlsRef
+} from './CameraControls/CameraControls';
 import css from './GraphCanvas.module.css';
 import { Theme, lightTheme } from './utils/themes';
 

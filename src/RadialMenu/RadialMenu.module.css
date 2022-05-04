@@ -1,0 +1,23 @@
+.container {
+  border-radius: 50%;
+  z-index: 9;
+  position: relative;
+  height: 175px;
+  width: 175px;
+  border: solid 5px var(--border);
+  overflow: hidden;
+  background: var(--background);
+
+  &:before {
+    content: ' ';
+    background: var(--border);
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+    position: absolute;
+    z-index: 9;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

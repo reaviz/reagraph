@@ -1,0 +1,40 @@
+.container {
+  transform-origin: bottom right;
+  overflow: hidden;
+  position: absolute;
+  border: solid 1px var(--border);
+
+  .contentContainer {
+    width: 200%;
+    height: 200%;
+    transform-origin: 50% 50%;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    transition: background 150ms ease-in-out;
+    color: var(--color);
+
+    &:hover {
+      color: var(--active-color);
+      background: var(--active-background);
+    }
+
+    .contentInner {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+
+      .content {
+        display: inline-block;
+      }
+    }
+  }
+
+  svg {
+    margin: 0 auto;
+    fill: var(--active-color);
+    height: 25px;
+    width: 25px;
+    display: block;
+  }
+}

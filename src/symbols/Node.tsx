@@ -8,13 +8,16 @@ import { Icon } from './Icon';
 import { Theme } from '../utils/themes';
 import { Ring } from './Ring';
 import { InternalGraphNode } from '../types';
+import { MenuItem, RadialMenu } from '../RadialMenu';
+import { Html } from '@react-three/drei';
 
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
   graph: any;
   selections?: string[];
-  onClick?: () => void;
   animated?: boolean;
+  contextMenuItems?: MenuItem[];
+  onClick?: () => void;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -29,10 +32,12 @@ export const Node: FC<NodeProps> = ({
   selections,
   labelVisible,
   theme,
+  contextMenuItems,
   onClick
 }) => {
   const group = useRef<THREE.Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
+  const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const hasSelections = selections?.length > 0;
   const isPrimarySelection = selections?.includes(id);
@@ -81,6 +86,7 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={onClick}
           onActive={setActive}
+          onContextMenu={() => setMenuVisible(true)}
         />
       ) : (
         <Sphere
@@ -94,6 +100,11 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={onClick}
           onActive={setActive}
+          onContextMenu={() => {
+            if (contextMenuItems?.length) {
+              setMenuVisible(true);
+            }
+          }}
         />
       )}
       <Ring
@@ -102,6 +113,15 @@ export const Node: FC<NodeProps> = ({
         animated={animated}
         color={isSelected || isActive ? theme.ring.activeFill : theme.ring.fill}
       />
+      {menuVisible && (
+        <Html prepend={true} center={true}>
+          <RadialMenu
+            theme={theme}
+            items={contextMenuItems}
+            onClose={() => setMenuVisible(false)}
+          />
+        </Html>
+      )}
       {(labelVisible || isSelected || isActive) && label && (
         <a.group position={labelPosition as any}>
           <Label

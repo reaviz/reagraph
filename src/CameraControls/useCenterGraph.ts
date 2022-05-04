@@ -1,5 +1,5 @@
 import { useThree } from '@react-three/fiber';
-import { useControls } from '../controls';
+import { useControls } from '.';
 import { useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import { useHotkeys } from 'reakeys';

@@ -20,6 +20,13 @@ export interface Theme {
     fill: string;
     activeFill: string;
   };
+  menu: {
+    background: string;
+    color: string;
+    border: string;
+    activeBackground: string;
+    activeColor: string;
+  };
 }
 
 export const lightTheme: Theme = {
@@ -29,6 +36,13 @@ export const lightTheme: Theme = {
     color: '#2A6475',
     activeFill: '#1DE9AC',
     activeColor: '#1DE9AC'
+  },
+  menu: {
+    background: '#FFF',
+    border: '#AACBD2',
+    color: '#000',
+    activeBackground: '#D8E6EA',
+    activeColor: '#000'
   },
   ring: {
     fill: '#D8E6EA',
@@ -53,6 +67,13 @@ export const darkTheme: Theme = {
     color: '#ACBAC7',
     activeFill: '#1DE9AC',
     activeColor: '#1DE9AC'
+  },
+  menu: {
+    background: '#54616D',
+    border: '#7A8C9E',
+    color: '#fff',
+    activeBackground: '#1DE9AC',
+    activeColor: '#000'
   },
   ring: {
     fill: '#54616D',
