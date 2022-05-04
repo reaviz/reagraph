@@ -1,0 +1,69 @@
+import { Meta } from '@storybook/addon-docs';
+
+<Meta title="Docs/Getting Started/Theme" />
+
+# Theme
+
+By default, the graph supports 2 themes: light and dark mode. You can
+also define your own theme using the `theme` interface.
+
+```ts
+export interface Theme {
+  backgroundColor: string;
+  node: {
+    fill: string;
+    color: string;
+    activeFill: string;
+    activeColor: string;
+  };
+  ring: {
+    fill: string;
+    activeFill: string;
+  };
+  edge: {
+    fill: string;
+    color: string;
+    activeFill: string;
+    activeColor: string;
+  };
+  arrow: {
+    fill: string;
+    activeFill: string;
+  };
+  menu: {
+    background: string;
+    color: string;
+    border: string;
+    activeBackground: string;
+    activeColor: string;
+  };
+}
+```
+
+which you can pass to the `GraphCanvas` component like:
+
+```tsx
+<GraphCanvas
+  theme={myTheme}
+/>
+```
+
+you can extend the existing themes by importing them and then overriding them like:
+
+```tsx
+import { GraphCanvas, lightTheme } from 'reagraph';
+
+const myTheme = {
+  ...lightTheme,
+  node: {
+    ...lightTheme.node,
+    color: '#000'
+  }
+};
+
+const App = () => (
+  <GraphCanvas
+    theme={myTheme}
+  />
+);
+```
