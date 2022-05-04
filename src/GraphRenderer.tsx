@@ -11,7 +11,7 @@ import { LayoutTypes } from './layout/types';
 import { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { SizingType } from './sizing';
 import { Edge, Node } from './symbols';
-import { useCenterGraph } from './CameraControls/useCenterGraph';
+import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils/visibility';
 import { Theme } from './utils/themes';
 import { MenuItem } from './RadialMenu';

@@ -12,11 +12,7 @@ import {
   GraphRendererProps,
   GraphRendererRef
 } from './GraphRenderer';
-import {
-  CameraMode,
-  Controls,
-  ControlsRef
-} from './CameraControls/CameraControls';
+import { CameraMode, Controls, ControlsRef } from './CameraControls';
 import { Theme, lightTheme } from './utils/themes';
 import css from './GraphCanvas.module.css';
 
@@ -63,7 +59,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             <Controls mode={cameraMode} ref={controlsRef} animated={animated}>
               <Suspense>
                 <GraphRenderer
-                  ref={rendererRef}
+                  ref={rendererRef as any}
                   theme={theme}
                   animated={animated}
                   {...rest}
