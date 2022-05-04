@@ -36,6 +36,15 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 
 - Checkout the [**docs and demos**](https://reagraph.dev)
 
+## ✨ Features
+- WebGL based for high performance
+- Built in layouts: Force Directed 2d, Force Directed 3d, Circular 2d
+- Node Sizing based on attribute, page rank, centrality, custom
+- Light and Dark Mode with custom theme ability
+- Path finding between nodes
+- Context Menu
+- Selection Hook
+
 ## 📦 Usage
 
 Install the package via **NPM**:
