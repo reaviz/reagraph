@@ -17,8 +17,8 @@ import {
   Controls,
   ControlsRef
 } from './CameraControls/CameraControls';
-import css from './GraphCanvas.module.css';
 import { Theme, lightTheme } from './utils/themes';
+import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasProps extends Omit<GraphRendererProps, 'theme'> {
   theme?: Theme;

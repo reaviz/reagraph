@@ -174,7 +174,8 @@ export const useSelection = ({
       clearSelections();
       setMetaKeyDown(false);
 
-      if (focusOnSelect) {
+      // Only re-center if we have a single selection
+      if (focusOnSelect && internalSelections.length === 1) {
         ref.current?.centerGraph();
       }
     }
