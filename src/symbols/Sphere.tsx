@@ -51,14 +51,8 @@ export const Sphere: FC<SphereProps> = ({
             onContextMenu();
           }
         }}
-        onPointerOver={() => {
-          onActive?.(true);
-          document.body.style['cursor'] = 'pointer';
-        }}
-        onPointerOut={() => {
-          onActive?.(false);
-          document.body.style['cursor'] = 'inherit';
-        }}
+        onPointerOver={() => onActive?.(true)}
+        onPointerOut={() => onActive?.(false)}
       >
         <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
         <a.meshPhongMaterial

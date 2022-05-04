@@ -9,7 +9,7 @@ import { Theme } from '../utils/themes';
 import { Ring } from './Ring';
 import { InternalGraphNode } from '../types';
 import { MenuItem, RadialMenu } from '../RadialMenu';
-import { Html } from '@react-three/drei';
+import { Html, useCursor } from '@react-three/drei';
 
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
@@ -75,6 +75,8 @@ export const Node: FC<NodeProps> = ({
       duration: animated ? undefined : 0
     }
   });
+
+  useCursor(isActive, 'pointer');
 
   return (
     <a.group ref={group} position={nodePosition as any}>
