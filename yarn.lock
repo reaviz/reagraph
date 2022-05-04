@@ -6500,6 +6500,14 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
+framer-motion-3d@^6.3.3:
+  version "6.3.3"
+  resolved "https://registry.yarnpkg.com/framer-motion-3d/-/framer-motion-3d-6.3.3.tgz#ef241b16b30c48821287d9b662080fc7a0350d0c"
+  integrity sha512-rJ3IgjxYWhiCwuOpz3KCTtT4lXX9k/1y3pMwXmmy2ODwRIqoHg74E1hq3v/caQdLp2AMOZ41+K9LoLw0e+UWuQ==
+  dependencies:
+    framer-motion "^6.3.3"
+    react-merge-refs "^1.1.0"
+
 framer-motion@^6.3.3:
   version "6.3.3"
   resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-6.3.3.tgz#58978fe6955d13000351ea4c134c9bc052638967"

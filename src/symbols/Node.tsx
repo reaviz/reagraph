@@ -1,7 +1,4 @@
-import React, { FC, useRef, useMemo, useState } from 'react';
-import * as THREE from 'three';
-import { animationConfig } from '../utils/animation';
-import { useSpring, a } from '@react-spring/three';
+import React, { FC, useMemo, useState } from 'react';
 import { Sphere } from './Sphere';
 import { Label } from './Label';
 import { Icon } from './Icon';
@@ -10,6 +7,8 @@ import { Ring } from './Ring';
 import { InternalGraphNode } from '../types';
 import { MenuItem, RadialMenu } from '../RadialMenu';
 import { Html } from '@react-three/drei';
+import { motion } from 'framer-motion-3d';
+import { animationConfig } from '../utils/animation';
 
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
@@ -35,7 +34,6 @@ export const Node: FC<NodeProps> = ({
   contextMenuItems,
   onClick
 }) => {
-  const group = useRef<THREE.Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
@@ -61,23 +59,24 @@ export const Node: FC<NodeProps> = ({
     : 1;
 
   const labelOffset = size + 7;
-  const { nodePosition, labelPosition } = useSpring({
-    from: {
-      nodePosition: [0, 0, 0],
-      labelPosition: [0, -labelOffset, 2]
-    },
-    to: {
-      nodePosition: position ? [position.x, position.y, position.z] : [0, 0, 0],
-      labelPosition: [0, -labelOffset, 2]
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
 
   return (
-    <a.group ref={group} position={nodePosition as any}>
+    <motion.group
+      initial={{
+        x: 0,
+        y: 0,
+        z: 0
+      }}
+      animate={{
+        x: position.x || 0,
+        y: position.y || 0,
+        z: position.z || 0
+      }}
+      transition={{
+        ...animationConfig,
+        type: animated ? 'spring' : false
+      }}
+    >
       {icon ? (
         <Icon
           image={icon}
@@ -123,7 +122,7 @@ export const Node: FC<NodeProps> = ({
         </Html>
       )}
       {(labelVisible || isSelected || isActive) && label && (
-        <a.group position={labelPosition as any}>
+        <group position={[0, -labelOffset, 2]}>
           <Label
             text={label}
             opacity={selectionOpacity}
@@ -131,9 +130,9 @@ export const Node: FC<NodeProps> = ({
               isSelected || isActive ? theme.node.activeColor : theme.node.color
             }
           />
-        </a.group>
+        </group>
       )}
-    </a.group>
+    </motion.group>
   );
 };
 

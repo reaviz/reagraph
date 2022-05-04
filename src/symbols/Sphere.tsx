@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { useSpring, a } from '@react-spring/three';
-import { animationConfig } from '../utils/animation';
 import * as THREE from 'three';
+import { motion } from 'framer-motion-3d';
+import { animationConfig } from '../utils/animation';
 
 export interface SphereProps {
   size?: number;
@@ -16,63 +16,60 @@ export interface SphereProps {
 export const Sphere: FC<SphereProps> = ({
   color,
   size,
-  opacity,
   animated,
+  opacity,
   onActive,
   onClick,
   onContextMenu
-}) => {
-  const { scale, nodeColor, nodeOpacity } = useSpring({
-    from: {
-      // Note: This prevents incorrect scaling w/ 0
-      scale: [0.00001, 0.00001, 0.00001],
-      nodeColor: color,
-      nodeOpacity: 0
-    },
-    to: {
-      scale: [size, size, size],
-      nodeColor: color,
-      nodeOpacity: opacity
-    },
-    config: {
+}) => (
+  <motion.mesh
+    initial={{
+      scale: [0.00001, 0.00001, 0.00001]
+    }}
+    animate={{
+      scale: [size, size, size]
+    }}
+    transition={{
       ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
-
-  return (
-    <group>
-      <a.mesh
-        scale={scale as any}
-        onClick={onClick}
-        onPointerDown={event => {
-          // context menu controls
-          if (event.nativeEvent.buttons === 2) {
-            onContextMenu();
-          }
-        }}
-        onPointerOver={() => {
-          onActive?.(true);
-          document.body.style['cursor'] = 'pointer';
-        }}
-        onPointerOut={() => {
-          onActive?.(false);
-          document.body.style['cursor'] = 'inherit';
-        }}
-      >
-        <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
-        <a.meshPhongMaterial
-          attach="material"
-          side={THREE.DoubleSide}
-          transparent={true}
-          fog={true}
-          opacity={nodeOpacity}
-          color={nodeColor}
-        />
-      </a.mesh>
-    </group>
-  );
-};
+      type: animated ? 'spring' : false
+    }}
+    onClick={onClick}
+    onPointerDown={event => {
+      // context menu controls
+      if (event.nativeEvent.buttons === 2) {
+        onContextMenu();
+      }
+    }}
+    onPointerOver={() => {
+      onActive?.(true);
+      document.body.style['cursor'] = 'pointer';
+    }}
+    onPointerOut={() => {
+      onActive?.(false);
+      document.body.style['cursor'] = 'inherit';
+    }}
+  >
+    <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
+    <motion.meshPhongMaterial
+      attach="material"
+      side={THREE.DoubleSide}
+      transparent={true}
+      fog={true}
+      initial={{
+        color,
+        opacity: 0
+      }}
+      animate={{
+        color,
+        opacity
+      }}
+      transition={{
+        ...animationConfig,
+        type: animated ? 'spring' : false
+      }}
+    />
+  </motion.mesh>
+);
 
 Sphere.defaultProps = {
   opacity: 1,

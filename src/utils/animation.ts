@@ -1,6 +1,6 @@
 export const animationConfig = {
-  mass: 10,
-  tension: 1000,
-  friction: 300,
-  precision: 0.00001
+  mass: 5,
+  stiffness: 1000,
+  damping: 50,
+  restDelta: 0.0001
 };

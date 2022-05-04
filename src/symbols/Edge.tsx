@@ -1,11 +1,11 @@
 import React, { FC, useMemo } from 'react';
-import { useSpring, a } from '@react-spring/three';
 import { Arrow } from './Arrow';
 import { Label } from './Label';
 import { animationConfig, getMidPoint, getPoints } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../utils/themes';
 import { InternalGraphEdge } from '../types';
+import { motion } from 'framer-motion-3d';
 
 export interface EdgeProps extends InternalGraphEdge {
   theme: Theme;
@@ -41,19 +41,6 @@ export const Edge: FC<EdgeProps> = ({
       : 0.1
     : 0.5;
 
-  const { labelPosition } = useSpring({
-    from: {
-      labelPosition: [0, 0, 2]
-    },
-    to: {
-      labelPosition: [midPoint.x, midPoint.y, 2]
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
-
   return (
     <group>
       <Line
@@ -71,14 +58,29 @@ export const Edge: FC<EdgeProps> = ({
         animated={animated}
       />
       {labelVisible && label && (
-        <a.group position={labelPosition as any}>
+        <motion.group
+          intial={{
+            x: 0,
+            y: 0,
+            z: 2
+          }}
+          animate={{
+            x: midPoint.x,
+            y: midPoint.y,
+            z: 2
+          }}
+          transition={{
+            ...animationConfig,
+            type: animated ? 'spring' : false
+          }}
+        >
           <Label
             text={label}
             color={isSelected ? theme.edge.activeColor : theme.edge.color}
             opacity={selectionOpacity}
             fontSize={6}
           />
-        </a.group>
+        </motion.group>
       )}
     </group>
   );

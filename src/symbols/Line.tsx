@@ -1,7 +1,8 @@
-import React, { FC, useMemo, useRef } from 'react';
-import { useSpring, a } from '@react-spring/three';
+import React, { FC, useRef, useMemo, useEffect } from 'react';
 import { animationConfig, EdgeVectors3 } from '../utils';
 import * as THREE from 'three';
+import { motion } from 'framer-motion-3d';
+import { useMotionValue } from 'framer-motion';
 
 export interface LineProps {
   color?: string;
@@ -19,47 +20,34 @@ export const Line: FC<LineProps> = ({
   animated
 }) => {
   const tubeRef = useRef<THREE.TubeBufferGeometry | null>(null);
+  const x = useMotionValue([0, 0, 0, 0, 0, 0]);
 
-  // Do opacity seperate from vertices for perf
-  const { lineOpacity } = useSpring({
-    from: {
-      lineOpacity: 0
-    },
-    to: {
-      lineOpacity: opacity
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
+  useEffect(() => {
+    x.set([
+      points.from?.x,
+      points.from?.y,
+      points.from?.z || 0,
+      points.to?.x,
+      points.to?.y,
+      points.to?.z || 0
+    ]);
   });
 
-  useSpring({
-    from: {
-      fromVertices: [0, 0, 0],
-      toVertices: [0, 0, 0]
-    },
-    to: {
-      fromVertices: [points.from?.x, points.from?.y, points.from?.z || 0],
-      toVertices: [points.to?.x, points.to?.y, points.to?.z || 0]
-    },
-    onChange: event => {
-      const { fromVertices, toVertices } = event.value;
+  useEffect(() => {
+    const unsub = x.onChange(latest => {
       // Reference: https://bit.ly/3ORuuBP
       const t = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(...fromVertices),
-        new THREE.Vector3(...toVertices)
+        new THREE.Vector3(latest[0], latest[1], latest[2]),
+        new THREE.Vector3(latest[3], latest[4], latest[5])
       ]);
 
-      tubeRef.current.copy(
+      tubeRef.current?.copy(
         new THREE.TubeBufferGeometry(t, 20, size / 2, 5, false)
       );
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
+    });
+
+    return () => unsub();
+  }, [size, x]);
 
   const curve = useMemo(
     () =>
@@ -77,9 +65,18 @@ export const Line: FC<LineProps> = ({
         args={[curve, 20, size / 2, 5, false]}
         ref={tubeRef}
       />
-      <a.meshBasicMaterial
+      <motion.meshBasicMaterial
         attach="material"
-        opacity={lineOpacity}
+        initial={{
+          opacity: 0
+        }}
+        animate={{
+          opacity
+        }}
+        transition={{
+          ...animationConfig,
+          type: animated ? 'spring' : false
+        }}
         fog={true}
         transparent={true}
         depthTest={false}

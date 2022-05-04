@@ -1,13 +1,12 @@
 import React, { FC, useMemo, useRef, useEffect, useCallback } from 'react';
-import { useSpring, a } from '@react-spring/three';
-import * as THREE from 'three';
 import {
   getQuaternion,
-  animationConfig,
   getMidPoint,
   getEndPoint,
-  EdgeVectors3
+  EdgeVectors3,
+  animationConfig
 } from '../utils';
+import { motion } from 'framer-motion-3d';
 
 export interface ArrowProps {
   position: EdgeVectors3;
@@ -26,7 +25,7 @@ export const Arrow: FC<ArrowProps> = ({
   placement,
   color
 }) => {
-  const meshRef = useRef<THREE.Mesh | null>(null);
+  const meshRef = useRef<any | null>(null);
   const quaternion = useMemo(() => getQuaternion(position), [position]);
 
   const endPos = useMemo(() => {
@@ -38,21 +37,6 @@ export const Arrow: FC<ArrowProps> = ({
     }
   }, [position, placement]);
 
-  const { pos, arrowOpacity } = useSpring({
-    from: {
-      pos: [0, 0, 0],
-      arrowOpacity: 0
-    },
-    to: {
-      pos: [endPos.x, endPos.y, endPos.z],
-      arrowOpacity: opacity
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
-
   const setQuaternion = useCallback(() => {
     meshRef.current?.quaternion.setFromUnitVectors(
       quaternion[0],
@@ -63,17 +47,44 @@ export const Arrow: FC<ArrowProps> = ({
   useEffect(() => setQuaternion(), [position, setQuaternion]);
 
   return (
-    <a.mesh position={pos as any} ref={meshRef} scale={[size, size, size]}>
+    <motion.mesh
+      ref={meshRef}
+      initial={{
+        x: 0,
+        y: 0,
+        z: 0,
+        scale: [0.00001, 0.00001, 0.00001]
+      }}
+      animate={{
+        x: endPos.x,
+        y: endPos.y,
+        z: endPos.z,
+        scale: [size, size, size]
+      }}
+      transition={{
+        ...animationConfig,
+        type: animated ? 'spring' : false
+      }}
+    >
       <cylinderGeometry args={[0, 3, 7, 20, 20, false]} attach="geometry" />
-      <a.meshBasicMaterial
+      <motion.meshBasicMaterial
         attach="material"
         color={color}
         depthTest={false}
-        opacity={arrowOpacity}
         transparent={true}
         fog={true}
+        initial={{
+          opacity: 0
+        }}
+        animate={{
+          opacity
+        }}
+        transition={{
+          ...animationConfig,
+          type: animated ? 'spring' : false
+        }}
       />
-    </a.mesh>
+    </motion.mesh>
   );
 };
 

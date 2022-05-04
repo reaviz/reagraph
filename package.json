@@ -49,6 +49,7 @@
     "d3-scale": "^4.0.2",
     "ellipsize": "^0.5.1",
     "framer-motion": "^6.3.3",
+    "framer-motion-3d": "^6.3.3",
     "hold-event": "^0.2.0",
     "ngraph.centrality": "^2.1.0",
     "ngraph.circular.fixed": "^1.0.1",
