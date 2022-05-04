@@ -1,0 +1,42 @@
+import { Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Docs/Getting Started/Data Shapes" />
+
+# Data Shapes
+
+The graph is made up of 2 basic data shape objects you can pass to the graph.
+
+- `GraphNode` - The sphere element-like object that represents an entity in the graph
+- `GraphEdge` - The link between Nodes
+
+## GraphNode
+```ts
+export interface GraphElementBaseAttributes<T = any> {
+  id: string;
+  data?: T;
+  label?: string;
+  size?: number;
+  labelVisible?: boolean;
+}
+
+export interface GraphNode extends GraphElementBaseAttributes {
+  icon?: string;
+  fill?: string;
+}
+```
+
+## GraphEdge
+```ts
+export interface GraphElementBaseAttributes<T = any> {
+  id: string;
+  data?: T;
+  label?: string;
+  size?: number;
+  labelVisible?: boolean;
+}
+
+export interface GraphEdge extends GraphElementBaseAttributes {
+  source: string;
+  target: string;
+}
+```
