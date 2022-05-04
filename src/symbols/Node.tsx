@@ -9,7 +9,7 @@ import { Theme } from '../utils/themes';
 import { Ring } from './Ring';
 import { InternalGraphNode } from '../types';
 import { MenuItem, RadialMenu } from '../RadialMenu';
-import { Html, useCursor } from '@react-three/drei';
+import { Center, Html, useCursor } from '@react-three/drei';
 
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
@@ -62,15 +62,13 @@ export const Node: FC<NodeProps> = ({
       : 0.2
     : 1;
 
-  const labelOffset = size + 7;
-  const { nodePosition, labelPosition } = useSpring({
+  const labelOffset = size + 6;
+  const { nodePosition } = useSpring({
     from: {
-      nodePosition: [0, 0, 0],
-      labelPosition: [0, -labelOffset, 2]
+      nodePosition: [0, 0, 0]
     },
     to: {
-      nodePosition: position ? [position.x, position.y, position.z] : [0, 0, 0],
-      labelPosition: [0, -labelOffset, 2]
+      nodePosition: position ? [position.x, position.y, position.z] : [0, 0, 0]
     },
     config: {
       ...animationConfig,
@@ -135,7 +133,7 @@ export const Node: FC<NodeProps> = ({
         </Html>
       )}
       {(labelVisible || isSelected || isActive) && label && (
-        <a.group position={labelPosition as any}>
+        <Center position={[0, -labelOffset, 2]}>
           <Label
             text={label}
             opacity={selectionOpacity}
@@ -143,7 +141,7 @@ export const Node: FC<NodeProps> = ({
               isSelected || isActive ? theme.node.activeColor : theme.node.color
             }
           />
-        </a.group>
+        </Center>
       )}
     </a.group>
   );
