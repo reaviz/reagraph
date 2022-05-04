@@ -13,6 +13,31 @@ export const Simple = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} />
 );
 
+export const TwoWayLink = () => (
+  <GraphCanvas
+    nodes={[{
+      id: '1',
+      label: '1'
+    },
+    {
+      id: '2',
+      label: '2'
+    }]}
+    edges={[{
+      source: '1',
+      target: '2',
+      id: '1-2',
+      label: '1-2'
+    },
+    {
+      source: '2',
+      target: '1',
+      id: '2-1',
+      label: '2-1'
+    }]}
+  />
+);
+
 export const Disabled = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} disabled />
 );
