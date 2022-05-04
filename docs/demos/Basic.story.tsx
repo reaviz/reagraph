@@ -13,11 +13,15 @@ export const Simple = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} />
 );
 
+export const Disabled = () => (
+  <GraphCanvas nodes={simpleNodes} edges={simpleEdges} disabled />
+);
+
 export const Many = () => (
   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
     {range(10).map(i => (
       <div key={i} style={{ border: 'solid 1px red', height: 350, width: 350, margin: 15, position: 'relative' }}>
-        <GraphCanvas nodes={simpleNodes} edges={simpleEdges} animated={false} />
+        <GraphCanvas disabled nodes={simpleNodes} edges={simpleEdges} animated={false} />
       </div>
     ))}
   </div>

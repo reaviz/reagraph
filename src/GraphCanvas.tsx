@@ -7,22 +7,18 @@ import React, {
   useRef
 } from 'react';
 import { Canvas } from '@react-three/fiber';
-import {
-  GraphRenderer,
-  GraphRendererProps,
-  GraphRendererRef
-} from './GraphRenderer';
+import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
 import { CameraMode, Controls, ControlsRef } from './CameraControls';
 import { Theme, lightTheme } from './utils/themes';
 import css from './GraphCanvas.module.css';
 
-export interface GraphCanvasProps extends Omit<GraphRendererProps, 'theme'> {
+export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   theme?: Theme;
   cameraMode?: CameraMode;
   onCanvasClick?: (event: MouseEvent) => void;
 }
 
-export type GraphCanvasRef = Omit<GraphRendererRef, 'graph'> &
+export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
   Omit<ControlsRef, 'controls'> & {
     getGraph: () => any;
     getControls: () => any;
@@ -31,10 +27,10 @@ export type GraphCanvasRef = Omit<GraphRendererRef, 'graph'> &
 export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
     (
-      { cameraMode, theme, onCanvasClick, animated, ...rest },
+      { cameraMode, theme, onCanvasClick, animated, disabled, ...rest },
       ref: Ref<GraphCanvasRef>
     ) => {
-      const rendererRef = useRef<GraphRendererRef | null>(null);
+      const rendererRef = useRef<GraphSceneRef | null>(null);
       const controlsRef = useRef<ControlsRef | null>(null);
 
       useImperativeHandle(ref, () => ({
@@ -56,11 +52,17 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 75 }}
             onPointerMissed={onCanvasClick}
           >
-            <Controls mode={cameraMode} ref={controlsRef} animated={animated}>
+            <Controls
+              mode={cameraMode}
+              ref={controlsRef}
+              animated={animated}
+              disabled={disabled}
+            >
               <Suspense>
-                <GraphRenderer
+                <GraphScene
                   ref={rendererRef as any}
                   theme={theme}
+                  disabled={disabled}
                   animated={animated}
                   {...rest}
                 />

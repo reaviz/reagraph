@@ -14,6 +14,7 @@ import { Html, useCursor } from '@react-three/drei';
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
   graph: any;
+  disabled?: boolean;
   selections?: string[];
   animated?: boolean;
   contextMenuItems?: MenuItem[];
@@ -28,6 +29,7 @@ export const Node: FC<NodeProps> = ({
   graph,
   size,
   fill,
+  disabled,
   id,
   selections,
   labelVisible,
@@ -88,7 +90,11 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={onClick}
           onActive={setActive}
-          onContextMenu={() => setMenuVisible(true)}
+          onContextMenu={() => {
+            if (contextMenuItems?.length && !disabled) {
+              setMenuVisible(true);
+            }
+          }}
         />
       ) : (
         <Sphere
@@ -101,9 +107,13 @@ export const Node: FC<NodeProps> = ({
           opacity={selectionOpacity}
           animated={animated}
           onClick={onClick}
-          onActive={setActive}
+          onActive={val => {
+            if (!disabled) {
+              setActive(val);
+            }
+          }}
           onContextMenu={() => {
-            if (contextMenuItems?.length) {
+            if (contextMenuItems?.length && !disabled) {
               setMenuVisible(true);
             }
           }}

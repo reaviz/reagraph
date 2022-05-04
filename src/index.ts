@@ -1,4 +1,5 @@
 export * from './GraphCanvas';
+export * from './GraphScene';
 export * from './types';
 export * from './utils';
 export * from './layout';
