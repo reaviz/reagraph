@@ -1,4 +1,4 @@
-import React, { RefObject, useState } from 'react';
+import React, { RefObject, useEffect, useState } from 'react';
 import { GraphCanvasRef } from '../GraphCanvas';
 import { useHotkeys } from 'reakeys';
 import { GraphEdge, GraphNode } from 'types';
@@ -46,7 +46,7 @@ export interface SelectionProps {
   /**
    * On selection change.
    */
-  onSelection?: (newSelectedIds: string[]) => void;
+  onSelection?: (selectionIds: string[]) => void;
 }
 
 export interface SelectionResult {
@@ -89,11 +89,6 @@ export interface SelectionResult {
    * On canvas click event pass through.
    */
   onCanvasClick?: (event: MouseEvent) => void;
-
-  /**
-   * On keydown event pass through.
-   */
-  onKeyDown?: (event: React.KeyboardEvent<SVGGElement>) => void;
 }
 
 export const useSelection = ({
@@ -161,10 +156,18 @@ export const useSelection = ({
     setMetaKeyDown(false);
   };
 
-  const onKeyDown = event => {
+  const onKeyDown = (event: KeyboardEvent) => {
     event.preventDefault();
     setMetaKeyDown(event.metaKey || event.ctrlKey);
   };
+
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  });
 
   const onCanvasClick = (event: MouseEvent) => {
     if (event.button !== 2 && internalSelections.length) {
@@ -212,7 +215,6 @@ export const useSelection = ({
 
   return {
     onNodeClick,
-    onKeyDown,
     onCanvasClick,
     selections: internalSelections,
     clearSelections,
@@ -222,3 +224,6 @@ export const useSelection = ({
     setSelections: setInternalSelections
   };
 };
+function useCallback(arg0: (event: any) => void, arg1: undefined[]) {
+  throw new Error('Function not implemented.');
+}
