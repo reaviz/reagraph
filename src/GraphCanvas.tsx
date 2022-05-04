@@ -26,7 +26,11 @@ export interface GraphCanvasProps extends Omit<GraphRendererProps, 'theme'> {
   onCanvasClick?: (event: MouseEvent) => void;
 }
 
-export type GraphCanvasRef = GraphRendererRef & ControlsRef;
+export type GraphCanvasRef = Omit<GraphRendererRef, 'graph'> &
+  Omit<ControlsRef, 'controls'> & {
+    getGraph: () => any;
+    getControls: () => any;
+  };
 
 export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
@@ -45,7 +49,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         panRight: () => controlsRef.current?.panRight(),
         panDown: () => controlsRef.current?.panDown(),
         panUp: () => controlsRef.current?.panUp(),
-        controls: controlsRef.current?.controls
+        getControls: () => controlsRef.current?.controls,
+        getGraph: () => rendererRef.current?.graph
       }));
 
       return (

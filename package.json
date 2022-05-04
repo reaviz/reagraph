@@ -54,6 +54,7 @@
     "ngraph.circular.fixed": "^1.0.1",
     "ngraph.graph": "^20.0.0",
     "ngraph.pagerank": "^2.1.0",
+    "ngraph.path": "^1.4.0",
     "reakeys": "^1.2.6",
     "three": "^0.140.0"
   },

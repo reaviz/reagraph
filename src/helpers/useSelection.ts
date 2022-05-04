@@ -2,6 +2,7 @@ import React, { RefObject, useEffect, useState } from 'react';
 import { GraphCanvasRef } from '../GraphCanvas';
 import { useHotkeys } from 'reakeys';
 import { GraphEdge, GraphNode } from 'types';
+import { findPath } from '../utils/paths';
 
 export type HotkeyTypes = 'selectAll' | 'deselect' | 'delete';
 
@@ -64,6 +65,11 @@ export interface SelectionResult {
    * A selection method.
    */
   addSelection: (value: string) => void;
+
+  /**
+   * Get the paths between two nodes.
+   */
+  selectNodePaths: (fromId: string, toId: string) => void;
 
   /**
    * Remove selection method.
@@ -156,6 +162,16 @@ export const useSelection = ({
     setMetaKeyDown(false);
   };
 
+  const selectNodePaths = (fromId: string, toId: string) => {
+    const graph = ref.current.getGraph();
+    if (!graph) {
+      throw new Error('Graph is not initialized');
+    }
+
+    const path = findPath(graph, fromId, toId);
+    clearSelections(path.map(p => p.id as string));
+  };
+
   const onKeyDown = (event: KeyboardEvent) => {
     event.preventDefault();
     setMetaKeyDown(event.metaKey || event.ctrlKey);
@@ -216,6 +232,7 @@ export const useSelection = ({
 
   return {
     onNodeClick,
+    selectNodePaths,
     onCanvasClick,
     selections: internalSelections,
     clearSelections,

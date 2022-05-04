@@ -31,6 +31,7 @@ export interface GraphRendererProps {
 }
 
 export interface GraphRendererRef {
+  graph: any;
   centerGraph: (nodeIds?: string[]) => void;
 }
 
@@ -44,9 +45,14 @@ export const GraphRenderer: FC<
     const { nodes, edges, graph } = useGraph(rest);
     const { centerNodesById } = useCenterGraph({ nodes, animated });
 
-    useImperativeHandle(ref, () => ({
-      centerGraph: centerNodesById
-    }));
+    useImperativeHandle(
+      ref,
+      () => ({
+        centerGraph: centerNodesById,
+        graph
+      }),
+      [centerNodesById, graph]
+    );
 
     return (
       <Fragment>

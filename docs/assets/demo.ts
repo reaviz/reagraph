@@ -75,15 +75,15 @@ export function transformGenerator(g) {
 
   g.forEachNode(node => {
     nodes.push({
-      id: node.id,
+      id: `${node.id}`,
       label: `Node ${node.id}`
     });
 
     node.links.forEach(link => {
       edges.push({
         id: `${node.id}->${link.toId}`,
-        source: link.fromId,
-        target: link.toId,
+        source: `${link.fromId}`,
+        target: `${link.toId}`,
         label: `${link.fromId} -> ${link.toId}`
       });
     });
