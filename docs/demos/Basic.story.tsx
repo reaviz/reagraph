@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 import random from 'lodash/random';
+import { range } from 'd3-array';
 
 export default {
   title: 'Demos/Basic',
@@ -10,6 +11,16 @@ export default {
 
 export const Simple = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} />
+);
+
+export const Many = () => (
+  <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+    {range(10).map(i => (
+      <div key={i} style={{ border: 'solid 1px red', height: 350, width: 350, margin: 15, position: 'relative' }}>
+        <GraphCanvas nodes={simpleNodes} edges={simpleEdges} animated={false} />
+      </div>
+    ))}
+  </div>
 );
 
 export const LiveUpdates = () => {
