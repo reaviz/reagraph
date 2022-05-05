@@ -1,3 +1,3 @@
 export * from './CameraControls';
-export * from './useControls';
+export * from './useCameraControls';
 export * from './useCenterGraph';

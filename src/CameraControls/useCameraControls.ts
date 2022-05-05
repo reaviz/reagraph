@@ -1,7 +1,7 @@
 import CameraControls from 'camera-controls';
 import { createContext, useContext } from 'react';
 
-export interface ControlsContextProps {
+export interface CameraControlsConextProps {
   controls: CameraControls | null;
   zoomIn: () => void;
   zoomOut: () => void;
@@ -11,7 +11,7 @@ export interface ControlsContextProps {
   panDown: () => void;
 }
 
-export const ControlsContext = createContext<ControlsContextProps>({
+export const CameraControlsContext = createContext<CameraControlsConextProps>({
   controls: null,
   zoomIn: () => undefined,
   zoomOut: () => undefined,
@@ -21,12 +21,12 @@ export const ControlsContext = createContext<ControlsContextProps>({
   panDown: () => undefined
 });
 
-export const useControls = () => {
-  const context = useContext(ControlsContext);
+export const useCameraControls = () => {
+  const context = useContext(CameraControlsContext);
 
   if (context === undefined) {
     throw new Error(
-      '`useControls` hook must be used within a `ControlsProvider` component'
+      '`useCameraControls` hook must be used within a `ControlsProvider` component'
     );
   }
 

@@ -8,7 +8,11 @@ import React, {
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
-import { CameraMode, Controls, ControlsRef } from './CameraControls';
+import {
+  CameraMode,
+  CameraControls,
+  CameraControlsRef
+} from './CameraControls';
 import { Theme, lightTheme } from './utils/themes';
 import css from './GraphCanvas.module.css';
 
@@ -19,7 +23,7 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
-  Omit<ControlsRef, 'controls'> & {
+  Omit<CameraControlsRef, 'controls'> & {
     getGraph: () => any;
     getControls: () => any;
   };
@@ -31,7 +35,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       ref: Ref<GraphCanvasRef>
     ) => {
       const rendererRef = useRef<GraphSceneRef | null>(null);
-      const controlsRef = useRef<ControlsRef | null>(null);
+      const controlsRef = useRef<CameraControlsRef | null>(null);
 
       useImperativeHandle(ref, () => ({
         centerGraph: (n?: string[]) => rendererRef.current?.centerGraph(n),
@@ -52,7 +56,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 75 }}
             onPointerMissed={onCanvasClick}
           >
-            <Controls
+            <color attach="background" args={[theme.backgroundColor]} />
+            <ambientLight intensity={0.5} />
+            <CameraControls
               mode={cameraMode}
               ref={controlsRef}
               animated={animated}
@@ -67,9 +73,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                   {...rest}
                 />
               </Suspense>
-            </Controls>
-            <color attach="background" args={[theme.backgroundColor]} />
-            <ambientLight intensity={0.5} />
+            </CameraControls>
           </Canvas>
         </div>
       );

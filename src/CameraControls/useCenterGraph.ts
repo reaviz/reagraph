@@ -1,5 +1,5 @@
 import { useThree } from '@react-three/fiber';
-import { useControls } from '.';
+import { useCameraControls } from './useCameraControls';
 import { useCallback, useEffect } from 'react';
 import * as THREE from 'three';
 import { useHotkeys } from 'reakeys';
@@ -23,7 +23,7 @@ export const useCenterGraph = ({
   animated
 }: CenterGraphInput): CenterGraphOutput => {
   const { invalidate } = useThree();
-  const { controls } = useControls();
+  const { controls } = useCameraControls();
 
   const centerNodes = useCallback(
     (centerNodes: InternalGraphNode[], factor: number = 0) => {
