@@ -1,4 +1,4 @@
-const NODE_THRESHOLD = 10;
+const NODE_THRESHOLD = 20;
 
 export type LabelVisibilityType = 'all' | 'auto' | 'none' | 'nodes' | 'edges';
 
