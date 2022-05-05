@@ -26,7 +26,7 @@ export function forceRadial(
 ) {
   const { depths, maxDepth } = getNodeDepth(nodes, links);
 
-  const modeDistance = RADIALS.includes(dagMode) ? 0.7 : 1;
+  const modeDistance = RADIALS.includes(dagMode) ? 1 : 5;
   const dagLevelDistance =
     (nodes.length / maxDepth) * DAG_LEVEL_NODE_RATIO * modeDistance;
 
@@ -49,8 +49,6 @@ export function forceRadial(
       node.fz = fzFn(node);
     });
   }
-
-  console.log('here', nodes);
 
   return RADIALS.includes(dagMode)
     ? d3ForceRadial(node => {

@@ -8,6 +8,12 @@ export function layoutProvider({
 }: LayoutFactoryProps): LayoutStrategy {
   if (type === 'forceDirected2d') {
     return forceDirected(rest);
+  } else if (type === 'treeTd2d') {
+    return forceDirected({ ...rest, mode: 'td', dimensions: 2 });
+  } else if (type === 'treeLr2d') {
+    return forceDirected({ ...rest, mode: 'lr', dimensions: 2 });
+  } else if (type === 'radialOut2d') {
+    return forceDirected({ ...rest, mode: 'radialout', dimensions: 2 });
   } else if (type === 'treeTd3d') {
     return forceDirected({ ...rest, mode: 'td', dimensions: 3 });
   } else if (type === 'treeLr3d') {

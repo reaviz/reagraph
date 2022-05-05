@@ -4,8 +4,11 @@ export type LayoutTypes =
   | 'forceDirected2d'
   | 'forceDirected3d'
   | 'circular2d'
+  | 'treeTd2d'
   | 'treeTd3d'
+  | 'treeLr2d'
   | 'treeLr3d'
+  | 'radialOut2d'
   | 'radialOut3d';
 
 export interface LayoutFactoryProps {

@@ -67,6 +67,39 @@ export const simpleEdges: GraphEdge[] = [
   }
 ];
 
+export const treeEdges: GraphEdge[] = [
+  {
+    id: '0->1',
+    source: 'n-0',
+    target: 'n-1',
+    label: 'Edge 0-1'
+  },
+  {
+    id: '0->2',
+    source: 'n-0',
+    target: 'n-2',
+    label: 'Edge 0-2'
+  },
+  {
+    id: '2->3',
+    source: 'n-2',
+    target: 'n-3',
+    label: 'Edge 2-3'
+  },
+  {
+    id: '3->4',
+    source: 'n-3',
+    target: 'n-4',
+    label: 'Edge 2-3'
+  },
+  {
+    id: '0->4',
+    source: 'n-0',
+    target: 'n-4',
+    label: 'Edge 0-4'
+  }
+];
+
 export const [complexNodes, complexEdges] = transformGenerator(generators.balancedBinTree(3));
 
 export function transformGenerator(g) {
