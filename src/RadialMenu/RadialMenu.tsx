@@ -2,7 +2,6 @@ import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { RadialSlice, MenuItem } from './RadialSlice';
 import { calculateRadius } from './utils';
 import { Theme } from '../utils/themes';
-import { motion } from 'framer-motion';
 import css from './RadialMenu.module.css';
 
 interface RadialMenuProps {
@@ -35,15 +34,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
   });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0 }}
-      transition={{
-        type: 'spring',
-        velocity: 50,
-        damping: 50
-      }}
+    <div
       role="menu"
       className={css.container}
       onPointerEnter={() => clearTimeout(timeout.current)}
@@ -80,7 +71,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
           }}
         />
       ))}
-    </motion.div>
+    </div>
   );
 };
 

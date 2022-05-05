@@ -1,6 +1,6 @@
 {
   "name": "reagraph",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
     "build": "rollup -c",
@@ -49,7 +49,6 @@
     "d3-hierarchy": "^3.1.2",
     "d3-scale": "^4.0.2",
     "ellipsize": "^0.5.1",
-    "framer-motion": "^6.3.3",
     "hold-event": "^0.2.0",
     "ngraph.centrality": "^2.1.0",
     "ngraph.circular.fixed": "^1.0.1",
