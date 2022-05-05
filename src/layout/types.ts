@@ -1,24 +1,19 @@
-import { GraphNode } from '../types';
+import { InternalGraphNode } from '../types';
 
 export type LayoutTypes =
   | 'forceDirected2d'
   | 'forceDirected3d'
   | 'circular2d'
-  | 'treeTd'
-  | 'treeLr'
-  | 'radialOut';
+  | 'treeTd3d'
+  | 'treeLr3d'
+  | 'radialOut3d';
 
 export interface LayoutFactoryProps {
   type: LayoutTypes;
   graph: any;
 }
 
-export interface LayoutNode extends GraphNode {
-  x: number;
-  y: number;
-}
-
 export interface LayoutStrategy {
-  getNodePosition: (id: string) => LayoutNode;
+  getNodePosition: (id: string) => InternalGraphNode;
   step: () => boolean | undefined;
 }

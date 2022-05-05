@@ -60,4 +60,7 @@ export interface InternalVector3 {
 export interface InternalGraphNode extends GraphNode {
   links: InternalGraphLink[];
   position: InternalGraphPosition;
+  fx?: number;
+  fy?: number;
+  fz?: number;
 }

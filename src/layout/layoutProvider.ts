@@ -8,11 +8,11 @@ export function layoutProvider({
 }: LayoutFactoryProps): LayoutStrategy {
   if (type === 'forceDirected2d') {
     return forceDirected(rest);
-  } else if (type === 'treeTd') {
-    return forceDirected({ ...rest, mode: 'td', dimensions: 2 });
-  } else if (type === 'treeLr') {
-    return forceDirected({ ...rest, mode: 'lr', dimensions: 2 });
-  } else if (type === 'radialOut') {
+  } else if (type === 'treeTd3d') {
+    return forceDirected({ ...rest, mode: 'td', dimensions: 3 });
+  } else if (type === 'treeLr3d') {
+    return forceDirected({ ...rest, mode: 'lr', dimensions: 3 });
+  } else if (type === 'radialOut3d') {
     return forceDirected({ ...rest, mode: 'radialout', dimensions: 3 });
   } else if (type === 'forceDirected3d') {
     return forceDirected({ ...rest, dimensions: 3 });

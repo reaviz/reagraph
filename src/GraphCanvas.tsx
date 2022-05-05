@@ -56,8 +56,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 75 }}
             onPointerMissed={onCanvasClick}
           >
-            <color attach="background" args={[theme.backgroundColor]} />
+            <color attach="background" args={[theme.canvas.background]} />
             <ambientLight intensity={0.5} />
+            <fog attach="fog" args={[theme.canvas.fog, 5, 2000]} />
             <CameraControls
               mode={cameraMode}
               ref={controlsRef}

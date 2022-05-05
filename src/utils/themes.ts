@@ -1,5 +1,8 @@
 export interface Theme {
-  backgroundColor: string;
+  canvas: {
+    background: string;
+    fog: string;
+  };
   node: {
     fill: string;
     color: string;
@@ -30,7 +33,10 @@ export interface Theme {
 }
 
 export const lightTheme: Theme = {
-  backgroundColor: '#fff',
+  canvas: {
+    background: '#fff',
+    fog: '#FFFFFF'
+  },
   node: {
     fill: '#AACBD2',
     color: '#2A6475',
@@ -61,7 +67,10 @@ export const lightTheme: Theme = {
 };
 
 export const darkTheme: Theme = {
-  backgroundColor: '#1C252D',
+  canvas: {
+    background: '#1C252D',
+    fog: '#000000'
+  },
   node: {
     fill: '#7A8C9E',
     color: '#ACBAC7',

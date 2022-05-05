@@ -4,6 +4,7 @@ import {
   forceManyBody as d3ForceManyBody,
   forceCenter as d3ForceCenter
 } from 'd3-force-3d';
+import { InternalGraphEdge, InternalGraphNode } from 'types';
 import { forceRadial, DagMode } from './radialUtils';
 import { LayoutStrategy } from './types';
 
@@ -18,8 +19,8 @@ export function forceDirected({
   mode = null,
   dimensions = 2
 }: ForceDirectedD3Inputs): LayoutStrategy {
-  const nodes = [];
-  const links = [];
+  const nodes: InternalGraphNode[] = [];
+  const links: InternalGraphEdge[] = [];
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {

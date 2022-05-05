@@ -8,3 +8,4 @@ export * from './sizing';
 export * from './helpers';
 export * from './RadialMenu';
 export * from './CameraControls';
+export * from './useGraph';

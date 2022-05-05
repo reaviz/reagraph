@@ -28,7 +28,10 @@ export const DarkTheme = () => (
 export const CustomTheme = () => (
   <GraphCanvas
     theme={{
-      backgroundColor: 'gray',
+      canvas: {
+        background: 'gray',
+        fog: '000000'
+      },
       node: {
         fill: 'blue',
         color: 'white',

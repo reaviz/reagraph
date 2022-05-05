@@ -5,7 +5,7 @@ import React, {
   Ref,
   useImperativeHandle
 } from 'react';
-import { useGraph } from './utils/graph';
+import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout/types';
 import { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { SizingType } from './sizing';

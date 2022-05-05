@@ -9,7 +9,10 @@ also define your own theme using the `theme` interface.
 
 ```ts
 export interface Theme {
-  backgroundColor: string;
+  canvas: {
+    background: string;
+    fog: string;
+  };
   node: {
     fill: string;
     color: string;

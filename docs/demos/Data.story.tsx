@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { GraphCanvas } from '../../src';
 import { transformGenerator } from '../assets/demo';
 import generators from 'ngraph.generators';
@@ -33,18 +33,5 @@ export const Ladder = () => {
   const [ladderNodes, ladderEdges] = useMemo(() => transformGenerator(generators.ladder(5)), []);
   return (
     <GraphCanvas nodes={ladderNodes} edges={ladderEdges} />
-  );
-};
-
-export const Performance = () => {
-  const [perfNodes, perfEdges] = useMemo(() => transformGenerator(generators.balancedBinTree(10)), []);
-  return (
-    <Fragment>
-      <pre style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 1, color: 'white' }}>
-        Nodes: {perfNodes.length}<br />
-        Edges: {perfEdges.length}
-      </pre>
-      <GraphCanvas nodes={perfNodes} edges={perfEdges} />
-    </Fragment>
   );
 };

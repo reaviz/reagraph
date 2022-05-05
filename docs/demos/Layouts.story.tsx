@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
-import { complexEdges, complexNodes } from '../assets/demo';
+import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Layouts',
@@ -19,16 +19,14 @@ export const Circular2d = () => (
   <GraphCanvas layoutType="circular2d" nodes={complexNodes} edges={complexEdges} />
 );
 
-/*
-export const RadialOut = () => (
-  <GraphCanvas layoutType="radialOut" nodes={simpleNodes} edges={simpleEdges} />
+export const RadialOut3d = () => (
+  <GraphCanvas layoutType="radialOut3d" nodes={simpleNodes} edges={simpleEdges} />
 );
 
-export const TreeLeftRight = () => (
-  <GraphCanvas layoutType="treeLr" nodes={simpleNodes} edges={simpleEdges} />
+export const TreeLeftRight3d = () => (
+  <GraphCanvas layoutType="treeLr3d" nodes={simpleNodes} edges={simpleEdges} />
 );
 
-export const TreeTopDown = () => (
-  <GraphCanvas layoutType="treeTd" nodes={simpleNodes} edges={simpleEdges} />
+export const TreeTopDown3d = () => (
+  <GraphCanvas layoutType="treeTd3d" nodes={simpleNodes} edges={simpleEdges} />
 );
-*/

@@ -1,8 +1,9 @@
 import { forceRadial as d3ForceRadial } from 'd3-force-3d';
-import { getNodeDepth } from '../utils/depth';
+import { InternalGraphEdge, InternalGraphNode } from 'types';
+import { getNodeDepth } from './depthUtils';
 
 const DAG_LEVEL_NODE_RATIO = 2;
-const RADIALS = ['radialin', 'radialout'];
+const RADIALS: DagMode[] = ['radialin', 'radialout'];
 
 export type DagMode =
   | 'lr'
@@ -19,28 +20,24 @@ export type DagMode =
  * Inspired by: https://github.com/vasturiano/three-forcegraph/blob/master/src/forcegraph-kapsule.js#L970-L1018
  */
 export function forceRadial(
-  nodes: any[],
-  links: any[],
+  nodes: InternalGraphNode[],
+  links: InternalGraphEdge[],
   dagMode: DagMode = 'lr'
 ) {
-  const { depths, invalid, maxDepth } = getNodeDepth(nodes, links);
+  const { depths, maxDepth } = getNodeDepth(nodes, links);
 
-  if (invalid) {
-    return null;
-  }
-
+  const modeDistance = RADIALS.includes(dagMode) ? 0.7 : 1;
   const dagLevelDistance =
-    (nodes.length / (maxDepth || 1)) *
-    DAG_LEVEL_NODE_RATIO *
-    (RADIALS.includes(dagMode) ? 0.7 : 1);
+    (nodes.length / maxDepth) * DAG_LEVEL_NODE_RATIO * modeDistance;
 
   if (dagMode) {
-    const getFFn = (fix, invert) => node =>
-      !fix
-        ? undefined
-        : (depths[node.id] - maxDepth / 2) *
-          dagLevelDistance *
-          (invert ? -1 : 1);
+    const getFFn =
+      (fix: boolean, invert: boolean) => (node: InternalGraphNode) =>
+        !fix
+          ? undefined
+          : (depths[node.id].depth - maxDepth / 2) *
+            dagLevelDistance *
+            (invert ? -1 : 1);
 
     const fxFn = getFFn(['lr', 'rl'].includes(dagMode), dagMode === 'rl');
     const fyFn = getFFn(['td', 'bu'].includes(dagMode), dagMode === 'td');
@@ -53,13 +50,14 @@ export function forceRadial(
     });
   }
 
+  console.log('here', nodes);
+
   return RADIALS.includes(dagMode)
     ? d3ForceRadial(node => {
       const nodeDepth = depths[node.id];
-      return (
-        (dagMode === 'radialin' ? maxDepth - nodeDepth : nodeDepth) *
-          dagLevelDistance
-      );
+      const depth =
+          dagMode === 'radialin' ? maxDepth - nodeDepth.depth : nodeDepth.depth;
+      return depth * dagLevelDistance;
     }).strength(1)
     : null;
 }

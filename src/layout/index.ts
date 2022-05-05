@@ -4,3 +4,4 @@ export * from './circular2d';
 export * from './forceDirected';
 export * from './layoutUtils';
 export * from './radialUtils';
+export * from './depthUtils';

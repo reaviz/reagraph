@@ -1,15 +1,15 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { nodeSizeProvider, SizingType } from '../sizing';
-import { LayoutTypes, layoutProvider, LayoutStrategy } from '../layout';
+import { nodeSizeProvider, SizingType } from './sizing';
+import { LayoutTypes, layoutProvider, LayoutStrategy } from './layout';
 import ngraph from 'ngraph.graph';
-import { calcLabelVisibility, LabelVisibilityType } from './visibility';
-import { tick } from '../layout/layoutUtils';
+import { calcLabelVisibility, LabelVisibilityType } from './utils/visibility';
+import { tick } from './layout/layoutUtils';
 import {
   GraphEdge,
   GraphNode,
   InternalGraphEdge,
   InternalGraphNode
-} from '../types';
+} from './types';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -63,7 +63,10 @@ export const useGraph = ({
   useEffect(() => {
     buildGraph(graph.current, nodes, edges);
     updateLayout();
-    layoutMounted.current = true;
+
+    // queue this in a frame so it only happens after the graph is built
+    requestAnimationFrame(() => (layoutMounted.current = true));
+
     // eslint-disable-next-line
   }, [nodes, edges, graph]);
 
