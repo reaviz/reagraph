@@ -38,12 +38,25 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 
 ## ✨ Features
 - WebGL based for high performance
-- Built in layouts: Force Directed 2d, Force Directed 3d, Circular 2d
 - Node Sizing based on attribute, page rank, centrality, custom
 - Light and Dark Mode with custom theme ability
 - Path finding between nodes
-- Context Menu
+- Radial Context Menu
 - Selection Hook
+
+with the following built in layouts:
+
+- Force Directed 2D
+- Force Directed 3D
+- Circular 2D
+- Tree Top Down 2D
+- Tree Left Right 2D
+- Tree Top Down 3D
+- Tree Left Right 3D
+- Radial Out 2D
+- Radial Out 3D
+- Hierarchical Top Down 2D
+- Hierarchical Left Right 2D
 
 ## 📦 Usage
 

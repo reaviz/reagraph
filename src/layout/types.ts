@@ -3,7 +3,6 @@ import { InternalGraphNode } from '../types';
 export type LayoutTypes =
   | 'forceDirected2d'
   | 'forceDirected3d'
-  | 'hierarchical'
   | 'circular2d'
   | 'treeTd2d'
   | 'treeTd3d'
