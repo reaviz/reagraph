@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig, EdgeVectors3 } from '../utils';
-import * as THREE from 'three';
+import { Vector3, TubeBufferGeometry, CatmullRomCurve3 } from 'three';
 
 export interface LineProps {
   color?: string;
@@ -18,7 +18,7 @@ export const Line: FC<LineProps> = ({
   points,
   animated
 }) => {
-  const tubeRef = useRef<THREE.TubeBufferGeometry | null>(null);
+  const tubeRef = useRef<TubeBufferGeometry | null>(null);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({
@@ -46,14 +46,12 @@ export const Line: FC<LineProps> = ({
     onChange: event => {
       const { fromVertices, toVertices } = event.value;
       // Reference: https://bit.ly/3ORuuBP
-      const t = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(...fromVertices),
-        new THREE.Vector3(...toVertices)
+      const t = new CatmullRomCurve3([
+        new Vector3(...fromVertices),
+        new Vector3(...toVertices)
       ]);
 
-      tubeRef.current.copy(
-        new THREE.TubeBufferGeometry(t, 20, size / 2, 5, false)
-      );
+      tubeRef.current.copy(new TubeBufferGeometry(t, 20, size / 2, 5, false));
     },
     config: {
       ...animationConfig,
@@ -62,11 +60,7 @@ export const Line: FC<LineProps> = ({
   });
 
   const curve = useMemo(
-    () =>
-      new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, 0, 0),
-        new THREE.Vector3(0, 0, 0)
-      ]),
+    () => new CatmullRomCurve3([new Vector3(0, 0, 0), new Vector3(0, 0, 0)]),
     []
   );
 

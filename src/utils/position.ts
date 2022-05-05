@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 import { InternalGraphNode, InternalVector3 } from '../types';
 
 export interface EdgeVectors3 {
@@ -10,7 +10,7 @@ function pointAtLine(
   from: InternalVector3,
   to: InternalVector3,
   size: number
-): THREE.Vector3 {
+): Vector3 {
   const { distance, fromVector, toVector } = calcDistance({ from, to });
   if (distance < size) {
     // NOTE: This is a hacky way to get the from position - we should not do this long term
@@ -24,8 +24,8 @@ function pointAtLine(
 }
 
 const getVectors = ({ from, to }: EdgeVectors3) => [
-  new THREE.Vector3(from.x, from.y || 0, from.z || 0),
-  new THREE.Vector3(to.x, to.y || 0, to.z || 0)
+  new Vector3(from.x, from.y || 0, from.z || 0),
+  new Vector3(to.x, to.y || 0, to.z || 0)
 ];
 
 function calcDistance({ from, to }: EdgeVectors3) {
@@ -49,7 +49,7 @@ export const getPoints = ({ from, to }: GetPointsInput) => ({
 
 export function getMidPoint(positions: EdgeVectors3) {
   const [fromVector, toVector] = getVectors(positions);
-  return new THREE.Vector3().addVectors(fromVector, toVector).divideScalar(2);
+  return new Vector3().addVectors(fromVector, toVector).divideScalar(2);
 }
 
 export function getEndPoint(positions: EdgeVectors3) {
@@ -59,7 +59,7 @@ export function getEndPoint(positions: EdgeVectors3) {
 
 export function getQuaternion(positions: EdgeVectors3) {
   const [fromVector, toVector] = getVectors(positions);
-  const dir = new THREE.Vector3().subVectors(toVector, fromVector);
-  const axis = new THREE.Vector3(0, 1, 0);
+  const dir = new Vector3().subVectors(toVector, fromVector);
+  const axis = new Vector3(0, 1, 0);
   return [axis, dir.clone().normalize()];
 }

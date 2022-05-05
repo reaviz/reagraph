@@ -1,5 +1,5 @@
 import React, { FC, useRef, useMemo, useState } from 'react';
-import * as THREE from 'three';
+import { Group } from 'three';
 import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './Sphere';
@@ -37,7 +37,7 @@ export const Node: FC<NodeProps> = ({
   contextMenuItems,
   onClick
 }) => {
-  const group = useRef<THREE.Group | null>(null);
+  const group = useRef<Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 

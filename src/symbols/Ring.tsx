@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import * as THREE from 'three';
+import { DoubleSide } from 'three';
 import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
 import { Billboard } from '@react-three/drei';
@@ -37,7 +37,7 @@ export const Ring: FC<RingProps> = ({ color, size, opacity, animated }) => {
           transparent={true}
           depthTest={false}
           opacity={ringOpacity}
-          side={THREE.DoubleSide}
+          side={DoubleSide}
           fog={true}
         />
       </a.mesh>

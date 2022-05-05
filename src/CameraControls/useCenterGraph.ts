@@ -1,7 +1,7 @@
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
 import { useCallback, useEffect } from 'react';
-import * as THREE from 'three';
+import { Vector3, Box3 } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
 import { InternalGraphNode } from '../types';
@@ -33,9 +33,9 @@ export const useCenterGraph = ({
           getLayoutCenter(centerNodes);
 
         controls?.fitToBox(
-          new THREE.Box3(
-            new THREE.Vector3(minX, minY, minZ + factor),
-            new THREE.Vector3(maxX, maxY, maxZ + factor)
+          new Box3(
+            new Vector3(minX, minY, minZ + factor),
+            new Vector3(maxX, maxY, maxZ + factor)
           ),
           animated,
           {

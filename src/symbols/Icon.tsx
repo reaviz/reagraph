@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
-import * as THREE from 'three';
+import { TextureLoader, LinearFilter } from 'three';
 import { animationConfig } from '../utils';
 
 export interface IconProps {
@@ -22,7 +22,7 @@ export const Icon: FC<IconProps> = ({
   onClick,
   onContextMenu
 }) => {
-  const texture = useMemo(() => new THREE.TextureLoader().load(image), [image]);
+  const texture = useMemo(() => new TextureLoader().load(image), [image]);
 
   const { scale, spriteOpacity } = useSpring({
     from: {
@@ -66,11 +66,7 @@ export const Icon: FC<IconProps> = ({
           depthTest={false}
           transparent={true}
         >
-          <primitive
-            attach="map"
-            object={texture}
-            minFilter={THREE.LinearFilter}
-          />
+          <primitive attach="map" object={texture} minFilter={LinearFilter} />
         </a.spriteMaterial>
       </a.sprite>
     </group>

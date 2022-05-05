@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import * as THREE from 'three';
+import { Mesh } from 'three';
 import {
   getQuaternion,
   animationConfig,
@@ -26,7 +26,7 @@ export const Arrow: FC<ArrowProps> = ({
   placement,
   color
 }) => {
-  const meshRef = useRef<THREE.Mesh | null>(null);
+  const meshRef = useRef<Mesh | null>(null);
   const quaternion = useMemo(() => getQuaternion(position), [position]);
 
   const endPos = useMemo(() => {

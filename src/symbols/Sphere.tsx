@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig } from '../utils/animation';
-import * as THREE from 'three';
+import { DoubleSide } from 'three';
 
 export interface SphereProps {
   size?: number;
@@ -57,7 +57,7 @@ export const Sphere: FC<SphereProps> = ({
         <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
         <a.meshPhongMaterial
           attach="material"
-          side={THREE.DoubleSide}
+          side={DoubleSide}
           transparent={true}
           fog={true}
           opacity={nodeOpacity}
