@@ -1,6 +1,7 @@
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected } from './forceDirected';
 import { circular2d } from './circular2d';
+import { hierarchical } from './hierarchical';
 
 export function layoutProvider({
   type,
@@ -24,6 +25,10 @@ export function layoutProvider({
     return forceDirected({ ...rest, dimensions: 3 });
   } else if (type === 'circular2d') {
     return circular2d(rest);
+  } else if (type === 'hierarchicalTd') {
+    return hierarchical({ ...rest, mode: 'td' });
+  } else if (type === 'hierarchicalLr') {
+    return hierarchical({ ...rest, mode: 'lr' });
   }
 
   throw new Error(`Layout ${type} not found.`);

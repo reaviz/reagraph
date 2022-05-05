@@ -11,6 +11,14 @@ export const ForceDirected = () => (
   <GraphCanvas layoutType="forceDirected2d" nodes={complexNodes} edges={complexEdges} />
 );
 
+export const HierarchicalTopDown = () => (
+  <GraphCanvas layoutType="hierarchicalTd" nodes={simpleNodes} edges={treeEdges} />
+);
+
+export const HierarchicalLeftRight = () => (
+  <GraphCanvas layoutType="hierarchicalLr" nodes={simpleNodes} edges={treeEdges} />
+);
+
 export const Circular = () => (
   <GraphCanvas layoutType="circular2d" nodes={complexNodes} edges={complexEdges} />
 );

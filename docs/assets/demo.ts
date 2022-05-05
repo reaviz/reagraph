@@ -91,12 +91,6 @@ export const treeEdges: GraphEdge[] = [
     source: 'n-3',
     target: 'n-4',
     label: 'Edge 2-3'
-  },
-  {
-    id: '0->4',
-    source: 'n-0',
-    target: 'n-4',
-    label: 'Edge 0-4'
   }
 ];
 

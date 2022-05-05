@@ -5,7 +5,7 @@ import {
   forceCenter as d3ForceCenter
 } from 'd3-force-3d';
 import { InternalGraphEdge, InternalGraphNode } from 'types';
-import { forceRadial, DagMode } from './radialUtils';
+import { forceRadial, DagMode } from './forceUtils';
 import { LayoutStrategy } from './types';
 
 interface ForceDirectedD3Inputs {

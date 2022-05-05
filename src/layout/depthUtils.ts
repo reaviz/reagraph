@@ -1,8 +1,9 @@
 import { InternalGraphEdge, InternalGraphNode } from '../types';
 
-interface DepthNode {
-  data: any;
-  out: any[];
+export interface DepthNode {
+  data: InternalGraphNode;
+  ins: DepthNode[];
+  out: DepthNode[];
   depth: number;
 }
 
@@ -14,7 +15,7 @@ function traverseGraph(nodes: DepthNode[], nodeStack: DepthNode[] = []) {
     if (idx > -1) {
       const loop = [...nodeStack.slice(idx), node].map(d => d.data.id);
       throw new Error(
-        `Invalid DAG - circular node path: ${loop.join(' -> ')}.`
+        `Invalid Graph: Circular node path detected: ${loop.join(' -> ')}.`
       );
     }
 
@@ -38,7 +39,8 @@ export function getNodeDepth(
       [cur.id]: {
         data: cur,
         out: [],
-        depth: -1
+        depth: -1,
+        ins: []
       }
     }),
     {}
@@ -60,13 +62,14 @@ export function getNodeDepth(
 
     const sourceNode = graph[from];
     const targetNode = graph[to];
+    targetNode.ins.push(sourceNode);
     sourceNode.out.push(targetNode);
   });
 
   traverseGraph(Object.values(graph));
 
-  const depths = Object.keys(graph).map(id => graph[id].depth);
-  const maxDepth = Math.max(...depths);
+  const allDepths = Object.keys(graph).map(id => graph[id].depth);
+  const maxDepth = Math.max(...allDepths);
 
   return {
     depths: graph,
