@@ -9,11 +9,11 @@ export default {
   component: GraphCanvas
 };
 
-export const SimpleStory = (args) => (
+const SimpleStory = (args) => (
   <GraphCanvas {...args} />
 );
 
-const Simple = SimpleStory.bind({});
+export const Simple = SimpleStory.bind({});
 Simple.args = {
   nodes: simpleNodes,
   edges: simpleEdges,
