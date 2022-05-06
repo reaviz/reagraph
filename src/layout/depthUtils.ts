@@ -33,6 +33,8 @@ export function getNodeDepth(
   nodes: InternalGraphNode[],
   links: InternalGraphEdge[]
 ) {
+  let invalid = false;
+
   const graph: { [key: string]: DepthNode } = nodes.reduce(
     (acc, cur) => ({
       ...acc,
@@ -46,32 +48,37 @@ export function getNodeDepth(
     {}
   );
 
-  links.forEach(link => {
-    // @ts-ignore
-    const from = link.fromId || link.source;
-    // @ts-ignore
-    const to = link.toId || link.target;
+  try {
+    links.forEach(link => {
+      // @ts-ignore
+      const from = link.fromId || link.source;
+      // @ts-ignore
+      const to = link.toId || link.target;
 
-    if (!graph.hasOwnProperty(from)) {
-      throw new Error(`Missing source Node ${from}`);
-    }
+      if (!graph.hasOwnProperty(from)) {
+        throw new Error(`Missing source Node ${from}`);
+      }
 
-    if (!graph.hasOwnProperty(to)) {
-      throw new Error(`Missing target Node ${to}`);
-    }
+      if (!graph.hasOwnProperty(to)) {
+        throw new Error(`Missing target Node ${to}`);
+      }
 
-    const sourceNode = graph[from];
-    const targetNode = graph[to];
-    targetNode.ins.push(sourceNode);
-    sourceNode.out.push(targetNode);
-  });
+      const sourceNode = graph[from];
+      const targetNode = graph[to];
+      targetNode.ins.push(sourceNode);
+      sourceNode.out.push(targetNode);
+    });
 
-  traverseGraph(Object.values(graph));
+    traverseGraph(Object.values(graph));
+  } catch (e) {
+    invalid = true;
+  }
 
   const allDepths = Object.keys(graph).map(id => graph[id].depth);
   const maxDepth = Math.max(...allDepths);
 
   return {
+    invalid,
     depths: graph,
     maxDepth: maxDepth || 1
   };

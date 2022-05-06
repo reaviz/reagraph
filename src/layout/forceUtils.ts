@@ -24,7 +24,11 @@ export function forceRadial(
   links: InternalGraphEdge[],
   dagMode: DagMode = 'lr'
 ) {
-  const { depths, maxDepth } = getNodeDepth(nodes, links);
+  const { depths, maxDepth, invalid } = getNodeDepth(nodes, links);
+
+  if (invalid) {
+    return null;
+  }
 
   const modeDistance = RADIALS.includes(dagMode) ? 1 : 5;
   const dagLevelDistance =

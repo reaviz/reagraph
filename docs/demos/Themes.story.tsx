@@ -25,41 +25,9 @@ export const DarkTheme = () => (
   />
 );
 
-export const CustomTheme = () => (
+export const CustomThemeStory = (args) => (
   <GraphCanvas
-    theme={{
-      canvas: {
-        background: 'gray',
-        fog: '000000'
-      },
-      node: {
-        fill: 'blue',
-        color: 'white',
-        activeFill: '#1DE9AC',
-        activeColor: '#1DE9AC'
-      },
-      menu: {
-        background: '#FFF',
-        border: '#AACBD2',
-        color: '#000',
-        activeBackground: '#1DE9AC',
-        activeColor: '#FFF'
-      },
-      edge: {
-        fill: 'yellow',
-        color: 'white',
-        activeFill: '#1DE9AC',
-        activeColor: '#1DE9AC'
-      },
-      ring: {
-        fill: 'green',
-        activeFill: '#1DE9AC'
-      },
-      arrow: {
-        fill: 'green',
-        activeFill: '#1DE9AC'
-      }
-    }}
+    {...args}
     nodes={simpleNodes}
     edges={simpleEdges}
     contextMenuItems={[
@@ -74,3 +42,40 @@ export const CustomTheme = () => (
     ]}
   />
 );
+
+export const CustomTheme = CustomThemeStory.bind({});
+CustomTheme.args = {
+  theme: {
+    canvas: {
+      background: 'gray',
+      fog: '000000'
+    },
+    node: {
+      fill: 'blue',
+      color: 'white',
+      activeFill: '#1DE9AC',
+      activeColor: '#1DE9AC'
+    },
+    menu: {
+      background: '#FFF',
+      border: '#AACBD2',
+      color: '#000',
+      activeBackground: '#1DE9AC',
+      activeColor: '#FFF'
+    },
+    edge: {
+      fill: 'yellow',
+      color: 'white',
+      activeFill: '#1DE9AC',
+      activeColor: '#1DE9AC'
+    },
+    ring: {
+      fill: 'green',
+      activeFill: '#1DE9AC'
+    },
+    arrow: {
+      fill: 'green',
+      activeFill: '#1DE9AC'
+    }
+  }
+};

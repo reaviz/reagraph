@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphCanvas } from '../../src';
+import { GraphCanvas, lightTheme } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 import random from 'lodash/random';
 import { range } from 'd3-array';
@@ -9,9 +9,20 @@ export default {
   component: GraphCanvas
 };
 
-export const Simple = () => (
-  <GraphCanvas nodes={simpleNodes} edges={simpleEdges} />
+export const SimpleStory = (args) => (
+  <GraphCanvas {...args} />
 );
+
+export const Simple = SimpleStory.bind({});
+Simple.args = {
+  nodes: simpleNodes,
+  edges: simpleEdges,
+  cameraMode: 'pan',
+  theme: lightTheme,
+  layoutType: 'forceDirected2d',
+  sizingType: 'none',
+  labelType: 'auto'
+};
 
 export const TwoWayLink = () => (
   <GraphCanvas
