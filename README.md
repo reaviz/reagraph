@@ -35,6 +35,7 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 ## 🚀 Quick Links
 
 - Checkout the [**docs and demos**](https://reagraph.dev)
+- Checkout a basic demo on [CodeSandbox](https://codesandbox.io/s/reagraph-example-mwh96q)
 
 ## ✨ Features
 - WebGL based for high performance
@@ -71,6 +72,38 @@ Install the package via **Yarn**:
 ```
 yarn add reagraph
 ```
+
+Import the component into your app and add some nodes and edges:
+
+```tsx
+import React from 'react';
+import { GraphCanvas } from 'reagraph';
+
+export default () => (
+  <GraphCanvas
+    nodes={[
+      {
+        id: '1',
+        label: '1'
+      },
+      {
+        id: '2',
+        label: '2'
+      }
+    ]}
+    edges={[
+      {
+        id: '1->2',
+        source: 'n-1',
+        target: 'n-2',
+        label: 'Edge 1-2'
+      }
+    ]}
+  />
+);
+```
+
+Checkout an example on [CodeSandbox](https://codesandbox.io/s/reagraph-example-mwh96q).
 
 ## 🔭 Development
 
