@@ -25,7 +25,7 @@ export const DarkTheme = () => (
   />
 );
 
-export const CustomThemeStory = (args) => (
+const CustomThemeStory = (args) => (
   <GraphCanvas
     {...args}
     nodes={simpleNodes}

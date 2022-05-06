@@ -13,7 +13,7 @@ export const SimpleStory = (args) => (
   <GraphCanvas {...args} />
 );
 
-export const Simple = SimpleStory.bind({});
+const Simple = SimpleStory.bind({});
 Simple.args = {
   nodes: simpleNodes,
   edges: simpleEdges,
