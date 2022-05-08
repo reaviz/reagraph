@@ -1,7 +1,7 @@
 import React, { RefObject, useEffect, useState } from 'react';
 import { GraphCanvasRef } from '../GraphCanvas';
 import { useHotkeys } from 'reakeys';
-import { GraphEdge, GraphNode } from 'types';
+import { GraphEdge, GraphNode } from '../types';
 import { findPath } from '../utils/paths';
 
 export type HotkeyTypes = 'selectAll' | 'deselect' | 'delete';
