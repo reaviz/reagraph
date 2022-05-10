@@ -36,6 +36,7 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 
 - Checkout the [**docs and demos**](https://reagraph.dev)
 - Checkout a basic demo on [CodeSandbox](https://codesandbox.io/s/reagraph-example-mwh96q)
+- Learn about updates from the [changelog](CHANGELOG.md)
 
 ## ✨ Features
 - WebGL based for high performance
