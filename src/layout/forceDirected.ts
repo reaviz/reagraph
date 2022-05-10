@@ -6,7 +6,7 @@ import {
   forceY as d3ForceY,
   forceZ as d3ForceZ
 } from 'd3-force-3d';
-import { InternalGraphEdge, InternalGraphNode } from 'types';
+import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutStrategy } from './types';
 
