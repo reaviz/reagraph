@@ -95,6 +95,11 @@ export interface SelectionResult {
    * On canvas click event pass through.
    */
   onCanvasClick?: (event: MouseEvent) => void;
+
+  /**
+   * Center the camera on the given node id.
+   */
+  focusOnNode: (value: string) => void;
 }
 
 export const useSelection = ({
@@ -172,6 +177,10 @@ export const useSelection = ({
     clearSelections(path.map(p => p.id as string));
   };
 
+  const focusOnNode = (item: string) => {
+    ref.current?.centerGraph([item]);
+  };
+
   const onKeyDown = (event: KeyboardEvent) => {
     event.preventDefault();
     setMetaKeyDown(event.metaKey || event.ctrlKey);
@@ -239,6 +248,7 @@ export const useSelection = ({
     addSelection,
     removeSelection,
     toggleSelection,
+    focusOnNode,
     setSelections: setInternalSelections
   };
 };
