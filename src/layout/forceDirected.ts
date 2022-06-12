@@ -2,9 +2,11 @@ import {
   forceSimulation as d3ForceSimulation,
   forceLink as d3ForceLink,
   forceManyBody as d3ForceManyBody,
-  forceCenter as d3ForceCenter
+  forceX as d3ForceX,
+  forceY as d3ForceY,
+  forceZ as d3ForceZ
 } from 'd3-force-3d';
-import { InternalGraphEdge, InternalGraphNode } from 'types';
+import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutStrategy } from './types';
 
@@ -33,9 +35,11 @@ export function forceDirected({
 
   // Create the simulation
   const sim = d3ForceSimulation()
+    .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -500 : -250))
     .force('link', d3ForceLink())
-    .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -300 : -150))
-    .force('center', d3ForceCenter())
+    .force('x', d3ForceX())
+    .force('y', d3ForceY())
+    .force('z', d3ForceZ())
     .force('dagRadial', forceRadial(nodes, links, mode as DagMode))
     .stop();
 
