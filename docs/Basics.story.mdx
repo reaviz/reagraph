@@ -13,22 +13,28 @@ or `icon` to them to show some sort of indication what it represents.
 
 ```js
 const nodes = [
-  {
+{
     id: '1',
-    label: 'Node 1'
+    label: '1'
   },
   {
     id: '2',
-    label: 'Node 2'
+    label: '2'
   }
 ];
 
 const edges = [
   {
-    label: 'Edge 1-2',
+    source: '1',
+    target: '2',
     id: '1-2',
-    from: '1',
-    to: '2'
+    label: '1-2'
+  },
+  {
+    source: '2',
+    target: '1',
+    id: '2-1',
+    label: '2-1'
   }
 ];
 ```
