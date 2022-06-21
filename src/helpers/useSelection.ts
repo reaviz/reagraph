@@ -173,8 +173,17 @@ export const useSelection = ({
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    event.preventDefault();
-    setMetaKeyDown(event.metaKey || event.ctrlKey);
+    const element = event.target as any;
+    const isSafe =
+      element.tagName !== 'INPUT' &&
+      element.tagName !== 'SELECT' &&
+      element.tagName !== 'TEXTAREA' &&
+      !element.isContentEditable;
+
+    if (isSafe) {
+      event.preventDefault();
+      setMetaKeyDown(event.metaKey || event.ctrlKey);
+    }
   };
 
   useEffect(() => {
