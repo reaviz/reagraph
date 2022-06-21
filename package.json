@@ -31,6 +31,9 @@
   "keywords": [
     "react",
     "reactjs",
+    "network-graph",
+    "graph",
+    "threejs",
     "webgl"
   ],
   "license": "Apache-2.0",
