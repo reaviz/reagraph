@@ -97,8 +97,8 @@ export const treeEdges: GraphEdge[] = [
 export const [complexNodes, complexEdges] = transformGenerator(generators.balancedBinTree(3));
 
 export function transformGenerator(g) {
-  const nodes = [];
-  const edges = [];
+  const nodes: any[] = [];
+  const edges: any[] = [];
 
   g.forEachNode(node => {
     nodes.push({
