@@ -3,7 +3,7 @@ module.exports = {
   addons: [
     'storybook-css-modules-preset',
     '@storybook/addon-storysource',
-    '@storybook/addon-docs/preset',
+    '@storybook/addon-docs',
     '@storybook/addon-essentials'
   ],
   webpackFinal: async (config, { configType }) => {
