@@ -58,7 +58,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           >
             <color attach="background" args={[theme.canvas.background]} />
             <ambientLight intensity={0.5} />
-            <fog attach="fog" args={[theme.canvas.fog, 5, 3000]} />
+            <fog attach="fog" args={[theme.canvas.fog, 5, 5000]} />
             <CameraControls
               mode={cameraMode}
               ref={controlsRef}
