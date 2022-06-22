@@ -16,6 +16,7 @@ export interface EdgeProps extends InternalGraphEdge {
 export const Edge: FC<EdgeProps> = ({
   from,
   to,
+  id,
   animated,
   position,
   label,
@@ -41,22 +42,26 @@ export const Edge: FC<EdgeProps> = ({
       : 0.1
     : 0.5;
 
-  const { labelPosition } = useSpring({
-    from: {
-      labelPosition: [0, 0, 2]
-    },
-    to: {
-      labelPosition: [midPoint.x, midPoint.y, 2]
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
+  const [{ labelPosition }] = useSpring(
+    () => ({
+      from: {
+        labelPosition: [0, 0, 2]
+      },
+      to: {
+        labelPosition: [midPoint.x, midPoint.y, 2]
+      },
+      config: {
+        ...animationConfig,
+        duration: animated ? undefined : 0
+      }
+    }),
+    [midPoint, animated]
+  );
 
   return (
     <group>
       <Line
+        id={id}
         color={isSelected ? theme.edge.activeFill : theme.edge.fill}
         opacity={selectionOpacity}
         points={points}

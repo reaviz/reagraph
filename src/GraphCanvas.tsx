@@ -53,12 +53,12 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         <div className={css.canvas}>
           <Canvas
             gl={{ alpha: true, antialias: true }}
-            camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 75 }}
+            camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 10 }}
             onPointerMissed={onCanvasClick}
           >
             <color attach="background" args={[theme.canvas.background]} />
             <ambientLight intensity={0.5} />
-            <fog attach="fog" args={[theme.canvas.fog, 5, 3000]} />
+            <fog attach="fog" args={[theme.canvas.fog, 5, 5000]} />
             <CameraControls
               mode={cameraMode}
               ref={controlsRef}

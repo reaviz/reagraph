@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
-import { iconNodes, manyNodes, simpleEdges, simpleNodesColors } from '../assets/demo';
+import { iconNodes, manyNodes, simpleEdges, simpleNodes, simpleNodesColors } from '../assets/demo';
 
 export default {
   title: 'Demos/Nodes',
@@ -17,4 +17,8 @@ export const Icons = () => (
 
 export const Colors = () => (
   <GraphCanvas nodes={simpleNodesColors} edges={simpleEdges} />
+);
+
+export const Draggable = () => (
+  <GraphCanvas nodes={simpleNodes} edges={simpleEdges} draggable />
 );

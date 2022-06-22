@@ -2,25 +2,32 @@ import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
 import { TextureLoader, LinearFilter } from 'three';
 import { animationConfig } from '../utils';
+import { ThreeEvent } from '@react-three/fiber';
 
 export interface IconProps {
   image: string;
   opacity?: number;
+  id: string;
   animated?: boolean;
   size?: number;
   onActive?: (state: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
+  onPointerDown?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerUp?: (event: ThreeEvent<PointerEvent>) => void;
 }
 
 export const Icon: FC<IconProps> = ({
   image,
+  id,
   size,
   opacity,
   animated,
   onActive,
   onClick,
-  onContextMenu
+  onContextMenu,
+  onPointerDown,
+  onPointerUp
 }) => {
   const texture = useMemo(() => new TextureLoader().load(image), [image]);
 
@@ -42,6 +49,7 @@ export const Icon: FC<IconProps> = ({
   return (
     <group>
       <a.sprite
+        userData={{ id }}
         scale={scale as any}
         onClick={onClick}
         onPointerDown={event => {
@@ -49,7 +57,10 @@ export const Icon: FC<IconProps> = ({
           if (event.nativeEvent.buttons === 2) {
             onContextMenu();
           }
+
+          onPointerDown?.(event);
         }}
+        onPointerUp={onPointerUp}
         onPointerOver={() => {
           onActive(true);
           document.body.style['cursor'] = 'pointer';

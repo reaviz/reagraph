@@ -38,20 +38,23 @@ export const Arrow: FC<ArrowProps> = ({
     }
   }, [position, placement]);
 
-  const { pos, arrowOpacity } = useSpring({
-    from: {
-      pos: [0, 0, 0],
-      arrowOpacity: 0
-    },
-    to: {
-      pos: [endPos.x, endPos.y, endPos.z],
-      arrowOpacity: opacity
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
+  const [{ pos, arrowOpacity }] = useSpring(
+    () => ({
+      from: {
+        pos: [0, 0, 0],
+        arrowOpacity: 0
+      },
+      to: {
+        pos: [endPos.x, endPos.y, endPos.z],
+        arrowOpacity: opacity
+      },
+      config: {
+        ...animationConfig,
+        duration: animated ? undefined : 0
+      }
+    }),
+    [animated, opacity, endPos]
+  );
 
   const setQuaternion = useCallback(() => {
     meshRef.current?.quaternion.setFromUnitVectors(
