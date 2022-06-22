@@ -237,6 +237,7 @@ export const CameraControls: FC<
           ref={cameraRef}
           args={[camera, gl.domElement]}
           enabled={!disabled}
+          dampingFactor={0.3}
         />
         {children}
       </CameraControlsContext.Provider>
