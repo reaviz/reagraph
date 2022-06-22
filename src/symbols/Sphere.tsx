@@ -2,7 +2,6 @@ import React, { FC } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig } from '../utils/animation';
 import { DoubleSide } from 'three';
-import { ThreeEvent } from '@react-three/fiber';
 
 export interface SphereProps {
   size?: number;
@@ -13,8 +12,6 @@ export interface SphereProps {
   onActive?: (active: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
-  onPointerDown?: (event: ThreeEvent<PointerEvent>) => void;
-  onPointerUp?: (event: ThreeEvent<PointerEvent>) => void;
 }
 
 export const Sphere: FC<SphereProps> = ({
@@ -25,8 +22,6 @@ export const Sphere: FC<SphereProps> = ({
   animated,
   onActive,
   onClick,
-  onPointerDown,
-  onPointerUp,
   onContextMenu
 }) => {
   const { scale, nodeColor, nodeOpacity } = useSpring({
@@ -58,9 +53,7 @@ export const Sphere: FC<SphereProps> = ({
           if (event.nativeEvent.buttons === 2) {
             onContextMenu();
           }
-          onPointerDown?.(event);
         }}
-        onPointerUp={onPointerUp}
         onPointerOver={() => onActive?.(true)}
         onPointerOut={() => onActive?.(false)}
       >
