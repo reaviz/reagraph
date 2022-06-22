@@ -27,6 +27,7 @@ export interface GraphSceneProps {
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
   disabled?: boolean;
+  draggable?: boolean;
   onNodeClick?: (node: InternalGraphNode) => void;
 }
 
@@ -45,6 +46,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         selections,
         disabled,
         contextMenuItems,
+        draggable,
         ...rest
       },
       ref: Ref<GraphSceneRef>
@@ -67,6 +69,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
             <Node
               {...n}
               key={n.id}
+              draggable={draggable}
               graph={graph}
               disabled={disabled}
               animated={animated}

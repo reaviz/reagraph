@@ -16,6 +16,7 @@ export interface EdgeProps extends InternalGraphEdge {
 export const Edge: FC<EdgeProps> = ({
   from,
   to,
+  id,
   animated,
   position,
   label,
@@ -57,6 +58,7 @@ export const Edge: FC<EdgeProps> = ({
   return (
     <group>
       <Line
+        id={id}
         color={isSelected ? theme.edge.activeFill : theme.edge.fill}
         opacity={selectionOpacity}
         points={points}

@@ -7,12 +7,14 @@ export interface LineProps {
   color?: string;
   size?: number;
   animated?: boolean;
+  id: string;
   opacity?: number;
   points: EdgeVectors3;
 }
 
 export const Line: FC<LineProps> = ({
   color,
+  id,
   size,
   opacity,
   points,
@@ -65,7 +67,7 @@ export const Line: FC<LineProps> = ({
   );
 
   return (
-    <mesh>
+    <mesh userData={{ id }}>
       <tubeBufferGeometry
         attach="geometry"
         args={[curve, 20, size / 2, 5, false]}

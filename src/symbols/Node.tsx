@@ -10,6 +10,9 @@ import { Ring } from './Ring';
 import { InternalGraphNode } from '../types';
 import { MenuItem, RadialMenu } from '../RadialMenu';
 import { Html, useCursor } from '@react-three/drei';
+import { useGesture } from 'react-use-gesture';
+import { useThree } from '@react-three/fiber';
+import { useCameraControls } from '../CameraControls';
 
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
@@ -18,6 +21,7 @@ export interface NodeProps extends InternalGraphNode {
   selections?: string[];
   animated?: boolean;
   contextMenuItems?: MenuItem[];
+  draggable?: boolean;
   onClick?: () => void;
 }
 
@@ -27,10 +31,11 @@ export const Node: FC<NodeProps> = ({
   animated,
   icon,
   graph,
-  size,
+  size: nodeSize,
   fill,
   disabled,
   id,
+  draggable,
   selections,
   labelVisible,
   theme,
@@ -62,8 +67,8 @@ export const Node: FC<NodeProps> = ({
       : 0.2
     : 1;
 
-  const labelOffset = size + 7;
-  const { nodePosition, labelPosition } = useSpring({
+  const labelOffset = nodeSize + 7;
+  const [{ nodePosition, labelPosition }, set] = useSpring(() => ({
     from: {
       nodePosition: [0, 0, 0],
       labelPosition: [0, -labelOffset, 2]
@@ -76,16 +81,34 @@ export const Node: FC<NodeProps> = ({
       ...animationConfig,
       duration: animated ? undefined : 0
     }
-  });
+  }));
 
   useCursor(isActive, 'pointer');
 
+  const camera = useCameraControls();
+
+  const { size, viewport } = useThree();
+  const aspect = size.width / viewport.width;
+  const bind = useGesture(
+    {
+      onDrag: ({ offset: [x, y] }) =>
+        set({
+          nodePosition: [x / viewport.aspect, -y / viewport.aspect, position.z]
+        })
+      // onHover: ({ hovering }) => set({ scale: hovering ? [1.2, 1.2, 1.2] : [1, 1, 1] })
+    },
+    { drag: { enabled: draggable } }
+  );
+
+  console.log('>>>>', size, viewport, aspect);
+
   return (
-    <a.group ref={group} position={nodePosition as any}>
+    <a.group ref={group} position={nodePosition as any} {...(bind() as any)}>
       {icon ? (
         <Icon
+          id={id}
           image={icon}
-          size={size + 8}
+          size={nodeSize + 8}
           opacity={selectionOpacity}
           animated={animated}
           onClick={onClick}
@@ -98,7 +121,8 @@ export const Node: FC<NodeProps> = ({
         />
       ) : (
         <Sphere
-          size={size}
+          id={id}
+          size={nodeSize}
           color={
             isSelected || isActive
               ? theme.node.activeFill
@@ -121,7 +145,7 @@ export const Node: FC<NodeProps> = ({
       )}
       <Ring
         opacity={isPrimarySelection ? 0.5 : 0}
-        size={size}
+        size={nodeSize}
         animated={animated}
         color={isSelected || isActive ? theme.ring.activeFill : theme.ring.fill}
       />
@@ -151,5 +175,6 @@ export const Node: FC<NodeProps> = ({
 
 Node.defaultProps = {
   size: 7,
-  labelVisible: true
+  labelVisible: true,
+  draggable: false
 };
