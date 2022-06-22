@@ -1,5 +1,5 @@
 import React, { FC, useRef, useMemo, useState } from 'react';
-import { Group } from 'three';
+import { Group, Vector2, Vector3, Plane } from 'three';
 import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './Sphere';
@@ -42,6 +42,9 @@ export const Node: FC<NodeProps> = ({
   contextMenuItems,
   onClick
 }) => {
+  const cameraControls = useCameraControls();
+  const { raycaster, size, camera } = useThree();
+
   const group = useRef<Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
@@ -67,47 +70,101 @@ export const Node: FC<NodeProps> = ({
       : 0.2
     : 1;
 
-  const labelOffset = nodeSize + 7;
-  const [{ nodePosition, labelPosition }, set] = useSpring(() => ({
-    from: {
-      nodePosition: [0, 0, 0],
-      labelPosition: [0, -labelOffset, 2]
-    },
-    to: {
-      nodePosition: position ? [position.x, position.y, position.z] : [0, 0, 0],
-      labelPosition: [0, -labelOffset, 2]
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  }));
+  const [dragging, setDragging] = useState<boolean>(false);
 
-  useCursor(isActive, 'pointer');
+  const [{ nodePosition, labelPosition }, set] = useSpring(
+    () => ({
+      from: {
+        nodePosition: [0, 0, 0],
+        labelPosition: [0, -(nodeSize + 7), 2]
+      },
+      to: {
+        nodePosition: position
+          ? [position.x, position.y, position.z]
+          : [0, 0, 0],
+        labelPosition: [0, -(nodeSize + 7), 2]
+      },
+      config: {
+        ...animationConfig,
+        duration: animated && !dragging ? undefined : 0
+      }
+    }),
+    [dragging, position, animated, nodeSize]
+  );
 
-  const camera = useCameraControls();
+  useCursor(isActive && !dragging, 'pointer');
+  useCursor(dragging, 'grabbing');
 
-  const { size, viewport } = useThree();
-  const aspect = size.width / viewport.width;
+  // Reference: https://codesandbox.io/s/react-three-draggable-cxu37
+  const { mouse2D, mouse3D, offset, normal, plane } = useMemo(
+    () => ({
+      // Normalized 2D screen space mouse coords
+      mouse2D: new Vector2(),
+      // 3D world space mouse coords
+      mouse3D: new Vector3(),
+      // Drag point offset from object origin
+      offset: new Vector3(),
+      // Normal of the drag plane
+      normal: new Vector3(),
+      // Drag plane
+      plane: new Plane()
+    }),
+    []
+  );
+
   const bind = useGesture(
     {
-      onDrag: ({ offset: [x, y], ...rest }) => {
-        camera.controls.enabled = false;
+      onDragStart: ({ event }) => {
+        setDragging(true);
 
-        console.log('here', x, y, position, rest);
+        // @ts-ignore
+        const { eventObject, point } = event;
+
+        // Save the offset of click point from object origin
+        eventObject.getWorldPosition(offset).sub(point);
+
+        // Set initial 3D cursor position (needed for onDrag plane calculation)
+        mouse3D.copy(point);
+
+        // Run user callback
+        cameraControls.controls.enabled = false;
+      },
+      onDrag: ({ xy: [x, y] }) => {
+        // Compute normalized mouse coordinates (screen space)
+        const nx = (x / size.width) * 2 - 1;
+        const ny = (-y / size.height) * 2 + 1;
+
+        // Unlike the mouse from useThree, this works offscreen
+        mouse2D.set(nx, ny);
+
+        // Update raycaster (otherwise it doesn't track offscreen)
+        raycaster.setFromCamera(mouse2D, camera);
+
+        // The drag plane is normal to the camera view
+        camera.getWorldDirection(normal).negate();
+
+        // Find the plane that's normal to the camera and contains our drag point
+        plane.setFromNormalAndCoplanarPoint(normal, mouse3D);
+
+        // Find the point of intersection
+        raycaster.ray.intersectPlane(plane, mouse3D);
+
+        // Update the object position with the original offset
+        const updated = new Vector3(position.x, position.y, position.z)
+          .copy(mouse3D)
+          .add(offset);
 
         return set({
-          nodePosition: [x / viewport.aspect, -y / viewport.aspect, position.z]
+          nodePosition: [updated.x, updated.y, updated.z]
         });
       },
       onDragEnd: () => {
-        camera.controls.enabled = true;
+        setDragging(false);
+        cameraControls.controls.enabled = true;
       }
     },
     { drag: { enabled: draggable } }
   );
-
-  console.log('>>>>', size, viewport, aspect);
 
   return (
     <a.group ref={group} position={nodePosition as any} {...(bind() as any)}>

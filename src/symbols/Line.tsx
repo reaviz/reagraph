@@ -36,30 +36,33 @@ export const Line: FC<LineProps> = ({
     }
   });
 
-  useSpring({
-    from: {
-      fromVertices: [0, 0, 0],
-      toVertices: [0, 0, 0]
-    },
-    to: {
-      fromVertices: [points.from?.x, points.from?.y, points.from?.z || 0],
-      toVertices: [points.to?.x, points.to?.y, points.to?.z || 0]
-    },
-    onChange: event => {
-      const { fromVertices, toVertices } = event.value;
-      // Reference: https://bit.ly/3ORuuBP
-      const t = new CatmullRomCurve3([
-        new Vector3(...fromVertices),
-        new Vector3(...toVertices)
-      ]);
+  useSpring(
+    () => ({
+      from: {
+        fromVertices: [0, 0, 0],
+        toVertices: [0, 0, 0]
+      },
+      to: {
+        fromVertices: [points.from?.x, points.from?.y, points.from?.z || 0],
+        toVertices: [points.to?.x, points.to?.y, points.to?.z || 0]
+      },
+      onChange: event => {
+        const { fromVertices, toVertices } = event.value;
+        // Reference: https://bit.ly/3ORuuBP
+        const t = new CatmullRomCurve3([
+          new Vector3(...fromVertices),
+          new Vector3(...toVertices)
+        ]);
 
-      tubeRef.current.copy(new TubeBufferGeometry(t, 20, size / 2, 5, false));
-    },
-    config: {
-      ...animationConfig,
-      duration: animated ? undefined : 0
-    }
-  });
+        tubeRef.current.copy(new TubeBufferGeometry(t, 20, size / 2, 5, false));
+      },
+      config: {
+        ...animationConfig,
+        duration: animated ? undefined : 0
+      }
+    }),
+    [animated, points, size]
+  );
 
   const curve = useMemo(
     () => new CatmullRomCurve3([new Vector3(0, 0, 0), new Vector3(0, 0, 0)]),
