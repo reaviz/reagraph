@@ -91,11 +91,18 @@ export const Node: FC<NodeProps> = ({
   const aspect = size.width / viewport.width;
   const bind = useGesture(
     {
-      onDrag: ({ offset: [x, y] }) =>
-        set({
+      onDrag: ({ offset: [x, y], ...rest }) => {
+        camera.controls.enabled = false;
+
+        console.log('here', x, y, position, rest);
+
+        return set({
           nodePosition: [x / viewport.aspect, -y / viewport.aspect, position.z]
-        })
-      // onHover: ({ hovering }) => set({ scale: hovering ? [1.2, 1.2, 1.2] : [1, 1, 1] })
+        });
+      },
+      onDragEnd: () => {
+        camera.controls.enabled = true;
+      }
     },
     { drag: { enabled: draggable } }
   );
