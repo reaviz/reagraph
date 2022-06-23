@@ -5318,6 +5318,11 @@ d3-force-3d@^3.0.3:
     d3-quadtree "1 - 3"
     d3-timer "1 - 3"
 
+d3-force-cluster-3d@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/d3-force-cluster-3d/-/d3-force-cluster-3d-1.0.1.tgz#239196360d049ded31260a13f48345c25a80e1d9"
+  integrity sha512-NtQ699p8es4tOCxEI1tz/Va2NgbWwMorRiUpQo55lyvJTlEuDEogLE8CgpruDlVycdytr3xnrRyeFEX06AWyrQ==
+
 "d3-format@1 - 3":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-3.1.0.tgz#9260e23a28ea5cb109e93b21a06e24e2ebd55641"

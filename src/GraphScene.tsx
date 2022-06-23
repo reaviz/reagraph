@@ -68,6 +68,11 @@ export interface GraphSceneProps {
   sizingAttribute?: string;
 
   /**
+   * Attribute used for clustering.
+   */
+  clusterAttribute?: string;
+
+  /**
    * Disable interactions or not.
    */
   disabled?: boolean;

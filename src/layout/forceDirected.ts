@@ -14,15 +14,19 @@ interface ForceDirectedD3Inputs {
   dimensions?: number;
   mode?: DagMode;
   graph: any;
+  clusterAttribute?: string;
 }
 
 export function forceDirected({
   graph,
   mode = null,
-  dimensions = 2
+  dimensions = 2,
+  clusterAttribute
 }: ForceDirectedD3Inputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
+
+  console.log('>>>', clusterAttribute);
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
