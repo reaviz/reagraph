@@ -45,6 +45,7 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 - Path finding between nodes
 - Radial Context Menu
 - Selection Hook
+- Dragging Nodes
 
 with the following built in layouts:
 
