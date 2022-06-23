@@ -32,8 +32,6 @@ export const useDrag = ({
   const bind = useGesture(
     {
       onDragStart: ({ event }) => {
-        onDragStart();
-
         // @ts-ignore
         const { eventObject, point } = event;
 
@@ -44,6 +42,7 @@ export const useDrag = ({
         mouse3D.copy(point);
 
         // Run user callback
+        onDragStart();
       },
       onDrag: ({ xy: [x, y] }) => {
         // Compute normalized mouse coordinates (screen space)
@@ -74,9 +73,7 @@ export const useDrag = ({
           nodePosition: [updated.x, updated.y, updated.z]
         });
       },
-      onDragEnd: () => {
-        onDragEnd();
-      }
+      onDragEnd
     },
     { drag: { enabled: draggable } }
   );
