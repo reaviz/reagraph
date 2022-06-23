@@ -52,13 +52,14 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       ref: Ref<GraphSceneRef>
     ) => {
       useGraph(rest);
-      const [graph, nodes, edges] = useStore(state => [
+
+      const [graph, nodeIds, edgeIds] = useStore(state => [
         state.graph,
-        state.nodes,
-        state.edges
+        state.nodes.map(n => n.id),
+        state.edges.map(e => e.id)
       ]);
+
       const { centerNodesById: centerGraph } = useCenterGraph({
-        nodes,
         animated
       });
 
@@ -73,24 +74,20 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
 
       return (
         <Fragment>
-          {nodes.map(n => (
+          {nodeIds.map(n => (
             <Node
-              {...n}
-              key={n.id}
+              key={n}
+              id={n}
               draggable={draggable}
               disabled={disabled}
               animated={animated}
               contextMenuItems={contextMenuItems}
               theme={theme}
-              onClick={() => {
-                if (!disabled) {
-                  onNodeClick?.(n);
-                }
-              }}
+              onClick={onNodeClick}
             />
           ))}
-          {edges.map(e => (
-            <Edge {...e} theme={theme} key={e.id} animated={animated} />
+          {edgeIds.map(e => (
+            <Edge theme={theme} key={e} id={e} animated={animated} />
           ))}
         </Fragment>
       );

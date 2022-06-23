@@ -14,31 +14,36 @@ import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { useDrag } from '../utils/useDrag';
 
-export interface NodeProps extends InternalGraphNode {
+export interface NodeProps {
+  id: string;
   theme: Theme;
   disabled?: boolean;
   animated?: boolean;
   contextMenuItems?: MenuItem[];
   draggable?: boolean;
-  onClick?: () => void;
+  onClick?: (node: InternalGraphNode) => void;
 }
 
 export const Node: FC<NodeProps> = ({
-  position,
-  label,
   animated,
-  icon,
-  size: nodeSize,
-  fill,
   disabled,
   id,
   draggable,
-  labelVisible,
   theme,
   contextMenuItems,
   onClick
 }) => {
   const cameraControls = useCameraControls();
+  const node = useStore(state => state.nodes.find(n => n.id === id));
+  const {
+    position,
+    label,
+    icon,
+    size: nodeSize = 7,
+    fill,
+    labelVisible = true
+  } = node;
+
   const { isPrimarySelection, hasSelections, hasLinksSelected } = useStore(
     state => ({
       hasSelections: state.selections?.length,
@@ -109,7 +114,11 @@ export const Node: FC<NodeProps> = ({
           size={nodeSize + 8}
           opacity={selectionOpacity}
           animated={animated}
-          onClick={onClick}
+          onClick={() => {
+            if (!disabled) {
+              onClick?.(node);
+            }
+          }}
           onActive={setActive}
           onContextMenu={() => {
             if (contextMenuItems?.length && !disabled) {
@@ -128,7 +137,11 @@ export const Node: FC<NodeProps> = ({
           }
           opacity={selectionOpacity}
           animated={animated}
-          onClick={onClick}
+          onClick={() => {
+            if (!disabled) {
+              onClick?.(node);
+            }
+          }}
           onActive={val => {
             if (!disabled) {
               setActive(val);
@@ -172,7 +185,5 @@ export const Node: FC<NodeProps> = ({
 };
 
 Node.defaultProps = {
-  size: 7,
-  labelVisible: true,
   draggable: false
 };

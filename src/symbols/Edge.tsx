@@ -8,21 +8,16 @@ import { Theme } from '../utils/themes';
 import { InternalGraphEdge } from '../types';
 import { useStore } from '../store';
 
-export interface EdgeProps extends InternalGraphEdge {
+export interface EdgeProps {
+  id: string;
   theme: Theme;
   animated?: boolean;
 }
 
-export const Edge: FC<EdgeProps> = ({
-  id,
-  animated,
-  toId,
-  fromId,
-  label,
-  theme,
-  labelVisible,
-  size
-}) => {
+export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
+  const edge = useStore(state => state.edges.find(e => e.id === id));
+  const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
+
   const from = useStore(store => store.nodes.find(node => node.id === fromId));
   const to = useStore(store => store.nodes.find(node => node.id === toId));
 
@@ -95,9 +90,4 @@ export const Edge: FC<EdgeProps> = ({
       )}
     </group>
   );
-};
-
-Edge.defaultProps = {
-  labelVisible: false,
-  size: 1
 };
