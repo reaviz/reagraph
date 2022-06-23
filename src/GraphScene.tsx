@@ -44,7 +44,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onNodeClick,
         theme,
         animated,
-        selections,
         disabled,
         contextMenuItems,
         draggable,
@@ -83,7 +82,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               animated={animated}
               contextMenuItems={contextMenuItems}
               theme={theme}
-              selections={selections}
               onClick={() => {
                 if (!disabled) {
                   onNodeClick?.(n);
@@ -92,13 +90,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
             />
           ))}
           {edges.map(e => (
-            <Edge
-              {...e}
-              theme={theme}
-              key={e.id}
-              selections={selections}
-              animated={animated}
-            />
+            <Edge {...e} theme={theme} key={e.id} animated={animated} />
           ))}
         </Fragment>
       );

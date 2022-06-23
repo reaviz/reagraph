@@ -11,7 +11,6 @@ import { useStore } from '../store';
 export interface EdgeProps extends InternalGraphEdge {
   theme: Theme;
   animated?: boolean;
-  selections?: string[];
 }
 
 export const Edge: FC<EdgeProps> = ({
@@ -21,7 +20,6 @@ export const Edge: FC<EdgeProps> = ({
   fromId,
   label,
   theme,
-  selections,
   labelVisible,
   size
 }) => {
@@ -40,10 +38,14 @@ export const Edge: FC<EdgeProps> = ({
     [from.position, to.position]
   );
 
-  const hasSelections = selections?.length > 0;
-  const isSelected = selections?.includes(from.id);
+  const { isSelected, hasSelections, hasSingleSelection } = useStore(state => ({
+    hasSingleSelection: state.selections?.length === 1,
+    hasSelections: state.selections?.length,
+    isSelected: state.selections?.includes(fromId)
+  }));
+
   const selectionOpacity = hasSelections
-    ? isSelected && selections?.length === 1
+    ? isSelected && hasSingleSelection
       ? 0.5
       : 0.1
     : 0.5;

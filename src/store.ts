@@ -7,6 +7,8 @@ export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
   graph: any;
+  selections: string[];
+  setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
 }
@@ -17,7 +19,9 @@ export const createStore = () =>
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
+    selections: [],
     graph: ngraph(),
+    setSelections: selections => set(state => ({ ...state, selections })),
     setNodes: nodes => set(state => ({ ...state, nodes })),
     setEdges: edges => set(state => ({ ...state, edges }))
   }));

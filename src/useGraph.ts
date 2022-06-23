@@ -14,6 +14,7 @@ export interface GraphInputs {
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
+  selections?: string[];
 }
 
 export const useGraph = ({
@@ -21,13 +22,15 @@ export const useGraph = ({
   sizingType,
   labelType,
   sizingAttribute,
+  selections,
   nodes,
   edges
 }: GraphInputs) => {
-  const [graph, setEdges, setNodes] = useStore(state => [
+  const [graph, setEdges, setNodes, setSelections] = useStore(state => [
     state.graph,
     state.setEdges,
-    state.setNodes
+    state.setNodes,
+    state.setSelections
   ]);
 
   const layoutMounted = useRef<boolean>(false);
@@ -65,6 +68,10 @@ export const useGraph = ({
       setNodes
     ]
   );
+
+  useEffect(() => {
+    setSelections(selections);
+  }, [selections, setSelections]);
 
   // Create the nggraph object
   useEffect(() => {

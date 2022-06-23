@@ -1,5 +1,5 @@
 import React, { FC, useRef, useMemo, useState } from 'react';
-import { Group, Vector2, Vector3, Plane } from 'three';
+import { Group } from 'three';
 import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './Sphere';
@@ -10,8 +10,6 @@ import { Ring } from './Ring';
 import { InternalGraphNode } from '../types';
 import { MenuItem, RadialMenu } from '../RadialMenu';
 import { Html, useCursor } from '@react-three/drei';
-import { useGesture } from 'react-use-gesture';
-import { useThree } from '@react-three/fiber';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { useDrag } from '../utils/useDrag';
@@ -19,7 +17,6 @@ import { useDrag } from '../utils/useDrag';
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
   disabled?: boolean;
-  selections?: string[];
   animated?: boolean;
   contextMenuItems?: MenuItem[];
   draggable?: boolean;
@@ -36,35 +33,27 @@ export const Node: FC<NodeProps> = ({
   disabled,
   id,
   draggable,
-  selections,
   labelVisible,
   theme,
   contextMenuItems,
   onClick
 }) => {
   const cameraControls = useCameraControls();
-
-  const hasLink = useStore(state => state.graph.hasLink);
+  const { isPrimarySelection, hasSelections, hasLinksSelected } = useStore(
+    state => ({
+      hasSelections: state.selections?.length,
+      isPrimarySelection: state.selections?.includes(id),
+      hasLinksSelected: state.selections?.some(selection =>
+        state.graph.hasLink(selection, id)
+      )
+    })
+  );
 
   const group = useRef<Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
   const [dragging, setDragging] = useState<boolean>(false);
-
-  const hasSelections = selections?.length > 0;
-  const isPrimarySelection = selections?.includes(id);
-
-  const isSelected = useMemo(() => {
-    if (isPrimarySelection) {
-      return true;
-    }
-
-    if (selections?.length) {
-      return selections.some(selection => hasLink(selection, id));
-    }
-
-    return false;
-  }, [selections, id, hasLink, isPrimarySelection]);
+  const isSelected = isPrimarySelection || hasLinksSelected;
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
