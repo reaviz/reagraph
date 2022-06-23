@@ -14,6 +14,7 @@ import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils/visibility';
 import { Theme } from './utils/themes';
 import { MenuItem } from './RadialMenu';
+import { useStore } from './store';
 
 export interface GraphSceneProps {
   theme: Theme;
@@ -43,7 +44,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onNodeClick,
         theme,
         animated,
-        selections,
         disabled,
         contextMenuItems,
         draggable,
@@ -51,46 +51,43 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref: Ref<GraphSceneRef>
     ) => {
-      const { nodes, edges, graph } = useGraph(rest);
-      const { centerNodesById } = useCenterGraph({ nodes, animated });
+      useGraph(rest);
+
+      const [graph, nodeIds, edgeIds] = useStore(state => [
+        state.graph,
+        state.nodes.map(n => n.id),
+        state.edges.map(e => e.id)
+      ]);
+
+      const { centerNodesById: centerGraph } = useCenterGraph({
+        animated
+      });
 
       useImperativeHandle(
         ref,
         () => ({
-          centerGraph: centerNodesById,
+          centerGraph,
           graph
         }),
-        [centerNodesById, graph]
+        [centerGraph, graph]
       );
 
       return (
         <Fragment>
-          {nodes.map(n => (
+          {nodeIds.map(n => (
             <Node
-              {...n}
-              key={n.id}
+              key={n}
+              id={n}
               draggable={draggable}
-              graph={graph}
               disabled={disabled}
               animated={animated}
               contextMenuItems={contextMenuItems}
               theme={theme}
-              selections={selections}
-              onClick={() => {
-                if (!disabled) {
-                  onNodeClick?.(n);
-                }
-              }}
+              onClick={onNodeClick}
             />
           ))}
-          {edges.map(e => (
-            <Edge
-              {...e}
-              theme={theme}
-              key={e.id}
-              selections={selections}
-              animated={animated}
-            />
+          {edgeIds.map(e => (
+            <Edge theme={theme} key={e} id={e} animated={animated} />
           ))}
         </Fragment>
       );

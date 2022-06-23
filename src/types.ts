@@ -28,18 +28,10 @@ export interface InternalGraphLink {
   toId: string;
 }
 
-export interface InternalGraphEdgePosition {
-  from: InternalGraphPosition;
-  to: InternalGraphPosition;
-}
-
 export interface InternalGraphEdge
   extends Omit<GraphEdge, 'source' | 'target'> {
-  from: InternalGraphNode;
-  to: InternalGraphNode;
   fromId: string;
   toId: string;
-  position: InternalGraphEdgePosition;
 }
 
 export interface InternalGraphPosition extends InternalVector3 {

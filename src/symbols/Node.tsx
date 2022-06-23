@@ -1,5 +1,5 @@
 import React, { FC, useRef, useMemo, useState } from 'react';
-import { Group, Vector2, Vector3, Plane } from 'three';
+import { Group } from 'three';
 import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './Sphere';
@@ -10,59 +10,60 @@ import { Ring } from './Ring';
 import { InternalGraphNode } from '../types';
 import { MenuItem, RadialMenu } from '../RadialMenu';
 import { Html, useCursor } from '@react-three/drei';
-import { useGesture } from 'react-use-gesture';
-import { useThree } from '@react-three/fiber';
 import { useCameraControls } from '../CameraControls';
+import { useStore } from '../store';
+import { useDrag } from '../utils/useDrag';
 
-export interface NodeProps extends InternalGraphNode {
+export interface NodeProps {
+  id: string;
   theme: Theme;
-  graph: any;
   disabled?: boolean;
-  selections?: string[];
   animated?: boolean;
   contextMenuItems?: MenuItem[];
   draggable?: boolean;
-  onClick?: () => void;
+  onClick?: (node: InternalGraphNode) => void;
 }
 
 export const Node: FC<NodeProps> = ({
-  position,
-  label,
   animated,
-  icon,
-  graph,
-  size: nodeSize,
-  fill,
   disabled,
   id,
   draggable,
-  selections,
-  labelVisible,
   theme,
   contextMenuItems,
   onClick
 }) => {
   const cameraControls = useCameraControls();
-  const { raycaster, size, camera } = useThree();
+  const node = useStore(state => state.nodes.find(n => n.id === id));
+  const [dragging, setDragging] = useStore(state => [
+    state.dragging,
+    state.setDragging
+  ]);
+  const setNodePosition = useStore(state => state.setNodePosition);
+
+  const {
+    position,
+    label,
+    icon,
+    size: nodeSize = 7,
+    fill,
+    labelVisible = true
+  } = node;
+
+  const { isPrimarySelection, hasSelections, hasLinksSelected } = useStore(
+    state => ({
+      hasSelections: state.selections?.length,
+      isPrimarySelection: state.selections?.includes(id),
+      hasLinksSelected: state.selections?.some(selection =>
+        state.graph.hasLink(selection, id)
+      )
+    })
+  );
 
   const group = useRef<Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-
-  const hasSelections = selections?.length > 0;
-  const isPrimarySelection = selections?.includes(id);
-
-  const isSelected = useMemo(() => {
-    if (isPrimarySelection) {
-      return true;
-    }
-
-    if (selections?.length) {
-      return selections.some(selection => graph.hasLink(selection, id));
-    }
-
-    return false;
-  }, [selections, id, graph, isPrimarySelection]);
+  const isSelected = isPrimarySelection || hasLinksSelected;
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
@@ -70,9 +71,7 @@ export const Node: FC<NodeProps> = ({
       : 0.2
     : 1;
 
-  const [dragging, setDragging] = useState<boolean>(false);
-
-  const [{ nodePosition, labelPosition }, set] = useSpring(
+  const [{ nodePosition, labelPosition }] = useSpring(
     () => ({
       from: {
         nodePosition: [0, 0, 0],
@@ -92,79 +91,24 @@ export const Node: FC<NodeProps> = ({
     [dragging, position, animated, nodeSize]
   );
 
+  const bind = useDrag({
+    draggable,
+    position,
+    set: pos => setNodePosition(id, pos),
+    onDragStart: () => {
+      setDragging(true);
+      setActive(true);
+      cameraControls.controls.enabled = false;
+    },
+    onDragEnd: () => {
+      setDragging(false);
+      setActive(false);
+      cameraControls.controls.enabled = true;
+    }
+  });
+
   useCursor(isActive && !dragging, 'pointer');
   useCursor(dragging, 'grabbing');
-
-  // Reference: https://codesandbox.io/s/react-three-draggable-cxu37
-  const { mouse2D, mouse3D, offset, normal, plane } = useMemo(
-    () => ({
-      // Normalized 2D screen space mouse coords
-      mouse2D: new Vector2(),
-      // 3D world space mouse coords
-      mouse3D: new Vector3(),
-      // Drag point offset from object origin
-      offset: new Vector3(),
-      // Normal of the drag plane
-      normal: new Vector3(),
-      // Drag plane
-      plane: new Plane()
-    }),
-    []
-  );
-
-  const bind = useGesture(
-    {
-      onDragStart: ({ event }) => {
-        setDragging(true);
-
-        // @ts-ignore
-        const { eventObject, point } = event;
-
-        // Save the offset of click point from object origin
-        eventObject.getWorldPosition(offset).sub(point);
-
-        // Set initial 3D cursor position (needed for onDrag plane calculation)
-        mouse3D.copy(point);
-
-        // Run user callback
-        cameraControls.controls.enabled = false;
-      },
-      onDrag: ({ xy: [x, y] }) => {
-        // Compute normalized mouse coordinates (screen space)
-        const nx = (x / size.width) * 2 - 1;
-        const ny = (-y / size.height) * 2 + 1;
-
-        // Unlike the mouse from useThree, this works offscreen
-        mouse2D.set(nx, ny);
-
-        // Update raycaster (otherwise it doesn't track offscreen)
-        raycaster.setFromCamera(mouse2D, camera);
-
-        // The drag plane is normal to the camera view
-        camera.getWorldDirection(normal).negate();
-
-        // Find the plane that's normal to the camera and contains our drag point
-        plane.setFromNormalAndCoplanarPoint(normal, mouse3D);
-
-        // Find the point of intersection
-        raycaster.ray.intersectPlane(plane, mouse3D);
-
-        // Update the object position with the original offset
-        const updated = new Vector3(position.x, position.y, position.z)
-          .copy(mouse3D)
-          .add(offset);
-
-        return set({
-          nodePosition: [updated.x, updated.y, updated.z]
-        });
-      },
-      onDragEnd: () => {
-        setDragging(false);
-        cameraControls.controls.enabled = true;
-      }
-    },
-    { drag: { enabled: draggable } }
-  );
 
   return (
     <a.group ref={group} position={nodePosition as any} {...(bind() as any)}>
@@ -175,7 +119,11 @@ export const Node: FC<NodeProps> = ({
           size={nodeSize + 8}
           opacity={selectionOpacity}
           animated={animated}
-          onClick={onClick}
+          onClick={() => {
+            if (!disabled) {
+              onClick?.(node);
+            }
+          }}
           onActive={setActive}
           onContextMenu={() => {
             if (contextMenuItems?.length && !disabled) {
@@ -194,7 +142,11 @@ export const Node: FC<NodeProps> = ({
           }
           opacity={selectionOpacity}
           animated={animated}
-          onClick={onClick}
+          onClick={() => {
+            if (!disabled) {
+              onClick?.(node);
+            }
+          }}
           onActive={val => {
             if (!disabled) {
               setActive(val);
@@ -238,7 +190,5 @@ export const Node: FC<NodeProps> = ({
 };
 
 Node.defaultProps = {
-  size: 7,
-  labelVisible: true,
   draggable: false
 };

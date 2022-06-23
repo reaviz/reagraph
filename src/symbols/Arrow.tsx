@@ -8,6 +8,7 @@ import {
   getEndPoint,
   EdgeVectors3
 } from '../utils';
+import { useStore } from '../store';
 
 export interface ArrowProps {
   position: EdgeVectors3;
@@ -28,6 +29,7 @@ export const Arrow: FC<ArrowProps> = ({
 }) => {
   const meshRef = useRef<Mesh | null>(null);
   const quaternion = useMemo(() => getQuaternion(position), [position]);
+  const dragging = useStore(state => state.dragging);
 
   const endPos = useMemo(() => {
     if (placement === 'mid') {
@@ -50,10 +52,10 @@ export const Arrow: FC<ArrowProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated ? undefined : 0
+        duration: animated && !dragging ? undefined : 0
       }
     }),
-    [animated, opacity, endPos]
+    [animated, dragging, opacity, endPos]
   );
 
   const setQuaternion = useCallback(() => {

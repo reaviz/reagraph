@@ -2,6 +2,7 @@ import React, { FC, useMemo, useRef } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig, EdgeVectors3 } from '../utils';
 import { Vector3, TubeBufferGeometry, CatmullRomCurve3 } from 'three';
+import { useStore } from '../store';
 
 export interface LineProps {
   color?: string;
@@ -21,6 +22,7 @@ export const Line: FC<LineProps> = ({
   animated
 }) => {
   const tubeRef = useRef<TubeBufferGeometry | null>(null);
+  const dragging = useStore(state => state.dragging);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({
@@ -58,10 +60,10 @@ export const Line: FC<LineProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated ? undefined : 0
+        duration: animated && !dragging ? undefined : 0
       }
     }),
-    [animated, points, size]
+    [animated, dragging, points, size]
   );
 
   const curve = useMemo(

@@ -5,12 +5,12 @@ import { Vector3, Box3 } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
 import { InternalGraphNode } from '../types';
+import { useStore } from '../store';
 
 const PADDING = 50;
 
 export interface CenterGraphInput {
   animated?: boolean;
-  nodes: InternalGraphNode[];
 }
 
 export interface CenterGraphOutput {
@@ -19,9 +19,9 @@ export interface CenterGraphOutput {
 }
 
 export const useCenterGraph = ({
-  nodes,
   animated
 }: CenterGraphInput): CenterGraphOutput => {
+  const nodes = useStore(state => state.nodes);
   const { invalidate } = useThree();
   const { controls } = useCameraControls();
 

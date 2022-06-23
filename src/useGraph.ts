@@ -1,16 +1,11 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { SizingType } from './sizing';
 import { LayoutTypes, layoutProvider, LayoutStrategy } from './layout';
-import ngraph from 'ngraph.graph';
 import { LabelVisibilityType } from './utils/visibility';
 import { tick } from './layout/layoutUtils';
-import {
-  GraphEdge,
-  GraphNode,
-  InternalGraphEdge,
-  InternalGraphNode
-} from './types';
+import { GraphEdge, GraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/buildGraph';
+import { useStore } from './store';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -19,6 +14,7 @@ export interface GraphInputs {
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
+  selections?: string[];
 }
 
 export const useGraph = ({
@@ -26,14 +22,19 @@ export const useGraph = ({
   sizingType,
   labelType,
   sizingAttribute,
+  selections,
   nodes,
   edges
 }: GraphInputs) => {
-  const graph = useRef<any>(ngraph());
+  const [graph, setEdges, setNodes, setSelections] = useStore(state => [
+    state.graph,
+    state.setEdges,
+    state.setNodes,
+    state.setSelections
+  ]);
+
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
-  const [internalNodes, setInternalNodes] = useState<InternalGraphNode[]>([]);
-  const [internalEdges, setInternalEdges] = useState<InternalGraphEdge[]>([]);
 
   const updateLayout = useCallback(
     (curLayout?: any) => {
@@ -41,28 +42,40 @@ export const useGraph = ({
         curLayout ||
         layoutProvider({
           type: layoutType,
-          graph: graph.current
+          graph
         });
 
       tick(layout.current, () => {
         const result = transformGraph({
-          graph: graph.current,
+          graph,
           layout: layout.current,
           sizingType,
           labelType,
           sizingAttribute
         });
 
-        setInternalEdges(result.edges);
-        setInternalNodes(result.nodes);
+        setEdges(result.edges);
+        setNodes(result.nodes);
       });
     },
-    [graph, layoutType, sizingType, sizingAttribute, labelType]
+    [
+      layoutType,
+      graph,
+      sizingType,
+      labelType,
+      sizingAttribute,
+      setEdges,
+      setNodes
+    ]
   );
+
+  useEffect(() => {
+    setSelections(selections);
+  }, [selections, setSelections]);
 
   // Create the nggraph object
   useEffect(() => {
-    buildGraph(graph.current, nodes, edges);
+    buildGraph(graph, nodes, edges);
     updateLayout();
 
     // queue this in a frame so it only happens after the graph is built
@@ -84,10 +97,4 @@ export const useGraph = ({
       updateLayout(layout.current);
     }
   }, [graph, sizingType, sizingAttribute, labelType, updateLayout]);
-
-  return {
-    graph: graph.current,
-    nodes: internalNodes,
-    edges: internalEdges
-  };
 };

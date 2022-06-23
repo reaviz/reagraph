@@ -6,25 +6,22 @@ import { animationConfig, getMidPoint, getPoints } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../utils/themes';
 import { InternalGraphEdge } from '../types';
+import { useStore } from '../store';
 
-export interface EdgeProps extends InternalGraphEdge {
+export interface EdgeProps {
+  id: string;
   theme: Theme;
   animated?: boolean;
-  selections?: string[];
 }
 
-export const Edge: FC<EdgeProps> = ({
-  from,
-  to,
-  id,
-  animated,
-  position,
-  label,
-  theme,
-  selections,
-  labelVisible,
-  size
-}) => {
+export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
+  const edge = useStore(state => state.edges.find(e => e.id === id));
+  const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
+
+  const from = useStore(store => store.nodes.find(node => node.id === fromId));
+  const to = useStore(store => store.nodes.find(node => node.id === toId));
+  const dragging = useStore(state => state.dragging);
+
   const arrowSize = Math.max(size * 0.3, 1);
   const points = useMemo(
     () => getPoints({ from, to: { ...to, size: to.size + arrowSize + 6 } }),
@@ -32,12 +29,19 @@ export const Edge: FC<EdgeProps> = ({
   );
 
   const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
-  const midPoint = useMemo(() => getMidPoint(position), [position]);
+  const midPoint = useMemo(
+    () => getMidPoint({ from: from.position, to: to.position }),
+    [from.position, to.position]
+  );
 
-  const hasSelections = selections?.length > 0;
-  const isSelected = selections?.includes(from.id);
+  const { isSelected, hasSelections, hasSingleSelection } = useStore(state => ({
+    hasSingleSelection: state.selections?.length === 1,
+    hasSelections: state.selections?.length,
+    isSelected: state.selections?.includes(fromId)
+  }));
+
   const selectionOpacity = hasSelections
-    ? isSelected && selections?.length === 1
+    ? isSelected && hasSingleSelection
       ? 0.5
       : 0.1
     : 0.5;
@@ -52,10 +56,10 @@ export const Edge: FC<EdgeProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated ? undefined : 0
+        duration: animated && !dragging ? undefined : 0
       }
     }),
-    [midPoint, animated]
+    [midPoint, animated, dragging]
   );
 
   return (
@@ -87,9 +91,4 @@ export const Edge: FC<EdgeProps> = ({
       )}
     </group>
   );
-};
-
-Edge.defaultProps = {
-  labelVisible: false,
-  size: 1
 };

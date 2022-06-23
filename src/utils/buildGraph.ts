@@ -37,8 +37,8 @@ export function transformGraph({
   labelType,
   sizingAttribute
 }: TransformGraphInput) {
-  const nodes = [];
-  const edges = [];
+  const nodes: InternalGraphNode[] = [];
+  const edges: InternalGraphEdge[] = [];
   const map = new Map();
 
   const sizes = nodeSizeProvider(graph, sizingType, sizingAttribute);
@@ -88,16 +88,18 @@ export function transformGraph({
         label,
         labelVisible,
         size,
-        from,
-        to,
         data: {
           ...rest,
           ...(data || {})
-        },
+        }
+        /*
+        from,
+        to,
         position: {
           from: from.position,
           to: to.position
         }
+        */
       });
     }
   });
