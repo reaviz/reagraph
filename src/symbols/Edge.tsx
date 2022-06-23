@@ -20,6 +20,7 @@ export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
 
   const from = useStore(store => store.nodes.find(node => node.id === fromId));
   const to = useStore(store => store.nodes.find(node => node.id === toId));
+  const dragging = useStore(state => state.dragging);
 
   const arrowSize = Math.max(size * 0.3, 1);
   const points = useMemo(
@@ -55,10 +56,10 @@ export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
       },
       config: {
         ...animationConfig,
-        duration: animated ? undefined : 0
+        duration: animated && !dragging ? undefined : 0
       }
     }),
-    [midPoint, animated]
+    [midPoint, animated, dragging]
   );
 
   return (

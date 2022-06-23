@@ -69,9 +69,7 @@ export const useDrag = ({
           .copy(mouse3D)
           .add(offset);
 
-        return set({
-          nodePosition: [updated.x, updated.y, updated.z]
-        });
+        return set(updated);
       },
       onDragEnd
     },

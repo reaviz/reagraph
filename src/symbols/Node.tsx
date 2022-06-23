@@ -35,6 +35,12 @@ export const Node: FC<NodeProps> = ({
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
+  const [dragging, setDragging] = useStore(state => [
+    state.dragging,
+    state.setDragging
+  ]);
+  const setNodePosition = useStore(state => state.setNodePosition);
+
   const {
     position,
     label,
@@ -57,7 +63,6 @@ export const Node: FC<NodeProps> = ({
   const group = useRef<Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-  const [dragging, setDragging] = useState<boolean>(false);
   const isSelected = isPrimarySelection || hasLinksSelected;
 
   const selectionOpacity = hasSelections
@@ -66,7 +71,7 @@ export const Node: FC<NodeProps> = ({
       : 0.2
     : 1;
 
-  const [{ nodePosition, labelPosition }, set] = useSpring(
+  const [{ nodePosition, labelPosition }] = useSpring(
     () => ({
       from: {
         nodePosition: [0, 0, 0],
@@ -89,7 +94,7 @@ export const Node: FC<NodeProps> = ({
   const bind = useDrag({
     draggable,
     position,
-    set,
+    set: pos => setNodePosition(id, pos),
     onDragStart: () => {
       setDragging(true);
       setActive(true);
