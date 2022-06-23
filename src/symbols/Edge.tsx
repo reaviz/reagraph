@@ -6,6 +6,7 @@ import { animationConfig, getMidPoint, getPoints } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../utils/themes';
 import { InternalGraphEdge } from '../types';
+import { useStore } from '../store';
 
 export interface EdgeProps extends InternalGraphEdge {
   theme: Theme;
@@ -14,17 +15,19 @@ export interface EdgeProps extends InternalGraphEdge {
 }
 
 export const Edge: FC<EdgeProps> = ({
-  from,
-  to,
   id,
   animated,
-  position,
+  toId,
+  fromId,
   label,
   theme,
   selections,
   labelVisible,
   size
 }) => {
+  const from = useStore(store => store.nodes.find(node => node.id === fromId));
+  const to = useStore(store => store.nodes.find(node => node.id === toId));
+
   const arrowSize = Math.max(size * 0.3, 1);
   const points = useMemo(
     () => getPoints({ from, to: { ...to, size: to.size + arrowSize + 6 } }),
@@ -32,7 +35,10 @@ export const Edge: FC<EdgeProps> = ({
   );
 
   const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
-  const midPoint = useMemo(() => getMidPoint(position), [position]);
+  const midPoint = useMemo(
+    () => getMidPoint({ from: from.position, to: to.position }),
+    [from.position, to.position]
+  );
 
   const hasSelections = selections?.length > 0;
   const isSelected = selections?.includes(from.id);

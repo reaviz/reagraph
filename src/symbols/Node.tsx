@@ -13,10 +13,11 @@ import { Html, useCursor } from '@react-three/drei';
 import { useGesture } from 'react-use-gesture';
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from '../CameraControls';
+import { useStore } from '../store';
+import { useDrag } from '../utils/useDrag';
 
 export interface NodeProps extends InternalGraphNode {
   theme: Theme;
-  graph: any;
   disabled?: boolean;
   selections?: string[];
   animated?: boolean;
@@ -30,7 +31,6 @@ export const Node: FC<NodeProps> = ({
   label,
   animated,
   icon,
-  graph,
   size: nodeSize,
   fill,
   disabled,
@@ -43,11 +43,13 @@ export const Node: FC<NodeProps> = ({
   onClick
 }) => {
   const cameraControls = useCameraControls();
-  const { raycaster, size, camera } = useThree();
+
+  const hasLink = useStore(state => state.graph.hasLink);
 
   const group = useRef<Group | null>(null);
   const [isActive, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
+  const [dragging, setDragging] = useState<boolean>(false);
 
   const hasSelections = selections?.length > 0;
   const isPrimarySelection = selections?.includes(id);
@@ -58,19 +60,17 @@ export const Node: FC<NodeProps> = ({
     }
 
     if (selections?.length) {
-      return selections.some(selection => graph.hasLink(selection, id));
+      return selections.some(selection => hasLink(selection, id));
     }
 
     return false;
-  }, [selections, id, graph, isPrimarySelection]);
+  }, [selections, id, hasLink, isPrimarySelection]);
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
       ? 1
       : 0.2
     : 1;
-
-  const [dragging, setDragging] = useState<boolean>(false);
 
   const [{ nodePosition, labelPosition }, set] = useSpring(
     () => ({
@@ -92,79 +92,24 @@ export const Node: FC<NodeProps> = ({
     [dragging, position, animated, nodeSize]
   );
 
+  const bind = useDrag({
+    draggable,
+    position,
+    set,
+    onDragStart: () => {
+      setDragging(true);
+      setActive(true);
+      cameraControls.controls.enabled = false;
+    },
+    onDragEnd: () => {
+      setDragging(false);
+      setActive(false);
+      cameraControls.controls.enabled = true;
+    }
+  });
+
   useCursor(isActive && !dragging, 'pointer');
   useCursor(dragging, 'grabbing');
-
-  // Reference: https://codesandbox.io/s/react-three-draggable-cxu37
-  const { mouse2D, mouse3D, offset, normal, plane } = useMemo(
-    () => ({
-      // Normalized 2D screen space mouse coords
-      mouse2D: new Vector2(),
-      // 3D world space mouse coords
-      mouse3D: new Vector3(),
-      // Drag point offset from object origin
-      offset: new Vector3(),
-      // Normal of the drag plane
-      normal: new Vector3(),
-      // Drag plane
-      plane: new Plane()
-    }),
-    []
-  );
-
-  const bind = useGesture(
-    {
-      onDragStart: ({ event }) => {
-        setDragging(true);
-
-        // @ts-ignore
-        const { eventObject, point } = event;
-
-        // Save the offset of click point from object origin
-        eventObject.getWorldPosition(offset).sub(point);
-
-        // Set initial 3D cursor position (needed for onDrag plane calculation)
-        mouse3D.copy(point);
-
-        // Run user callback
-        cameraControls.controls.enabled = false;
-      },
-      onDrag: ({ xy: [x, y] }) => {
-        // Compute normalized mouse coordinates (screen space)
-        const nx = (x / size.width) * 2 - 1;
-        const ny = (-y / size.height) * 2 + 1;
-
-        // Unlike the mouse from useThree, this works offscreen
-        mouse2D.set(nx, ny);
-
-        // Update raycaster (otherwise it doesn't track offscreen)
-        raycaster.setFromCamera(mouse2D, camera);
-
-        // The drag plane is normal to the camera view
-        camera.getWorldDirection(normal).negate();
-
-        // Find the plane that's normal to the camera and contains our drag point
-        plane.setFromNormalAndCoplanarPoint(normal, mouse3D);
-
-        // Find the point of intersection
-        raycaster.ray.intersectPlane(plane, mouse3D);
-
-        // Update the object position with the original offset
-        const updated = new Vector3(position.x, position.y, position.z)
-          .copy(mouse3D)
-          .add(offset);
-
-        return set({
-          nodePosition: [updated.x, updated.y, updated.z]
-        });
-      },
-      onDragEnd: () => {
-        setDragging(false);
-        cameraControls.controls.enabled = true;
-      }
-    },
-    { drag: { enabled: draggable } }
-  );
 
   return (
     <a.group ref={group} position={nodePosition as any} {...(bind() as any)}>

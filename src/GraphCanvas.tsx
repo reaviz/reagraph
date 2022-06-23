@@ -14,6 +14,7 @@ import {
   CameraControlsRef
 } from './CameraControls';
 import { Theme, lightTheme } from './utils/themes';
+import { createStore, Provider } from './store';
 import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
@@ -66,13 +67,15 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
               disabled={disabled}
             >
               <Suspense>
-                <GraphScene
-                  ref={rendererRef as any}
-                  theme={theme}
-                  disabled={disabled}
-                  animated={animated}
-                  {...rest}
-                />
+                <Provider createStore={createStore}>
+                  <GraphScene
+                    ref={rendererRef as any}
+                    theme={theme}
+                    disabled={disabled}
+                    animated={animated}
+                    {...rest}
+                  />
+                </Provider>
               </Suspense>
             </CameraControls>
           </Canvas>

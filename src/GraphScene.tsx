@@ -14,6 +14,7 @@ import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils/visibility';
 import { Theme } from './utils/themes';
 import { MenuItem } from './RadialMenu';
+import { useStore } from './store';
 
 export interface GraphSceneProps {
   theme: Theme;
@@ -51,16 +52,24 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref: Ref<GraphSceneRef>
     ) => {
-      const { nodes, edges, graph } = useGraph(rest);
-      const { centerNodesById } = useCenterGraph({ nodes, animated });
+      useGraph(rest);
+      const [graph, nodes, edges] = useStore(state => [
+        state.graph,
+        state.nodes,
+        state.edges
+      ]);
+      const { centerNodesById: centerGraph } = useCenterGraph({
+        nodes,
+        animated
+      });
 
       useImperativeHandle(
         ref,
         () => ({
-          centerGraph: centerNodesById,
+          centerGraph,
           graph
         }),
-        [centerNodesById, graph]
+        [centerGraph, graph]
       );
 
       return (
@@ -70,7 +79,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               {...n}
               key={n.id}
               draggable={draggable}
-              graph={graph}
               disabled={disabled}
               animated={animated}
               contextMenuItems={contextMenuItems}
