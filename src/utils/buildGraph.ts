@@ -92,14 +92,6 @@ export function transformGraph({
           ...rest,
           ...(data || {})
         }
-        /*
-        from,
-        to,
-        position: {
-          from: from.position,
-          to: to.position
-        }
-        */
       });
     }
   });
