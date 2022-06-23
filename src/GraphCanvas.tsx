@@ -18,8 +18,19 @@ import { createStore, Provider } from './store';
 import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
+  /**
+   * Theme to use for the graph.
+   */
   theme?: Theme;
+
+  /**
+   * Type of camera interaction.
+   */
   cameraMode?: CameraMode;
+
+  /**
+   * When the canvas was clicked but didn't hit a node/edge.
+   */
   onCanvasClick?: (event: MouseEvent) => void;
 }
 

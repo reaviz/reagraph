@@ -17,18 +17,69 @@ import { MenuItem } from './RadialMenu';
 import { useStore } from './store';
 
 export interface GraphSceneProps {
+  /**
+   * Theme to use for the graph.
+   */
   theme: Theme;
+
+  /**
+   * Type of layout.
+   */
   layoutType?: LayoutTypes;
+
+  /**
+   * List of ids that are selected.
+   */
   selections?: string[];
+
+  /**
+   * Animate or not the graph positions.
+   */
   animated?: boolean;
+
+  /**
+   * Nodes to pass to the graph.
+   */
   nodes: GraphNode[];
+
+  /**
+   * Edges to pass to the graph.
+   */
   edges: GraphEdge[];
+
+  /**
+   * Context menu items for a node.
+   */
   contextMenuItems?: MenuItem[];
+
+  /**
+   * Type of sizing for nodes.
+   */
   sizingType?: SizingType;
+
+  /**
+   * Type of visibility for labels.
+   */
   labelType?: LabelVisibilityType;
+
+  /**
+   * Attribute based sizing property.
+   */
   sizingAttribute?: string;
+
+  /**
+   * Disable interactions or not.
+   */
   disabled?: boolean;
+
+  /**
+   * Allow dragging of nodes.
+   */
   draggable?: boolean;
+
+  /**
+   * When a node was clicked.
+   */
   onNodeClick?: (node: InternalGraphNode) => void;
 }
 
