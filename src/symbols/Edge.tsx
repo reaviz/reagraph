@@ -2,7 +2,12 @@ import React, { FC, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { Arrow } from './Arrow';
 import { Label } from './Label';
-import { animationConfig, getMidPoint, getPoints } from '../utils';
+import {
+  animationConfig,
+  getLabelOffsetByType,
+  getMidPoint,
+  getPoints
+} from '../utils';
 import { Line } from './Line';
 import { Theme } from '../utils';
 import { useStore } from '../store';
@@ -10,18 +15,20 @@ import { Euler } from 'three';
 
 const LABEL_FONT_SIZE = 6;
 
+export type EdgeLabelPosition = 'inside' | 'outside' | 'inline';
+
 export interface EdgeProps {
   id: string;
   theme: Theme;
   animated?: boolean;
-  labelPlace?: 'inside' | 'outside';
+  labelPlace?: EdgeLabelPosition;
 }
 
 export const Edge: FC<EdgeProps> = ({
   id,
   animated,
   theme,
-  labelPlace = 'outside'
+  labelPlace = 'inline'
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
@@ -46,7 +53,7 @@ export const Edge: FC<EdgeProps> = ({
     () =>
       getMidPoint(
         { from: from.position, to: to.position },
-        labelPlace === 'inside' ? -labelOffset : labelOffset
+        getLabelOffsetByType(labelOffset, labelPlace)
       ),
     [from.position, to.position, labelOffset, labelPlace]
   );

@@ -9,7 +9,7 @@ import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout';
 import { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { SizingType } from './sizing';
-import { Edge, Node } from './symbols';
+import { Edge, EdgeLabelPosition, Node } from './symbols';
 import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { Theme } from './utils';
@@ -65,7 +65,7 @@ export interface GraphSceneProps {
   /**
    * Place of visibility for edge labels.
    */
-  edgeLabelPosition?: 'inside' | 'outside';
+  edgeLabelPosition?: EdgeLabelPosition;
 
   /**
    * Attribute based sizing property.

@@ -1,3 +1,5 @@
+import { EdgeLabelPosition } from '../symbols';
+
 const NODE_THRESHOLD = 20;
 
 export type LabelVisibilityType = 'all' | 'auto' | 'none' | 'nodes' | 'edges';
@@ -23,4 +25,19 @@ export function calcLabelVisibility(
 
     return false;
   };
+}
+
+export function getLabelOffsetByType(
+  offset: number,
+  position: EdgeLabelPosition
+): number {
+  switch (position) {
+  case 'outside':
+    return offset;
+  case 'inside':
+    return -offset;
+  case 'inline':
+  default:
+    return 0;
+  }
 }
