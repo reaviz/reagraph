@@ -4,17 +4,25 @@ import { Arrow } from './Arrow';
 import { Label } from './Label';
 import { animationConfig, getMidPoint, getPoints } from '../utils';
 import { Line } from './Line';
-import { Theme } from '../utils/themes';
-import { InternalGraphEdge } from '../types';
+import { Theme } from '../utils';
 import { useStore } from '../store';
+import { Euler } from 'three';
+
+const LABEL_FONT_SIZE = 6;
 
 export interface EdgeProps {
   id: string;
   theme: Theme;
   animated?: boolean;
+  labelPlace?: 'inside' | 'outside';
 }
 
-export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
+export const Edge: FC<EdgeProps> = ({
+  id,
+  animated,
+  theme,
+  labelPlace = 'outside'
+}) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
 
@@ -23,15 +31,24 @@ export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
   const dragging = useStore(state => state.dragging);
 
   const arrowSize = Math.max(size * 0.3, 1);
+  const labelOffset = (size + LABEL_FONT_SIZE) / 2;
   const points = useMemo(
-    () => getPoints({ from, to: { ...to, size: to.size + arrowSize + 6 } }),
+    () =>
+      getPoints({
+        from,
+        to: { ...to, size: to.size + arrowSize + LABEL_FONT_SIZE }
+      }),
     [from, to, arrowSize]
   );
 
   const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
   const midPoint = useMemo(
-    () => getMidPoint({ from: from.position, to: to.position }),
-    [from.position, to.position]
+    () =>
+      getMidPoint(
+        { from: from.position, to: to.position },
+        labelPlace === 'inside' ? -labelOffset : labelOffset
+      ),
+    [from.position, to.position, labelOffset, labelPlace]
   );
 
   const { isSelected, hasSelections, hasSingleSelection } = useStore(state => ({
@@ -61,6 +78,17 @@ export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
     }),
     [midPoint, animated, dragging]
   );
+  const labelRotation = useMemo(
+    () =>
+      new Euler(
+        0,
+        0,
+        Math.atan(
+          (to.position.y - from.position.y) / (to.position.x - from.position.x)
+        )
+      ),
+    [to.position.x, to.position.y, from.position.x, from.position.y]
+  );
 
   return (
     <group>
@@ -80,12 +108,12 @@ export const Edge: FC<EdgeProps> = ({ id, animated, theme }) => {
         animated={animated}
       />
       {labelVisible && label && (
-        <a.group position={labelPosition as any}>
+        <a.group position={labelPosition as any} rotation={labelRotation}>
           <Label
             text={label}
             color={isSelected ? theme.edge.activeColor : theme.edge.color}
             opacity={selectionOpacity}
-            fontSize={6}
+            fontSize={LABEL_FONT_SIZE}
           />
         </a.group>
       )}

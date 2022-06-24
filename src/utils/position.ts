@@ -47,9 +47,13 @@ export const getPoints = ({ from, to }: GetPointsInput) => ({
   to: pointAtLine(to.position, from.position, to.size)
 });
 
-export function getMidPoint(positions: EdgeVectors3) {
+export function getMidPoint(positions: EdgeVectors3, offset = 0) {
   const [fromVector, toVector] = getVectors(positions);
-  return new Vector3().addVectors(fromVector, toVector).divideScalar(2);
+  const midVector = new Vector3()
+    .addVectors(fromVector, toVector)
+    .divideScalar(2);
+
+  return midVector.setLength(midVector.length() + offset);
 }
 
 export function getEndPoint(positions: EdgeVectors3) {
