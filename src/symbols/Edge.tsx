@@ -15,6 +15,13 @@ import { Euler } from 'three';
 
 const LABEL_FONT_SIZE = 6;
 
+/**
+ * Label positions relatively edge
+ *
+ * inside: show label under the edge line
+ * outside: show label above the edge line
+ * inline: show label along the edge line
+ */
 export type EdgeLabelPosition = 'inside' | 'outside' | 'inline';
 
 export interface EdgeProps {
@@ -126,4 +133,8 @@ export const Edge: FC<EdgeProps> = ({
       )}
     </group>
   );
+};
+
+Edge.defaultProps = {
+  labelPlace: 'inline'
 };
