@@ -149,7 +149,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               key={e}
               id={e}
               animated={animated}
-              labelPlace={edgeLabelPosition}
+              labelPlacement={edgeLabelPosition}
             />
           ))}
         </Fragment>

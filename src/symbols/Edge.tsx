@@ -18,24 +18,25 @@ const LABEL_FONT_SIZE = 6;
 /**
  * Label positions relatively edge
  *
- * inside: show label under the edge line
- * outside: show label above the edge line
+ * below: show label under the edge line
+ * above: show label above the edge line
  * inline: show label along the edge line
+ * natural: normal text positions
  */
-export type EdgeLabelPosition = 'inside' | 'outside' | 'inline';
+export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 
 export interface EdgeProps {
   id: string;
   theme: Theme;
   animated?: boolean;
-  labelPlace?: EdgeLabelPosition;
+  labelPlacement?: EdgeLabelPosition;
 }
 
 export const Edge: FC<EdgeProps> = ({
   id,
   animated,
   theme,
-  labelPlace = 'inline'
+  labelPlacement
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
@@ -60,9 +61,9 @@ export const Edge: FC<EdgeProps> = ({
     () =>
       getMidPoint(
         { from: from.position, to: to.position },
-        getLabelOffsetByType(labelOffset, labelPlace)
+        getLabelOffsetByType(labelOffset, labelPlacement)
       ),
-    [from.position, to.position, labelOffset, labelPlace]
+    [from.position, to.position, labelOffset, labelPlacement]
   );
 
   const { isSelected, hasSelections, hasSingleSelection } = useStore(state => ({
@@ -92,16 +93,26 @@ export const Edge: FC<EdgeProps> = ({
     }),
     [midPoint, animated, dragging]
   );
+
   const labelRotation = useMemo(
     () =>
       new Euler(
         0,
         0,
-        Math.atan(
-          (to.position.y - from.position.y) / (to.position.x - from.position.x)
-        )
+        labelPlacement === 'natural'
+          ? 0
+          : Math.atan(
+            (to.position.y - from.position.y) /
+                (to.position.x - from.position.x)
+          )
       ),
-    [to.position.x, to.position.y, from.position.x, from.position.y]
+    [
+      to.position.x,
+      to.position.y,
+      from.position.x,
+      from.position.y,
+      labelPlacement
+    ]
   );
 
   return (
@@ -136,5 +147,5 @@ export const Edge: FC<EdgeProps> = ({
 };
 
 Edge.defaultProps = {
-  labelPlace: 'inline'
+  labelPlacement: 'inline'
 };

@@ -32,11 +32,12 @@ export function getLabelOffsetByType(
   position: EdgeLabelPosition
 ): number {
   switch (position) {
-  case 'outside':
+  case 'above':
     return offset;
-  case 'inside':
+  case 'below':
     return -offset;
   case 'inline':
+  case 'natural':
   default:
     return 0;
   }
