@@ -30,7 +30,11 @@ export function forceDirected({
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
-    nodes.push({ ...n });
+    nodes.push({
+      ...n,
+      // just trying to make the cluster work...
+      radius: 5
+    });
   });
 
   graph.forEachLink(l => {
@@ -39,13 +43,16 @@ export function forceDirected({
 
   const groups = group(nodes, n => n.data?.data?.[clusterAttribute]);
   const clusters = Array.from(groups, ([key]) => key);
-  // const clusterCount = clusters.length;
+  const clusterCount = clusters.length;
+
   console.log('>>>', clusters, clusterAttribute);
+  const fakeWidth = 1200;
+  const fakeHeight = 1200;
 
   // Create the simulation
   const sim = d3ForceSimulation()
-    .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -500 : -250))
     .force('link', d3ForceLink())
+    .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -500 : -250))
     .force('x', d3ForceX())
     .force('y', d3ForceY())
     .force('z', d3ForceZ())
@@ -53,10 +60,23 @@ export function forceDirected({
       'cluster',
       forceCluster()
         .centers(node => {
-          const cluster = clusters.indexOf(node.data?.data?.[clusterAttribute]);
-          console.log('cluster', cluster);
+          const idx = clusters.indexOf(node.data?.data?.[clusterAttribute]);
+
           // This is wrong duh
-          return { x: cluster * 100, y: cluster * 100, z: cluster * 100 };
+          // https://bl.ocks.org/ericsoco/4e1b7b628771ae77753842e6dabfcef3
+          const res = {
+            z: 0,
+            x:
+              Math.cos((idx / clusterCount) * 2 * Math.PI) * 150 +
+              fakeWidth / 2,
+            y:
+              Math.sin((idx / clusterCount) * 2 * Math.PI) * 150 +
+              fakeHeight / 2
+          };
+
+          console.log('cluster', res, idx);
+
+          return res;
         })
         .strength(0.5)
     )
@@ -74,6 +94,8 @@ export function forceDirected({
       .links(links)
       .distance(50);
   }
+
+  console.log('???', nodes);
 
   return {
     step() {
