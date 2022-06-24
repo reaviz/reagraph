@@ -55,7 +55,8 @@ export function forceDirected({
         .centers(node => {
           const cluster = clusters.indexOf(node.data?.data?.[clusterAttribute]);
           console.log('cluster', cluster);
-          return cluster;
+          // This is wrong duh
+          return { x: cluster * 100, y: cluster * 100, z: cluster * 100 };
         })
         .strength(0.5)
     )
