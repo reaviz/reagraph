@@ -9,6 +9,8 @@ import {
 import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutStrategy } from './types';
+import forceCluster from 'd3-force-cluster-3d';
+import { group } from 'd3-array';
 
 interface ForceDirectedD3Inputs {
   dimensions?: number;
@@ -26,8 +28,6 @@ export function forceDirected({
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
 
-  console.log('>>>', clusterAttribute);
-
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
     nodes.push({ ...n });
@@ -37,6 +37,11 @@ export function forceDirected({
     links.push({ ...l, id: l.data.id, source: l.fromId, target: l.toId });
   });
 
+  const groups = group(nodes, n => n.data?.data?.[clusterAttribute]);
+  const clusters = Array.from(groups, ([key]) => key);
+  // const clusterCount = clusters.length;
+  console.log('>>>', clusters, clusterAttribute);
+
   // Create the simulation
   const sim = d3ForceSimulation()
     .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -500 : -250))
@@ -44,6 +49,16 @@ export function forceDirected({
     .force('x', d3ForceX())
     .force('y', d3ForceY())
     .force('z', d3ForceZ())
+    .force(
+      'cluster',
+      forceCluster()
+        .centers(node => {
+          const cluster = clusters.indexOf(node.data?.data?.[clusterAttribute]);
+          console.log('cluster', cluster);
+          return cluster;
+        })
+        .strength(0.5)
+    )
     .force('dagRadial', forceRadial(nodes, links, mode as DagMode))
     .stop();
 
