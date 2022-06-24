@@ -6,13 +6,13 @@ import React, {
   useImperativeHandle
 } from 'react';
 import { useGraph } from './useGraph';
-import { LayoutTypes } from './layout/types';
+import { LayoutTypes } from './layout';
 import { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { SizingType } from './sizing';
-import { Edge, Node } from './symbols';
+import { Edge, EdgeLabelPosition, Node } from './symbols';
 import { useCenterGraph } from './CameraControls';
-import { LabelVisibilityType } from './utils/visibility';
-import { Theme } from './utils/themes';
+import { LabelVisibilityType } from './utils';
+import { Theme } from './utils';
 import { MenuItem } from './RadialMenu';
 import { useStore } from './store';
 
@@ -63,6 +63,11 @@ export interface GraphSceneProps {
   labelType?: LabelVisibilityType;
 
   /**
+   * Place of visibility for edge labels.
+   */
+  edgeLabelPosition?: EdgeLabelPosition;
+
+  /**
    * Attribute based sizing property.
    */
   sizingAttribute?: string;
@@ -98,6 +103,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         disabled,
         contextMenuItems,
         draggable,
+        edgeLabelPosition,
         ...rest
       },
       ref: Ref<GraphSceneRef>
@@ -138,7 +144,13 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
             />
           ))}
           {edgeIds.map(e => (
-            <Edge theme={theme} key={e} id={e} animated={animated} />
+            <Edge
+              theme={theme}
+              key={e}
+              id={e}
+              animated={animated}
+              labelPlace={edgeLabelPosition}
+            />
           ))}
         </Fragment>
       );
