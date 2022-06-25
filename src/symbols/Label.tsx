@@ -4,7 +4,7 @@ import { Billboard, Text } from '@react-three/drei';
 
 export interface LabelProps {
   text: string;
-  fontFamily?: string;
+  fontUrl?: string;
   fontSize?: number;
   color?: string;
   opacity?: number;
@@ -13,7 +13,7 @@ export interface LabelProps {
 export const Label: FC<LabelProps> = ({
   text,
   fontSize,
-  fontFamily,
+  fontUrl,
   color,
   opacity
 }) => {
@@ -21,7 +21,7 @@ export const Label: FC<LabelProps> = ({
   return (
     <Billboard position={[0, 0, 1]}>
       <Text
-        font={fontFamily}
+        font={fontUrl}
         fontSize={fontSize}
         color={color}
         fillOpacity={opacity}
@@ -35,6 +35,5 @@ export const Label: FC<LabelProps> = ({
 Label.defaultProps = {
   opacity: 1,
   fontSize: 7,
-  fontFamily: '"Helvetica Neue",Helvetica,Arial,sans-serif',
   color: '#2A6475'
 };
