@@ -68,6 +68,13 @@ export interface GraphSceneProps {
   edgeLabelPosition?: EdgeLabelPosition;
 
   /**
+   * Font of label, same as troika-three-text
+   * The URL of a custom font file to be used. Supported font formats are: * .ttf * .otf * .woff (.woff2 is not supported)
+   * Default: The Roboto font loaded from Google Fonts CDN
+   */
+  labelFontUrl?: string;
+
+  /**
    * Attribute based sizing property.
    */
   sizingAttribute?: string;
@@ -104,6 +111,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         contextMenuItems,
         draggable,
         edgeLabelPosition,
+        labelFontUrl,
         ...rest
       },
       ref: Ref<GraphSceneRef>
@@ -135,6 +143,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
             <Node
               key={n}
               id={n}
+              labelFontUrl={labelFontUrl}
               draggable={draggable}
               disabled={disabled}
               animated={animated}
