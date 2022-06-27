@@ -138,7 +138,7 @@ export const Node: FC<NodeProps> = ({
           id={id}
           size={nodeSize}
           color={
-            isSelected || isActive
+            isSelected || isActive || dragging
               ? theme.node.activeFill
               : fill || theme.node.fill
           }
@@ -183,7 +183,9 @@ export const Node: FC<NodeProps> = ({
             fontUrl={labelFontUrl}
             opacity={selectionOpacity}
             color={
-              isSelected || isActive ? theme.node.activeColor : theme.node.color
+              isSelected || isActive || dragging
+                ? theme.node.activeColor
+                : theme.node.color
             }
           />
         </a.group>
