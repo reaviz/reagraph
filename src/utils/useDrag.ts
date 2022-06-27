@@ -73,7 +73,7 @@ export const useDrag = ({
       },
       onDragEnd
     },
-    { drag: { enabled: draggable } }
+    { drag: { enabled: draggable, threshold: 10 } }
   );
 
   return bind;
