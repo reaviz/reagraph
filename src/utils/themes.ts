@@ -1,6 +1,8 @@
+import { Color } from 'three';
+
 export interface Theme {
   canvas: {
-    background: string;
+    background: string | Color;
     fog: string;
   };
   node: {
@@ -18,6 +20,9 @@ export interface Theme {
     color: string;
     activeFill: string;
     activeColor: string;
+    label?: {
+      outlineColor?: Color;
+    };
   };
   arrow: {
     fill: string;
@@ -34,7 +39,7 @@ export interface Theme {
 
 export const lightTheme: Theme = {
   canvas: {
-    background: '#fff',
+    background: new Color(255, 255, 255),
     fog: '#FFFFFF'
   },
   node: {
@@ -58,7 +63,10 @@ export const lightTheme: Theme = {
     fill: '#D8E6EA',
     color: '#2A6475',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    activeColor: '#1DE9AC',
+    label: {
+      outlineColor: new Color(255, 255, 255)
+    }
   },
   arrow: {
     fill: '#D8E6EA',
@@ -68,7 +76,7 @@ export const lightTheme: Theme = {
 
 export const darkTheme: Theme = {
   canvas: {
-    background: '#1C252D',
+    background: new Color(0, 0, 0),
     fog: '#000000'
   },
   node: {
@@ -92,7 +100,10 @@ export const darkTheme: Theme = {
     fill: '#54616D',
     color: '#ACBAC7',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    activeColor: '#1DE9AC',
+    label: {
+      outlineColor: new Color(0, 0, 0)
+    }
   },
   arrow: {
     fill: '#54616D',

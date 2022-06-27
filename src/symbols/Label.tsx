@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import ellipsize from 'ellipsize';
 import { Billboard, Text } from '@react-three/drei';
+import { Color } from 'three';
 
 export interface LabelProps {
   /**
@@ -33,6 +34,11 @@ export interface LabelProps {
    * The lenth of which to start the ellipsis.
    */
   ellipsis?: number;
+
+  /**
+   * RGB color of label outline.
+   */
+  outlineColor?: Color;
 }
 
 export const Label: FC<LabelProps> = ({
@@ -41,7 +47,8 @@ export const Label: FC<LabelProps> = ({
   fontUrl,
   color,
   opacity,
-  ellipsis
+  ellipsis,
+  outlineColor
 }) => {
   const shortText = ellipsis ? ellipsize(text, ellipsis) : text;
   return (
@@ -51,6 +58,9 @@ export const Label: FC<LabelProps> = ({
         fontSize={fontSize}
         color={color}
         fillOpacity={opacity}
+        outlineWidth={outlineColor ? 2 : 0}
+        outlineColor={outlineColor}
+        depthOffset={0}
       >
         {shortText}
       </Text>

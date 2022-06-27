@@ -114,6 +114,14 @@ export const Edge: FC<EdgeProps> = ({
     ]
   );
 
+  const labelBackgroundColor = useMemo(
+    () =>
+      ['inline', 'natural'].includes(labelPlacement)
+        ? theme.edge.label.outlineColor
+        : null,
+    [theme.edge.label.outlineColor, labelPlacement]
+  );
+
   return (
     <group>
       <Line
@@ -138,6 +146,7 @@ export const Edge: FC<EdgeProps> = ({
             color={isSelected ? theme.edge.activeColor : theme.edge.color}
             opacity={selectionOpacity}
             fontSize={LABEL_FONT_SIZE}
+            outlineColor={labelBackgroundColor}
           />
         </a.group>
       )}
