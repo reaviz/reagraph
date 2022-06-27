@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useRef } from 'react';
+import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
 import { RadialSlice, MenuItem } from './RadialSlice';
 import { calculateRadius } from './utils';
 import { Theme } from '../utils/themes';
@@ -27,11 +27,10 @@ export const RadialMenu: FC<RadialMenuProps> = ({
   );
   const timeout = useRef<any | null>(null);
 
-  useEffect(() => {
-    return () => {
-      clearTimeout(timeout.current);
-    };
-  });
+  useLayoutEffect(() => {
+    const timer = timeout.current;
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div

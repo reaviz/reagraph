@@ -43,31 +43,30 @@ export const Sphere: FC<SphereProps> = ({
   });
 
   return (
-    <group>
-      <a.mesh
-        userData={{ id }}
-        scale={scale as any}
-        onClick={onClick}
-        onPointerDown={event => {
-          // context menu controls
-          if (event.nativeEvent.buttons === 2) {
-            onContextMenu();
-          }
-        }}
-        onPointerOver={() => onActive?.(true)}
-        onPointerOut={() => onActive?.(false)}
-      >
-        <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
-        <a.meshPhongMaterial
-          attach="material"
-          side={DoubleSide}
-          transparent={true}
-          fog={true}
-          opacity={nodeOpacity}
-          color={nodeColor}
-        />
-      </a.mesh>
-    </group>
+    <a.mesh
+      userData={{ id }}
+      scale={scale as any}
+      onClick={onClick}
+      onPointerDown={event => {
+        // context menu controls
+        if (event.nativeEvent.buttons === 2) {
+          event.stopPropagation();
+          onContextMenu();
+        }
+      }}
+      onPointerOver={() => onActive?.(true)}
+      onPointerOut={() => onActive?.(false)}
+    >
+      <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
+      <a.meshPhongMaterial
+        attach="material"
+        side={DoubleSide}
+        transparent={true}
+        fog={true}
+        opacity={nodeOpacity}
+        color={nodeColor}
+      />
+    </a.mesh>
   );
 };
 

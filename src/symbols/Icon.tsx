@@ -50,6 +50,7 @@ export const Icon: FC<IconProps> = ({
         onPointerDown={event => {
           // context menu controls
           if (event.nativeEvent.buttons === 2) {
+            event.stopPropagation();
             onContextMenu();
           }
         }}
