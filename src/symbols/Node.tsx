@@ -110,7 +110,7 @@ export const Node: FC<NodeProps> = ({
     }
   });
 
-  useCursor(isActive && !draggingId, 'pointer');
+  useCursor(isActive && !draggingId && onClick !== undefined, 'pointer');
   useCursor(isDragging, 'grabbing');
 
   return (
