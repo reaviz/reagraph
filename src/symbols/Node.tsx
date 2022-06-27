@@ -37,10 +37,11 @@ export const Node: FC<NodeProps> = ({
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
-  const [dragging, setDragging] = useStore(state => [
-    state.dragging,
-    state.setDragging
+  const [draggingId, setDraggingId] = useStore(state => [
+    state.draggingId,
+    state.setDraggingId
   ]);
+  const isDragging = draggingId === id;
   const setNodePosition = useStore(state => state.setNodePosition);
 
   const {
@@ -87,10 +88,10 @@ export const Node: FC<NodeProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !dragging ? undefined : 0
+        duration: animated && !draggingId ? undefined : 0
       }
     }),
-    [dragging, position, animated, nodeSize]
+    [isDragging, position, animated, nodeSize]
   );
 
   const bind = useDrag({
@@ -98,19 +99,19 @@ export const Node: FC<NodeProps> = ({
     position,
     set: pos => setNodePosition(id, pos),
     onDragStart: () => {
-      setDragging(true);
+      setDraggingId(id);
       setActive(true);
       cameraControls.controls.enabled = false;
     },
     onDragEnd: () => {
-      setDragging(false);
+      setDraggingId(null);
       setActive(false);
       cameraControls.controls.enabled = true;
     }
   });
 
-  useCursor(isActive && !dragging, 'pointer');
-  useCursor(dragging, 'grabbing');
+  useCursor(isActive && !draggingId, 'pointer');
+  useCursor(isDragging, 'grabbing');
 
   return (
     <a.group ref={group} position={nodePosition as any} {...(bind() as any)}>
@@ -138,7 +139,7 @@ export const Node: FC<NodeProps> = ({
           id={id}
           size={nodeSize}
           color={
-            isSelected || isActive || dragging
+            isSelected || isActive || isDragging
               ? theme.node.activeFill
               : fill || theme.node.fill
           }
@@ -183,7 +184,7 @@ export const Node: FC<NodeProps> = ({
             fontUrl={labelFontUrl}
             opacity={selectionOpacity}
             color={
-              isSelected || isActive || dragging
+              isSelected || isActive || isDragging
                 ? theme.node.activeColor
                 : theme.node.color
             }

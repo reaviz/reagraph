@@ -43,7 +43,7 @@ export const Edge: FC<EdgeProps> = ({
 
   const from = useStore(store => store.nodes.find(node => node.id === fromId));
   const to = useStore(store => store.nodes.find(node => node.id === toId));
-  const dragging = useStore(state => state.dragging);
+  const draggingId = useStore(state => state.draggingId);
 
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;
   const points = useMemo(
@@ -87,10 +87,10 @@ export const Edge: FC<EdgeProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !dragging ? undefined : 0
+        duration: animated && !draggingId ? undefined : 0
       }
     }),
-    [midPoint, animated, dragging]
+    [midPoint, animated, draggingId]
   );
 
   const labelRotation = useMemo(

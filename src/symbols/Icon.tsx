@@ -53,14 +53,8 @@ export const Icon: FC<IconProps> = ({
             onContextMenu();
           }
         }}
-        onPointerOver={() => {
-          onActive(true);
-          document.body.style['cursor'] = 'pointer';
-        }}
-        onPointerOut={() => {
-          onActive(false);
-          document.body.style['cursor'] = 'inherit';
-        }}
+        onPointerOver={() => onActive(true)}
+        onPointerOut={() => onActive(false)}
       >
         <a.spriteMaterial
           attach="material"

@@ -29,7 +29,7 @@ export const Arrow: FC<ArrowProps> = ({
 }) => {
   const meshRef = useRef<Mesh | null>(null);
   const quaternion = useMemo(() => getQuaternion(position), [position]);
-  const dragging = useStore(state => state.dragging);
+  const draggingId = useStore(state => state.draggingId);
   const [arrowLength, arrowSize] = useMemo(
     () => [size + 6, 2 + size / 1.5],
     [size]
@@ -55,10 +55,10 @@ export const Arrow: FC<ArrowProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !dragging ? undefined : 0
+        duration: animated && !draggingId ? undefined : 0
       }
     }),
-    [animated, dragging, opacity, endPos]
+    [animated, draggingId, opacity, endPos]
   );
 
   const setQuaternion = useCallback(() => {

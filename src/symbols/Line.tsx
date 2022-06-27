@@ -22,7 +22,7 @@ export const Line: FC<LineProps> = ({
   animated
 }) => {
   const tubeRef = useRef<TubeBufferGeometry | null>(null);
-  const dragging = useStore(state => state.dragging);
+  const draggingId = useStore(state => state.draggingId);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({
@@ -60,10 +60,10 @@ export const Line: FC<LineProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !dragging ? undefined : 0
+        duration: animated && !draggingId ? undefined : 0
       }
     }),
-    [animated, dragging, points, size]
+    [animated, draggingId, points, size]
   );
 
   const curve = useMemo(
