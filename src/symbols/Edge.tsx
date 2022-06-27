@@ -11,7 +11,7 @@ import {
 import { Line } from './Line';
 import { Theme } from '../utils';
 import { useStore } from '../store';
-import { Euler } from 'three';
+import { Color, Euler } from 'three';
 
 const LABEL_FONT_SIZE = 6;
 
@@ -114,13 +114,10 @@ export const Edge: FC<EdgeProps> = ({
     ]
   );
 
-  const labelBackgroundColor = useMemo(
-    () =>
-      ['inline', 'natural'].includes(labelPlacement)
-        ? theme.edge.label.outlineColor
-        : null,
-    [theme.edge.label.outlineColor, labelPlacement]
-  );
+  const { r: strokeR, g: strokeG, b: strokeB } = theme.edge.label.strokeColor;
+  const labelBackgroundColor = ['inline', 'natural'].includes(labelPlacement)
+    ? new Color(strokeR, strokeG, strokeB)
+    : null;
 
   return (
     <group>

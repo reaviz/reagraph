@@ -21,7 +21,11 @@ export interface Theme {
     activeFill: string;
     activeColor: string;
     label?: {
-      outlineColor?: Color;
+      strokeColor?: {
+        r: number;
+        g: number;
+        b: number;
+      };
     };
   };
   arrow: {
@@ -39,7 +43,7 @@ export interface Theme {
 
 export const lightTheme: Theme = {
   canvas: {
-    background: new Color(255, 255, 255),
+    background: '#FFFFFF',
     fog: '#FFFFFF'
   },
   node: {
@@ -65,7 +69,11 @@ export const lightTheme: Theme = {
     activeFill: '#1DE9AC',
     activeColor: '#1DE9AC',
     label: {
-      outlineColor: new Color(255, 255, 255)
+      strokeColor: {
+        r: 255,
+        g: 255,
+        b: 255
+      }
     }
   },
   arrow: {
@@ -76,7 +84,7 @@ export const lightTheme: Theme = {
 
 export const darkTheme: Theme = {
   canvas: {
-    background: new Color(0, 0, 0),
+    background: '#000000',
     fog: '#000000'
   },
   node: {
@@ -102,7 +110,11 @@ export const darkTheme: Theme = {
     activeFill: '#1DE9AC',
     activeColor: '#1DE9AC',
     label: {
-      outlineColor: new Color(0, 0, 0)
+      strokeColor: {
+        r: 0,
+        g: 0,
+        b: 0
+      }
     }
   },
   arrow: {
