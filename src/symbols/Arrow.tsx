@@ -5,7 +5,7 @@ import {
   getQuaternion,
   animationConfig,
   getMidPoint,
-  getEndPoint,
+  getArrowPosition,
   EdgeVectors3
 } from '../utils';
 import { useStore } from '../store';
@@ -30,15 +30,18 @@ export const Arrow: FC<ArrowProps> = ({
   const meshRef = useRef<Mesh | null>(null);
   const quaternion = useMemo(() => getQuaternion(position), [position]);
   const dragging = useStore(state => state.dragging);
+  const [arrowLength, arrowSize] = useMemo(
+    () => [size + 6, 2 + size / 1.5],
+    [size]
+  );
 
   const endPos = useMemo(() => {
     if (placement === 'mid') {
       return getMidPoint(position);
     } else {
-      // TODO: Improve this
-      return getEndPoint(position);
+      return getArrowPosition(position, arrowLength);
     }
-  }, [position, placement]);
+  }, [position, placement, arrowLength]);
 
   const [{ pos, arrowOpacity }] = useSpring(
     () => ({
@@ -68,8 +71,11 @@ export const Arrow: FC<ArrowProps> = ({
   useEffect(() => setQuaternion(), [position, setQuaternion]);
 
   return (
-    <a.mesh position={pos as any} ref={meshRef} scale={[size, size, size]}>
-      <cylinderGeometry args={[0, 3, 7, 20, 20, false]} attach="geometry" />
+    <a.mesh position={pos as any} ref={meshRef} scale={[1, 1, 0]}>
+      <cylinderGeometry
+        args={[0, arrowSize, arrowLength, 20, 20, true]}
+        attach="geometry"
+      />
       <a.meshBasicMaterial
         attach="material"
         color={color}

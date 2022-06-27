@@ -56,9 +56,11 @@ export function getMidPoint(positions: EdgeVectors3, offset = 0) {
   return midVector.setLength(midVector.length() + offset);
 }
 
-export function getEndPoint(positions: EdgeVectors3) {
-  const { fromVector, toVector, distance } = calcDistance(positions);
-  return toVector.add(fromVector.sub(toVector).multiplyScalar(3 / distance));
+export function getArrowPosition(positions: EdgeVectors3, arrowSize = 1) {
+  const [from, to] = getVectors(positions);
+  const diff = to.sub(from);
+
+  return from.add(diff.setLength(diff.length() - arrowSize / 2));
 }
 
 export function getQuaternion(positions: EdgeVectors3) {

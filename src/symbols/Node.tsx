@@ -22,6 +22,7 @@ export interface NodeProps {
   contextMenuItems?: MenuItem[];
   draggable?: boolean;
   onClick?: (node: InternalGraphNode) => void;
+  labelFontUrl?: string;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -31,7 +32,8 @@ export const Node: FC<NodeProps> = ({
   draggable,
   theme,
   contextMenuItems,
-  onClick
+  onClick,
+  labelFontUrl
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
@@ -178,6 +180,7 @@ export const Node: FC<NodeProps> = ({
         <a.group position={labelPosition as any}>
           <Label
             text={label}
+            fontUrl={labelFontUrl}
             opacity={selectionOpacity}
             color={
               isSelected || isActive ? theme.node.activeColor : theme.node.color

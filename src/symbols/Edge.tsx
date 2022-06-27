@@ -45,15 +45,14 @@ export const Edge: FC<EdgeProps> = ({
   const to = useStore(store => store.nodes.find(node => node.id === toId));
   const dragging = useStore(state => state.dragging);
 
-  const arrowSize = Math.max(size * 0.3, 1);
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;
   const points = useMemo(
     () =>
       getPoints({
         from,
-        to: { ...to, size: to.size + arrowSize + LABEL_FONT_SIZE }
+        to: { ...to, size: to.size + size + LABEL_FONT_SIZE }
       }),
-    [from, to, arrowSize]
+    [from, to, size]
   );
 
   const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
@@ -129,7 +128,7 @@ export const Edge: FC<EdgeProps> = ({
         position={realPoints}
         color={isSelected ? theme.arrow.activeFill : theme.arrow.fill}
         opacity={selectionOpacity}
-        size={arrowSize}
+        size={size}
         animated={animated}
       />
       {labelVisible && label && (

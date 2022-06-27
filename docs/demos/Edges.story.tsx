@@ -57,7 +57,7 @@ export const Sizes = () => (
         target: '5',
         id: '4-5',
         label: '4-5',
-        size: 1,
+        size: 10,
       }]}
   />
 );
