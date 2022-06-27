@@ -71,7 +71,7 @@ export const Arrow: FC<ArrowProps> = ({
   useEffect(() => setQuaternion(), [position, setQuaternion]);
 
   return (
-    <a.mesh position={pos as any} ref={meshRef} scale={[1, 1, 0]}>
+    <a.mesh position={pos as any} ref={meshRef} scale={[1, 1, 1]}>
       <cylinderGeometry
         args={[0, arrowSize, arrowLength, 20, 20, true]}
         attach="geometry"
