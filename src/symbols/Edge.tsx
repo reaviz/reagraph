@@ -80,10 +80,10 @@ export const Edge: FC<EdgeProps> = ({
   const [{ labelPosition }] = useSpring(
     () => ({
       from: {
-        labelPosition: [0, 0, 2]
+        labelPosition: [0, 0, 0]
       },
       to: {
-        labelPosition: [midPoint.x, midPoint.y, 2]
+        labelPosition: [midPoint.x, midPoint.y, midPoint.z]
       },
       config: {
         ...animationConfig,
