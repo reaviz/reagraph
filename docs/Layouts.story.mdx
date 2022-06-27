@@ -1,0 +1,52 @@
+import { Meta, Story } from '@storybook/addon-docs';
+
+<Meta title="Docs/Getting Started/Layouts" />
+
+# Layouts
+reagraph has the following layout types:
+
+- Force Directed 2D
+- Force Directed 3D
+- Circular 2D
+- Tree Top Down 2D
+- Tree Left Right 2D
+- Tree Top Down 3D
+- Tree Left Right 3D
+- Radial Out 2D
+- Radial Out 3D
+- Hierarchical Top Down 2D
+- Hierarchical Left Right 2D
+
+## Layout Types
+
+### Force Directed 2D
+This is the standard force-directed layout which uses [d3-force-3d](https://github.com/vasturiano/d3-force-3d).
+This is a modified version of the force directed library from d3 except adds support for three dimensional layouts.
+
+This is a one of the most common layouts used because of the simplicity and flexibility that the layout
+can support.
+
+### Force Directed 3D
+The force directed 3d layout is similar to the 2D version except it adds another dimension. It uses
+the same library as the 2D version ( [d3-force-3d](https://github.com/vasturiano/d3-force-3d) ).
+The 3D version is useful for very large graphs where many nodes would overlap each other.
+
+### Circular 2d
+The circular layout arranges nodes in a circular fashion drawing relationships between the nodes
+on the outside of the circle. This layout uses [ngraph.circular.fixed](https://www.npmjs.com/package/ngraph.circular.fixed).
+
+## Tree 2D
+The tree layout is a good way to display a clear parent-child relationship between nodes. This layout uses
+[d3-force-3d](https://github.com/vasturiano/d3-force-3d).
+
+## Tree 3D
+This layout is the same as the tree 2d except adds another dimension. It uses
+[d3-force-3d](https://github.com/vasturiano/d3-force-3d) under the hood for the layout.
+
+## Radial
+The radial layout arranges nodes in a circular fashion around the focus node in a radial tree. Each
+relationship extends to another level in the tree to show a depedency tree.
+This layout uses [d3-force-3d](https://github.com/vasturiano/d3-force-3d).
+
+## Hierarchical 2D
+This layout uses [d3-hierarchy](https://www.npmjs.com/package/d3-hierarchy).
