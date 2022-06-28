@@ -24,3 +24,7 @@ export const Sizes = () => (
 export const Edges = () => (
   <GraphCanvas nodes={clusterNodes} edges={clusterEdges} clusterAttribute="type" />
 );
+
+export const ThreeDimensions = () => (
+  <GraphCanvas nodes={clusterNodesWithSizes} edges={[]} layoutType="forceDirected3d" clusterAttribute="type" />
+);
