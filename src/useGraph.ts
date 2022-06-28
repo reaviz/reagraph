@@ -15,6 +15,7 @@ export interface GraphInputs {
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
   selections?: string[];
+  clusterAttribute?: string;
 }
 
 export const useGraph = ({
@@ -22,6 +23,7 @@ export const useGraph = ({
   sizingType,
   labelType,
   sizingAttribute,
+  clusterAttribute,
   selections,
   nodes,
   edges
@@ -42,7 +44,8 @@ export const useGraph = ({
         curLayout ||
         layoutProvider({
           type: layoutType,
-          graph
+          graph,
+          clusterAttribute
         });
 
       tick(layout.current, () => {
@@ -62,6 +65,7 @@ export const useGraph = ({
       layoutType,
       graph,
       sizingType,
+      clusterAttribute,
       labelType,
       sizingAttribute,
       setEdges,
@@ -70,10 +74,11 @@ export const useGraph = ({
   );
 
   useEffect(() => {
+    // Let's set the store selections so its easier to access
     setSelections(selections);
   }, [selections, setSelections]);
 
-  // Create the nggraph object
+  // Create the nggraph graph object
   useEffect(() => {
     buildGraph(graph, nodes, edges);
     updateLayout();

@@ -9,24 +9,34 @@ import {
 import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutStrategy } from './types';
+import forceCluster from 'd3-force-cluster-3d';
+import { group } from 'd3-array';
 
 interface ForceDirectedD3Inputs {
   dimensions?: number;
   mode?: DagMode;
   graph: any;
+  clusterAttribute?: string;
 }
 
 export function forceDirected({
   graph,
   mode = null,
-  dimensions = 2
+  dimensions = 2,
+  clusterAttribute
 }: ForceDirectedD3Inputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
 
+  const clust = new Map();
+
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
-    nodes.push({ ...n });
+    nodes.push({
+      ...n,
+      // TODO: Make this use the size attributes
+      radius: 1
+    });
   });
 
   graph.forEachLink(l => {
@@ -35,11 +45,31 @@ export function forceDirected({
 
   // Create the simulation
   const sim = d3ForceSimulation()
-    .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -500 : -250))
     .force('link', d3ForceLink())
+    .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -500 : -250))
     .force('x', d3ForceX())
     .force('y', d3ForceY())
     .force('z', d3ForceZ())
+    .force(
+      'cluster',
+      forceCluster()
+        .centers(node => {
+          if (clusterAttribute) {
+            const nodeClusterAttr = node.data?.data?.[clusterAttribute];
+            const centerNode = clust.get(nodeClusterAttr);
+
+            if (!centerNode) {
+              // TODO: Calculate the center of a cluster
+              // rather than just using the first node
+              clust.set(nodeClusterAttr, node);
+              return node;
+            } else {
+              return centerNode;
+            }
+          }
+        })
+        .strength(0.5)
+    )
     .force('dagRadial', forceRadial(nodes, links, mode as DagMode))
     .stop();
 

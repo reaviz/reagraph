@@ -15,6 +15,7 @@ export type LayoutTypes =
 
 export interface LayoutFactoryProps {
   type: LayoutTypes;
+  clusterAttribute?: string;
   graph: any;
 }
 
