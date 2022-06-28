@@ -1,7 +1,7 @@
 import random from 'lodash/random';
 import React from 'react';
 import { GraphCanvas } from '../../src';
-import { clusterNodes } from '../assets/demo';
+import { clusterNodes, clusterEdges } from '../assets/demo';
 
 export default {
   title: 'Demos/Cluster',
@@ -19,4 +19,8 @@ const clusterNodesWithSizes = clusterNodes.map(node => ({
 
 export const Sizes = () => (
   <GraphCanvas nodes={clusterNodesWithSizes} edges={[]} clusterAttribute="type" />
+);
+
+export const Edges = () => (
+  <GraphCanvas nodes={clusterNodes} edges={clusterEdges} clusterAttribute="type" />
 );

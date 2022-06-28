@@ -87,7 +87,7 @@ export function forceDirected({
             return centerNode;
           }
         })
-        .strength(0.8)
+        .strength(0.5)
     );
 
   // Run the force on the links
