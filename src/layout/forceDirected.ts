@@ -28,26 +28,20 @@ export function forceDirected({
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
 
+  const clust = new Map();
+
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
     nodes.push({
       ...n,
-      // just trying to make the cluster work...
-      radius: 5
+      // TODO: Make this use the size attributes
+      radius: 1
     });
   });
 
   graph.forEachLink(l => {
     links.push({ ...l, id: l.data.id, source: l.fromId, target: l.toId });
   });
-
-  const groups = group(nodes, n => n.data?.data?.[clusterAttribute]);
-  const clusters = Array.from(groups, ([key]) => key);
-  const clusterCount = clusters.length;
-
-  console.log('>>>', clusters, clusterAttribute);
-  const fakeWidth = 1200;
-  const fakeHeight = 1200;
 
   // Create the simulation
   const sim = d3ForceSimulation()
@@ -60,23 +54,19 @@ export function forceDirected({
       'cluster',
       forceCluster()
         .centers(node => {
-          const idx = clusters.indexOf(node.data?.data?.[clusterAttribute]);
+          if (clusterAttribute) {
+            const nodeClusterAttr = node.data?.data?.[clusterAttribute];
+            const centerNode = clust.get(nodeClusterAttr);
 
-          // This is wrong duh
-          // https://bl.ocks.org/ericsoco/4e1b7b628771ae77753842e6dabfcef3
-          const res = {
-            z: 0,
-            x:
-              Math.cos((idx / clusterCount) * 2 * Math.PI) * 150 +
-              fakeWidth / 2,
-            y:
-              Math.sin((idx / clusterCount) * 2 * Math.PI) * 150 +
-              fakeHeight / 2
-          };
-
-          console.log('cluster', res, idx);
-
-          return res;
+            if (!centerNode) {
+              // TODO: Calculate the center of a cluster
+              // rather than just using the first node
+              clust.set(nodeClusterAttr, node);
+              return node;
+            } else {
+              return centerNode;
+            }
+          }
         })
         .strength(0.5)
     )
@@ -94,8 +84,6 @@ export function forceDirected({
       .links(links)
       .distance(50);
   }
-
-  console.log('???', nodes);
 
   return {
     step() {
