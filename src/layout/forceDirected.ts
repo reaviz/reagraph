@@ -1,6 +1,7 @@
 import {
   forceSimulation as d3ForceSimulation,
   forceLink as d3ForceLink,
+  forceCollide,
   forceManyBody as d3ForceManyBody,
   forceX as d3ForceX,
   forceY as d3ForceY,
@@ -18,6 +19,8 @@ interface ForceDirectedD3Inputs {
   clusterAttribute?: string;
 }
 
+const CLUSTER_PADDING = 10;
+
 export function forceDirected({
   graph,
   mode = null,
@@ -26,15 +29,14 @@ export function forceDirected({
 }: ForceDirectedD3Inputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
-
-  const clust = new Map();
+  const cluster = new Map();
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
     nodes.push({
       ...n,
-      // TODO: Make this use the size attributes
-      radius: 1
+      // This is for the clustering
+      radius: n.data?.size || 1
     });
   });
 
@@ -49,31 +51,44 @@ export function forceDirected({
     .force('x', d3ForceX())
     .force('y', d3ForceY())
     .force('z', d3ForceZ())
+    // Handles nodes not overlapping each other ( most relevant in clustering )
     .force(
-      'cluster',
-      forceCluster()
-        .centers(node => {
-          if (clusterAttribute) {
-            const nodeClusterAttr = node.data?.data?.[clusterAttribute];
-            const centerNode = clust.get(nodeClusterAttr);
-
-            if (!centerNode) {
-              // TODO: Calculate the center of a cluster
-              // rather than just using the first node
-              clust.set(nodeClusterAttr, node);
-              return node;
-            } else {
-              return centerNode;
-            }
-          }
-        })
-        .strength(0.5)
+      'collide',
+      forceCollide(d => d.radius + CLUSTER_PADDING)
     )
     .force('dagRadial', forceRadial(nodes, links, mode as DagMode))
     .stop();
 
   // Initialize the simulation
-  const layout = sim.numDimensions(dimensions).nodes(nodes);
+  const layout = sim
+    .numDimensions(dimensions)
+    .nodes(nodes)
+    .force(
+      'cluster',
+      forceCluster()
+        .centers(node => {
+          // Happens after nodes passed so they have the x/y/z
+          if (clusterAttribute) {
+            const nodeClusterAttr = node.data?.data?.[clusterAttribute];
+            const centerNode = cluster.get(nodeClusterAttr);
+
+            if (!centerNode) {
+              const largestNode = nodes.reduce((last: any, cur: any) => {
+                if (cur.data?.data?.[clusterAttribute] === nodeClusterAttr) {
+                  return cur.radius > last.radius ? cur : last;
+                }
+                return last;
+              }, node);
+
+              cluster.set(nodeClusterAttr, largestNode);
+              return largestNode;
+            }
+
+            return centerNode;
+          }
+        })
+        .strength(0.8)
+    );
 
   // Run the force on the links
   const linkForce = layout.force('link');

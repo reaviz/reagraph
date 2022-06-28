@@ -15,14 +15,21 @@ export const simpleNodes: GraphNode[] =
   }));
 
 const types = ['IP', 'URL', 'Email', 'MD5'];
+const colors = ['blue', 'green', 'red', 'orange'];
+
 export const clusterNodes: GraphNode[] =
-  range(25).map(i => ({
+  range(25).map(i => {
+    const idx = random(0, types.length - 1);
+
+    return {
     id: `n-${i}`,
     label: `Node ${i}`,
+    fill: colors[idx],
     data: {
-      type: types[random(0, types.length - 1)]
+      type: types[idx]
     }
-  }));
+  }
+});
 
 export const simpleNodesColors: GraphNode[] =
   range(5).map(i => ({
