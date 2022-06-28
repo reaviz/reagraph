@@ -1,3 +1,17 @@
+# 1.2.0 - 6/28/22
+- [feature] clustering
+- [feature] layout recommender mvp
+- [feature] add font url for labels #37
+- [fix] improve fog
+- [fix] fix label positioning
+- [fix] fix radial menu not working until you cause CD
+- [fix] fix line arrow position
+- [fix] hide pointer unless clickable
+- [fix] fix drag highlighting
+- [fix] add threshold to dragging
+- [fix] update ellipsis default length to 24
+- [chore] improve drag selection
+
 # 1.1.0 - 6/24/22
 - [feature] improved label positioning for edges
 - [feature] dragging of nodes
