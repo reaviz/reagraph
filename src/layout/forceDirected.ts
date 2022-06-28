@@ -10,7 +10,6 @@ import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
-import { group } from 'd3-array';
 
 interface ForceDirectedD3Inputs {
   dimensions?: number;
