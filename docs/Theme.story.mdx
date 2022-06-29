@@ -70,3 +70,43 @@ const App = () => (
   />
 );
 ```
+
+An example theme ( the light theme in this case ) ends up looking like this:
+
+```ts
+import { Theme } from 'reagraph';
+
+export const lightTheme: Theme = {
+  canvas: {
+    background: '#fff',
+    fog: '#FFFFFF'
+  },
+  node: {
+    fill: '#AACBD2',
+    color: '#2A6475',
+    activeFill: '#1DE9AC',
+    activeColor: '#1DE9AC'
+  },
+  menu: {
+    background: '#FFF',
+    border: '#AACBD2',
+    color: '#000',
+    activeBackground: '#D8E6EA',
+    activeColor: '#000'
+  },
+  ring: {
+    fill: '#D8E6EA',
+    activeFill: '#1DE9AC'
+  },
+  edge: {
+    fill: '#D8E6EA',
+    color: '#2A6475',
+    activeFill: '#1DE9AC',
+    activeColor: '#1DE9AC'
+  },
+  arrow: {
+    fill: '#D8E6EA',
+    activeFill: '#1DE9AC'
+  }
+};
+```
