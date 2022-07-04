@@ -3,8 +3,10 @@ import React, {
   forwardRef,
   Ref,
   Suspense,
+  useEffect,
   useImperativeHandle,
-  useRef
+  useRef,
+  useState
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
@@ -13,7 +15,7 @@ import {
   CameraControls,
   CameraControlsRef
 } from './CameraControls';
-import { Theme, lightTheme } from './utils/themes';
+import { Theme, lightTheme } from './utils';
 import { createStore, Provider } from './store';
 import css from './GraphCanvas.module.css';
 
@@ -46,6 +48,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       { cameraMode, theme, onCanvasClick, animated, disabled, ...rest },
       ref: Ref<GraphCanvasRef>
     ) => {
+      const [canvasContainer, setCanvasContainer] = useState<DOMRect>();
+      const canvasRef = useRef<HTMLCanvasElement>();
       const rendererRef = useRef<GraphSceneRef | null>(null);
       const controlsRef = useRef<CameraControlsRef | null>(null);
 
@@ -61,9 +65,14 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         getGraph: () => rendererRef.current?.graph
       }));
 
+      useEffect(() => {
+        setCanvasContainer(canvasRef?.current?.getBoundingClientRect());
+      }, []);
+
       return (
         <div className={css.canvas}>
           <Canvas
+            ref={canvasRef}
             gl={{ alpha: true, antialias: true }}
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 10 }}
             onPointerMissed={onCanvasClick}
@@ -84,6 +93,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                     theme={theme}
                     disabled={disabled}
                     animated={animated}
+                    canvasContainer={canvasContainer}
                     {...rest}
                   />
                 </Provider>

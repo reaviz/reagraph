@@ -25,7 +25,7 @@ import {
 import ThreeCameraControls from 'camera-controls';
 import {
   CameraControlsContext,
-  CameraControlsConextProps
+  CameraControlsContextProps
 } from './useCameraControls';
 import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
@@ -76,7 +76,7 @@ export interface CameraControlsProps {
   onUpdate?: () => void;
 }
 
-export type CameraControlsRef = CameraControlsConextProps;
+export type CameraControlsRef = CameraControlsContextProps;
 
 export const CameraControls: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
