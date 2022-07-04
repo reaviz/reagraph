@@ -46,7 +46,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       { cameraMode, theme, onCanvasClick, animated, disabled, ...rest },
       ref: Ref<GraphCanvasRef>
     ) => {
-      const canvasRef = useRef<HTMLCanvasElement>();
       const rendererRef = useRef<GraphSceneRef | null>(null);
       const controlsRef = useRef<CameraControlsRef | null>(null);
 
@@ -65,7 +64,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       return (
         <div className={css.canvas}>
           <Canvas
-            ref={canvasRef}
             gl={{ alpha: true, antialias: true }}
             camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 10 }}
             onPointerMissed={onCanvasClick}
