@@ -3,10 +3,8 @@ import React, {
   forwardRef,
   Ref,
   Suspense,
-  useEffect,
   useImperativeHandle,
-  useRef,
-  useState
+  useRef
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
@@ -48,7 +46,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       { cameraMode, theme, onCanvasClick, animated, disabled, ...rest },
       ref: Ref<GraphCanvasRef>
     ) => {
-      const [canvasContainer, setCanvasContainer] = useState<DOMRect>();
       const canvasRef = useRef<HTMLCanvasElement>();
       const rendererRef = useRef<GraphSceneRef | null>(null);
       const controlsRef = useRef<CameraControlsRef | null>(null);
@@ -64,10 +61,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         getControls: () => controlsRef.current?.controls,
         getGraph: () => rendererRef.current?.graph
       }));
-
-      useEffect(() => {
-        setCanvasContainer(canvasRef?.current?.getBoundingClientRect());
-      }, []);
 
       return (
         <div className={css.canvas}>
@@ -93,7 +86,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                     theme={theme}
                     disabled={disabled}
                     animated={animated}
-                    canvasContainer={canvasContainer}
                     {...rest}
                   />
                 </Provider>

@@ -23,7 +23,6 @@ export interface NodeProps {
   draggable?: boolean;
   onClick?: (node: InternalGraphNode) => void;
   labelFontUrl?: string;
-  canvasContainer?: DOMRect;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -34,8 +33,7 @@ export const Node: FC<NodeProps> = ({
   theme,
   contextMenuItems,
   onClick,
-  labelFontUrl,
-  canvasContainer
+  labelFontUrl
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
@@ -109,8 +107,7 @@ export const Node: FC<NodeProps> = ({
       setDraggingId(null);
       setActive(false);
       cameraControls.controls.enabled = true;
-    },
-    canvasContainer
+    }
   });
 
   useCursor(isActive && !draggingId && onClick !== undefined, 'pointer');

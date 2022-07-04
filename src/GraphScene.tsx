@@ -98,11 +98,6 @@ export interface GraphSceneProps {
    * When a node was clicked.
    */
   onNodeClick?: (node: InternalGraphNode) => void;
-
-  /**
-   * Canvas container DOM parameters
-   */
-  canvasContainer?: DOMRect;
 }
 
 export interface GraphSceneRef {
@@ -122,7 +117,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         draggable,
         edgeLabelPosition,
         labelFontUrl,
-        canvasContainer,
         ...rest
       },
       ref: Ref<GraphSceneRef>
@@ -161,7 +155,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               contextMenuItems={contextMenuItems}
               theme={theme}
               onClick={onNodeClick}
-              canvasContainer={canvasContainer}
             />
           ))}
           {edgeIds.map(e => (
