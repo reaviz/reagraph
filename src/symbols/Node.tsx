@@ -111,6 +111,10 @@ export const Node: FC<NodeProps> = ({
   });
 
   useCursor(isActive && !draggingId && onClick !== undefined, 'pointer');
+  useCursor(
+    isActive && draggable && !isDragging && onClick === undefined,
+    'grab'
+  );
   useCursor(isDragging, 'grabbing');
 
   return (
