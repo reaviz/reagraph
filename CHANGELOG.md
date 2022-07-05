@@ -1,3 +1,12 @@
+# 2.0.0 - 7/5/22
+- [BREAKING] update theme to include label options
+- [feature] add ability to add stroke to labels
+- [feature] improve label handling and show all label on hover
+- [fix] improve dark theme arrow/edges
+- [fix] center align labels better
+- [fix] improve color mappings
+- [fix] fix drag offset incorrect #42
+
 # 1.2.0 - 6/28/22
 - [feature] clustering
 - [feature] layout recommender mvp
