@@ -1,3 +1,6 @@
+# 2.0.3 - 7/5/22
+- [fix] fix dragging a node and then resetting layout not retaining position #43
+
 # 2.0.2 - 7/5/22
 - [fix] add stroke to labels and fix colors
 

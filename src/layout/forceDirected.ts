@@ -11,9 +11,8 @@ import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
-import { Graph } from 'ngraph.graph';
 
-interface ForceDirectedD3Inputs extends LayoutFactoryProps {
+export interface ForceDirectedD3Inputs extends LayoutFactoryProps {
   dimensions?: number;
   mode?: DagMode;
 }
