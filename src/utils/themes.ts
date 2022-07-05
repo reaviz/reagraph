@@ -46,11 +46,11 @@ export const lightTheme: Theme = {
     fog: '#fff'
   },
   node: {
-    fill: '#AACBD2',
+    fill: '#7CA0AB',
     activeFill: '#1DE9AC',
     label: {
       color: '#2A6475',
-      // stroke: '#fff',
+      stroke: '#fff',
       activeColor: '#1DE9AC'
     }
   },
@@ -69,7 +69,7 @@ export const lightTheme: Theme = {
     fill: '#D8E6EA',
     activeFill: '#1DE9AC',
     label: {
-      // stroke: '#fff',
+      stroke: '#fff',
       color: '#2A6475',
       activeColor: '#1DE9AC'
     }
@@ -89,7 +89,7 @@ export const darkTheme: Theme = {
     fill: '#7A8C9E',
     activeFill: '#1DE9AC',
     label: {
-      // stroke: '#1E2026',
+      stroke: '#1E2026',
       color: '#ACBAC7',
       activeColor: '#1DE9AC'
     }
@@ -109,7 +109,7 @@ export const darkTheme: Theme = {
     fill: '#474B56',
     activeFill: '#1DE9AC',
     label: {
-      // stroke: '#1E2026',
+      stroke: '#1E2026',
       color: '#ACBAC7',
       activeColor: '#1DE9AC'
     }

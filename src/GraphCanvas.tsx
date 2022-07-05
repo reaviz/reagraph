@@ -81,16 +81,20 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         getGraph: () => rendererRef.current?.graph
       }));
 
+      // NOTE: The legacy/linear/flat flags are for color issues
+      // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
       return (
         <div className={css.canvas}>
           <Canvas
-            colorManagement={false}
+            legacy
+            linear
+            flat
             gl={GL_DEFAULTS}
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
           >
             <color attach="background" args={[theme.canvas.background]} />
-            <ambientLight intensity={0.5} />
+            <ambientLight intensity={1} />
             <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
             <CameraControls
               mode={cameraMode}
