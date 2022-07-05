@@ -37,13 +37,14 @@ export const Node: FC<NodeProps> = ({
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
-  const [draggingId, setDraggingId] = useStore(state => [
-    state.draggingId,
-    state.setDraggingId
-  ]);
-  const isDragging = draggingId === id;
-  const setNodePosition = useStore(state => state.setNodePosition);
 
+  const [draggingId, setDraggingId, setNodePosition] = useStore(state => [
+    state.draggingId,
+    state.setDraggingId,
+    state.setNodePosition
+  ]);
+
+  const isDragging = draggingId === id;
   const {
     position,
     label,
@@ -97,6 +98,7 @@ export const Node: FC<NodeProps> = ({
   const bind = useDrag({
     draggable,
     position,
+    // @ts-ignore
     set: pos => setNodePosition(id, pos),
     onDragStart: () => {
       setDraggingId(id);
