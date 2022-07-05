@@ -13,7 +13,7 @@ import {
   CameraControls,
   CameraControlsRef
 } from './CameraControls';
-import { Theme, lightTheme } from './utils/themes';
+import { Theme, lightTheme } from './utils';
 import { createStore, Provider } from './store';
 import css from './GraphCanvas.module.css';
 

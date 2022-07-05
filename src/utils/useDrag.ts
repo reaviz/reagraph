@@ -2,6 +2,15 @@ import { useThree } from '@react-three/fiber';
 import { useMemo } from 'react';
 import { useGesture } from 'react-use-gesture';
 import { Vector2, Vector3, Plane } from 'three';
+import { InternalGraphPosition } from '../types';
+
+interface DragParams {
+  draggable: boolean;
+  position: InternalGraphPosition;
+  set: (position: Vector3) => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+}
 
 export const useDrag = ({
   draggable,
@@ -9,8 +18,8 @@ export const useDrag = ({
   position,
   onDragStart,
   onDragEnd
-}) => {
-  const { raycaster, size, camera } = useThree();
+}: DragParams) => {
+  const { raycaster, size, camera, gl } = useThree();
 
   // Reference: https://codesandbox.io/s/react-three-draggable-cxu37
   const { mouse2D, mouse3D, offset, normal, plane } = useMemo(
@@ -29,7 +38,12 @@ export const useDrag = ({
     []
   );
 
-  const bind = useGesture(
+  const clientRect = useMemo(
+    () => gl.domElement.getBoundingClientRect(),
+    [gl.domElement]
+  );
+
+  return useGesture(
     {
       onDragStart: ({ event }) => {
         // @ts-ignore
@@ -44,10 +58,12 @@ export const useDrag = ({
         // Run user callback
         onDragStart();
       },
-      onDrag: ({ xy: [x, y] }) => {
+      onDrag: ({ event }) => {
         // Compute normalized mouse coordinates (screen space)
-        const nx = (x / size.width) * 2 - 1;
-        const ny = (-y / size.height) * 2 + 1;
+        const nx =
+          ((event.clientX - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
+        const ny =
+          -((event.clientY - (clientRect?.top ?? 0)) / size.height) * 2 + 1;
 
         // Unlike the mouse from useThree, this works offscreen
         mouse2D.set(nx, ny);
@@ -75,6 +91,4 @@ export const useDrag = ({
     },
     { drag: { enabled: draggable, threshold: 10 } }
   );
-
-  return bind;
 };

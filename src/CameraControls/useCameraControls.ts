@@ -1,7 +1,7 @@
 import CameraControls from 'camera-controls';
 import { createContext, useContext } from 'react';
 
-export interface CameraControlsConextProps {
+export interface CameraControlsContextProps {
   controls: CameraControls | null;
   zoomIn: () => void;
   zoomOut: () => void;
@@ -11,7 +11,7 @@ export interface CameraControlsConextProps {
   panDown: () => void;
 }
 
-export const CameraControlsContext = createContext<CameraControlsConextProps>({
+export const CameraControlsContext = createContext<CameraControlsContextProps>({
   controls: null,
   zoomIn: () => undefined,
   zoomOut: () => undefined,
