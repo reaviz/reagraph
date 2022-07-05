@@ -1,15 +1,15 @@
 import create, { StoreApi } from 'zustand';
 import createContext from 'zustand/context';
 import { InternalGraphEdge, InternalGraphNode } from './types';
-import ngraph from 'ngraph.graph';
+import ngraph, { Graph } from 'ngraph.graph';
 
 export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
-  graph: any;
+  graph: Graph;
   selections?: string[];
   draggingId?: string | null;
-  setDraggingId: (id: string) => void;
+  setDraggingId: (id: string | null) => void;
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
@@ -22,7 +22,7 @@ export const createStore = () =>
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
-    draggingId: undefined,
+    draggingId: null,
     selections: [],
     graph: ngraph(),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
