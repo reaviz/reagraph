@@ -11,11 +11,12 @@ import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
+import { Graph } from 'ngraph.graph';
 
 interface ForceDirectedD3Inputs {
   dimensions?: number;
   mode?: DagMode;
-  graph: any;
+  graph: Graph;
   clusterAttribute?: string;
 }
 
@@ -33,6 +34,7 @@ export function forceDirected({
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
+    // @ts-ignore
     nodes.push({
       ...n,
       // This is for the clustering
@@ -41,6 +43,7 @@ export function forceDirected({
   });
 
   graph.forEachLink(l => {
+    // @ts-ignore
     links.push({ ...l, id: l.data.id, source: l.fromId, target: l.toId });
   });
 
