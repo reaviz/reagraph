@@ -1,3 +1,4 @@
+import { Graph } from 'ngraph.graph';
 import { nodeSizeProvider, SizingType } from '../sizing';
 import {
   GraphEdge,
@@ -7,7 +8,11 @@ import {
 } from '../types';
 import { calcLabelVisibility, LabelVisibilityType } from './visibility';
 
-export function buildGraph(graph, nodes: GraphNode[], edges: GraphEdge[]) {
+export function buildGraph(
+  graph: Graph,
+  nodes: GraphNode[],
+  edges: GraphEdge[]
+) {
   graph.clear();
   graph.beginUpdate();
 

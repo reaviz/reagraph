@@ -1,3 +1,4 @@
+import { Graph } from 'ngraph.graph';
 import { InternalGraphNode } from '../types';
 
 export type LayoutTypes =
@@ -16,7 +17,7 @@ export type LayoutTypes =
 export interface LayoutFactoryProps {
   type: LayoutTypes;
   clusterAttribute?: string;
-  graph: any;
+  graph: Graph;
 }
 
 export interface LayoutStrategy {

@@ -16,6 +16,7 @@ import {
 import { Theme, lightTheme } from './utils';
 import { createStore, Provider } from './store';
 import css from './GraphCanvas.module.css';
+import { Graph } from 'ngraph.graph';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
@@ -39,7 +40,7 @@ export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
     /**
      * Get the ngraph object.
      */
-    getGraph: () => any;
+    getGraph: () => Graph;
 
     /**
      * Get the camera controls.

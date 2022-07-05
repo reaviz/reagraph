@@ -15,6 +15,7 @@ import { LabelVisibilityType } from './utils';
 import { Theme } from './utils';
 import { MenuItem } from './RadialMenu';
 import { useStore } from './store';
+import { Graph } from 'ngraph.graph';
 
 export interface GraphSceneProps {
   /**
@@ -104,7 +105,7 @@ export interface GraphSceneRef {
   /**
    * Reference to the ngraph object.
    */
-  graph: any;
+  graph: Graph;
 
   /**
    * Center the graph on a node or list of nodes.
