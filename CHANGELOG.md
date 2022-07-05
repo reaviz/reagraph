@@ -1,3 +1,6 @@
+# 2.0.1 - 7/5/22
+- [fix] fix cursor not correct when draggable and not clickable
+
 # 2.0.0 - 7/5/22
 - [BREAKING] update theme to include label options
 - [feature] add ability to add stroke to labels
