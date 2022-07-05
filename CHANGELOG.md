@@ -1,3 +1,6 @@
+# 2.0.2 - 7/5/22
+- [fix] add stroke to labels and fix colors
+
 # 2.0.1 - 7/5/22
 - [fix] fix cursor not correct when draggable and not clickable
 
