@@ -13,7 +13,6 @@ export interface GraphState {
   graph: Graph;
   selections?: string[];
   draggingId?: string | null;
-  drags?: { [key: string]: any };
   setDraggingId: (id: string | null) => void;
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
