@@ -1,6 +1,10 @@
 import create, { StoreApi } from 'zustand';
 import createContext from 'zustand/context';
-import { InternalGraphEdge, InternalGraphNode } from './types';
+import {
+  InternalGraphEdge,
+  InternalGraphNode,
+  InternalGraphPosition
+} from './types';
 import ngraph, { Graph } from 'ngraph.graph';
 
 export interface GraphState {
@@ -9,11 +13,12 @@ export interface GraphState {
   graph: Graph;
   selections?: string[];
   draggingId?: string | null;
+  drags?: { [key: string]: any };
   setDraggingId: (id: string | null) => void;
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
-  setNodePosition: (id: string, position) => void;
+  setNodePosition: (id: string, position: InternalGraphPosition) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
