@@ -3,9 +3,9 @@ import { SizingType } from './sizing';
 import { LayoutTypes, layoutProvider, LayoutStrategy } from './layout';
 import { LabelVisibilityType } from './utils/visibility';
 import { tick } from './layout/layoutUtils';
-import { GraphEdge, GraphNode } from './types';
+import { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/buildGraph';
-import { useStore } from './store';
+import { DragReferences, useStore } from './store';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -28,15 +28,22 @@ export const useGraph = ({
   nodes,
   edges
 }: GraphInputs) => {
-  const [graph, setEdges, setNodes, setSelections] = useStore(state => [
+  const [graph, setEdges, setNodes, setSelections, drags] = useStore(state => [
     state.graph,
     state.setEdges,
     state.setNodes,
-    state.setSelections
+    state.setSelections,
+    state.drags
   ]);
 
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
+
+  // Transient updates
+  const dragRef = useRef<DragReferences>(drags);
+  useEffect(() => {
+    dragRef.current = drags;
+  }, [drags]);
 
   const updateLayout = useCallback(
     (curLayout?: any) => {
@@ -45,6 +52,7 @@ export const useGraph = ({
         layoutProvider({
           type: layoutType,
           graph,
+          drags: dragRef.current,
           clusterAttribute
         });
 

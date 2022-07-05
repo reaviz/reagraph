@@ -1,4 +1,5 @@
 import { Graph } from 'ngraph.graph';
+import { DragReferences } from '../store';
 import { InternalGraphNode } from '../types';
 
 export type LayoutTypes =
@@ -18,6 +19,7 @@ export interface LayoutFactoryProps {
   type: LayoutTypes;
   clusterAttribute?: string;
   graph: Graph;
+  drags?: DragReferences;
 }
 
 export interface LayoutStrategy {

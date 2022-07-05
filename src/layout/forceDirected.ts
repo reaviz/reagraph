@@ -9,15 +9,13 @@ import {
 } from 'd3-force-3d';
 import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
-import { LayoutStrategy } from './types';
+import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
 import { Graph } from 'ngraph.graph';
 
-interface ForceDirectedD3Inputs {
+interface ForceDirectedD3Inputs extends LayoutFactoryProps {
   dimensions?: number;
   mode?: DagMode;
-  graph: Graph;
-  clusterAttribute?: string;
 }
 
 const CLUSTER_PADDING = 10;
@@ -26,6 +24,7 @@ export function forceDirected({
   graph,
   mode = null,
   dimensions = 2,
+  drags,
   clusterAttribute
 }: ForceDirectedD3Inputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
@@ -102,6 +101,8 @@ export function forceDirected({
       .distance(50);
   }
 
+  const nodeMap = new Map(nodes.map(n => [n.id, n]));
+
   return {
     step() {
       // Run the ticker 100 times so
@@ -110,7 +111,7 @@ export function forceDirected({
       return true;
     },
     getNodePosition(id: string) {
-      return nodes.find(n => n.id === id);
+      return drags?.[id] || nodeMap.get(id);
     }
   };
 }

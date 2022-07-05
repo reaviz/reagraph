@@ -7,12 +7,15 @@ import {
 } from './types';
 import ngraph, { Graph } from 'ngraph.graph';
 
+export type DragReferences = { [key: string]: InternalGraphNode };
+
 export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
   graph: Graph;
   selections?: string[];
   draggingId?: string | null;
+  drags?: DragReferences;
   setDraggingId: (id: string | null) => void;
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
@@ -28,6 +31,7 @@ export const createStore = () =>
     nodes: [],
     draggingId: null,
     selections: [],
+    drags: {},
     graph: ngraph(),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
     setSelections: selections => set(state => ({ ...state, selections })),
@@ -36,12 +40,12 @@ export const createStore = () =>
     setNodePosition: (id, position) =>
       set(state => {
         const node = state.nodes.find(n => n.id === id);
+        // TODO: Come back and fix this so we don't have to double project
+        const newNode = { ...node, ...position, position };
         return {
           ...state,
-          nodes: [
-            ...state.nodes.filter(n => n.id !== id),
-            { ...node, position }
-          ]
+          drags: { ...state.drags, [id]: newNode },
+          nodes: [...state.nodes.filter(n => n.id !== id), newNode]
         };
       })
   }));
