@@ -44,7 +44,7 @@ export function transformGraph({
 }: TransformGraphInput) {
   const nodes: InternalGraphNode[] = [];
   const edges: InternalGraphEdge[] = [];
-  const map = new Map();
+  const map = new Map<string, InternalGraphNode>();
 
   const sizes = nodeSizeProvider(graph, sizingType, sizingAttribute);
   const nodeCount = graph.getNodesCount();
