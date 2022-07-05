@@ -8,30 +8,38 @@ By default, the graph supports 2 themes: light and dark mode. You can
 also define your own theme using the `theme` interface.
 
 ```ts
+export type ThemeColor = number | string;
+
 export interface Theme {
   canvas: {
-    background: string;
-    fog: string;
+    background: ThemeColor;
+    fog: ThemeColor;
   };
   node: {
-    fill: string;
-    color: string;
-    activeFill: string;
-    activeColor: string;
+    fill: ThemeColor;
+    activeFill: ThemeColor;
+    label: {
+      color: ThemeColor;
+      stroke: ThemeColor;
+      activeColor: ThemeColor;
+    }
   };
   ring: {
-    fill: string;
-    activeFill: string;
+    fill: ThemeColor;
+    activeFill: ThemeColor;
   };
   edge: {
-    fill: string;
-    color: string;
-    activeFill: string;
-    activeColor: string;
+    fill: ThemeColor;
+    activeFill: ThemeColor;
+    label: {
+      color: ThemeColor;
+      stroke: ThemeColor;
+      activeColor: ThemeColor;
+    }
   };
   arrow: {
-    fill: string;
-    activeFill: string;
+    fill: ThemeColor;
+    activeFill: ThemeColor;
   };
   menu: {
     background: string;
@@ -79,16 +87,19 @@ import { Theme } from 'reagraph';
 export const lightTheme: Theme = {
   canvas: {
     background: '#fff',
-    fog: '#FFFFFF'
+    fog: '#fff'
   },
   node: {
     fill: '#AACBD2',
-    color: '#2A6475',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    label: {
+      color: '#2A6475',
+      stroke: '#fff',
+      activeColor: '#1DE9AC'
+    }
   },
   menu: {
-    background: '#FFF',
+    background: '#fff',
     border: '#AACBD2',
     color: '#000',
     activeBackground: '#D8E6EA',
@@ -100,9 +111,12 @@ export const lightTheme: Theme = {
   },
   edge: {
     fill: '#D8E6EA',
-    color: '#2A6475',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    label: {
+      stroke: '#fff',
+      color: '#2A6475',
+      activeColor: '#1DE9AC',
+    }
   },
   arrow: {
     fill: '#D8E6EA',

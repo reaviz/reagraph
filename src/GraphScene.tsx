@@ -101,7 +101,14 @@ export interface GraphSceneProps {
 }
 
 export interface GraphSceneRef {
+  /**
+   * Reference to the ngraph object.
+   */
   graph: any;
+
+  /**
+   * Center the graph on a node or list of nodes.
+   */
   centerGraph: (nodeIds?: string[]) => void;
 }
 
@@ -119,7 +126,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         labelFontUrl,
         ...rest
       },
-      ref: Ref<GraphSceneRef>
+      ref
     ) => {
       useGraph(rest);
 

@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig } from '../utils/animation';
-import { DoubleSide } from 'three';
+import { Color, ColorRepresentation, DoubleSide } from 'three';
 
 export interface SphereProps {
   size?: number;
-  color?: string;
+  color?: ColorRepresentation;
   opacity?: number;
   id: string;
   animated?: boolean;
@@ -24,16 +24,14 @@ export const Sphere: FC<SphereProps> = ({
   onClick,
   onContextMenu
 }) => {
-  const { scale, nodeColor, nodeOpacity } = useSpring({
+  const { scale, nodeOpacity } = useSpring({
     from: {
       // Note: This prevents incorrect scaling w/ 0
       scale: [0.00001, 0.00001, 0.00001],
-      nodeColor: color,
       nodeOpacity: 0
     },
     to: {
       scale: [size, size, size],
-      nodeColor: color,
       nodeOpacity: opacity
     },
     config: {
@@ -41,6 +39,7 @@ export const Sphere: FC<SphereProps> = ({
       duration: animated ? undefined : 0
     }
   });
+  const normalizedColor = useMemo(() => new Color(color), [color]);
 
   return (
     <a.mesh
@@ -64,7 +63,7 @@ export const Sphere: FC<SphereProps> = ({
         transparent={true}
         fog={true}
         opacity={nodeOpacity}
-        color={nodeColor}
+        color={normalizedColor}
       />
     </a.mesh>
   );

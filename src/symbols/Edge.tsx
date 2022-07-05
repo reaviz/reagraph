@@ -73,9 +73,9 @@ export const Edge: FC<EdgeProps> = ({
 
   const selectionOpacity = hasSelections
     ? isSelected && hasSingleSelection
-      ? 0.5
+      ? 1
       : 0.1
-    : 0.5;
+    : 1;
 
   const [{ labelPosition }] = useSpring(
     () => ({
@@ -135,7 +135,11 @@ export const Edge: FC<EdgeProps> = ({
         <a.group position={labelPosition as any} rotation={labelRotation}>
           <Label
             text={label}
-            color={isSelected ? theme.edge.activeColor : theme.edge.color}
+            ellipsis={15}
+            stroke={theme.edge.label.stroke}
+            color={
+              isSelected ? theme.edge.label.activeColor : theme.edge.label.color
+            }
             opacity={selectionOpacity}
             fontSize={LABEL_FONT_SIZE}
           />

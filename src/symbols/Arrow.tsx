@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { Mesh } from 'three';
+import { Color, ColorRepresentation, Mesh } from 'three';
 import {
   getQuaternion,
   animationConfig,
@@ -12,7 +12,7 @@ import { useStore } from '../store';
 
 export interface ArrowProps {
   position: EdgeVectors3;
-  color?: string;
+  color?: ColorRepresentation;
   animated?: boolean;
   opacity?: number;
   size?: number;
@@ -27,6 +27,7 @@ export const Arrow: FC<ArrowProps> = ({
   placement,
   color
 }) => {
+  const normalizedColor = useMemo(() => new Color(color), [color]);
   const meshRef = useRef<Mesh | null>(null);
   const quaternion = useMemo(() => getQuaternion(position), [position]);
   const draggingId = useStore(state => state.draggingId);
@@ -78,7 +79,7 @@ export const Arrow: FC<ArrowProps> = ({
       />
       <a.meshBasicMaterial
         attach="material"
-        color={color}
+        color={normalizedColor}
         depthTest={false}
         opacity={arrowOpacity}
         transparent={true}

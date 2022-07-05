@@ -6,7 +6,8 @@ import React, {
   forwardRef,
   Ref,
   useImperativeHandle,
-  useMemo
+  useMemo,
+  ReactNode
 } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
 import {
@@ -69,10 +70,29 @@ const downKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_DOWN, 100);
 export type CameraMode = 'pan' | 'rotate';
 
 export interface CameraControlsProps {
+  /**
+   * Mode of the camera.
+   */
   mode?: CameraMode;
-  children?: React.ReactNode;
+
+  /**
+   * Children symbols.
+   */
+  children?: ReactNode;
+
+  /**
+   * Animate transitions to centering.
+   */
   animated?: boolean;
+
+  /**
+   * Disable the controls.
+   */
   disabled?: boolean;
+
+  /**
+   * When the controls were updated.
+   */
   onUpdate?: () => void;
 }
 

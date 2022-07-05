@@ -10,6 +10,9 @@ import { useStore } from '../store';
 const PADDING = 50;
 
 export interface CenterGraphInput {
+  /**
+   * Whether the animate the transition or not.
+   */
   animated?: boolean;
 }
 

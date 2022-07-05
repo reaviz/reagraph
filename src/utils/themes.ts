@@ -1,27 +1,35 @@
+import { ColorRepresentation } from 'three';
+
 export interface Theme {
   canvas: {
-    background: string;
-    fog: string;
+    background: ColorRepresentation;
+    fog: ColorRepresentation;
   };
   node: {
-    fill: string;
-    color: string;
-    activeFill: string;
-    activeColor: string;
+    fill: ColorRepresentation;
+    activeFill: ColorRepresentation;
+    label: {
+      color: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor: ColorRepresentation;
+    };
   };
   ring: {
-    fill: string;
-    activeFill: string;
+    fill: ColorRepresentation;
+    activeFill: ColorRepresentation;
   };
   edge: {
-    fill: string;
-    color: string;
-    activeFill: string;
-    activeColor: string;
+    fill: ColorRepresentation;
+    activeFill: ColorRepresentation;
+    label: {
+      color: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor: ColorRepresentation;
+    };
   };
   arrow: {
-    fill: string;
-    activeFill: string;
+    fill: ColorRepresentation;
+    activeFill: ColorRepresentation;
   };
   menu: {
     background: string;
@@ -35,16 +43,19 @@ export interface Theme {
 export const lightTheme: Theme = {
   canvas: {
     background: '#fff',
-    fog: '#FFFFFF'
+    fog: '#fff'
   },
   node: {
     fill: '#AACBD2',
-    color: '#2A6475',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    label: {
+      color: '#2A6475',
+      // stroke: '#fff',
+      activeColor: '#1DE9AC'
+    }
   },
   menu: {
-    background: '#FFF',
+    background: '#fff',
     border: '#AACBD2',
     color: '#000',
     activeBackground: '#D8E6EA',
@@ -56,9 +67,12 @@ export const lightTheme: Theme = {
   },
   edge: {
     fill: '#D8E6EA',
-    color: '#2A6475',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    label: {
+      // stroke: '#fff',
+      color: '#2A6475',
+      activeColor: '#1DE9AC'
+    }
   },
   arrow: {
     fill: '#D8E6EA',
@@ -68,14 +82,17 @@ export const lightTheme: Theme = {
 
 export const darkTheme: Theme = {
   canvas: {
-    background: '#1C252D',
-    fog: '#000000'
+    background: '#1E2026',
+    fog: '#1E2026'
   },
   node: {
     fill: '#7A8C9E',
-    color: '#ACBAC7',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    label: {
+      // stroke: '#1E2026',
+      color: '#ACBAC7',
+      activeColor: '#1DE9AC'
+    }
   },
   menu: {
     background: '#54616D',
@@ -89,13 +106,16 @@ export const darkTheme: Theme = {
     activeFill: '#1DE9AC'
   },
   edge: {
-    fill: '#54616D',
-    color: '#ACBAC7',
+    fill: '#474B56',
     activeFill: '#1DE9AC',
-    activeColor: '#1DE9AC'
+    label: {
+      // stroke: '#1E2026',
+      color: '#ACBAC7',
+      activeColor: '#1DE9AC'
+    }
   },
   arrow: {
-    fill: '#54616D',
+    fill: '#474B56',
     activeFill: '#1DE9AC'
   }
 };

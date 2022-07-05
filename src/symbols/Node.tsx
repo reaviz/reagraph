@@ -183,10 +183,12 @@ export const Node: FC<NodeProps> = ({
             text={label}
             fontUrl={labelFontUrl}
             opacity={selectionOpacity}
+            stroke={theme.node.label.stroke}
+            active={isSelected || isActive || isDragging}
             color={
               isSelected || isActive || isDragging
-                ? theme.node.activeColor
-                : theme.node.color
+                ? theme.node.label.activeColor
+                : theme.node.label.color
             }
           />
         </a.group>

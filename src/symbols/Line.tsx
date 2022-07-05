@@ -1,11 +1,17 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig, EdgeVectors3 } from '../utils';
-import { Vector3, TubeBufferGeometry, CatmullRomCurve3 } from 'three';
+import {
+  Vector3,
+  TubeBufferGeometry,
+  CatmullRomCurve3,
+  ColorRepresentation,
+  Color
+} from 'three';
 import { useStore } from '../store';
 
 export interface LineProps {
-  color?: string;
+  color?: ColorRepresentation;
   size?: number;
   animated?: boolean;
   id: string;
@@ -23,6 +29,7 @@ export const Line: FC<LineProps> = ({
 }) => {
   const tubeRef = useRef<TubeBufferGeometry | null>(null);
   const draggingId = useStore(state => state.draggingId);
+  const normalizedColor = useMemo(() => new Color(color), [color]);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({
@@ -84,7 +91,7 @@ export const Line: FC<LineProps> = ({
         fog={true}
         transparent={true}
         depthTest={false}
-        color={color}
+        color={normalizedColor}
       />
     </mesh>
   );

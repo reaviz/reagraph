@@ -1,17 +1,19 @@
-import React, { FC } from 'react';
-import { DoubleSide } from 'three';
+import React, { FC, useMemo } from 'react';
+import { Color, ColorRepresentation, DoubleSide } from 'three';
 import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
 import { Billboard } from '@react-three/drei';
 
 export interface RingProps {
-  color?: string;
+  color?: ColorRepresentation;
   animated?: boolean;
   size?: number;
   opacity?: number;
 }
 
 export const Ring: FC<RingProps> = ({ color, size, opacity, animated }) => {
+  const normalizedColor = useMemo(() => new Color(color), [color]);
+
   const { ringSize, ringOpacity } = useSpring({
     from: {
       ringOpacity: 0,
@@ -33,7 +35,7 @@ export const Ring: FC<RingProps> = ({ color, size, opacity, animated }) => {
         <ringBufferGeometry attach="geometry" args={[4, 4.5, 25]} />
         <a.meshBasicMaterial
           attach="material"
-          color={color}
+          color={normalizedColor}
           transparent={true}
           depthTest={false}
           opacity={ringOpacity}

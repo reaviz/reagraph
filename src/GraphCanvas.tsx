@@ -36,9 +36,29 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
   Omit<CameraControlsRef, 'controls'> & {
+    /**
+     * Get the ngraph object.
+     */
     getGraph: () => any;
+
+    /**
+     * Get the camera controls.
+     */
     getControls: () => any;
   };
+
+const GL_DEFAULTS = {
+  alpha: true,
+  antialias: true
+};
+
+// TODO: Fix type
+const CAMERA_DEFAULTS: any = {
+  position: [0, 0, 1000],
+  near: 5,
+  far: 10000,
+  fov: 10
+};
 
 export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
@@ -64,8 +84,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       return (
         <div className={css.canvas}>
           <Canvas
-            gl={{ alpha: true, antialias: true }}
-            camera={{ position: [0, 0, 1000], near: 5, far: 10000, fov: 10 }}
+            colorManagement={false}
+            gl={GL_DEFAULTS}
+            camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
           >
             <color attach="background" args={[theme.canvas.background]} />

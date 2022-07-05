@@ -12,6 +12,7 @@ export const DarkTheme = () => (
     theme={darkTheme}
     nodes={simpleNodes}
     edges={simpleEdges}
+    labelType="all"
     contextMenuItems={[
       {
         label: 'Add Node',
@@ -47,34 +48,40 @@ export const CustomTheme = CustomThemeStory.bind({});
 CustomTheme.args = {
   theme: {
     canvas: {
-      background: 'gray',
-      fog: '000000'
+      background: '#1E2026',
+      fog: '#1E2026'
     },
     node: {
-      fill: 'blue',
-      color: 'white',
+      fill: '#7A8C9E',
       activeFill: '#1DE9AC',
-      activeColor: '#1DE9AC'
+      label: {
+        stroke: '#1E2026',
+        color: '#ACBAC7',
+        activeColor: '#1DE9AC',
+      }
     },
     menu: {
-      background: '#FFF',
-      border: '#AACBD2',
-      color: '#000',
+      background: '#54616D',
+      border: '#7A8C9E',
+      color: '#fff',
       activeBackground: '#1DE9AC',
-      activeColor: '#FFF'
-    },
-    edge: {
-      fill: 'yellow',
-      color: 'white',
-      activeFill: '#1DE9AC',
-      activeColor: '#1DE9AC'
+      activeColor: '#000'
     },
     ring: {
-      fill: 'green',
+      fill: '#54616D',
       activeFill: '#1DE9AC'
     },
+    edge: {
+      fill: '#54616D',
+      activeFill: '#1DE9AC',
+      label: {
+        stroke: '#1E2026',
+        color: '#ACBAC7',
+        activeColor: '#1DE9AC',
+      }
+    },
     arrow: {
-      fill: 'green',
+      fill: '#54616D',
       activeFill: '#1DE9AC'
     }
   }
