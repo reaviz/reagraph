@@ -46,8 +46,8 @@ ThreeCameraControls.install({
     Sphere: Sphere,
     Raycaster: Raycaster,
     MathUtils: {
-      DEG2RAD: MathUtils.DEG2RAD,
-      clamp: MathUtils.clamp
+      DEG2RAD: MathUtils?.DEG2RAD,
+      clamp: MathUtils?.clamp
     }
   }
 });
