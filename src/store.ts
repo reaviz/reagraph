@@ -16,6 +16,7 @@ export interface GraphState {
   selections?: string[];
   draggingId?: string | null;
   drags?: DragReferences;
+  setDrags: (drags: DragReferences) => void;
   setDraggingId: (id: string | null) => void;
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
@@ -33,6 +34,7 @@ export const createStore = () =>
     selections: [],
     drags: {},
     graph: ngraph(),
+    setDrags: drags => set(state => ({ ...state, drags })),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
     setSelections: selections => set(state => ({ ...state, selections })),
     setNodes: nodes => set(state => ({ ...state, nodes })),

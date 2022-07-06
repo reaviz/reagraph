@@ -28,13 +28,16 @@ export const useGraph = ({
   nodes,
   edges
 }: GraphInputs) => {
-  const [graph, setEdges, setNodes, setSelections, drags] = useStore(state => [
-    state.graph,
-    state.setEdges,
-    state.setNodes,
-    state.setSelections,
-    state.drags
-  ]);
+  const [graph, setEdges, setNodes, setSelections, drags, setDrags] = useStore(
+    state => [
+      state.graph,
+      state.setEdges,
+      state.setNodes,
+      state.setSelections,
+      state.drags,
+      state.setDrags
+    ]
+  );
 
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
@@ -100,9 +103,14 @@ export const useGraph = ({
   // Update layout on type changes
   useEffect(() => {
     if (layoutMounted.current) {
+      // Set the transient and the state
+      dragRef.current = {};
+      setDrags({});
+
+      // Recalculate the layout
       updateLayout();
     }
-  }, [graph, layoutType, updateLayout]);
+  }, [graph, layoutType, updateLayout, setDrags]);
 
   // Update layout on size, label changes
   useEffect(() => {
