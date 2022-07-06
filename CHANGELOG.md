@@ -1,3 +1,7 @@
+# 2.0.4 - 7/6/22
+- [fix] fix dragging node not getting reset on layout change
+- [fix] fix null reference in camera controls #25
+
 # 2.0.3 - 7/5/22
 - [fix] fix dragging a node and then resetting layout not retaining position #43
 
