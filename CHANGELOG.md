@@ -1,3 +1,6 @@
+# 2.0.4 - 7/11/22
+- [fix] fix edge selection #46
+
 # 2.0.4 - 7/6/22
 - [fix] fix dragging node not getting reset on layout change
 - [fix] fix null reference in camera controls #25
