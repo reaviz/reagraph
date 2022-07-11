@@ -42,32 +42,30 @@ export const Icon: FC<IconProps> = ({
   });
 
   return (
-    <group>
-      <a.sprite
-        userData={{ id }}
-        scale={scale as any}
-        onClick={onClick}
-        onPointerDown={event => {
-          // context menu controls
-          if (event.nativeEvent.buttons === 2) {
-            event.stopPropagation();
-            onContextMenu();
-          }
-        }}
-        onPointerOver={() => onActive(true)}
-        onPointerOut={() => onActive(false)}
+    <a.sprite
+      userData={{ id }}
+      scale={scale as any}
+      onClick={onClick}
+      onPointerDown={event => {
+        // context menu controls
+        if (event.nativeEvent.buttons === 2) {
+          event.stopPropagation();
+          onContextMenu();
+        }
+      }}
+      onPointerOver={() => onActive(true)}
+      onPointerOut={() => onActive(false)}
+    >
+      <a.spriteMaterial
+        attach="material"
+        opacity={spriteOpacity}
+        fog={true}
+        depthTest={false}
+        transparent={true}
       >
-        <a.spriteMaterial
-          attach="material"
-          opacity={spriteOpacity}
-          fog={true}
-          depthTest={false}
-          transparent={true}
-        >
-          <primitive attach="map" object={texture} minFilter={LinearFilter} />
-        </a.spriteMaterial>
-      </a.sprite>
-    </group>
+        <primitive attach="map" object={texture} minFilter={LinearFilter} />
+      </a.spriteMaterial>
+    </a.sprite>
   );
 };
 
