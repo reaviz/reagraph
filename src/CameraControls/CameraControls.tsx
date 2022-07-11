@@ -67,7 +67,7 @@ const rightKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_RIGHT, 100);
 const upKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_UP, 100);
 const downKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_DOWN, 100);
 
-export type CameraMode = 'pan' | 'rotate';
+export type CameraMode = 'pan' | 'rotate' | 'orbit';
 
 export interface CameraControlsProps {
   /**
@@ -107,8 +107,16 @@ export const CameraControls: FC<
   ) => {
     const cameraRef = useRef<ThreeCameraControls | null>(null);
     const { camera, gl } = useThree();
+    const isOrbiting = mode === 'orbit';
 
-    useFrame((_state, delta) => cameraRef.current?.update(delta));
+    useFrame((_state, delta) => {
+      cameraRef.current?.update(delta);
+
+      if (isOrbiting) {
+        cameraRef.current.azimuthAngle += 20 * delta * MathUtils.DEG2RAD;
+      }
+    });
+
     useEffect(() => () => cameraRef.current?.dispose(), []);
 
     const zoomIn = useCallback(() => {
@@ -121,30 +129,38 @@ export const CameraControls: FC<
 
     const panRight = useCallback(
       event => {
-        cameraRef.current?.truck(-0.03 * event.deltaTime, 0, animated);
+        if (!isOrbiting) {
+          cameraRef.current?.truck(-0.03 * event.deltaTime, 0, animated);
+        }
       },
-      [animated]
+      [animated, isOrbiting]
     );
 
     const panLeft = useCallback(
       event => {
-        cameraRef.current?.truck(0.03 * event.deltaTime, 0, animated);
+        if (!isOrbiting) {
+          cameraRef.current?.truck(0.03 * event.deltaTime, 0, animated);
+        }
       },
-      [animated]
+      [animated, isOrbiting]
     );
 
     const panUp = useCallback(
       event => {
-        cameraRef.current?.truck(0, 0.03 * event.deltaTime, animated);
+        if (!isOrbiting) {
+          cameraRef.current?.truck(0, 0.03 * event.deltaTime, animated);
+        }
       },
-      [animated]
+      [animated, isOrbiting]
     );
 
     const panDown = useCallback(
       event => {
-        cameraRef.current?.truck(0, -0.03 * event.deltaTime, animated);
+        if (!isOrbiting) {
+          cameraRef.current?.truck(0, -0.03 * event.deltaTime, animated);
+        }
       },
-      [animated]
+      [animated, isOrbiting]
     );
 
     const onKeyDown = useCallback(
