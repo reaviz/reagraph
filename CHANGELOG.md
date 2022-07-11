@@ -1,4 +1,7 @@
-# 2.0.4 - 7/11/22
+# 2.0.6 - 7/11/22
+- [feature] add `orbit` camera mode for auto rotating
+
+# 2.0.5 - 7/11/22
 - [fix] fix edge selection #46
 
 # 2.0.4 - 7/6/22
