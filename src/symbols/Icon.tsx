@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
-import { TextureLoader, LinearFilter } from 'three';
+import { TextureLoader, LinearFilter, DoubleSide } from 'three';
 import { animationConfig } from '../utils';
 
 export interface IconProps {
@@ -62,6 +62,7 @@ export const Icon: FC<IconProps> = ({
         fog={true}
         depthTest={false}
         transparent={true}
+        side={DoubleSide}
       >
         <primitive attach="map" object={texture} minFilter={LinearFilter} />
       </a.spriteMaterial>
