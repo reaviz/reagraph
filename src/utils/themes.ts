@@ -78,8 +78,8 @@ export const lightTheme: Theme = {
     fill: '#D8E6EA',
     activeFill: '#1DE9AC',
     opacity: 1,
-    opacitySelected: 1,
-    opacityOnlySelected: 0.1,
+    opacitySelected: 0.1,
+    opacityOnlySelected: 1,
     label: {
       stroke: '#fff',
       color: '#2A6475',
@@ -124,8 +124,8 @@ export const darkTheme: Theme = {
     fill: '#474B56',
     activeFill: '#1DE9AC',
     opacity: 1,
-    opacitySelected: 1,
-    opacityOnlySelected: 0.1,
+    opacitySelected: 0.1,
+    opacityOnlySelected: 1,
     label: {
       stroke: '#1E2026',
       color: '#ACBAC7',
