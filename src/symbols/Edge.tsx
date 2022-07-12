@@ -68,14 +68,15 @@ export const Edge: FC<EdgeProps> = ({
   const { isSelected, hasSelections, hasSingleSelection } = useStore(state => ({
     hasSingleSelection: state.selections?.length === 1,
     hasSelections: state.selections?.length,
-    isSelected: state.selections?.includes(fromId) || state.selections?.includes(id)
+    isSelected:
+      state.selections?.includes(fromId) || state.selections?.includes(id)
   }));
 
   const selectionOpacity = hasSelections
     ? isSelected && hasSingleSelection
-      ? 1
-      : 0.1
-    : 1;
+      ? theme.edge.opacityOnlySelected || 1
+      : theme.edge.opacitySelected || 0.1
+    : theme.edge.opacity || 1;
 
   const [{ labelPosition }] = useSpring(
     () => ({

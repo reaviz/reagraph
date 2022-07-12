@@ -71,9 +71,9 @@ export const Node: FC<NodeProps> = ({
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
-      ? 1
-      : 0.2
-    : 1;
+      ? theme.node.opacitySelected || 1
+      : theme.node.opacityNotSelected || 0.2
+    : theme.node.opacity || 1;
 
   const [{ nodePosition, labelPosition }] = useSpring(
     () => ({
