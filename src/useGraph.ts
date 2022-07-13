@@ -3,7 +3,7 @@ import { SizingType } from './sizing';
 import { LayoutTypes, layoutProvider, LayoutStrategy } from './layout';
 import { LabelVisibilityType } from './utils/visibility';
 import { tick } from './layout/layoutUtils';
-import { GraphEdge, GraphNode, InternalGraphNode } from './types';
+import { GraphEdge, GraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/buildGraph';
 import { DragReferences, useStore } from './store';
 
@@ -82,6 +82,7 @@ export const useGraph = ({
       });
     },
     [
+      defaultNodeSize,
       maxNodeSize,
       minNodeSize,
       layoutType,

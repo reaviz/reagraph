@@ -1,3 +1,6 @@
+# 2.0.7 - 7/11/22
+- [feature] add min/max/default sizes to nodes
+
 # 2.0.6 - 7/11/22
 - [feature] add `orbit` camera mode for auto rotating
 

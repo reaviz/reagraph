@@ -15,14 +15,14 @@ export const Centrality = () => (
   <GraphCanvas sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
 );
 
-export const MinMaxSizesStory = (props) => (
+const MinMaxSizesStory = (props) => (
   <GraphCanvas {...props} sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
 );
 
 export const MinMaxSizes = MinMaxSizesStory.bind({});
 MinMaxSizes.args = {
-  minNodeSize: 10,
-  maxNodeSize: 50
+  minNodeSize: 25,
+  maxNodeSize: 100
 };
 
 export const PageRank = () => (
