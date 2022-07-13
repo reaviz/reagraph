@@ -16,6 +16,9 @@ export interface GraphInputs {
   sizingAttribute?: string;
   selections?: string[];
   clusterAttribute?: string;
+  defaultNodeSize?: number;
+  minNodeSize?: number;
+  maxNodeSize?: number;
 }
 
 export const useGraph = ({
@@ -26,7 +29,10 @@ export const useGraph = ({
   clusterAttribute,
   selections,
   nodes,
-  edges
+  edges,
+  defaultNodeSize,
+  maxNodeSize,
+  minNodeSize
 }: GraphInputs) => {
   const [graph, setEdges, setNodes, setSelections, drags, setDrags] = useStore(
     state => [
@@ -65,7 +71,10 @@ export const useGraph = ({
           layout: layout.current,
           sizingType,
           labelType,
-          sizingAttribute
+          sizingAttribute,
+          maxNodeSize,
+          minNodeSize,
+          defaultNodeSize
         });
 
         setEdges(result.edges);
@@ -73,6 +82,8 @@ export const useGraph = ({
       });
     },
     [
+      maxNodeSize,
+      minNodeSize,
       layoutType,
       graph,
       sizingType,

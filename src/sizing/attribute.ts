@@ -1,15 +1,14 @@
 import { scaleLinear } from 'd3-scale';
 import { extent } from 'd3-array';
-import { SizingStrategy } from './types';
-import { Graph } from 'ngraph.graph';
+import { SizingStrategy, SizingStrategyInputs } from './types';
 
-const SIZE_RANGE = [3, 15];
-const DEFAULT_SIZE = 7;
-
-export function attributeSizing(
-  graph: Graph,
-  attribute?: string
-): SizingStrategy {
+export function attributeSizing({
+  graph,
+  attribute,
+  defaultSize,
+  minSize,
+  maxSize
+}: SizingStrategyInputs): SizingStrategy {
   const nodes = [];
 
   // Map the nodes from ngraph
@@ -20,7 +19,7 @@ export function attributeSizing(
   let map;
   if (attribute) {
     const domain = extent(nodes, n => n.data.data[attribute]);
-    const scale = scaleLinear().domain(domain).rangeRound(SIZE_RANGE);
+    const scale = scaleLinear().domain(domain).rangeRound([minSize, maxSize]);
 
     map = new Map();
     for (const node of nodes) {
@@ -29,9 +28,9 @@ export function attributeSizing(
   }
 
   return {
-    getSizeForNode: (nodeId: string, size = DEFAULT_SIZE) => {
+    getSizeForNode: (nodeId: string) => {
       if (!attribute || !map) {
-        return size;
+        return defaultSize;
       }
 
       return map.get(nodeId);

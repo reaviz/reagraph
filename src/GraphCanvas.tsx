@@ -127,5 +127,8 @@ GraphCanvas.defaultProps = {
   sizingType: 'none',
   labelType: 'auto',
   theme: lightTheme,
-  animated: true
+  animated: true,
+  defaultNodeSize: 7,
+  minNodeSize: 5,
+  maxNodeSize: 15
 };

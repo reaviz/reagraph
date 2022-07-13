@@ -81,6 +81,21 @@ export interface GraphSceneProps {
   sizingAttribute?: string;
 
   /**
+   * The default size to size nodes to. Default is 7.
+   */
+  defaultNodeSize?: number;
+
+  /**
+   * When using sizing attributes, the min size a node can be.
+   */
+  minNodeSize?: number;
+
+  /**
+   * When using sizing attributes, the max size a node can be.
+   */
+  maxNodeSize?: number;
+
+  /**
    * Attribute used for clustering.
    */
   clusterAttribute?: string;

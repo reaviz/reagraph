@@ -33,6 +33,9 @@ interface TransformGraphInput {
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
+  minNodeSize?: number;
+  maxNodeSize?: number;
+  defaultNodeSize?: number;
 }
 
 export function transformGraph({
@@ -40,13 +43,23 @@ export function transformGraph({
   layout,
   sizingType,
   labelType,
-  sizingAttribute
+  sizingAttribute,
+  defaultNodeSize,
+  minNodeSize,
+  maxNodeSize
 }: TransformGraphInput) {
   const nodes: InternalGraphNode[] = [];
   const edges: InternalGraphEdge[] = [];
   const map = new Map<string, InternalGraphNode>();
 
-  const sizes = nodeSizeProvider(graph, sizingType, sizingAttribute);
+  const sizes = nodeSizeProvider({
+    graph,
+    type: sizingType,
+    attribute: sizingAttribute,
+    minSize: minNodeSize,
+    maxSize: maxNodeSize,
+    defaultSize: defaultNodeSize
+  });
   const nodeCount = graph.getNodesCount();
   const checkVisibility = calcLabelVisibility(nodeCount, labelType);
 
@@ -54,7 +67,7 @@ export function transformGraph({
     if (node.data) {
       const position = layout.getNodePosition(node.id);
       const { data, fill, icon, label, size, ...rest } = node.data;
-      const nodeSize = sizes.getSizeForNode(node.id, size);
+      const nodeSize = sizes.getSizeForNode(node.id);
       const labelVisible = checkVisibility('node', nodeSize);
 
       const n: InternalGraphNode = {

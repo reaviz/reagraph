@@ -1,12 +1,15 @@
 import centrality from 'ngraph.centrality';
-import { Graph } from 'ngraph.graph';
-import { SizingStrategy } from './types';
+import { SizingStrategy, SizingStrategyInputs } from './types';
 
-export function centralitySizing(graph: Graph): SizingStrategy {
+export function centralitySizing({
+  graph,
+  minSize,
+  maxSize
+}: SizingStrategyInputs): SizingStrategy {
   const ranks = centrality.closeness(graph);
   return {
     ranks,
-    getSizeForNode: (nodeID: string, size?: number) =>
-      Math.max(ranks[nodeID] * 20, 5)
+    getSizeForNode: (nodeID: string) =>
+      Math.min(Math.max(ranks[nodeID] * 20, minSize), maxSize)
   };
 }
