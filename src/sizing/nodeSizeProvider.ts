@@ -2,11 +2,12 @@ import { pageRankSizing } from './pageRank';
 import { centralitySizing } from './centrality';
 import { attributeSizing } from './attribute';
 import { SizingStrategy } from './types';
+import { Graph } from 'ngraph.graph';
 
 export type SizingType = 'none' | 'pagerank' | 'centrality' | 'attribute';
 
 export function nodeSizeProvider(
-  graph,
+  graph: Graph,
   type: SizingType,
   sizingAttribute?: string
 ): SizingStrategy {

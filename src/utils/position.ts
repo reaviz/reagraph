@@ -13,7 +13,8 @@ function pointAtLine(
 ): Vector3 {
   const { distance, fromVector, toVector } = calcDistance({ from, to });
   if (distance < size) {
-    // NOTE: This is a hacky way to get the from position - we should not do this long term
+    // NOTE: This is a hacky way to get the from position
+    // we should not do this long term
     // @ts-ignore
     return from;
   }

@@ -1,11 +1,15 @@
 import { scaleLinear } from 'd3-scale';
 import { extent } from 'd3-array';
 import { SizingStrategy } from './types';
+import { Graph } from 'ngraph.graph';
 
 const SIZE_RANGE = [3, 15];
 const DEFAULT_SIZE = 7;
 
-export function attributeSizing(graph, attribute?: string): SizingStrategy {
+export function attributeSizing(
+  graph: Graph,
+  attribute?: string
+): SizingStrategy {
   const nodes = [];
 
   // Map the nodes from ngraph

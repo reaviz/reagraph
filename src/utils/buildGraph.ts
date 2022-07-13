@@ -28,7 +28,7 @@ export function buildGraph(
 }
 
 interface TransformGraphInput {
-  graph: any;
+  graph: Graph;
   layout: any;
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
@@ -50,15 +50,15 @@ export function transformGraph({
   const nodeCount = graph.getNodesCount();
   const checkVisibility = calcLabelVisibility(nodeCount, labelType);
 
-  graph.forEachNode((node: InternalGraphNode) => {
+  graph.forEachNode((node: any) => {
     if (node.data) {
       const position = layout.getNodePosition(node.id);
       const { data, fill, icon, label, size, ...rest } = node.data;
       const nodeSize = sizes.getSizeForNode(node.id, size);
       const labelVisible = checkVisibility('node', nodeSize);
 
-      const n = {
-        ...node,
+      const n: InternalGraphNode = {
+        ...(node as any),
         size: nodeSize,
         labelVisible,
         label,
@@ -79,7 +79,7 @@ export function transformGraph({
     }
   });
 
-  graph.forEachLink((link: InternalGraphEdge) => {
+  graph.forEachLink((link: any) => {
     const from = map.get(link.fromId);
     const to = map.get(link.toId);
 

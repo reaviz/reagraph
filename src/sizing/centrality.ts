@@ -1,7 +1,8 @@
 import centrality from 'ngraph.centrality';
+import { Graph } from 'ngraph.graph';
 import { SizingStrategy } from './types';
 
-export function centralitySizing(graph: any): SizingStrategy {
+export function centralitySizing(graph: Graph): SizingStrategy {
   const ranks = centrality.closeness(graph);
   return {
     ranks,

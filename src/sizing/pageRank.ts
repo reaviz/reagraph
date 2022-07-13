@@ -1,7 +1,8 @@
+import { Graph } from 'ngraph.graph';
 import pagerank from 'ngraph.pagerank';
 import { SizingStrategy } from './types';
 
-export function pageRankSizing(graph: any): SizingStrategy {
+export function pageRankSizing(graph: Graph): SizingStrategy {
   const ranks = pagerank(graph);
   return {
     ranks,
