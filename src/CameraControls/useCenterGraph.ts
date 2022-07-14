@@ -1,6 +1,6 @@
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Vector3, Box3 } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
@@ -79,10 +79,12 @@ export const useCenterGraph = ({
     [centerNodes, nodes]
   );
 
-  // On load of graph, listen for center events and center the graph
+  const mounted = useRef<boolean>(false);
   useEffect(() => {
-    if (controls && nodes?.length) {
+    // Center the graph once nodes are loaded on mount
+    if (controls && nodes?.length && !mounted.current) {
       centerNodes(nodes);
+      mounted.current = true;
     }
   }, [controls, centerNodes, nodes]);
 
