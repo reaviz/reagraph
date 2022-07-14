@@ -1,3 +1,7 @@
+# 2.0.8 - 7/12/22
+- [fix] cleanup sizing logic to be relative #51
+- [fix] improve various layout distances
+
 # 2.0.7 - 7/11/22
 - [feature] add min/max/default sizes to nodes
 
