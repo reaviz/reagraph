@@ -1,31 +1,23 @@
-import { scaleLinear } from 'd3-scale';
-import { extent } from 'd3-array';
 import { SizingStrategy, SizingStrategyInputs } from './types';
 
 export function attributeSizing({
   graph,
   attribute,
-  defaultSize,
-  minSize,
-  maxSize
+  defaultSize
 }: SizingStrategyInputs): SizingStrategy {
-  const nodes = [];
-
-  // Map the nodes from ngraph
-  graph.forEachNode(node => {
-    nodes.push(node);
-  });
-
-  let map;
-  if (attribute) {
-    const domain = extent(nodes, n => n.data.data[attribute]);
-    const scale = scaleLinear().domain(domain).rangeRound([minSize, maxSize]);
-
-    map = new Map();
-    for (const node of nodes) {
-      map.set(node.id, scale(node.data.data[attribute]));
-    }
+  if (!attribute) {
+    throw new Error('Attribute sizing configured but no attribute provided');
   }
+
+  const map = new Map();
+  graph.forEachNode(node => {
+    const size = node.data.data[attribute];
+    if (isNaN(size)) {
+      console.warn(`Attribute ${size} is not a number for node ${node.id}`);
+    }
+
+    map.set(node.id, size || 0);
+  });
 
   return {
     getSizeForNode: (nodeId: string) => {

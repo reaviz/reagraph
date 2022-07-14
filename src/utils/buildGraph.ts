@@ -67,7 +67,7 @@ export function transformGraph({
     if (node.data) {
       const position = layout.getNodePosition(node.id);
       const { data, fill, icon, label, size, ...rest } = node.data;
-      const nodeSize = sizes.getSizeForNode(node.id);
+      const nodeSize = sizes.get(node.id);
       const labelVisible = checkVisibility('node', nodeSize);
 
       const n: InternalGraphNode = {
