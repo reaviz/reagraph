@@ -1,3 +1,7 @@
+# 2.0.9 - 7/12/22
+- [fix] fix node size not being applied
+- [fix] fix dragging node after zooming resetting zoom
+
 # 2.0.8 - 7/12/22
 - [fix] cleanup sizing logic to be relative #51
 - [fix] improve various layout distances
