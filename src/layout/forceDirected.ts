@@ -15,20 +15,27 @@ import forceCluster from 'd3-force-cluster-3d';
 export interface ForceDirectedD3Inputs extends LayoutFactoryProps {
   dimensions?: number;
   mode?: DagMode;
+  linkDistance?: number;
+  nodeStrength?: number;
 }
 
+const TICK_COUNT = 100;
 const CLUSTER_PADDING = 10;
+const CLUSTER_STRENGTH = 0.5;
 
 export function forceDirected({
   graph,
   mode = null,
   dimensions = 2,
+  nodeStrength = -250,
+  linkDistance = 50,
   drags,
   clusterAttribute
 }: ForceDirectedD3Inputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
-  const cluster = new Map();
+  const cluster = new Map<string, InternalGraphNode>();
+  const is2d = dimensions === 2;
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
@@ -48,7 +55,7 @@ export function forceDirected({
   // Create the simulation
   const sim = d3ForceSimulation()
     .force('link', d3ForceLink())
-    .force('charge', d3ForceManyBody().strength(dimensions > 2 ? -500 : -250))
+    .force('charge', d3ForceManyBody().strength(nodeStrength))
     .force('x', d3ForceX())
     .force('y', d3ForceY())
     .force('z', d3ForceZ())
@@ -88,7 +95,7 @@ export function forceDirected({
             return centerNode;
           }
         })
-        .strength(0.5)
+        .strength(CLUSTER_STRENGTH)
     );
 
   // Run the force on the links
@@ -97,7 +104,9 @@ export function forceDirected({
     linkForce
       .id(d => d.id)
       .links(links)
-      .distance(50);
+      // When no mode passed, its a tree layout
+      // so let's use a larger distance
+      .distance(linkDistance);
   }
 
   const nodeMap = new Map(nodes.map(n => [n.id, n]));
@@ -106,10 +115,11 @@ export function forceDirected({
     step() {
       // Run the ticker 100 times so
       // we don't overdo the animation
-      sim.tick(100);
+      sim.tick(TICK_COUNT);
       return true;
     },
     getNodePosition(id: string) {
+      // If we dragged, we need to use that position
       return drags?.[id] || nodeMap.get(id);
     }
   };

@@ -8,45 +8,67 @@ export function layoutProvider({
   ...rest
 }: LayoutFactoryProps | ForceDirectedD3Inputs): LayoutStrategy {
   if (type === 'forceDirected2d') {
-    return forceDirected(rest as ForceDirectedD3Inputs);
+    return forceDirected({
+      ...rest,
+      dimensions: 2,
+      nodeStrength: -250,
+      linkDistance: 50
+    } as ForceDirectedD3Inputs);
   } else if (type === 'treeTd2d') {
     return forceDirected({
       ...rest,
       mode: 'td',
-      dimensions: 2
+      dimensions: 2,
+      nodeStrength: -250,
+      linkDistance: 100
     } as ForceDirectedD3Inputs);
   } else if (type === 'treeLr2d') {
     return forceDirected({
       ...rest,
       mode: 'lr',
-      dimensions: 2
+      dimensions: 2,
+      nodeStrength: -250,
+      linkDistance: 100
     } as ForceDirectedD3Inputs);
   } else if (type === 'radialOut2d') {
     return forceDirected({
       ...rest,
       mode: 'radialout',
-      dimensions: 2
+      dimensions: 2,
+      nodeStrength: -250,
+      linkDistance: 100
     } as ForceDirectedD3Inputs);
   } else if (type === 'treeTd3d') {
     return forceDirected({
       ...rest,
       mode: 'td',
-      dimensions: 3
+      dimensions: 3,
+      nodeStrength: -500,
+      linkDistance: 50
     } as ForceDirectedD3Inputs);
   } else if (type === 'treeLr3d') {
     return forceDirected({
       ...rest,
       mode: 'lr',
-      dimensions: 3
+      dimensions: 3,
+      nodeStrength: -500,
+      linkDistance: 50
     } as ForceDirectedD3Inputs);
   } else if (type === 'radialOut3d') {
     return forceDirected({
       ...rest,
       mode: 'radialout',
-      dimensions: 3
+      dimensions: 3,
+      nodeStrength: -500,
+      linkDistance: 100
     } as ForceDirectedD3Inputs);
   } else if (type === 'forceDirected3d') {
-    return forceDirected({ ...rest, dimensions: 3 } as ForceDirectedD3Inputs);
+    return forceDirected({
+      ...rest,
+      dimensions: 3,
+      nodeStrength: -250,
+      linkDistance: 50
+    } as ForceDirectedD3Inputs);
   } else if (type === 'circular2d') {
     return circular2d(rest);
   } else if (type === 'hierarchicalTd') {
