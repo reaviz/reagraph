@@ -54,7 +54,5 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
     }
   }
 
-  console.log('here', min, max, sizes);
-
   return sizes;
 }
