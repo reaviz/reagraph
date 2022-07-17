@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { Color, ColorRepresentation, Mesh } from 'three';
+import { Color, ColorRepresentation, Mesh, DoubleSide } from 'three';
 import {
   getQuaternion,
   animationConfig,
@@ -83,6 +83,7 @@ export const Arrow: FC<ArrowProps> = ({
         depthTest={false}
         opacity={arrowOpacity}
         transparent={true}
+        side={DoubleSide}
         fog={true}
       />
     </a.mesh>
