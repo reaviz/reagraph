@@ -38,11 +38,14 @@ export const Node: FC<NodeProps> = ({
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
 
-  const [draggingId, setDraggingId, setNodePosition] = useStore(state => [
-    state.draggingId,
-    state.setDraggingId,
-    state.setNodePosition
-  ]);
+  const [draggingId, setDraggingId, setNodePosition, panning] = useStore(
+    state => [
+      state.draggingId,
+      state.setDraggingId,
+      state.setNodePosition,
+      state.panning
+    ]
+  );
 
   const isDragging = draggingId === id;
   const {
@@ -157,7 +160,7 @@ export const Node: FC<NodeProps> = ({
             }
           }}
           onActive={val => {
-            if (!disabled) {
+            if (!disabled && !panning) {
               setActive(val);
             }
           }}

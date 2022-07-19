@@ -94,17 +94,17 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
           >
-            <color attach="background" args={[theme.canvas.background]} />
-            <ambientLight intensity={1} />
-            <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
-            <CameraControls
-              mode={cameraMode}
-              ref={controlsRef}
-              animated={animated}
-              disabled={disabled}
-            >
-              <Suspense>
-                <Provider createStore={createStore}>
+            <Provider createStore={createStore}>
+              <color attach="background" args={[theme.canvas.background]} />
+              <ambientLight intensity={1} />
+              <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
+              <CameraControls
+                mode={cameraMode}
+                ref={controlsRef}
+                animated={animated}
+                disabled={disabled}
+              >
+                <Suspense>
                   <GraphScene
                     ref={rendererRef as any}
                     theme={theme}
@@ -112,9 +112,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                     animated={animated}
                     {...rest}
                   />
-                </Provider>
-              </Suspense>
-            </CameraControls>
+                </Suspense>
+              </CameraControls>
+            </Provider>
           </Canvas>
         </div>
       );

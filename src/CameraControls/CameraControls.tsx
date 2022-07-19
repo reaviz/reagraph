@@ -30,6 +30,7 @@ import {
 } from './useCameraControls';
 import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
+import { useStore } from '../store';
 
 // Install the camera controls
 // Use a subset for better three shaking
@@ -89,11 +90,6 @@ export interface CameraControlsProps {
    * Disable the controls.
    */
   disabled?: boolean;
-
-  /**
-   * When the controls were updated.
-   */
-  onUpdate?: () => void;
 }
 
 export type CameraControlsRef = CameraControlsContextProps;
@@ -101,13 +97,11 @@ export type CameraControlsRef = CameraControlsContextProps;
 export const CameraControls: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
 > = forwardRef(
-  (
-    { mode, children, animated, disabled, onUpdate },
-    ref: Ref<CameraControlsRef>
-  ) => {
+  ({ mode, children, animated, disabled }, ref: Ref<CameraControlsRef>) => {
     const cameraRef = useRef<ThreeCameraControls | null>(null);
     const { camera, gl } = useThree();
     const isOrbiting = mode === 'orbit';
+    const setPanning = useStore(state => state.setPanning);
 
     useFrame((_state, delta) => {
       cameraRef.current?.update(delta);
@@ -212,17 +206,22 @@ export const CameraControls: FC<
     }, [onKeyDown, onKeyUp, panDown, panLeft, panRight, panUp]);
 
     useEffect(() => {
+      const onControl = () => setPanning(true);
+      const onControlEnd = () => setPanning(false);
+
       const ref = cameraRef.current;
-      if (ref && onUpdate) {
-        ref.addEventListener('update', onUpdate);
+      if (ref) {
+        ref.addEventListener('control', onControl);
+        ref.addEventListener('controlend', onControlEnd);
       }
 
       return () => {
-        if (ref && onUpdate) {
-          ref.removeEventListener('update', onUpdate);
+        if (ref) {
+          ref.removeEventListener('control', onControl);
+          ref.removeEventListener('controlend', onControlEnd);
         }
       };
-    }, [cameraRef, onUpdate]);
+    }, [cameraRef, setPanning]);
 
     useEffect(() => {
       if (mode === 'rotate') {

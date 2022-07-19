@@ -16,6 +16,8 @@ export interface GraphState {
   selections?: string[];
   draggingId?: string | null;
   drags?: DragReferences;
+  panning?: boolean;
+  setPanning: (panning: boolean) => void;
   setDrags: (drags: DragReferences) => void;
   setDraggingId: (id: string | null) => void;
   setSelections: (selections: string[]) => void;
@@ -30,10 +32,12 @@ export const createStore = () =>
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
+    panning: false,
     draggingId: null,
     selections: [],
     drags: {},
     graph: ngraph(),
+    setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
     setSelections: selections => set(state => ({ ...state, selections })),
