@@ -1,3 +1,6 @@
+# 2.1.1 - 7/19/22
+- [fix] fix empty attributes causing node error
+
 # 2.1.0 - 7/19/22
 - [feature] add ability to click edges
 - [fix] warn when switching to attribute with no attribute selected
