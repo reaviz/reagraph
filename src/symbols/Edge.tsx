@@ -12,6 +12,7 @@ import { Line } from './Line';
 import { Theme } from '../utils';
 import { useStore } from '../store';
 import { Euler } from 'three';
+import { InternalGraphEdge } from '../types';
 
 const LABEL_FONT_SIZE = 6;
 
@@ -29,14 +30,18 @@ export interface EdgeProps {
   id: string;
   theme: Theme;
   animated?: boolean;
+  disabled?: boolean;
   labelPlacement?: EdgeLabelPosition;
+  onClick?: (edge: InternalGraphEdge) => void;
 }
 
 export const Edge: FC<EdgeProps> = ({
   id,
   animated,
   theme,
-  labelPlacement
+  disabled,
+  labelPlacement,
+  onClick
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
@@ -68,7 +73,8 @@ export const Edge: FC<EdgeProps> = ({
   const { isSelected, hasSelections, hasSingleSelection } = useStore(state => ({
     hasSingleSelection: state.selections?.length === 1,
     hasSelections: state.selections?.length,
-    isSelected: state.selections?.includes(fromId) || state.selections?.includes(id)
+    isSelected:
+      state.selections?.includes(fromId) || state.selections?.includes(id)
   }));
 
   const selectionOpacity = hasSelections
@@ -123,6 +129,11 @@ export const Edge: FC<EdgeProps> = ({
         points={points}
         size={size}
         animated={animated}
+        onClick={() => {
+          if (!disabled) {
+            onClick?.(edge);
+          }
+        }}
       />
       <Arrow
         position={realPoints}

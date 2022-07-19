@@ -1,5 +1,6 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
+import { simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Edges',
@@ -62,3 +63,10 @@ export const Sizes = () => (
   />
 );
 
+export const Events = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
+  />
+);

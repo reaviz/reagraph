@@ -7,7 +7,12 @@ import React, {
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout';
-import { GraphEdge, GraphNode, InternalGraphNode } from './types';
+import {
+  GraphEdge,
+  GraphNode,
+  InternalGraphEdge,
+  InternalGraphNode
+} from './types';
 import { SizingType } from './sizing';
 import { Edge, EdgeLabelPosition, Node } from './symbols';
 import { useCenterGraph } from './CameraControls';
@@ -114,6 +119,11 @@ export interface GraphSceneProps {
    * When a node was clicked.
    */
   onNodeClick?: (node: InternalGraphNode) => void;
+
+  /**
+   * When an edge was clicked.
+   */
+  onEdgeClick?: (node: InternalGraphEdge) => void;
 }
 
 export interface GraphSceneRef {
@@ -133,6 +143,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     (
       {
         onNodeClick,
+        onEdgeClick,
         theme,
         animated,
         disabled,
@@ -185,8 +196,10 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               theme={theme}
               key={e}
               id={e}
+              disabled={disabled}
               animated={animated}
               labelPlacement={edgeLabelPosition}
+              onClick={onEdgeClick}
             />
           ))}
         </Fragment>

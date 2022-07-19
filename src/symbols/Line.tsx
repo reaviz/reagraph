@@ -17,6 +17,7 @@ export interface LineProps {
   id: string;
   opacity?: number;
   points: EdgeVectors3;
+  onClick?: () => void;
 }
 
 export const Line: FC<LineProps> = ({
@@ -25,7 +26,8 @@ export const Line: FC<LineProps> = ({
   size,
   opacity,
   points,
-  animated
+  animated,
+  onClick
 }) => {
   const tubeRef = useRef<TubeBufferGeometry | null>(null);
   const draggingId = useStore(state => state.draggingId);
@@ -79,7 +81,7 @@ export const Line: FC<LineProps> = ({
   );
 
   return (
-    <mesh userData={{ id }}>
+    <mesh userData={{ id }} onClick={onClick}>
       <tubeBufferGeometry
         attach="geometry"
         args={[curve, 20, size / 2, 5, false]}
