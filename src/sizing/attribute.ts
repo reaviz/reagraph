@@ -6,7 +6,7 @@ export function attributeSizing({
   defaultSize
 }: SizingStrategyInputs): SizingStrategy {
   if (!attribute) {
-    throw new Error('Attribute sizing configured but no attribute provided');
+    console.warn('Attribute sizing configured but no attribute provided');
   }
 
   const map = new Map();
