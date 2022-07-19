@@ -1,3 +1,6 @@
+# 2.0.10 - 7/19/22
+- [chore] upgrade deps
+
 # 2.0.9 - 7/12/22
 - [fix] fix node size not being applied
 - [fix] fix dragging node after zooming resetting zoom
