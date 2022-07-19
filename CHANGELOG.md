@@ -1,3 +1,8 @@
+# 2.1.0 - 7/19/22
+- [feature] add ability to click edges
+- [fix] warn when switching to attribute with no attribute selected
+- [fix] fix when panning not to highlight nodes
+
 # 2.0.10 - 7/19/22
 - [chore] upgrade deps
 
