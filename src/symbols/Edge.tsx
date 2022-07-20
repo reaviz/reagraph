@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { Arrow } from './Arrow';
 import { Label } from './Label';
@@ -13,6 +13,7 @@ import { Theme } from '../utils';
 import { useStore } from '../store';
 import { Euler } from 'three';
 import { InternalGraphEdge } from '../types';
+import { useCursor } from '@react-three/drei';
 
 const LABEL_FONT_SIZE = 6;
 
@@ -49,6 +50,7 @@ export const Edge: FC<EdgeProps> = ({
   const from = useStore(store => store.nodes.find(node => node.id === fromId));
   const to = useStore(store => store.nodes.find(node => node.id === toId));
   const draggingId = useStore(state => state.draggingId);
+  const [isActive, setActive] = useState<boolean>(false);
 
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;
   const points = useMemo(
@@ -120,15 +122,18 @@ export const Edge: FC<EdgeProps> = ({
     ]
   );
 
+  useCursor(isActive && !draggingId && onClick !== undefined, 'pointer');
+
   return (
     <group>
       <Line
         id={id}
-        color={isSelected ? theme.edge.activeFill : theme.edge.fill}
         opacity={selectionOpacity}
         points={points}
         size={size}
         animated={animated}
+        onActive={setActive}
+        color={isSelected || isActive ? theme.edge.activeFill : theme.edge.fill}
         onClick={() => {
           if (!disabled) {
             onClick?.(edge);
@@ -137,10 +142,12 @@ export const Edge: FC<EdgeProps> = ({
       />
       <Arrow
         position={realPoints}
-        color={isSelected ? theme.arrow.activeFill : theme.arrow.fill}
         opacity={selectionOpacity}
         size={size}
         animated={animated}
+        color={
+          isSelected || isActive ? theme.arrow.activeFill : theme.arrow.fill
+        }
       />
       {labelVisible && label && (
         <a.group position={labelPosition as any} rotation={labelRotation}>
@@ -149,7 +156,9 @@ export const Edge: FC<EdgeProps> = ({
             ellipsis={15}
             stroke={theme.edge.label.stroke}
             color={
-              isSelected ? theme.edge.label.activeColor : theme.edge.label.color
+              isSelected || isActive
+                ? theme.edge.label.activeColor
+                : theme.edge.label.color
             }
             opacity={selectionOpacity}
             fontSize={LABEL_FONT_SIZE}

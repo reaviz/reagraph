@@ -18,6 +18,7 @@ export interface LineProps {
   opacity?: number;
   points: EdgeVectors3;
   onClick?: () => void;
+  onActive?: (state: boolean) => void;
 }
 
 export const Line: FC<LineProps> = ({
@@ -27,6 +28,7 @@ export const Line: FC<LineProps> = ({
   opacity,
   points,
   animated,
+  onActive,
   onClick
 }) => {
   const tubeRef = useRef<TubeBufferGeometry | null>(null);
@@ -81,7 +83,12 @@ export const Line: FC<LineProps> = ({
   );
 
   return (
-    <mesh userData={{ id }} onClick={onClick}>
+    <mesh
+      userData={{ id }}
+      onPointerOver={() => onActive(true)}
+      onPointerOut={() => onActive(false)}
+      onClick={onClick}
+    >
       <tubeBufferGeometry
         attach="geometry"
         args={[curve, 20, size / 2, 5, false]}
