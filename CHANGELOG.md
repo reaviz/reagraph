@@ -1,3 +1,7 @@
+# 2.1.2 - 7/20/22
+- [improvement] improve hover events for edges
+- [fix] revert reakeys for regression with binding
+
 # 2.1.1 - 7/19/22
 - [fix] fix empty attributes causing node error
 
