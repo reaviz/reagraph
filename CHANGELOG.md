@@ -1,3 +1,6 @@
+# 2.1.3 - 7/20/22
+- [fix] upgrade reakeys
+
 # 2.1.2 - 7/20/22
 - [improvement] improve hover events for edges
 - [fix] revert reakeys for regression with binding
