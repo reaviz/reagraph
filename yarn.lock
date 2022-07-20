@@ -11266,10 +11266,10 @@ readdirp@~3.6.0:
   dependencies:
     picomatch "^2.2.1"
 
-reakeys@^1.2.7:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/reakeys/-/reakeys-1.2.7.tgz#ea4e57692110013c8e1aa9c5147de38a4c5f1056"
-  integrity sha512-OODtFCNt1vGhmwLWjkav/UK+bCmSNbhuXqRSaaZrzMRr/2dIHnJAmpgIP0y5rupi0rHZCcIVwGFqvnsrrK/bbQ==
+reakeys@^1.2.8:
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/reakeys/-/reakeys-1.2.8.tgz#4343abc70469a98b2c1c2d6ebb85081e615b9f78"
+  integrity sha512-+pb/zR8nOr9vBdQ4rtCBFPtdsD1CBiD2RDCuRHeI4msNmgxZ0m+T8TODJUgQAwmiKgB9oeh7aT6oU29s2s8Bgw==
   dependencies:
     mousetrap "^1.6.5"
 

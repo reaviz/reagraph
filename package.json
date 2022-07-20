@@ -62,7 +62,7 @@
     "ngraph.pagerank": "^2.1.0",
     "ngraph.path": "^1.4.0",
     "react-use-gesture": "^9.1.3",
-    "reakeys": "^1.2.7",
+    "reakeys": "^1.2.8",
     "three": "^0.142.0",
     "zustand": "4.0.0-rc.1"
   },
