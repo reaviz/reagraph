@@ -1,3 +1,6 @@
+# 2.1.4 - 7/20/22
+- [fix] Cannot read properties of undefined (reading 'size') error within nodeSizeProvider #54
+
 # 2.1.3 - 7/20/22
 - [fix] upgrade reakeys
 
