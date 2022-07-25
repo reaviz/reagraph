@@ -41,7 +41,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
       onPointerEnter={() => clearTimeout(timeout.current)}
       onPointerLeave={event => {
         clearTimeout(timeout.current);
-        timeout.current = setTimeout(() => onClose?.(event, data), 500);
+        timeout.current = setTimeout(() => onClose?.(event), 500);
       }}
     >
       <style>
