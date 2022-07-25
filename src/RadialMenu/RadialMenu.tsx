@@ -8,7 +8,6 @@ interface RadialMenuProps {
   theme: Theme;
   items: MenuItem[];
   radius?: number;
-  data?: any;
   innerRadius?: number;
   startOffsetAngle?: number;
   onClose?: (event: React.MouseEvent<HTMLDivElement>) => void;
@@ -16,21 +15,15 @@ interface RadialMenuProps {
 
 export const RadialMenu: FC<RadialMenuProps> = ({
   items,
-  data,
   theme,
   radius,
   innerRadius,
   startOffsetAngle,
   onClose
 }) => {
-  const filteredItems = useMemo(
-    () => items.filter(item => (item?.visible ? item?.visible(data) : true)),
-    [items, data]
-  );
-
   const { centralAngle, polar, startAngle, deltaAngle } = useMemo(
-    () => calculateRadius(filteredItems, startOffsetAngle),
-    [filteredItems, startOffsetAngle]
+    () => calculateRadius(items, startOffsetAngle),
+    [items, startOffsetAngle]
   );
   const timeout = useRef<any | null>(null);
 
@@ -39,7 +32,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
-  if (filteredItems.length === 0) {
+  if (items.length === 0) {
     return null;
   }
 
@@ -64,7 +57,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
           }
         `}
       </style>
-      {filteredItems.map((slice, index) => (
+      {items.map((slice, index) => (
         <RadialSlice
           key={index}
           {...slice}
@@ -76,7 +69,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
           polar={polar}
           centralAngle={centralAngle}
           onClick={event => {
-            slice?.onClick(event, data);
+            slice?.onClick(event);
             onClose?.(event);
           }}
         />

@@ -14,19 +14,14 @@ export interface MenuItem {
   icon?: ReactNode;
 
   /**
-   * Optional callback to determine if the menu item should be visible.
-   */
-  visible?: (data?: any) => boolean;
-
-  /**
    * Optional callback to detemine if the menu item is active.
    */
-  disabled?: (data?: any) => boolean;
+  disabled?: boolean;
 
   /**
    * Optional callback to handle when the menu item is clicked.
    */
-  onClick?: (event: React.MouseEvent<HTMLDivElement>, data?: any) => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 interface RadialSliceProps extends MenuItem {
