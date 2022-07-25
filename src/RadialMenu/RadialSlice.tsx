@@ -2,8 +2,24 @@ import React, { FC, ReactNode } from 'react';
 import css from './RadialSlice.module.css';
 
 export interface MenuItem {
+  /**
+   * Label to display on the menu item.
+   */
   label: string;
+
+  /**
+   * Optional icon to display on the menu item.
+   */
   icon?: ReactNode;
+
+  /**
+   * Optional callback to determine if the menu item should be visible.
+   */
+  visible?: (data?: any) => boolean;
+
+  /**
+   * Optional callback to handle when the menu item is clicked.
+   */
   onClick?: (event: React.MouseEvent<HTMLDivElement>, data?: any) => void;
 }
 

@@ -23,9 +23,14 @@ export const RadialMenu: FC<RadialMenuProps> = ({
   startOffsetAngle,
   onClose
 }) => {
+  const filteredItems = useMemo(
+    () => items.filter(item => (item?.visible ? item?.visible(data) : true)),
+    [items, data]
+  );
+
   const { centralAngle, polar, startAngle, deltaAngle } = useMemo(
-    () => calculateRadius(items, startOffsetAngle),
-    [items, startOffsetAngle]
+    () => calculateRadius(filteredItems, startOffsetAngle),
+    [filteredItems, startOffsetAngle]
   );
   const timeout = useRef<any | null>(null);
 
@@ -55,7 +60,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
           }
         `}
       </style>
-      {items.map((slice, index) => (
+      {filteredItems.map((slice, index) => (
         <RadialSlice
           key={index}
           {...slice}
