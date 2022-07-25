@@ -8,13 +8,15 @@ interface RadialMenuProps {
   theme: Theme;
   items: MenuItem[];
   radius?: number;
+  data?: any;
   innerRadius?: number;
   startOffsetAngle?: number;
-  onClose?: () => void;
+  onClose?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const RadialMenu: FC<RadialMenuProps> = ({
   items,
+  data,
   theme,
   radius,
   innerRadius,
@@ -37,9 +39,9 @@ export const RadialMenu: FC<RadialMenuProps> = ({
       role="menu"
       className={css.container}
       onPointerEnter={() => clearTimeout(timeout.current)}
-      onPointerLeave={() => {
+      onPointerLeave={event => {
         clearTimeout(timeout.current);
-        timeout.current = setTimeout(() => onClose?.(), 500);
+        timeout.current = setTimeout(() => onClose?.(event, data), 500);
       }}
     >
       <style>
@@ -64,9 +66,9 @@ export const RadialMenu: FC<RadialMenuProps> = ({
           skew={polar ? 0 : deltaAngle}
           polar={polar}
           centralAngle={centralAngle}
-          onClick={() => {
-            slice?.onClick();
-            onClose?.();
+          onClick={event => {
+            slice?.onClick(event, data);
+            onClose?.(event);
           }}
         />
       ))}

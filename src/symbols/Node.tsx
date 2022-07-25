@@ -180,6 +180,7 @@ export const Node: FC<NodeProps> = ({
       {menuVisible && (
         <Html prepend={true} center={true}>
           <RadialMenu
+            data={node}
             theme={theme}
             items={contextMenuItems}
             onClose={() => setMenuVisible(false)}

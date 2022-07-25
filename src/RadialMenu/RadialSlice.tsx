@@ -4,7 +4,7 @@ import css from './RadialSlice.module.css';
 export interface MenuItem {
   label: string;
   icon?: ReactNode;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLDivElement>, data?: any) => void;
 }
 
 interface RadialSliceProps extends MenuItem {
