@@ -4,20 +4,33 @@
   position: absolute;
   border: solid 1px var(--border);
 
+  &.disabled {
+    opacity: 0.6;
+
+    .contentContainer {
+      cursor: not-allowed;
+    }
+  }
+
+  &:not(.disabled) {
+    .contentContainer {
+      cursor: pointer;
+
+      &:hover {
+        color: var(--active-color);
+        background: var(--active-background);
+      }
+    }
+  }
+
   .contentContainer {
     width: 200%;
     height: 200%;
     transform-origin: 50% 50%;
     border-radius: 50%;
     outline: none;
-    cursor: pointer;
     transition: background 150ms ease-in-out;
     color: var(--color);
-
-    &:hover {
-      color: var(--active-color);
-      background: var(--active-background);
-    }
 
     .contentInner {
       position: absolute;

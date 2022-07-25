@@ -171,3 +171,15 @@ export interface InternalGraphNode extends GraphNode {
    */
   fz?: number;
 }
+
+export interface ContextMenuEvent {
+  /**
+   * Data the node was invoked on.
+   */
+  data: InternalGraphNode | InternalGraphEdge;
+
+  /**
+   * Close event callback.
+   */
+  onClose: () => void;
+}

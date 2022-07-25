@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { Arrow } from './Arrow';
+import { Arrow, EdgeArrowPosition } from './Arrow';
 import { Label } from './Label';
 import {
   animationConfig,
@@ -12,8 +12,8 @@ import { Line } from './Line';
 import { Theme } from '../utils';
 import { useStore } from '../store';
 import { Euler } from 'three';
-import { InternalGraphEdge } from '../types';
-import { useCursor } from '@react-three/drei';
+import { ContextMenuEvent, InternalGraphEdge } from '../types';
+import { Html, useCursor } from '@react-three/drei';
 
 const LABEL_FONT_SIZE = 6;
 
@@ -33,7 +33,10 @@ export interface EdgeProps {
   animated?: boolean;
   disabled?: boolean;
   labelPlacement?: EdgeLabelPosition;
+  arrowPlacement?: EdgeArrowPosition;
+  contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
   onClick?: (edge: InternalGraphEdge) => void;
+  onContextMenu?: (edge?: InternalGraphEdge) => void;
 }
 
 export const Edge: FC<EdgeProps> = ({
@@ -42,6 +45,9 @@ export const Edge: FC<EdgeProps> = ({
   theme,
   disabled,
   labelPlacement,
+  arrowPlacement,
+  contextMenu,
+  onContextMenu,
   onClick
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
@@ -51,16 +57,18 @@ export const Edge: FC<EdgeProps> = ({
   const to = useStore(store => store.nodes.find(node => node.id === toId));
   const draggingId = useStore(state => state.draggingId);
   const [isActive, setActive] = useState<boolean>(false);
+  const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;
-  const points = useMemo(
-    () =>
-      getPoints({
-        from,
-        to: { ...to, size: to.size + size + LABEL_FONT_SIZE }
-      }),
-    [from, to, size]
-  );
+  const points = useMemo(() => {
+    // Handle arrow position offset
+    const offset = arrowPlacement === 'end' ? to.size : 0;
+
+    return getPoints({
+      from,
+      to: { ...to, size: offset + size + LABEL_FONT_SIZE }
+    });
+  }, [from, to, size, arrowPlacement]);
 
   const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
   const midPoint = useMemo(
@@ -139,16 +147,32 @@ export const Edge: FC<EdgeProps> = ({
             onClick?.(edge);
           }
         }}
+        onContextMenu={() => {
+          if (!disabled) {
+            setMenuVisible(true);
+            onContextMenu?.(edge);
+          }
+        }}
       />
-      <Arrow
-        position={realPoints}
-        opacity={selectionOpacity}
-        size={size}
-        animated={animated}
-        color={
-          isSelected || isActive ? theme.arrow.activeFill : theme.arrow.fill
-        }
-      />
+      {arrowPlacement !== 'none' && (
+        <Arrow
+          position={realPoints}
+          opacity={selectionOpacity}
+          size={size}
+          animated={animated}
+          placement={arrowPlacement}
+          color={
+            isSelected || isActive ? theme.arrow.activeFill : theme.arrow.fill
+          }
+          onActive={setActive}
+          onContextMenu={() => {
+            if (!disabled) {
+              setMenuVisible(true);
+              onContextMenu?.(edge);
+            }
+          }}
+        />
+      )}
       {labelVisible && label && (
         <a.group position={labelPosition as any} rotation={labelRotation}>
           <Label
@@ -164,6 +188,11 @@ export const Edge: FC<EdgeProps> = ({
             fontSize={LABEL_FONT_SIZE}
           />
         </a.group>
+      )}
+      {menuVisible && contextMenu && (
+        <Html prepend={true} center={true}>
+          {contextMenu({ data: edge, onClose: () => setMenuVisible(false) })}
+        </Html>
       )}
     </group>
   );

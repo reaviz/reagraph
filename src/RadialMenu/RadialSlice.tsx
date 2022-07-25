@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { FC, ReactNode } from 'react';
 import css from './RadialSlice.module.css';
 
@@ -16,6 +17,11 @@ export interface MenuItem {
    * Optional callback to determine if the menu item should be visible.
    */
   visible?: (data?: any) => boolean;
+
+  /**
+   * Optional callback to detemine if the menu item is active.
+   */
+  disabled?: (data?: any) => boolean;
 
   /**
    * Optional callback to handle when the menu item is clicked.
@@ -43,11 +49,12 @@ export const RadialSlice: FC<RadialSliceProps> = ({
   icon,
   innerRadius,
   skew,
+  disabled,
   onClick
 }) => (
   <div
     role="menuitem"
-    className={css.container}
+    className={classNames(css.container, { [css.disabled]: disabled })}
     style={{
       width: centralAngle > 90 ? '100%' : '50%',
       height: centralAngle > 90 ? '100%' : '50%',
@@ -55,7 +62,11 @@ export const RadialSlice: FC<RadialSliceProps> = ({
       right: centralAngle > 90 ? '50%' : 'initial',
       transform: `rotate(${startAngle + endAngle}deg) skew(${skew}deg)`
     }}
-    onClick={onClick}
+    onClick={event => {
+      if (!disabled) {
+        onClick(event);
+      }
+    }}
   >
     <div
       className={css.contentContainer}

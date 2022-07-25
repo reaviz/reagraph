@@ -15,8 +15,8 @@ import {
 } from './CameraControls';
 import { Theme, lightTheme } from './utils';
 import { createStore, Provider } from './store';
-import css from './GraphCanvas.module.css';
 import { Graph } from 'ngraph.graph';
+import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**

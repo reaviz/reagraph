@@ -10,13 +10,17 @@ import {
 } from '../utils';
 import { useStore } from '../store';
 
+export type EdgeArrowPosition = 'none' | 'mid' | 'end';
+
 export interface ArrowProps {
   position: EdgeVectors3;
   color?: ColorRepresentation;
   animated?: boolean;
   opacity?: number;
   size?: number;
-  placement?: 'mid' | 'end';
+  placement?: EdgeArrowPosition;
+  onContextMenu?: () => void;
+  onActive?: (state: boolean) => void;
 }
 
 export const Arrow: FC<ArrowProps> = ({
@@ -25,7 +29,9 @@ export const Arrow: FC<ArrowProps> = ({
   animated,
   opacity,
   placement,
-  color
+  color,
+  onActive,
+  onContextMenu
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const meshRef = useRef<Mesh | null>(null);
@@ -39,7 +45,7 @@ export const Arrow: FC<ArrowProps> = ({
   const endPos = useMemo(() => {
     if (placement === 'mid') {
       return getMidPoint(position);
-    } else {
+    } else if (placement === 'end') {
       return getArrowPosition(position, arrowLength);
     }
   }, [position, placement, arrowLength]);
@@ -72,7 +78,20 @@ export const Arrow: FC<ArrowProps> = ({
   useEffect(() => setQuaternion(), [position, setQuaternion]);
 
   return (
-    <a.mesh position={pos as any} ref={meshRef} scale={[1, 1, 1]}>
+    <a.mesh
+      position={pos as any}
+      ref={meshRef}
+      scale={[1, 1, 1]}
+      onPointerOver={() => onActive(true)}
+      onPointerOut={() => onActive(false)}
+      onPointerDown={event => {
+        // context menu controls
+        if (event.nativeEvent.buttons === 2) {
+          event.stopPropagation();
+          onContextMenu();
+        }
+      }}
+    >
       <cylinderGeometry
         args={[0, arrowSize, arrowLength, 20, 20, true]}
         attach="geometry"

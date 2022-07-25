@@ -19,6 +19,7 @@ export interface LineProps {
   points: EdgeVectors3;
   onClick?: () => void;
   onActive?: (state: boolean) => void;
+  onContextMenu?: () => void;
 }
 
 export const Line: FC<LineProps> = ({
@@ -28,6 +29,7 @@ export const Line: FC<LineProps> = ({
   opacity,
   points,
   animated,
+  onContextMenu,
   onActive,
   onClick
 }) => {
@@ -88,6 +90,13 @@ export const Line: FC<LineProps> = ({
       onPointerOver={() => onActive(true)}
       onPointerOut={() => onActive(false)}
       onClick={onClick}
+      onPointerDown={event => {
+        // context menu controls
+        if (event.nativeEvent.buttons === 2) {
+          event.stopPropagation();
+          onContextMenu();
+        }
+      }}
     >
       <tubeBufferGeometry
         attach="geometry"

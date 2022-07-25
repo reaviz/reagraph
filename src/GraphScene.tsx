@@ -8,17 +8,17 @@ import React, {
 import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout';
 import {
+  ContextMenuEvent,
   GraphEdge,
   GraphNode,
   InternalGraphEdge,
   InternalGraphNode
 } from './types';
 import { SizingType } from './sizing';
-import { Edge, EdgeLabelPosition, Node } from './symbols';
+import { Edge, EdgeArrowPosition, EdgeLabelPosition, Node } from './symbols';
 import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { Theme } from './utils';
-import { MenuItem } from './RadialMenu';
 import { useStore } from './store';
 import { Graph } from 'ngraph.graph';
 
@@ -54,9 +54,9 @@ export interface GraphSceneProps {
   edges: GraphEdge[];
 
   /**
-   * Context menu items for a node.
+   * Context menu element.
    */
-  contextMenuItems?: MenuItem[];
+  contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
 
   /**
    * Type of sizing for nodes.
@@ -72,6 +72,11 @@ export interface GraphSceneProps {
    * Place of visibility for edge labels.
    */
   edgeLabelPosition?: EdgeLabelPosition;
+
+  /**
+   * Placement of edge arrows.
+   */
+  edgeArrowPosition?: EdgeArrowPosition;
 
   /**
    * Font of label, same as troika-three-text
@@ -121,6 +126,16 @@ export interface GraphSceneProps {
   onNodeClick?: (node: InternalGraphNode) => void;
 
   /**
+   * When a node context menu happened.
+   */
+  onNodeContextMenu?: (node: InternalGraphNode) => void;
+
+  /**
+   * When a edge context menu happened.
+   */
+  onEdgeContextMenu?: (edge?: InternalGraphEdge) => void;
+
+  /**
    * When an edge was clicked.
    */
   onEdgeClick?: (node: InternalGraphEdge) => void;
@@ -143,13 +158,16 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     (
       {
         onNodeClick,
+        onNodeContextMenu,
+        onEdgeContextMenu,
         onEdgeClick,
+        contextMenu,
         theme,
         animated,
         disabled,
-        contextMenuItems,
         draggable,
         edgeLabelPosition,
+        edgeArrowPosition,
         labelFontUrl,
         ...rest
       },
@@ -186,9 +204,10 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               draggable={draggable}
               disabled={disabled}
               animated={animated}
-              contextMenuItems={contextMenuItems}
               theme={theme}
+              contextMenu={contextMenu}
               onClick={onNodeClick}
+              onContextMenu={onNodeContextMenu}
             />
           ))}
           {edgeIds.map(e => (
@@ -199,7 +218,10 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               disabled={disabled}
               animated={animated}
               labelPlacement={edgeLabelPosition}
+              arrowPlacement={edgeArrowPosition}
+              contextMenu={contextMenu}
               onClick={onEdgeClick}
+              onContextMenu={onEdgeContextMenu}
             />
           ))}
         </Fragment>

@@ -7,8 +7,7 @@ import { Label } from './Label';
 import { Icon } from './Icon';
 import { Theme } from '../utils';
 import { Ring } from './Ring';
-import { InternalGraphNode } from '../types';
-import { MenuItem, RadialMenu } from '../RadialMenu';
+import { ContextMenuEvent, InternalGraphNode } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
@@ -19,10 +18,11 @@ export interface NodeProps {
   theme: Theme;
   disabled?: boolean;
   animated?: boolean;
-  contextMenuItems?: MenuItem[];
   draggable?: boolean;
-  onClick?: (node: InternalGraphNode) => void;
   labelFontUrl?: string;
+  onClick?: (node: InternalGraphNode) => void;
+  contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
+  onContextMenu?: (node?: InternalGraphNode) => void;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -31,9 +31,10 @@ export const Node: FC<NodeProps> = ({
   id,
   draggable,
   theme,
-  contextMenuItems,
+  labelFontUrl,
+  contextMenu,
   onClick,
-  labelFontUrl
+  onContextMenu
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
@@ -138,8 +139,9 @@ export const Node: FC<NodeProps> = ({
           }}
           onActive={setActive}
           onContextMenu={() => {
-            if (contextMenuItems?.length && !disabled) {
+            if (!disabled) {
               setMenuVisible(true);
+              onContextMenu?.(node);
             }
           }}
         />
@@ -165,8 +167,9 @@ export const Node: FC<NodeProps> = ({
             }
           }}
           onContextMenu={() => {
-            if (contextMenuItems?.length && !disabled) {
+            if (!disabled) {
               setMenuVisible(true);
+              onContextMenu?.(node);
             }
           }}
         />
@@ -177,14 +180,9 @@ export const Node: FC<NodeProps> = ({
         animated={animated}
         color={isSelected || isActive ? theme.ring.activeFill : theme.ring.fill}
       />
-      {menuVisible && (
+      {menuVisible && contextMenu && (
         <Html prepend={true} center={true}>
-          <RadialMenu
-            data={node}
-            theme={theme}
-            items={contextMenuItems}
-            onClose={() => setMenuVisible(false)}
-          />
+          {contextMenu({ data: node, onClose: () => setMenuVisible(false) })}
         </Html>
       )}
       {(labelVisible || isSelected || isActive) && label && (

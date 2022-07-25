@@ -39,6 +39,10 @@ export const RadialMenu: FC<RadialMenuProps> = ({
     return () => clearTimeout(timer);
   }, []);
 
+  if (filteredItems.length === 0) {
+    return null;
+  }
+
   return (
     <div
       role="menu"
