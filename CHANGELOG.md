@@ -1,3 +1,6 @@
+# 2.1.6 - 7/25/22
+- [improvement] Add `visible` prop to radial menu items
+
 # 2.1.5 - 7/25/22
 - [improvement] Add event and model to radial slice click event
 
