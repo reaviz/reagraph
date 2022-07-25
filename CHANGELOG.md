@@ -1,3 +1,12 @@
+# 3.0.0 - 7/25/22
+- [BREAKING] `contextMenuItems` has been removed in favor of `contextMenu` callback. Radial menu is still available but needs to be implemented directly. This opens up more flexible menus.
+- [feature] `onNodeContextMenu` and `onEdgeContextMenu` methods are exposed.
+- [feature] Edges now support context menus
+- [feature] Edge arrow positions
+- [feature] add disabled to radial context menu items
+- [fix] hide radial context menu if no slices visible
+- [fix] Hovering edge arrow would not highlight
+
 # 2.1.6 - 7/25/22
 - [improvement] Add `visible` prop to radial menu items
 
