@@ -1,3 +1,6 @@
+# 3.0.1 - 7/25/22
+- [fix] update radial menu slice props for new interface
+
 # 3.0.0 - 7/25/22
 - [BREAKING] `contextMenuItems` has been removed in favor of `contextMenu` callback. Radial menu is still available but needs to be implemented directly. This opens up more flexible menus.
 - [feature] `onNodeContextMenu` and `onEdgeContextMenu` methods are exposed.
