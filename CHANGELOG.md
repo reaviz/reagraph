@@ -1,3 +1,6 @@
+# 2.1.5 - 7/25/22
+- [improvement] Add event and model to radial slice click event
+
 # 2.1.4 - 7/20/22
 - [fix] Cannot read properties of undefined (reading 'size') error within nodeSizeProvider #54
 
