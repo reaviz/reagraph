@@ -18,6 +18,9 @@ export interface Theme {
   node: {
     fill: ThemeColor;
     activeFill: ThemeColor;
+    opacity: number;
+    selectedOpacity: number;
+    inactiveOpacity: number;
     label: {
       color: ThemeColor;
       stroke: ThemeColor;
@@ -31,6 +34,9 @@ export interface Theme {
   edge: {
     fill: ThemeColor;
     activeFill: ThemeColor;
+    opacity: number;
+    selectedOpacity: number;
+    opacityOnlySelected: number;
     label: {
       color: ThemeColor;
       stroke: ThemeColor;
@@ -90,8 +96,11 @@ export const lightTheme: Theme = {
     fog: '#fff'
   },
   node: {
-    fill: '#AACBD2',
+    fill: '#7CA0AB',
     activeFill: '#1DE9AC',
+    opacity: 1,
+    selectedOpacity: 1,
+    inactiveOpacity: 0.2,
     label: {
       color: '#2A6475',
       stroke: '#fff',
@@ -112,10 +121,13 @@ export const lightTheme: Theme = {
   edge: {
     fill: '#D8E6EA',
     activeFill: '#1DE9AC',
+    opacity: 1,
+    selectedOpacity: 1,
+    opacityOnlySelected: 0.1,
     label: {
       stroke: '#fff',
       color: '#2A6475',
-      activeColor: '#1DE9AC',
+      activeColor: '#1DE9AC'
     }
   },
   arrow: {
@@ -124,3 +136,5 @@ export const lightTheme: Theme = {
   }
 };
 ```
+
+Note that opacity fields are numbers between 0 and 1.
