@@ -75,7 +75,7 @@ export const Edge: FC<EdgeProps> = ({
   const selectionOpacity = hasSelections
     ? isSelected && hasSingleSelection
       ? theme.edge.opacityOnlySelected || 1
-      : theme.edge.opacitySelected || 0.1
+      : theme.edge.selectedOpacity || 0.1
     : theme.edge.opacity || 1;
 
   const [{ labelPosition }] = useSpring(

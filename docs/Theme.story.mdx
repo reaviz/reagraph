@@ -19,8 +19,8 @@ export interface Theme {
     fill: ThemeColor;
     activeFill: ThemeColor;
     opacity: number;
-    opacitySelected: number;
-    opacityNotSelected: number;
+    selectedOpacity: number;
+    inactiveOpacity: number;
     label: {
       color: ThemeColor;
       stroke: ThemeColor;
@@ -35,7 +35,7 @@ export interface Theme {
     fill: ThemeColor;
     activeFill: ThemeColor;
     opacity: number;
-    opacitySelected: number;
+    selectedOpacity: number;
     opacityOnlySelected: number;
     label: {
       color: ThemeColor;
@@ -99,8 +99,8 @@ export const lightTheme: Theme = {
     fill: '#7CA0AB',
     activeFill: '#1DE9AC',
     opacity: 1,
-    opacitySelected: 1,
-    opacityNotSelected: 0.2,
+    selectedOpacity: 1,
+    inactiveOpacity: 0.2,
     label: {
       color: '#2A6475',
       stroke: '#fff',
@@ -122,7 +122,7 @@ export const lightTheme: Theme = {
     fill: '#D8E6EA',
     activeFill: '#1DE9AC',
     opacity: 1,
-    opacitySelected: 1,
+    selectedOpacity: 1,
     opacityOnlySelected: 0.1,
     label: {
       stroke: '#fff',
