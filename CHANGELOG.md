@@ -1,3 +1,7 @@
+# 3.0.2 - 7/26/22
+- [feature] Use theme to define opacity #49
+- [fix] Set DoubleSide on the arrow heads #53
+
 # 3.0.1 - 7/25/22
 - [fix] update radial menu slice props for new interface
 
