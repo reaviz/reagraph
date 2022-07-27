@@ -20,6 +20,8 @@ export interface LineProps {
   onClick?: () => void;
   onActive?: (state: boolean) => void;
   onContextMenu?: () => void;
+  onPointerOver?: () => void;
+  onPointerOut?: () => void;
 }
 
 export const Line: FC<LineProps> = ({
@@ -31,7 +33,9 @@ export const Line: FC<LineProps> = ({
   animated,
   onContextMenu,
   onActive,
-  onClick
+  onClick,
+  onPointerOver,
+  onPointerOut
 }) => {
   const tubeRef = useRef<TubeBufferGeometry | null>(null);
   const draggingId = useStore(state => state.draggingId);
@@ -87,8 +91,14 @@ export const Line: FC<LineProps> = ({
   return (
     <mesh
       userData={{ id }}
-      onPointerOver={() => onActive(true)}
-      onPointerOut={() => onActive(false)}
+      onPointerOver={() => {
+        onActive(true);
+        onPointerOver?.();
+      }}
+      onPointerOut={() => {
+        onActive(false);
+        onPointerOut?.();
+      }}
       onClick={onClick}
       onPointerDown={event => {
         // context menu controls

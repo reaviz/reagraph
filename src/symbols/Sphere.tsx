@@ -12,6 +12,8 @@ export interface SphereProps {
   onActive?: (active: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
+  onPointerOver?: () => void;
+  onPointerOut?: () => void;
 }
 
 export const Sphere: FC<SphereProps> = ({
@@ -22,7 +24,9 @@ export const Sphere: FC<SphereProps> = ({
   animated,
   onActive,
   onClick,
-  onContextMenu
+  onContextMenu,
+  onPointerOver,
+  onPointerOut
 }) => {
   const { scale, nodeOpacity } = useSpring({
     from: {
@@ -50,11 +54,17 @@ export const Sphere: FC<SphereProps> = ({
         // context menu controls
         if (event.nativeEvent.buttons === 2) {
           event.stopPropagation();
-          onContextMenu();
+          onContextMenu?.();
         }
       }}
-      onPointerOver={() => onActive?.(true)}
-      onPointerOut={() => onActive?.(false)}
+      onPointerOver={() => {
+        onActive?.(true);
+        onPointerOver?.();
+      }}
+      onPointerOut={() => {
+        onActive?.(false);
+        onPointerOut?.();
+      }}
     >
       <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
       <a.meshPhongMaterial

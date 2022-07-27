@@ -131,6 +131,16 @@ export interface GraphSceneProps {
   onNodeContextMenu?: (node: InternalGraphNode) => void;
 
   /**
+   * When node got a pointer over.
+   */
+  onNodePointerOver?: (node: InternalGraphNode) => void;
+
+  /**
+   * When node lost pointer over.
+   */
+  onNodePointerOut?: (node: InternalGraphNode) => void;
+
+  /**
    * When a edge context menu happened.
    */
   onEdgeContextMenu?: (edge?: InternalGraphEdge) => void;
@@ -138,7 +148,17 @@ export interface GraphSceneProps {
   /**
    * When an edge was clicked.
    */
-  onEdgeClick?: (node: InternalGraphEdge) => void;
+  onEdgeClick?: (edge: InternalGraphEdge) => void;
+
+  /**
+   * When edge got a pointer over.
+   */
+  onEdgePointerOver?: (edge: InternalGraphEdge) => void;
+
+  /**
+   * When edge lost pointer over.
+   */
+  onEdgePointerOut?: (edge: InternalGraphEdge) => void;
 }
 
 export interface GraphSceneRef {
@@ -161,6 +181,10 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onNodeContextMenu,
         onEdgeContextMenu,
         onEdgeClick,
+        onEdgePointerOver,
+        onEdgePointerOut,
+        onNodePointerOver,
+        onNodePointerOut,
         contextMenu,
         theme,
         animated,
@@ -208,6 +232,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               contextMenu={contextMenu}
               onClick={onNodeClick}
               onContextMenu={onNodeContextMenu}
+              onPointerOver={onNodePointerOver}
+              onPointerOut={onNodePointerOut}
             />
           ))}
           {edgeIds.map(e => (
@@ -222,6 +248,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               contextMenu={contextMenu}
               onClick={onEdgeClick}
               onContextMenu={onEdgeContextMenu}
+              onPointerOver={onEdgePointerOver}
+              onPointerOut={onEdgePointerOut}
             />
           ))}
         </Fragment>

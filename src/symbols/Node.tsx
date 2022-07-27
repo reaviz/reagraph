@@ -20,8 +20,10 @@ export interface NodeProps {
   animated?: boolean;
   draggable?: boolean;
   labelFontUrl?: string;
-  onClick?: (node: InternalGraphNode) => void;
   contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
+  onPointerOver?: (node: InternalGraphNode) => void;
+  onPointerOut?: (node: InternalGraphNode) => void;
+  onClick?: (node: InternalGraphNode) => void;
   onContextMenu?: (node?: InternalGraphNode) => void;
 }
 
@@ -34,6 +36,8 @@ export const Node: FC<NodeProps> = ({
   labelFontUrl,
   contextMenu,
   onClick,
+  onPointerOver,
+  onPointerOut,
   onContextMenu
 }) => {
   const cameraControls = useCameraControls();
@@ -137,6 +141,8 @@ export const Node: FC<NodeProps> = ({
               onClick?.(node);
             }
           }}
+          onPointerOver={() => onPointerOver?.(node)}
+          onPointerOut={() => onPointerOut?.(node)}
           onActive={setActive}
           onContextMenu={() => {
             if (!disabled) {
@@ -156,6 +162,8 @@ export const Node: FC<NodeProps> = ({
           }
           opacity={selectionOpacity}
           animated={animated}
+          onPointerOver={() => onPointerOver?.(node)}
+          onPointerOut={() => onPointerOut?.(node)}
           onClick={() => {
             if (!disabled && !isDragging) {
               onClick?.(node);

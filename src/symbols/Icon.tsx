@@ -12,6 +12,8 @@ export interface IconProps {
   onActive?: (state: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
+  onPointerOver?: () => void;
+  onPointerOut?: () => void;
 }
 
 export const Icon: FC<IconProps> = ({
@@ -22,7 +24,9 @@ export const Icon: FC<IconProps> = ({
   animated,
   onActive,
   onClick,
-  onContextMenu
+  onContextMenu,
+  onPointerOver,
+  onPointerOut
 }) => {
   const texture = useMemo(() => new TextureLoader().load(image), [image]);
 
@@ -50,11 +54,17 @@ export const Icon: FC<IconProps> = ({
         // context menu controls
         if (event.nativeEvent.buttons === 2) {
           event.stopPropagation();
-          onContextMenu();
+          onContextMenu?.();
         }
       }}
-      onPointerOver={() => onActive(true)}
-      onPointerOut={() => onActive(false)}
+      onPointerOver={() => {
+        onActive(true);
+        onPointerOver?.();
+      }}
+      onPointerOut={() => {
+        onActive(false);
+        onPointerOut?.();
+      }}
     >
       <a.spriteMaterial
         attach="material"

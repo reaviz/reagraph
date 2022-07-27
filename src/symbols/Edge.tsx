@@ -37,6 +37,8 @@ export interface EdgeProps {
   contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
   onClick?: (edge: InternalGraphEdge) => void;
   onContextMenu?: (edge?: InternalGraphEdge) => void;
+  onPointerOver?: (edge: InternalGraphEdge) => void;
+  onPointerOut?: (edge: InternalGraphEdge) => void;
 }
 
 export const Edge: FC<EdgeProps> = ({
@@ -48,7 +50,9 @@ export const Edge: FC<EdgeProps> = ({
   arrowPlacement,
   contextMenu,
   onContextMenu,
-  onClick
+  onClick,
+  onPointerOver,
+  onPointerOut
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
@@ -147,6 +151,8 @@ export const Edge: FC<EdgeProps> = ({
             onClick?.(edge);
           }
         }}
+        onPointerOut={() => onPointerOut?.(edge)}
+        onPointerOver={() => onPointerOver?.(edge)}
         onContextMenu={() => {
           if (!disabled) {
             setMenuVisible(true);
