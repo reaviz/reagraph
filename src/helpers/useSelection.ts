@@ -1,10 +1,13 @@
-import React, { RefObject, useEffect, useState } from 'react';
+import React, { RefObject, useEffect, useMemo, useState } from 'react';
 import { GraphCanvasRef } from '../GraphCanvas';
 import { useHotkeys } from 'reakeys';
 import { GraphEdge, GraphNode } from '../types';
 import { findPath } from '../utils/paths';
+import { getAdjacents, PathSelectionTypes } from './utils';
 
 export type HotkeyTypes = 'selectAll' | 'deselect' | 'delete';
+
+export type SelectionTypes = 'single' | 'multi' | 'multiModifier';
 
 export interface SelectionProps {
   /**
@@ -18,6 +21,11 @@ export interface SelectionProps {
    * Contains both nodes and edges ids.
    */
   selections?: string[];
+
+  /**
+   * Default active selections.
+   */
+  actives?: string[];
 
   /**
    * Node datas.
@@ -45,6 +53,16 @@ export interface SelectionProps {
   focusOnSelect?: boolean;
 
   /**
+   * Type of selection.
+   */
+  type?: SelectionTypes;
+
+  /**
+   * Type of selection.
+   */
+  pathSelectionType?: PathSelectionTypes;
+
+  /**
    * On selection change.
    */
   onSelection?: (selectionIds: string[]) => void;
@@ -55,6 +73,11 @@ export interface SelectionResult {
    * Selections id array (of nodes and edges).
    */
   selections: string[];
+
+  /**
+   * The nodes/edges around the selections to highlight.
+   */
+  actives: string[];
 
   /**
    * Clear selections method.
@@ -100,35 +123,41 @@ export interface SelectionResult {
 export const useSelection = ({
   selections = [],
   nodes = [],
+  actives = [],
   focusOnSelect = true,
+  type = 'single',
+  pathSelectionType = 'direct',
   ref,
   hotkeys = ['selectAll', 'deselect', 'delete'],
   disabled,
   onSelection
 }: SelectionProps): SelectionResult => {
+  const [internalActives, setInternalActives] = useState<string[]>(actives);
   const [internalSelections, setInternalSelections] =
     useState<string[]>(selections);
   const [metaKeyDown, setMetaKeyDown] = useState<boolean>(false);
+  const isMulti = type === 'multi' || type === 'multiModifier';
 
-  const addSelection = (item: string) => {
-    if (!disabled) {
-      const has = internalSelections.includes(item);
-      if (!has) {
-        const next = [...internalSelections, item];
+  const addSelection = (items: string | string[]) => {
+    if (!disabled && items) {
+      items = Array.isArray(items) ? items : [items];
+
+      const filtered = items.filter(item => !internalSelections.includes(item));
+      if (filtered.length) {
+        const next = [...internalSelections, ...filtered];
         onSelection?.(next);
         setInternalSelections(next);
       }
     }
   };
 
-  const removeSelection = (item: string) => {
-    if (!disabled) {
-      const has = internalSelections.includes(item);
-      if (has) {
-        const next = internalSelections.filter(i => i !== item);
-        onSelection?.(next);
-        setInternalSelections(next);
-      }
+  const removeSelection = (items: string | string[]) => {
+    if (!disabled && items) {
+      items = Array.isArray(items) ? items : [items];
+
+      const next = internalSelections.filter(i => !items.includes(i));
+      onSelection?.(next);
+      setInternalSelections(next);
     }
   };
 
@@ -137,29 +166,41 @@ export const useSelection = ({
     if (has) {
       removeSelection(item);
     } else {
-      addSelection(item);
+      if (!isMulti) {
+        clearSelections(item);
+      } else {
+        addSelection(item);
+      }
     }
   };
 
-  const clearSelections = (next: string[] = []) => {
+  const clearSelections = (next: string | string[] = []) => {
     if (!disabled) {
+      next = Array.isArray(next) ? next : [next];
+      setInternalActives([]);
       setInternalSelections(next);
       onSelection?.(next);
     }
   };
 
   const onNodeClick = (data: GraphNode) => {
-    if (!metaKeyDown) {
-      clearSelections([data.id]);
-
-      if (focusOnSelect) {
-        ref.current?.centerGraph([data.id]);
+    if (isMulti) {
+      if (type === 'multiModifier') {
+        if (metaKeyDown) {
+          addSelection(data.id);
+        } else {
+          clearSelections(data.id);
+        }
+      } else {
+        addSelection(data.id);
       }
     } else {
-      toggleSelection(data.id);
+      clearSelections(data.id);
     }
 
-    setMetaKeyDown(false);
+    if (focusOnSelect) {
+      ref.current?.centerGraph([data.id]);
+    }
   };
 
   const selectNodePaths = (fromId: string, toId: string) => {
@@ -169,7 +210,19 @@ export const useSelection = ({
     }
 
     const path = findPath(graph, fromId, toId);
-    clearSelections(path.map(p => p.id as string));
+    clearSelections([fromId, toId]);
+
+    const result = [];
+    for (let i = 0; i < path.length - 1; i++) {
+      const from = path[i];
+      const to = path[i + 1];
+      const edge = graph.getLink(to.data.id, from.data.id);
+      if (edge) {
+        result.push(edge.data.id);
+      }
+    }
+
+    setInternalActives([...path.map(p => p.id as string), ...result]);
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
@@ -239,7 +292,16 @@ export const useSelection = ({
     }
   ]);
 
+  useEffect(() => {
+    if (pathSelectionType !== 'direct') {
+      setInternalActives(
+        getAdjacents(ref, internalSelections, pathSelectionType)
+      );
+    }
+  }, [internalSelections, pathSelectionType, ref]);
+
   return {
+    actives: internalActives,
     onNodeClick,
     selectNodePaths,
     onCanvasClick,
@@ -251,6 +313,3 @@ export const useSelection = ({
     setSelections: setInternalSelections
   };
 };
-function useCallback(arg0: (event: any) => void, arg1: undefined[]) {
-  throw new Error('Function not implemented.');
-}

@@ -39,6 +39,11 @@ export interface GraphSceneProps {
   selections?: string[];
 
   /**
+   * List of ids that are active.
+   */
+  actives?: string[];
+
+  /**
    * Animate or not the graph positions.
    */
   animated?: boolean;
@@ -170,7 +175,7 @@ export interface GraphSceneRef {
   /**
    * Center the graph on a node or list of nodes.
    */
-  centerGraph: (nodeIds?: string[]) => void;
+  centerGraph: (ids?: string[]) => void;
 }
 
 export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =

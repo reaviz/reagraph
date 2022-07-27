@@ -60,7 +60,7 @@ export const Edge: FC<EdgeProps> = ({
   const from = useStore(store => store.nodes.find(node => node.id === fromId));
   const to = useStore(store => store.nodes.find(node => node.id === toId));
   const draggingId = useStore(state => state.draggingId);
-  const [isActive, setActive] = useState<boolean>(false);
+  const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;
@@ -84,15 +84,14 @@ export const Edge: FC<EdgeProps> = ({
     [from.position, to.position, labelOffset, labelPlacement]
   );
 
-  const { isSelected, hasSelections, hasSingleSelection } = useStore(state => ({
-    hasSingleSelection: state.selections?.length === 1,
+  const { isSelected, hasSelections, isActive } = useStore(state => ({
     hasSelections: state.selections?.length,
-    isSelected:
-      state.selections?.includes(fromId) || state.selections?.includes(id)
+    isSelected: state.selections?.includes(id),
+    isActive: state.actives?.includes(id)
   }));
 
   const selectionOpacity = hasSelections
-    ? isSelected && hasSingleSelection
+    ? isSelected || isActive
       ? theme.edge.opacityOnlySelected
       : theme.edge.selectedOpacity
     : theme.edge.opacity;
@@ -134,7 +133,7 @@ export const Edge: FC<EdgeProps> = ({
     ]
   );
 
-  useCursor(isActive && !draggingId && onClick !== undefined, 'pointer');
+  useCursor(active && !draggingId && onClick !== undefined, 'pointer');
 
   return (
     <group>
@@ -145,7 +144,11 @@ export const Edge: FC<EdgeProps> = ({
         size={size}
         animated={animated}
         onActive={setActive}
-        color={isSelected || isActive ? theme.edge.activeFill : theme.edge.fill}
+        color={
+          isSelected || active || isActive
+            ? theme.edge.activeFill
+            : theme.edge.fill
+        }
         onClick={() => {
           if (!disabled) {
             onClick?.(edge);
@@ -168,7 +171,9 @@ export const Edge: FC<EdgeProps> = ({
           animated={animated}
           placement={arrowPlacement}
           color={
-            isSelected || isActive ? theme.arrow.activeFill : theme.arrow.fill
+            isSelected || active || isActive
+              ? theme.arrow.activeFill
+              : theme.arrow.fill
           }
           onActive={setActive}
           onContextMenu={() => {
@@ -186,7 +191,7 @@ export const Edge: FC<EdgeProps> = ({
             ellipsis={15}
             stroke={theme.edge.label.stroke}
             color={
-              isSelected || isActive
+              isSelected || active || isActive
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }

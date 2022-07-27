@@ -15,6 +15,7 @@ export interface GraphInputs {
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
   selections?: string[];
+  actives?: string[];
   clusterAttribute?: string;
   defaultNodeSize?: number;
   minNodeSize?: number;
@@ -30,20 +31,28 @@ export const useGraph = ({
   selections,
   nodes,
   edges,
+  actives,
   defaultNodeSize,
   maxNodeSize,
   minNodeSize
 }: GraphInputs) => {
-  const [graph, setEdges, setNodes, setSelections, drags, setDrags] = useStore(
-    state => [
-      state.graph,
-      state.setEdges,
-      state.setNodes,
-      state.setSelections,
-      state.drags,
-      state.setDrags
-    ]
-  );
+  const [
+    graph,
+    setEdges,
+    setNodes,
+    setSelections,
+    setActives,
+    drags,
+    setDrags
+  ] = useStore(state => [
+    state.graph,
+    state.setEdges,
+    state.setNodes,
+    state.setSelections,
+    state.setActives,
+    state.drags,
+    state.setDrags
+  ]);
 
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
@@ -100,6 +109,11 @@ export const useGraph = ({
     // Let's set the store selections so its easier to access
     setSelections(selections);
   }, [selections, setSelections]);
+
+  useEffect(() => {
+    // Let's set the store actives so its easier to access
+    setActives(actives);
+  }, [actives, setActives]);
 
   // Create the nggraph graph object
   useEffect(() => {

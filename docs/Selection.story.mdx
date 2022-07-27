@@ -12,6 +12,10 @@ The `useSelection` hook will automatically manage selection state and bind some 
 The hook accepts the following:
 
 ```ts
+export type HotkeyTypes = 'selectAll' | 'deselect' | 'delete';
+export type PathSelectionTypes = 'direct' | 'out' | 'in' | 'all';
+export type SelectionTypes = 'single' | 'multi' | 'multiModifier';
+
 export interface SelectionProps {
   /**
    * Required ref for the graph.
@@ -24,6 +28,11 @@ export interface SelectionProps {
    * Contains both nodes and edges ids.
    */
   selections?: string[];
+
+  /**
+   * Default active selections.
+   */
+  actives?: string[];
 
   /**
    * Node datas.
@@ -51,6 +60,16 @@ export interface SelectionProps {
   focusOnSelect?: boolean;
 
   /**
+   * Type of selection.
+   */
+  type?: SelectionTypes;
+
+  /**
+   * Type of selection.
+   */
+  pathSelectionType?: PathSelectionTypes;
+
+  /**
    * On selection change.
    */
   onSelection?: (selectionIds: string[]) => void;
@@ -60,12 +79,16 @@ export interface SelectionProps {
 and returns the following:
 
 ```ts
-
 export interface SelectionResult {
   /**
    * Selections id array (of nodes and edges).
    */
   selections: string[];
+
+  /**
+   * The nodes/edges around the selections to highlight.
+   */
+  actives: string[];
 
   /**
    * Clear selections method.

@@ -62,23 +62,18 @@ export const Node: FC<NodeProps> = ({
     labelVisible = true
   } = node;
 
-  const { isPrimarySelection, hasSelections, hasLinksSelected } = useStore(
-    state => ({
-      hasSelections: state.selections?.length,
-      isPrimarySelection: state.selections?.includes(id),
-      hasLinksSelected: state.selections?.some(selection =>
-        state.graph.hasLink(selection, id)
-      )
-    })
-  );
+  const { isSelected, hasSelections, isActive } = useStore(state => ({
+    hasSelections: state.selections?.length,
+    isSelected: state.selections?.includes(id),
+    isActive: state.actives?.includes(id)
+  }));
 
   const group = useRef<Group | null>(null);
-  const [isActive, setActive] = useState<boolean>(false);
+  const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-  const isSelected = isPrimarySelection || hasLinksSelected;
 
   const selectionOpacity = hasSelections
-    ? isSelected || isActive
+    ? isSelected || active || isActive
       ? theme.node.selectedOpacity
       : theme.node.inactiveOpacity
     : theme.node.opacity;
@@ -120,9 +115,9 @@ export const Node: FC<NodeProps> = ({
     }
   });
 
-  useCursor(isActive && !draggingId && onClick !== undefined, 'pointer');
+  useCursor(active && !draggingId && onClick !== undefined, 'pointer');
   useCursor(
-    isActive && draggable && !isDragging && onClick === undefined,
+    active && draggable && !isDragging && onClick === undefined,
     'grab'
   );
   useCursor(isDragging, 'grabbing');
@@ -156,7 +151,7 @@ export const Node: FC<NodeProps> = ({
           id={id}
           size={nodeSize}
           color={
-            isSelected || isActive || isDragging
+            isSelected || active || isDragging || isActive
               ? theme.node.activeFill
               : fill || theme.node.fill
           }
@@ -183,26 +178,26 @@ export const Node: FC<NodeProps> = ({
         />
       )}
       <Ring
-        opacity={isPrimarySelection ? 0.5 : 0}
+        opacity={isSelected ? 0.5 : 0}
         size={nodeSize}
         animated={animated}
-        color={isSelected || isActive ? theme.ring.activeFill : theme.ring.fill}
+        color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
       />
       {menuVisible && contextMenu && (
         <Html prepend={true} center={true}>
           {contextMenu({ data: node, onClose: () => setMenuVisible(false) })}
         </Html>
       )}
-      {(labelVisible || isSelected || isActive) && label && (
+      {(labelVisible || isSelected || active) && label && (
         <a.group position={labelPosition as any}>
           <Label
             text={label}
             fontUrl={labelFontUrl}
             opacity={selectionOpacity}
             stroke={theme.node.label.stroke}
-            active={isSelected || isActive || isDragging}
+            active={isSelected || active || isDragging || isActive}
             color={
-              isSelected || isActive || isDragging
+              isSelected || active || isDragging || isActive
                 ? theme.node.label.activeColor
                 : theme.node.label.color
             }
