@@ -1,7 +1,14 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useRef } from 'react';
+import { useFrame, useThree, useLoader } from '@react-three/fiber';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig } from '../utils/animation';
-import { Color, ColorRepresentation, DoubleSide } from 'three';
+import {
+  Color,
+  ColorRepresentation,
+  DoubleSide,
+  Group,
+  TextureLoader
+} from 'three';
 
 export interface SphereProps {
   size?: number;
@@ -38,6 +45,15 @@ export const Sphere: FC<SphereProps> = ({
     }
   });
   const normalizedColor = useMemo(() => new Color(color), [color]);
+  const iconTexture = useLoader(
+    TextureLoader,
+    'http://placekitten.com/200/200'
+  );
+  const meshRef = useRef<Group>();
+  const { camera } = useThree();
+  useFrame(() => {
+    meshRef.current.lookAt(camera.position);
+  });
 
   return (
     <a.mesh
