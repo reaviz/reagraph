@@ -64,6 +64,27 @@ export const Simple = () => {
   );
 };
 
+export const Dragging = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { selections, onNodeClick, onCanvasClick } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      draggable
+      nodes={complexNodes}
+      edges={complexEdges}
+      selections={selections}
+      onCanvasClick={onCanvasClick}
+      onNodeClick={onNodeClick}
+    />
+  );
+};
+
 export const PathFinding = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, selectNodePaths, onNodeClick, onCanvasClick } = useSelection({
