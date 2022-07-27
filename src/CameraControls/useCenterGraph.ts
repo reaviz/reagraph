@@ -7,8 +7,6 @@ import { getLayoutCenter } from '../utils/layout';
 import { InternalGraphNode } from '../types';
 import { useStore } from '../store';
 
-const PADDING = 50;
-
 export interface CenterGraphInput {
   /**
    * Whether the animate the transition or not.
@@ -29,7 +27,7 @@ export const useCenterGraph = ({
   const { controls } = useCameraControls();
 
   const centerNodes = useCallback(
-    (centerNodes: InternalGraphNode[], factor: number = 0) => {
+    (centerNodes: InternalGraphNode[], padding = 50) => {
       requestAnimationFrame(() => {
         // Centers the graph based on the central most node
         const { minX, maxX, minY, maxY, minZ, maxZ } =
@@ -37,15 +35,15 @@ export const useCenterGraph = ({
 
         controls?.fitToBox(
           new Box3(
-            new Vector3(minX, minY, minZ + factor),
-            new Vector3(maxX, maxY, maxZ + factor)
+            new Vector3(minX, minY, minZ),
+            new Vector3(maxX, maxY, maxZ)
           ),
           animated,
           {
-            paddingLeft: PADDING,
-            paddingRight: PADDING,
-            paddingBottom: PADDING,
-            paddingTop: PADDING
+            paddingLeft: padding,
+            paddingRight: padding,
+            paddingBottom: padding,
+            paddingTop: padding
           }
         );
 
@@ -58,8 +56,10 @@ export const useCenterGraph = ({
   const centerNodesById = useCallback(
     (nodeIds?: string[]) => {
       let mappedNodes: InternalGraphNode[] | null = null;
+      let padding = 50;
 
       if (nodeIds?.length) {
+        padding = 150;
         mappedNodes = nodeIds.reduce((acc, id) => {
           const node = nodes.find(n => n.id === id);
           if (node) {
@@ -74,7 +74,7 @@ export const useCenterGraph = ({
         }, []);
       }
 
-      centerNodes(mappedNodes || nodes);
+      centerNodes(mappedNodes || nodes, padding);
     },
     [centerNodes, nodes]
   );
