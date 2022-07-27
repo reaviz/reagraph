@@ -133,8 +133,7 @@ export const Node: FC<NodeProps> = ({
           opacity={selectionOpacity}
           animated={animated}
           onClick={() => {
-            // Ignore if active since its dragging
-            if (!disabled && !isActive) {
+            if (!disabled && !isDragging) {
               onClick?.(node);
             }
           }}
@@ -158,8 +157,7 @@ export const Node: FC<NodeProps> = ({
           opacity={selectionOpacity}
           animated={animated}
           onClick={() => {
-            // Ignore if active since its dragging
-            if (!disabled && !isActive) {
+            if (!disabled && !isDragging) {
               onClick?.(node);
             }
           }}
