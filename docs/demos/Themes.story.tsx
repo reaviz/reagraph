@@ -13,16 +13,6 @@ export const DarkTheme = () => (
     nodes={simpleNodes}
     edges={simpleEdges}
     labelType="all"
-    contextMenuItems={[
-      {
-        label: 'Add Node',
-        onClick: () => alert('Add a node')
-      },
-      {
-        label: 'Remove Node',
-        onClick: () => alert('Remove the node')
-      }
-    ]}
   />
 );
 
