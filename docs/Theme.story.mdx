@@ -36,7 +36,7 @@ export interface Theme {
     activeFill: ThemeColor;
     opacity: number;
     selectedOpacity: number;
-    opacityOnlySelected: number;
+    inactiveOpacity: number;
     label: {
       color: ThemeColor;
       stroke: ThemeColor;
@@ -117,7 +117,7 @@ export const lightTheme: Theme = {
     activeFill: '#1DE9AC',
     opacity: 1,
     selectedOpacity: 1,
-    opacityOnlySelected: 0.1,
+    inactiveOpacity: 0.1,
     label: {
       stroke: '#fff',
       color: '#2A6475',
