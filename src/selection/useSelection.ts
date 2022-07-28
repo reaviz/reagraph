@@ -1,4 +1,10 @@
-import React, { RefObject, useEffect, useMemo, useState } from 'react';
+import React, {
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import { GraphCanvasRef } from '../GraphCanvas';
 import { useHotkeys } from 'reakeys';
 import { GraphEdge, GraphNode } from '../types';
@@ -148,94 +154,128 @@ export const useSelection = ({
   const [metaKeyDown, setMetaKeyDown] = useState<boolean>(false);
   const isMulti = type === 'multi' || type === 'multiModifier';
 
-  const addSelection = (items: string | string[]) => {
-    if (!disabled && items) {
-      items = Array.isArray(items) ? items : [items];
+  const addSelection = useCallback(
+    (items: string | string[]) => {
+      if (!disabled && items) {
+        items = Array.isArray(items) ? items : [items];
 
-      const filtered = items.filter(item => !internalSelections.includes(item));
-      if (filtered.length) {
-        const next = [...internalSelections, ...filtered];
+        const filtered = items.filter(
+          item => !internalSelections.includes(item)
+        );
+        if (filtered.length) {
+          const next = [...internalSelections, ...filtered];
+          onSelection?.(next);
+          setInternalSelections(next);
+        }
+      }
+    },
+    [disabled, internalSelections, onSelection]
+  );
+
+  const removeSelection = useCallback(
+    (items: string | string[]) => {
+      if (!disabled && items) {
+        items = Array.isArray(items) ? items : [items];
+
+        const next = internalSelections.filter(i => !items.includes(i));
         onSelection?.(next);
         setInternalSelections(next);
       }
-    }
-  };
+    },
+    [disabled, internalSelections, onSelection]
+  );
 
-  const removeSelection = (items: string | string[]) => {
-    if (!disabled && items) {
-      items = Array.isArray(items) ? items : [items];
-
-      const next = internalSelections.filter(i => !items.includes(i));
-      onSelection?.(next);
-      setInternalSelections(next);
-    }
-  };
-
-  const toggleSelection = (item: string) => {
-    const has = internalSelections.includes(item);
-    if (has) {
-      removeSelection(item);
-    } else {
-      if (!isMulti) {
-        clearSelections(item);
-      } else {
-        addSelection(item);
+  const clearSelections = useCallback(
+    (next: string | string[] = []) => {
+      if (!disabled) {
+        next = Array.isArray(next) ? next : [next];
+        setInternalActives([]);
+        setInternalSelections(next);
+        onSelection?.(next);
       }
-    }
-  };
+    },
+    [disabled, onSelection]
+  );
 
-  const clearSelections = (next: string | string[] = []) => {
-    if (!disabled) {
-      next = Array.isArray(next) ? next : [next];
-      setInternalActives([]);
-      setInternalSelections(next);
-      onSelection?.(next);
-    }
-  };
-
-  const onNodeClick = (data: GraphNode) => {
-    if (isMulti) {
-      if (type === 'multiModifier') {
-        if (metaKeyDown) {
-          addSelection(data.id);
+  const toggleSelection = useCallback(
+    (item: string) => {
+      const has = internalSelections.includes(item);
+      if (has) {
+        removeSelection(item);
+      } else {
+        if (!isMulti) {
+          clearSelections(item);
         } else {
-          clearSelections(data.id);
+          addSelection(item);
+        }
+      }
+    },
+    [
+      addSelection,
+      clearSelections,
+      internalSelections,
+      isMulti,
+      removeSelection
+    ]
+  );
+
+  const onNodeClick = useCallback(
+    (data: GraphNode) => {
+      if (isMulti) {
+        if (type === 'multiModifier') {
+          if (metaKeyDown) {
+            addSelection(data.id);
+          } else {
+            clearSelections(data.id);
+          }
+        } else {
+          addSelection(data.id);
         }
       } else {
-        addSelection(data.id);
+        clearSelections(data.id);
       }
-    } else {
-      clearSelections(data.id);
-    }
 
-    if (focusOnSelect) {
-      ref.current?.centerGraph([data.id]);
-    }
-  };
-
-  const selectNodePaths = (fromId: string, toId: string) => {
-    const graph = ref.current.getGraph();
-    if (!graph) {
-      throw new Error('Graph is not initialized');
-    }
-
-    const path = findPath(graph, fromId, toId);
-    clearSelections([fromId, toId]);
-
-    const result = [];
-    for (let i = 0; i < path.length - 1; i++) {
-      const from = path[i];
-      const to = path[i + 1];
-      const edge = graph.getLink(to.data.id, from.data.id);
-      if (edge) {
-        result.push(edge.data.id);
+      if (focusOnSelect) {
+        ref.current?.centerGraph([data.id]);
       }
-    }
+    },
+    [
+      addSelection,
+      clearSelections,
+      focusOnSelect,
+      isMulti,
+      metaKeyDown,
+      ref,
+      type
+    ]
+  );
 
-    setInternalActives([...path.map(p => p.id as string), ...result]);
-  };
+  const selectNodePaths = useCallback(
+    (fromId: string, toId: string) => {
+      const graph = ref.current.getGraph();
+      if (!graph) {
+        throw new Error('Graph is not initialized');
+      }
 
-  const onKeyDown = (event: KeyboardEvent) => {
+      const path = findPath(graph, fromId, toId);
+      clearSelections([fromId, toId]);
+
+      const result = [];
+      for (let i = 0; i < path.length - 1; i++) {
+        const from = path[i];
+        const to = path[i + 1];
+        const edge = graph.getLink(to.data.id, from.data.id);
+        if (edge) {
+          result.push(edge.data.id);
+        }
+      }
+
+      setInternalActives([...path.map(p => p.id as string), ...result]);
+    },
+    [clearSelections, ref]
+  );
+
+  const onKeyDown = useCallback((event: KeyboardEvent) => {
     const element = event.target as any;
     const isSafe =
       element.tagName !== 'INPUT' &&
@@ -247,7 +287,7 @@ export const useSelection = ({
       event.preventDefault();
       setMetaKeyDown(event.metaKey || event.ctrlKey);
     }
-  };
+  }, []);
 
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown);
@@ -255,30 +295,42 @@ export const useSelection = ({
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  });
+  }, [onKeyDown]);
 
-  const onCanvasClick = (event: MouseEvent) => {
-    if (
-      event.button !== 2 &&
-      (internalSelections.length || internalActives.length)
-    ) {
-      clearSelections();
-      setMetaKeyDown(false);
+  const onCanvasClick = useCallback(
+    (event: MouseEvent) => {
+      if (
+        event.button !== 2 &&
+        (internalSelections.length || internalActives.length)
+      ) {
+        clearSelections();
+        setMetaKeyDown(false);
 
-      // Only re-center if we have a single selection
-      if (focusOnSelect && internalSelections.length === 1) {
-        ref.current?.centerGraph();
+        // Only re-center if we have a single selection
+        if (focusOnSelect && internalSelections.length === 1) {
+          ref.current?.centerGraph();
+        }
       }
-    }
-  };
+    },
+    [
+      clearSelections,
+      focusOnSelect,
+      internalActives.length,
+      internalSelections.length,
+      ref
+    ]
+  );
 
-  const onLasso = (selections: string[]) => {
+  const onLasso = useCallback((selections: string[]) => {
     setInternalActives(selections);
-  };
+  }, []);
 
-  const onLassoEnd = (selections: string[]) => {
-    clearSelections(selections);
-  };
+  const onLassoEnd = useCallback(
+    (selections: string[]) => {
+      clearSelections(selections);
+    },
+    [clearSelections]
+  );
 
   useHotkeys([
     {
