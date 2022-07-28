@@ -8,46 +8,45 @@ export const getAdjacents = (
   nodeIds: string | string[],
   type: PathSelectionTypes
 ) => {
-  const graph = ref.current.getGraph();
-  if (!graph) {
-    throw new Error('Graph is not initialized');
-  }
-
   const results = [];
-  nodeIds = Array.isArray(nodeIds) ? nodeIds : [nodeIds];
 
-  for (const nodeId of nodeIds) {
-    graph.getLinks(nodeId).forEach(link => {
-      const linkId = link.data.id;
+  const graph = ref.current.getGraph();
+  if (graph) {
+    nodeIds = Array.isArray(nodeIds) ? nodeIds : [nodeIds];
 
-      if (type === 'in') {
-        if (link.toId === nodeId && !results.includes(linkId)) {
-          results.push(linkId);
-        }
-      } else if (type === 'out') {
-        if (link.fromId === nodeId && !results.includes(linkId)) {
-          results.push(linkId);
-        }
-      } else {
-        if (!results.includes(linkId)) {
-          results.push(linkId);
-        }
-      }
+    for (const nodeId of nodeIds) {
+      graph.getLinks(nodeId).forEach(link => {
+        const linkId = link.data.id;
 
-      if (type === 'out' || type === 'all') {
-        const toId = link.toId;
-        if (!results.includes(toId)) {
-          results.push(toId);
+        if (type === 'in') {
+          if (link.toId === nodeId && !results.includes(linkId)) {
+            results.push(linkId);
+          }
+        } else if (type === 'out') {
+          if (link.fromId === nodeId && !results.includes(linkId)) {
+            results.push(linkId);
+          }
+        } else {
+          if (!results.includes(linkId)) {
+            results.push(linkId);
+          }
         }
-      }
 
-      if (type === 'in' || type === 'all') {
-        const fromId = link.fromId;
-        if (!results.includes(fromId)) {
-          results.push(fromId);
+        if (type === 'out' || type === 'all') {
+          const toId = link.toId;
+          if (!results.includes(toId)) {
+            results.push(toId);
+          }
         }
-      }
-    });
+
+        if (type === 'in' || type === 'all') {
+          const fromId = link.fromId;
+          if (!results.includes(fromId)) {
+            results.push(fromId);
+          }
+        }
+      });
+    }
   }
 
   return results;

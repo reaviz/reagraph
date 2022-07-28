@@ -314,7 +314,7 @@ export const useSelection = ({
   ]);
 
   useEffect(() => {
-    if (pathSelectionType !== 'direct') {
+    if (pathSelectionType !== 'direct' && internalSelections.length > 0) {
       setInternalActives(
         getAdjacents(ref, internalSelections, pathSelectionType)
       );
