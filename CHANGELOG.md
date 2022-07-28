@@ -1,3 +1,9 @@
+# 4.0.2 - 7/28/22
+- [fix] fix incorrect variable name from `theme.edge.opacityOnlySelected` to `theme.edge.inactiveOpacity`.
+- [fix] use callback memos for useSelection hook
+- [fix] fix edge selection opacity inverted
+- [fix] improve focus padding math
+
 # 4.0.1 - 7/28/22
 - [fix] fix graph error on init for new selection types
 
