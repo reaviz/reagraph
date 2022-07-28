@@ -1,6 +1,6 @@
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Vector3, Box3 } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
@@ -25,6 +25,12 @@ export const useCenterGraph = ({
   const nodes = useStore(state => state.nodes);
   const { invalidate } = useThree();
   const { controls } = useCameraControls();
+
+  // Find the ideal spacing for focusing
+  const centerPadding = useMemo(() => {
+    const { maxX, maxY } = getLayoutCenter(nodes);
+    return Math.max(maxX, maxY);
+  }, [nodes]);
 
   const centerNodes = useCallback(
     (centerNodes: InternalGraphNode[], padding = 50) => {
@@ -59,7 +65,7 @@ export const useCenterGraph = ({
       let padding = 50;
 
       if (nodeIds?.length) {
-        padding = 150;
+        padding = centerPadding;
         mappedNodes = nodeIds.reduce((acc, id) => {
           const node = nodes.find(n => n.id === id);
           if (node) {
@@ -76,7 +82,7 @@ export const useCenterGraph = ({
 
       centerNodes(mappedNodes || nodes, padding);
     },
-    [centerNodes, nodes]
+    [centerNodes, nodes, centerPadding]
   );
 
   const mounted = useRef<boolean>(false);

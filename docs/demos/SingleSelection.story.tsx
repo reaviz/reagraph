@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
-import { complexEdges, complexNodes } from '../assets/demo';
+import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Selection/Single',
@@ -33,16 +33,16 @@ export const Simple = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
-    nodes: complexNodes,
-    edges: complexEdges,
+    nodes: simpleNodes,
+    edges: simpleEdges,
     type: 'single'
   });
 
   return (
     <GraphCanvas
       ref={graphRef}
-      nodes={complexNodes}
-      edges={complexEdges}
+      nodes={simpleNodes}
+      edges={simpleEdges}
       selections={selections}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
