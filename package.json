@@ -1,6 +1,6 @@
 {
   "name": "reagraph",
-  "version": "3.0.2",
+  "version": "4.0.0",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
     "build": "rollup -c",
@@ -64,6 +64,7 @@
     "react-use-gesture": "^9.1.3",
     "reakeys": "^1.2.9",
     "three": "^0.142.0",
+    "three-stdlib": "^2.12.1",
     "zustand": "4.0.0-rc.1"
   },
   "peerDependencies": {

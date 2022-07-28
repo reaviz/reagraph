@@ -1,3 +1,11 @@
+# 4.0.0 - 7/27/22
+- [BREAKING] reworked how selections/actives work. See selection stories.
+- [BREAKING] removed theme settings for radial menu in favor of css vars
+- [feature] lasso select
+- [feature] add pointer over/out events for nodes/edges
+- [fix] fix dragging causing selection
+- [fix] improve zoom level when selecting
+
 # 3.0.2 - 7/26/22
 - [feature] Use theme to define opacity #49
 - [fix] Set DoubleSide on the arrow heads #53
