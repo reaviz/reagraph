@@ -17,6 +17,7 @@ import { Theme, lightTheme } from './utils';
 import { createStore, Provider } from './store';
 import { Graph } from 'ngraph.graph';
 import css from './GraphCanvas.module.css';
+import { Lasso, LassoType } from './selection';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
@@ -33,6 +34,21 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * When the canvas was clicked but didn't hit a node/edge.
    */
   onCanvasClick?: (event: MouseEvent) => void;
+
+  /**
+   * The type of lasso selection.
+   */
+  lassoType?: LassoType;
+
+  /**
+   * When the canvas had a lasso selection.
+   */
+  onLasso?: (selections: string[]) => void;
+
+  /**
+   * When the canvas had a lasso selection end.
+   */
+  onLassoEnd?: (selections: string[]) => void;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
@@ -64,7 +80,17 @@ const CAMERA_DEFAULTS: any = {
 export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
     (
-      { cameraMode, theme, onCanvasClick, animated, disabled, ...rest },
+      {
+        cameraMode,
+        theme,
+        onCanvasClick,
+        animated,
+        disabled,
+        lassoType,
+        onLasso,
+        onLassoEnd,
+        ...rest
+      },
       ref: Ref<GraphCanvasRef>
     ) => {
       const rendererRef = useRef<GraphSceneRef | null>(null);
@@ -104,15 +130,23 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 animated={animated}
                 disabled={disabled}
               >
-                <Suspense>
-                  <GraphScene
-                    ref={rendererRef as any}
-                    theme={theme}
-                    disabled={disabled}
-                    animated={animated}
-                    {...rest}
-                  />
-                </Suspense>
+                <Lasso
+                  theme={theme}
+                  disabled={disabled}
+                  type={lassoType}
+                  onLasso={onLasso}
+                  onLassoEnd={onLassoEnd}
+                >
+                  <Suspense>
+                    <GraphScene
+                      ref={rendererRef as any}
+                      theme={theme}
+                      disabled={disabled}
+                      animated={animated}
+                      {...rest}
+                    />
+                  </Suspense>
+                </Lasso>
               </CameraControls>
             </Provider>
           </Canvas>
@@ -130,5 +164,6 @@ GraphCanvas.defaultProps = {
   animated: true,
   defaultNodeSize: 7,
   minNodeSize: 5,
-  maxNodeSize: 15
+  maxNodeSize: 15,
+  lassoType: 'none'
 };

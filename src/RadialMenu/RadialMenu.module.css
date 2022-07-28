@@ -4,13 +4,13 @@
   position: relative;
   height: 175px;
   width: 175px;
-  border: solid 5px var(--border);
+  border: solid 5px var(--radial-menu-border);
   overflow: hidden;
-  background: var(--background);
+  background: var(--radial-menu-background);
 
   &:before {
     content: ' ';
-    background: var(--border);
+    background: var(--radial-menu-border);
     border-radius: 50%;
     height: 25px;
     width: 25px;

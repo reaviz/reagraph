@@ -2,7 +2,7 @@
   transform-origin: bottom right;
   overflow: hidden;
   position: absolute;
-  border: solid 1px var(--border);
+  border: solid 1px var(--radial-menu-border);
 
   &.disabled {
     opacity: 0.6;
@@ -17,8 +17,8 @@
       cursor: pointer;
 
       &:hover {
-        color: var(--active-color);
-        background: var(--active-background);
+        color: var(--radial-menu-active-color);
+        background: var(--radial-menu-active-background);
       }
     }
   }
@@ -30,7 +30,7 @@
     border-radius: 50%;
     outline: none;
     transition: background 150ms ease-in-out;
-    color: var(--color);
+    color: var(--radial-menu-color);
 
     .contentInner {
       position: absolute;
@@ -45,7 +45,7 @@
 
   svg {
     margin: 0 auto;
-    fill: var(--active-color);
+    fill: var(--radial-menu-active-color);
     height: 25px;
     width: 25px;
     display: block;

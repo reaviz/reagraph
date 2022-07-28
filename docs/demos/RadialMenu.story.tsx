@@ -1,5 +1,5 @@
 import React from 'react';
-import { darkTheme, GraphCanvas, RadialMenu } from '../../src';
+import { GraphCanvas, RadialMenu } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
@@ -14,7 +14,6 @@ export const Simple = () => (
     contextMenu={({ data, onClose }) => (
       <RadialMenu
         onClose={onClose}
-        theme={darkTheme}
         items={[
           {
             label: 'Add Node',
@@ -43,11 +42,10 @@ export const Disabled = () => (
     contextMenu={({ data, onClose }) => (
       <RadialMenu
         onClose={onClose}
-        theme={darkTheme}
         items={[
           {
             label: 'Add Node',
-            disabled: () => true,
+            disabled: true,
             onClick: () => {
               alert('Add a node');
               onClose();
@@ -55,38 +53,7 @@ export const Disabled = () => (
           },
           {
             label: 'Remove Node',
-            disabled: () => true,
-            onClick: () => {
-              alert('Remove the node');
-              onClose();
-            }
-          }
-        ]}
-      />
-    )}
-  />
-);
-
-export const Empty = () => (
-  <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
-    contextMenu={({ data, onClose }) => (
-      <RadialMenu
-        theme={darkTheme}
-        onClose={onClose}
-        items={[
-          {
-            label: 'Add Node',
-            visible: () => false,
-            onClick: () => {
-              alert('Add a node');
-              onClose();
-            }
-          },
-          {
-            label: 'Remove Node',
-            visible: () => false,
+            disabled: true,
             onClick: () => {
               alert('Remove the node');
               onClose();

@@ -5,7 +5,7 @@ export * from './utils';
 export * from './layout';
 export * from './symbols';
 export * from './sizing';
-export * from './helpers';
+export * from './selection';
 export * from './RadialMenu';
 export * from './CameraControls';
 export * from './useGraph';

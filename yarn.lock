@@ -12708,7 +12708,7 @@ three-mesh-bvh@^0.5.10:
   resolved "https://registry.yarnpkg.com/three-mesh-bvh/-/three-mesh-bvh-0.5.10.tgz#6eadd0a9f63d8fc1bb3516bdc96b6ed906a888c4"
   integrity sha512-yOJPT3DhfZB/DvIr0lEfPUPMRX11HJABGapeuBa4GwgsF1NMMsy1nW1wMGxImmVyRCZ61yoor/YVqRRQV1p5VQ==
 
-three-stdlib@^2.10.2:
+three-stdlib@^2.10.2, three-stdlib@^2.12.1:
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/three-stdlib/-/three-stdlib-2.12.1.tgz#b63de05cf7f7803e630a7c0c5887e85ae06178ca"
   integrity sha512-G3SSsCOBiWa0sjjPt+K28ikQ84Plm/ZVUozMfWagK59kZqBWcaPVXpOThkAgvdBpm2zCWLW3edAoW/4XIbljVQ==

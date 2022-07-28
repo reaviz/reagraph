@@ -47,7 +47,7 @@ export const Icon: FC<IconProps> = ({
 
   return (
     <a.sprite
-      userData={{ id }}
+      userData={{ id, type: 'node' }}
       scale={scale as any}
       onClick={onClick}
       onPointerDown={event => {

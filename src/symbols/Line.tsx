@@ -90,7 +90,7 @@ export const Line: FC<LineProps> = ({
 
   return (
     <mesh
-      userData={{ id }}
+      userData={{ id, type: 'edge' }}
       onPointerOver={() => {
         onActive(true);
         onPointerOver?.();

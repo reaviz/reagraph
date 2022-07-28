@@ -118,6 +118,16 @@ export interface SelectionResult {
    * On canvas click event pass through.
    */
   onCanvasClick?: (event: MouseEvent) => void;
+
+  /**
+   * When the lasso happened.
+   */
+  onLasso?: (selections: string[]) => void;
+
+  /**
+   * When the lasso ended.
+   */
+  onLassoEnd?: (selections: string[]) => void;
 }
 
 export const useSelection = ({
@@ -248,7 +258,10 @@ export const useSelection = ({
   });
 
   const onCanvasClick = (event: MouseEvent) => {
-    if (event.button !== 2 && internalSelections.length) {
+    if (
+      event.button !== 2 &&
+      (internalSelections.length || internalActives.length)
+    ) {
       clearSelections();
       setMetaKeyDown(false);
 
@@ -257,6 +270,14 @@ export const useSelection = ({
         ref.current?.centerGraph();
       }
     }
+  };
+
+  const onLasso = (selections: string[]) => {
+    setInternalActives(selections);
+  };
+
+  const onLassoEnd = (selections: string[]) => {
+    clearSelections(selections);
   };
 
   useHotkeys([
@@ -269,7 +290,7 @@ export const useSelection = ({
       callback: event => {
         event.preventDefault();
 
-        if (!disabled) {
+        if (!disabled && type !== 'single') {
           const next = nodes.map(n => n.id);
           onSelection?.(next);
           setInternalSelections(next);
@@ -303,6 +324,8 @@ export const useSelection = ({
   return {
     actives: internalActives,
     onNodeClick,
+    onLasso,
+    onLassoEnd,
     selectNodePaths,
     onCanvasClick,
     selections: internalSelections,

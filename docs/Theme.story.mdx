@@ -47,12 +47,9 @@ export interface Theme {
     fill: ThemeColor;
     activeFill: ThemeColor;
   };
-  menu: {
+  lasso: {
     background: string;
-    color: string;
     border: string;
-    activeBackground: string;
-    activeColor: string;
   };
 }
 ```
@@ -107,12 +104,9 @@ export const lightTheme: Theme = {
       activeColor: '#1DE9AC'
     }
   },
-  menu: {
-    background: '#fff',
-    border: '#AACBD2',
-    color: '#000',
-    activeBackground: '#D8E6EA',
-    activeColor: '#000'
+  lasso: {
+    border: '1px solid #55aaff',
+    background: 'rgba(75, 160, 255, 0.1)'
   },
   ring: {
     fill: '#D8E6EA',

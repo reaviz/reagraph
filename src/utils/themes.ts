@@ -37,12 +37,9 @@ export interface Theme {
     fill: ColorRepresentation;
     activeFill: ColorRepresentation;
   };
-  menu: {
+  lasso: {
     background: string;
-    color: string;
     border: string;
-    activeBackground: string;
-    activeColor: string;
   };
 }
 
@@ -63,12 +60,9 @@ export const lightTheme: Theme = {
       activeColor: '#1DE9AC'
     }
   },
-  menu: {
-    background: '#fff',
-    border: '#AACBD2',
-    color: '#000',
-    activeBackground: '#D8E6EA',
-    activeColor: '#000'
+  lasso: {
+    border: '1px solid #55aaff',
+    background: 'rgba(75, 160, 255, 0.1)'
   },
   ring: {
     fill: '#D8E6EA',
@@ -109,12 +103,9 @@ export const darkTheme: Theme = {
       activeColor: '#1DE9AC'
     }
   },
-  menu: {
-    background: '#54616D',
-    border: '#7A8C9E',
-    color: '#fff',
-    activeBackground: '#1DE9AC',
-    activeColor: '#000'
+  lasso: {
+    border: '1px solid #55aaff',
+    background: 'rgba(75, 160, 255, 0.1)'
   },
   ring: {
     fill: '#54616D',
