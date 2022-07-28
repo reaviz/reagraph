@@ -1,4 +1,7 @@
-# 4.0.0 - 7/27/22
+# 4.0.1 - 7/28/22
+- [fix] fix graph error on init for new selection types
+
+# 4.0.0 - 7/28/22
 - [BREAKING] reworked how selections/actives work. See selection stories.
 - [BREAKING] removed theme settings for radial menu in favor of css vars
 - [feature] lasso select
