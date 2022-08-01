@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
 import { TextureLoader, LinearFilter, DoubleSide } from 'three';
-import { animationConfig } from '../utils';
+import { animationConfig } from '../../utils';
 
 export interface IconProps {
   image: string;

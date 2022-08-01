@@ -2,12 +2,11 @@ import React, { FC, useRef, useState } from 'react';
 import { Group } from 'three';
 import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
-import { Sphere } from './Sphere';
+import { Sphere } from './nodes/Sphere';
 import { Label } from './Label';
-import { Icon } from './Icon';
 import { Theme } from '../utils';
 import { Ring } from './Ring';
-import { ContextMenuEvent, InternalGraphNode } from '../types';
+import { ContextMenuEvent, InternalGraphNode, NodeRenderProp } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
@@ -25,6 +24,7 @@ export interface NodeProps {
   onPointerOut?: (node: InternalGraphNode) => void;
   onClick?: (node: InternalGraphNode) => void;
   onContextMenu?: (node?: InternalGraphNode) => void;
+  renderNode?: NodeRenderProp;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -38,7 +38,16 @@ export const Node: FC<NodeProps> = ({
   onClick,
   onPointerOver,
   onPointerOut,
-  onContextMenu
+  onContextMenu,
+  renderNode = ({ theme, node, nodeSize, active, opacity, animated }) => (
+    <Sphere
+      id={id}
+      size={nodeSize}
+      color={active ? theme.node.activeFill : node.fill || theme.node.fill}
+      opacity={opacity}
+      animated={animated}
+    />
+  )
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
@@ -123,60 +132,39 @@ export const Node: FC<NodeProps> = ({
   useCursor(isDragging, 'grabbing');
 
   return (
-    <a.group ref={group} position={nodePosition as any} {...(bind() as any)}>
-      {icon ? (
-        <Icon
-          id={id}
-          image={icon}
-          size={nodeSize + 8}
-          opacity={selectionOpacity}
-          animated={animated}
-          onClick={() => {
-            if (!disabled && !isDragging) {
-              onClick?.(node);
-            }
-          }}
-          onPointerOver={() => onPointerOver?.(node)}
-          onPointerOut={() => onPointerOut?.(node)}
-          onActive={setActive}
-          onContextMenu={() => {
-            if (!disabled) {
-              setMenuVisible(true);
-              onContextMenu?.(node);
-            }
-          }}
-        />
-      ) : (
-        <Sphere
-          id={id}
-          size={nodeSize}
-          color={
-            isSelected || active || isDragging || isActive
-              ? theme.node.activeFill
-              : fill || theme.node.fill
-          }
-          opacity={selectionOpacity}
-          animated={animated}
-          onPointerOver={() => onPointerOver?.(node)}
-          onPointerOut={() => onPointerOut?.(node)}
-          onClick={() => {
-            if (!disabled && !isDragging) {
-              onClick?.(node);
-            }
-          }}
-          onActive={val => {
-            if (!disabled && !panning) {
-              setActive(val);
-            }
-          }}
-          onContextMenu={() => {
-            if (!disabled) {
-              setMenuVisible(true);
-              onContextMenu?.(node);
-            }
-          }}
-        />
-      )}
+    <a.group
+      ref={group}
+      position={nodePosition as any}
+      {...(bind() as any)}
+      onClick={() => {
+        if (!disabled) {
+          onClick?.(node);
+        }
+      }}
+      onContextMenu={() => {
+        if (!disabled) {
+          setMenuVisible(true);
+          onContextMenu?.(node);
+        }
+      }}
+      onPointerOver={() => {
+        onPointerOver?.(node);
+        if (!disabled && !panning) setActive(true);
+      }}
+      onPointerOut={() => {
+        onPointerOut?.(node);
+        setActive(false);
+      }}
+    >
+      {renderNode({
+        id,
+        nodeSize,
+        theme,
+        active: isSelected || isActive || isDragging,
+        opacity: selectionOpacity,
+        animated,
+        node
+      })}
       <Ring
         opacity={isSelected ? 0.5 : 0}
         size={nodeSize}
