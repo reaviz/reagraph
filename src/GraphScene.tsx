@@ -12,7 +12,8 @@ import {
   GraphEdge,
   GraphNode,
   InternalGraphEdge,
-  InternalGraphNode
+  InternalGraphNode,
+  NodeRenderProp
 } from './types';
 import { SizingType } from './sizing';
 import { Edge, EdgeArrowPosition, EdgeLabelPosition, Node } from './symbols';
@@ -164,6 +165,11 @@ export interface GraphSceneProps {
    * When edge lost pointer over.
    */
   onEdgePointerOut?: (edge: InternalGraphEdge) => void;
+
+  /**
+   * Render a custom node
+   */
+  renderNode?: NodeRenderProp;
 }
 
 export interface GraphSceneRef {
@@ -198,6 +204,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         edgeLabelPosition,
         edgeArrowPosition,
         labelFontUrl,
+        renderNode,
         ...rest
       },
       ref
@@ -239,6 +246,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               onContextMenu={onNodeContextMenu}
               onPointerOver={onNodePointerOver}
               onPointerOut={onNodePointerOut}
+              renderNode={renderNode}
             />
           ))}
           {edgeIds.map(e => (
