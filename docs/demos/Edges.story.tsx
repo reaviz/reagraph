@@ -70,3 +70,12 @@ export const Events = () => (
     onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
   />
 );
+
+export const Curved = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    edgeShape="curve"
+    onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
+  />
+);
