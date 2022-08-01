@@ -27,11 +27,14 @@ const LABEL_FONT_SIZE = 6;
  */
 export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 
+export type EdgeShape = 'line' | 'curve';
+
 export interface EdgeProps {
   id: string;
   theme: Theme;
   animated?: boolean;
   disabled?: boolean;
+  curved?: boolean;
   labelPlacement?: EdgeLabelPosition;
   arrowPlacement?: EdgeArrowPosition;
   contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
@@ -46,6 +49,7 @@ export const Edge: FC<EdgeProps> = ({
   animated,
   theme,
   disabled,
+  curved,
   labelPlacement,
   arrowPlacement,
   contextMenu,
@@ -69,10 +73,10 @@ export const Edge: FC<EdgeProps> = ({
     const offset = arrowPlacement === 'end' ? to.size : 0;
 
     return getPoints({
-      from,
-      to: { ...to, size: offset + size + LABEL_FONT_SIZE }
+      from: { ...from, size: curved ? 0 : from.size },
+      to: { ...to, size: curved ? 0 : offset + size + LABEL_FONT_SIZE }
     });
-  }, [from, to, size, arrowPlacement]);
+  }, [from, to, size, arrowPlacement, curved]);
 
   const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
   const midPoint = useMemo(
@@ -138,6 +142,7 @@ export const Edge: FC<EdgeProps> = ({
   return (
     <group>
       <Line
+        curved={curved}
         id={id}
         opacity={selectionOpacity}
         points={points}
@@ -163,7 +168,7 @@ export const Edge: FC<EdgeProps> = ({
           }
         }}
       />
-      {arrowPlacement !== 'none' && (
+      {arrowPlacement !== 'none' && !curved && (
         <Arrow
           position={realPoints}
           opacity={selectionOpacity}

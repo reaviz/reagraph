@@ -70,3 +70,24 @@ export function getQuaternion(positions: EdgeVectors3) {
   const axis = new Vector3(0, 1, 0);
   return [axis, dir.clone().normalize()];
 }
+
+export function getCurvePoints(from: Vector3, to: Vector3) {
+  const fromVector = from.clone();
+  const toVector = to.clone();
+  const bend = 1;
+  const v = new Vector3().subVectors(toVector, fromVector);
+  const vn = v.clone().normalize();
+  const vlen = v.length();
+  const vv = new Vector3().subVectors(toVector, fromVector).divideScalar(2);
+  const k = Math.abs(vn.x) % 1;
+  const b = new Vector3(-vn.y, vn.x - k * vn.z, k * vn.y).normalize();
+  const vm = new Vector3()
+    .add(fromVector)
+    .add(vv)
+    .add(b.multiplyScalar(vlen / 4).multiplyScalar(bend));
+
+  fromVector.add(v.normalize());
+  toVector.sub(v.normalize());
+
+  return [fromVector, vm, toVector];
+}

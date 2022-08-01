@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { animationConfig, EdgeVectors3 } from '../utils';
+import { animationConfig, EdgeVectors3, getCurvePoints } from '../utils';
 import {
   Vector3,
   TubeBufferGeometry,
@@ -16,6 +16,7 @@ export interface LineProps {
   animated?: boolean;
   id: string;
   opacity?: number;
+  curved: boolean;
   points: EdgeVectors3;
   onClick?: () => void;
   onActive?: (state: boolean) => void;
@@ -31,6 +32,7 @@ export const Line: FC<LineProps> = ({
   opacity,
   points,
   animated,
+  curved = false,
   onContextMenu,
   onActive,
   onClick,
@@ -67,13 +69,16 @@ export const Line: FC<LineProps> = ({
       },
       onChange: event => {
         const { fromVertices, toVertices } = event.value;
-        // Reference: https://bit.ly/3ORuuBP
-        const t = new CatmullRomCurve3([
-          new Vector3(...fromVertices),
-          new Vector3(...toVertices)
-        ]);
+        const fromVector = new Vector3(...fromVertices);
+        const toVector = new Vector3(...toVertices);
+        const curvePoints = getCurvePoints(fromVector, toVector);
 
-        tubeRef.current.copy(new TubeBufferGeometry(t, 20, size / 2, 5, false));
+        const curve = curved
+          ? new CatmullRomCurve3(curvePoints)
+          : new CatmullRomCurve3([fromVector, toVector]);
+        tubeRef.current.copy(
+          new TubeBufferGeometry(curve, 20, size / 2, 5, false)
+        );
       },
       config: {
         ...animationConfig,
@@ -81,11 +86,6 @@ export const Line: FC<LineProps> = ({
       }
     }),
     [animated, draggingId, points, size]
-  );
-
-  const curve = useMemo(
-    () => new CatmullRomCurve3([new Vector3(0, 0, 0), new Vector3(0, 0, 0)]),
-    []
   );
 
   return (
@@ -108,11 +108,7 @@ export const Line: FC<LineProps> = ({
         }
       }}
     >
-      <tubeBufferGeometry
-        attach="geometry"
-        args={[curve, 20, size / 2, 5, false]}
-        ref={tubeRef}
-      />
+      <tubeBufferGeometry attach="geometry" ref={tubeRef} />
       <a.meshBasicMaterial
         attach="material"
         opacity={lineOpacity}
@@ -128,5 +124,6 @@ export const Line: FC<LineProps> = ({
 Line.defaultProps = {
   color: '#000',
   size: 1,
-  opacity: 1
+  opacity: 1,
+  curved: false
 };

@@ -15,7 +15,13 @@ import {
   InternalGraphNode
 } from './types';
 import { SizingType } from './sizing';
-import { Edge, EdgeArrowPosition, EdgeLabelPosition, Node } from './symbols';
+import {
+  Edge,
+  EdgeArrowPosition,
+  EdgeLabelPosition,
+  EdgeShape,
+  Node
+} from './symbols';
 import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { Theme } from './utils';
@@ -82,6 +88,11 @@ export interface GraphSceneProps {
    * Placement of edge arrows.
    */
   edgeArrowPosition?: EdgeArrowPosition;
+
+  /**
+   * Shape of edge.
+   */
+  edgeShape?: EdgeShape;
 
   /**
    * Font of label, same as troika-three-text
@@ -198,6 +209,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         edgeLabelPosition,
         edgeArrowPosition,
         labelFontUrl,
+        edgeShape = 'line',
         ...rest
       },
       ref
@@ -248,6 +260,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               id={e}
               disabled={disabled}
               animated={animated}
+              curved={edgeShape === 'curve'}
               labelPlacement={edgeLabelPosition}
               arrowPlacement={edgeArrowPosition}
               contextMenu={contextMenu}
