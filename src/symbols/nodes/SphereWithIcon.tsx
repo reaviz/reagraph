@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { useFrame, useThree, useLoader } from '@react-three/fiber';
 import { useSpring, a } from '@react-spring/three';
-import { animationConfig } from '../utils/animation';
+import { animationConfig } from '../../utils/animation';
 import {
   Color,
   ColorRepresentation,
@@ -10,7 +10,7 @@ import {
   TextureLoader
 } from 'three';
 
-export interface SphereProps {
+export interface SphereWithIconProps {
   size?: number;
   color?: ColorRepresentation;
   opacity?: number;
@@ -18,16 +18,17 @@ export interface SphereProps {
   animated?: boolean;
   onClick?: () => void;
   onContextMenu?: () => void;
+  iconSrc: string;
 }
 
-export const Sphere: FC<SphereProps> = ({
+export const SphereWithIcon: FC<SphereWithIconProps> = ({
   color,
   id,
   size,
   opacity,
   animated,
-  onClick,
-  onContextMenu
+  iconSrc,
+  onClick
 }) => {
   const { scale, nodeOpacity } = useSpring({
     from: {
@@ -45,10 +46,7 @@ export const Sphere: FC<SphereProps> = ({
     }
   });
   const normalizedColor = useMemo(() => new Color(color), [color]);
-  const iconTexture = useLoader(
-    TextureLoader,
-    'http://placekitten.com/200/200'
-  );
+  const iconTexture = useLoader(TextureLoader, iconSrc);
   const meshRef = useRef<Group>();
   const { camera } = useThree();
   useFrame(() => {
@@ -56,32 +54,30 @@ export const Sphere: FC<SphereProps> = ({
   });
 
   return (
-    <a.mesh
-      userData={{ id, type: 'node' }}
-      scale={scale as any}
-      onClick={onClick}
-      onPointerDown={event => {
-        // context menu controls
-        if (event.nativeEvent.buttons === 2) {
-          event.stopPropagation();
-          onContextMenu?.();
-        }
-      }}
-    >
-      <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
-      <a.meshPhongMaterial
-        attach="material"
-        side={DoubleSide}
-        transparent={true}
-        fog={true}
-        opacity={nodeOpacity}
-        color={normalizedColor}
-      />
-    </a.mesh>
+    <a.group ref={meshRef}>
+      <a.mesh userData={{ id }} scale={scale as any} onClick={onClick}>
+        <sphereBufferGeometry
+          attach="geometry"
+          args={[1, 25, 25, Math.PI, Math.PI]}
+        />
+        <a.meshPhongMaterial
+          attach="material"
+          side={DoubleSide}
+          transparent={true}
+          fog={true}
+          opacity={nodeOpacity}
+          color={normalizedColor}
+        />
+      </a.mesh>
+      <a.mesh>
+        <planeBufferGeometry attach="geometry" args={[10, 10]} />
+        <meshBasicMaterial attach="material" map={iconTexture} transparent />
+      </a.mesh>
+    </a.group>
   );
 };
 
-Sphere.defaultProps = {
+SphereWithIcon.defaultProps = {
   opacity: 1,
   active: false,
   selected: false
