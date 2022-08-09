@@ -1,3 +1,6 @@
+# 4.0.5 - 8/9/22
+- [fix] improving force layout when more than 25 edges
+
 # 4.0.4 - 8/9/22
 - [fix] improve mounted transition so it doesn't flicker
 
