@@ -8,12 +8,12 @@ body:
 
         This issue tracker is for reporting bugs found in `reagraph` (https://github.com/reaviz/reagraph).
         If you have a question about how to achieve something and are struggling, please post a question
-        inside of `solid` Discussions tab: https://github.com/reaviz/reagraph/discussions
+        inside of Discussions tab: https://github.com/reaviz/reagraph/discussions
 
         Before submitting a new bug/issue, please check the links below to see if there is a solution or question posted there already:
-         - `solid` Issues tab: https://github.com/reaviz/reagraph/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc
-         - `solid` closed issues tab: https://github.com/reaviz/reagraph/issues?q=is%3Aissue+sort%3Aupdated-desc+is%3Aclosed
-         - `solid` Discussions tab: https://github.com/reaviz/reagraph/discussions
+         - Issues tab: https://github.com/reaviz/reagraph/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc
+         - closed issues tab: https://github.com/reaviz/reagraph/issues?q=is%3Aissue+sort%3Aupdated-desc+is%3Aclosed
+         - Discussions tab: https://github.com/reaviz/reagraph/discussions
 
         The more information you fill in, the better the community can help you.
   - type: textarea
@@ -59,9 +59,9 @@ body:
     attributes:
       label: Platform
       value: |
+        - Reagraph Version: [e.g. 1.0.0]
         - OS: [e.g. macOS, Windows, Linux]
         - Browser: [e.g. Chrome, Safari, Firefox]
-        - Version: [e.g. 91.1]
         - NodeJS version: ...
     validations:
       required: true
@@ -78,7 +78,7 @@ body:
       placeholder: |
         e.g. https://stackblitz.com/edit/...... OR Github Repo
     validations:
-      required: true
+      required: false
   - type: textarea
     id: additional
     attributes:
