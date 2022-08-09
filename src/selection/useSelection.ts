@@ -236,6 +236,10 @@ export const useSelection = ({
       }
 
       if (focusOnSelect) {
+        if (!ref.current) {
+          throw new Error('No ref found for the graph canvas.');
+        }
+
         ref.current?.centerGraph([data.id]);
       }
     },
@@ -308,6 +312,10 @@ export const useSelection = ({
 
         // Only re-center if we have a single selection
         if (focusOnSelect && internalSelections.length === 1) {
+          if (!ref.current) {
+            throw new Error('No ref found for the graph canvas.');
+          }
+
           ref.current?.centerGraph();
         }
       }
