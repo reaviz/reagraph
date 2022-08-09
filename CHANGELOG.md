@@ -1,3 +1,7 @@
+# 4.0.3 - 8/9/22
+- [fix] improve hover events of nodes
+- [demo] cyber-security use case demo
+
 # 4.0.2 - 7/28/22
 - [fix] fix incorrect variable name from `theme.edge.opacityOnlySelected` to `theme.edge.inactiveOpacity`.
 - [fix] use callback memos for useSelection hook
