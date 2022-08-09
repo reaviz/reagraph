@@ -202,7 +202,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref
     ) => {
-      useGraph(rest);
+      const { mounted } = useGraph(rest);
 
       const [graph, nodeIds, edgeIds] = useStore(state => [
         state.graph,
@@ -225,38 +225,42 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
 
       return (
         <Fragment>
-          {nodeIds.map(n => (
-            <Node
-              key={n}
-              id={n}
-              labelFontUrl={labelFontUrl}
-              draggable={draggable}
-              disabled={disabled}
-              animated={animated}
-              theme={theme}
-              contextMenu={contextMenu}
-              onClick={onNodeClick}
-              onContextMenu={onNodeContextMenu}
-              onPointerOver={onNodePointerOver}
-              onPointerOut={onNodePointerOut}
-            />
-          ))}
-          {edgeIds.map(e => (
-            <Edge
-              theme={theme}
-              key={e}
-              id={e}
-              disabled={disabled}
-              animated={animated}
-              labelPlacement={edgeLabelPosition}
-              arrowPlacement={edgeArrowPosition}
-              contextMenu={contextMenu}
-              onClick={onEdgeClick}
-              onContextMenu={onEdgeContextMenu}
-              onPointerOver={onEdgePointerOver}
-              onPointerOut={onEdgePointerOut}
-            />
-          ))}
+          {mounted && (
+            <Fragment>
+              {nodeIds.map(n => (
+                <Node
+                  key={n}
+                  id={n}
+                  labelFontUrl={labelFontUrl}
+                  draggable={draggable}
+                  disabled={disabled}
+                  animated={animated}
+                  theme={theme}
+                  contextMenu={contextMenu}
+                  onClick={onNodeClick}
+                  onContextMenu={onNodeContextMenu}
+                  onPointerOver={onNodePointerOver}
+                  onPointerOut={onNodePointerOut}
+                />
+              ))}
+              {edgeIds.map(e => (
+                <Edge
+                  theme={theme}
+                  key={e}
+                  id={e}
+                  disabled={disabled}
+                  animated={animated}
+                  labelPlacement={edgeLabelPosition}
+                  arrowPlacement={edgeArrowPosition}
+                  contextMenu={contextMenu}
+                  onClick={onEdgeClick}
+                  onContextMenu={onEdgeContextMenu}
+                  onPointerOver={onEdgePointerOver}
+                  onPointerOut={onEdgePointerOut}
+                />
+              ))}
+            </Fragment>
+          )}
         </Fragment>
       );
     }

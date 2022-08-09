@@ -54,6 +54,7 @@ export const useGraph = ({
     state.setDrags
   ]);
 
+  const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
 
@@ -121,7 +122,11 @@ export const useGraph = ({
     updateLayout();
 
     // queue this in a frame so it only happens after the graph is built
-    requestAnimationFrame(() => (layoutMounted.current = true));
+    requestAnimationFrame(() => {
+      // Track mounted in state and transitent state
+      layoutMounted.current = true;
+      setMounted(true);
+    });
 
     // eslint-disable-next-line
   }, [nodes, edges, graph]);
@@ -144,4 +149,8 @@ export const useGraph = ({
       updateLayout(layout.current);
     }
   }, [graph, sizingType, sizingAttribute, labelType, updateLayout]);
+
+  return {
+    mounted
+  };
 };
