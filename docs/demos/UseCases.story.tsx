@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { darkTheme, GraphCanvas, GraphEdge, GraphNode } from '../../src';
+import React, { useMemo, useRef } from 'react';
+import { darkTheme, GraphCanvas, GraphCanvasRef, GraphEdge, GraphNode, useSelection } from '../../src';
 import cyberJson from '../assets/cyber.json';
 import fireSvg from '../assets/fire.svg';
 import flagSvg from '../assets/flag.svg';
@@ -33,6 +33,8 @@ const iconMap = {
 }
 
 export const CyberSecurity = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+
   const [nodes, edges] = useMemo(() => {
     const n: GraphNode[] = [];
     const e: GraphEdge[] = [];
@@ -64,8 +66,20 @@ export const CyberSecurity = () => {
     return [n, e];
   }, []);
 
+  const { selections, actives, onNodeClick, onCanvasClick } = useSelection({
+    ref: graphRef,
+    nodes,
+    edges,
+    pathSelectionType: 'all'
+  });
+
   return (
     <GraphCanvas
+      selections={selections}
+      actives={actives}
+      onCanvasClick={onCanvasClick}
+      onNodeClick={onNodeClick}
+      ref={graphRef}
       labelType="nodes"
       nodes={nodes}
       edges={edges}
