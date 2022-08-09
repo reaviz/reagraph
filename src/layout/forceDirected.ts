@@ -35,7 +35,6 @@ export function forceDirected({
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
   const cluster = new Map<string, InternalGraphNode>();
-  const is2d = dimensions === 2;
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
