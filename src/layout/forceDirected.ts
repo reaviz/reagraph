@@ -51,10 +51,15 @@ export function forceDirected({
     links.push({ ...l, id: l.data.id, source: l.fromId, target: l.toId });
   });
 
+  // Dynamically adjust node strength based on the number of edges
+  const is2d = dimensions === 2;
+  const nodeStrengthAdjustment =
+    is2d && links.length > 25 ? nodeStrength * 2 : nodeStrength;
+
   // Create the simulation
   const sim = d3ForceSimulation()
     .force('link', d3ForceLink())
-    .force('charge', d3ForceManyBody().strength(nodeStrength))
+    .force('charge', d3ForceManyBody().strength(nodeStrengthAdjustment))
     .force('x', d3ForceX())
     .force('y', d3ForceY())
     .force('z', d3ForceZ())
