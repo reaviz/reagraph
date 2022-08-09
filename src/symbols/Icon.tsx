@@ -9,11 +9,8 @@ export interface IconProps {
   id: string;
   animated?: boolean;
   size?: number;
-  onActive?: (state: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
-  onPointerOver?: () => void;
-  onPointerOut?: () => void;
 }
 
 export const Icon: FC<IconProps> = ({
@@ -22,11 +19,8 @@ export const Icon: FC<IconProps> = ({
   size,
   opacity,
   animated,
-  onActive,
   onClick,
-  onContextMenu,
-  onPointerOver,
-  onPointerOut
+  onContextMenu
 }) => {
   const texture = useMemo(() => new TextureLoader().load(image), [image]);
 
@@ -56,14 +50,6 @@ export const Icon: FC<IconProps> = ({
           event.stopPropagation();
           onContextMenu?.();
         }
-      }}
-      onPointerOver={() => {
-        onActive(true);
-        onPointerOver?.();
-      }}
-      onPointerOut={() => {
-        onActive(false);
-        onPointerOut?.();
       }}
     >
       <a.spriteMaterial

@@ -123,7 +123,21 @@ export const Node: FC<NodeProps> = ({
   useCursor(isDragging, 'grabbing');
 
   return (
-    <a.group ref={group} position={nodePosition as any} {...(bind() as any)}>
+    <a.group
+      ref={group}
+      position={nodePosition as any}
+      onPointerOver={() => {
+        if (!disabled && !isDragging) {
+          setActive(true);
+        }
+        onPointerOver?.(node);
+      }}
+      onPointerOut={() => {
+        setActive(false);
+        onPointerOut?.(node);
+      }}
+      {...(bind() as any)}
+    >
       {icon ? (
         <Icon
           id={id}
@@ -136,9 +150,6 @@ export const Node: FC<NodeProps> = ({
               onClick?.(node);
             }
           }}
-          onPointerOver={() => onPointerOver?.(node)}
-          onPointerOut={() => onPointerOut?.(node)}
-          onActive={setActive}
           onContextMenu={() => {
             if (!disabled) {
               setMenuVisible(true);
@@ -157,16 +168,9 @@ export const Node: FC<NodeProps> = ({
           }
           opacity={selectionOpacity}
           animated={animated}
-          onPointerOver={() => onPointerOver?.(node)}
-          onPointerOut={() => onPointerOut?.(node)}
           onClick={() => {
             if (!disabled && !isDragging) {
               onClick?.(node);
-            }
-          }}
-          onActive={val => {
-            if (!disabled && !panning) {
-              setActive(val);
             }
           }}
           onContextMenu={() => {

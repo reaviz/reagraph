@@ -9,11 +9,8 @@ export interface SphereProps {
   opacity?: number;
   id: string;
   animated?: boolean;
-  onActive?: (active: boolean) => void;
   onClick?: () => void;
   onContextMenu?: () => void;
-  onPointerOver?: () => void;
-  onPointerOut?: () => void;
 }
 
 export const Sphere: FC<SphereProps> = ({
@@ -22,11 +19,8 @@ export const Sphere: FC<SphereProps> = ({
   size,
   opacity,
   animated,
-  onActive,
   onClick,
-  onContextMenu,
-  onPointerOver,
-  onPointerOut
+  onContextMenu
 }) => {
   const { scale, nodeOpacity } = useSpring({
     from: {
@@ -56,14 +50,6 @@ export const Sphere: FC<SphereProps> = ({
           event.stopPropagation();
           onContextMenu?.();
         }
-      }}
-      onPointerOver={() => {
-        onActive?.(true);
-        onPointerOver?.();
-      }}
-      onPointerOut={() => {
-        onActive?.(false);
-        onPointerOut?.();
       }}
     >
       <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
