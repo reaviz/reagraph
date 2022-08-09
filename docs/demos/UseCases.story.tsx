@@ -71,6 +71,7 @@ export const CyberSecurity = () => {
       edges={edges}
       theme={darkTheme}
       draggable
+      layoutType="forceDirected2d"
     />
   );
 };
