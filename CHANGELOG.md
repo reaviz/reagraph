@@ -1,3 +1,6 @@
+# 4.0.4 - 8/9/22
+- [fix] improve mounted transition so it doesn't flicker
+
 # 4.0.3 - 8/9/22
 - [fix] improve hover events of nodes
 - [demo] cyber-security use case demo
