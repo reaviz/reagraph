@@ -15,7 +15,11 @@ export const getAdjacents = (
     nodeIds = Array.isArray(nodeIds) ? nodeIds : [nodeIds];
 
     for (const nodeId of nodeIds) {
-      graph.getLinks(nodeId).forEach(link => {
+      const graphLinks = graph.getLinks(nodeId)
+       
+      if (!graphLinks) continue;
+
+      graphLinks.forEach(link => {
         const linkId = link.data.id;
 
         if (type === 'in') {
