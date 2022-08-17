@@ -1,3 +1,7 @@
+# 4.1.0 - 9/17/22
+- [feature] add `pathHoverType` to `useSelection` which allows for custom highlighting
+- [fix] decreased precision of animation to 0.1 from 0.0001 for performance
+
 # 4.0.5 - 8/9/22
 - [fix] improving force layout when more than 25 edges
 
