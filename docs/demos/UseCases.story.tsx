@@ -70,7 +70,7 @@ export const CyberSecurity = () => {
     ref: graphRef,
     nodes,
     edges,
-    pathSelectionType: 'all'
+    pathSelectionType: 'out'
   });
 
   return (
