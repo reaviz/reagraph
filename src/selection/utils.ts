@@ -1,57 +1,56 @@
-import { RefObject } from 'react';
-import { GraphCanvasRef } from '../GraphCanvas';
+import { Graph } from 'ngraph.graph';
 
 export type PathSelectionTypes = 'direct' | 'out' | 'in' | 'all';
 
 export const getAdjacents = (
-  ref: RefObject<GraphCanvasRef | null>,
+  graph: Graph,
   nodeIds: string | string[],
   type: PathSelectionTypes
 ) => {
-  const results = [];
+  nodeIds = Array.isArray(nodeIds) ? nodeIds : [nodeIds];
 
-  const graph = ref.current.getGraph();
-  if (graph) {
-    nodeIds = Array.isArray(nodeIds) ? nodeIds : [nodeIds];
+  const nodes: string[] = [];
+  const edges: string[] = [];
 
-    for (const nodeId of nodeIds) {
-      const graphLinks = graph.getLinks(nodeId)
-       
-      if (!graphLinks) continue;
+  for (const nodeId of nodeIds) {
+    const graphLinks = graph.getLinks(nodeId);
 
-      graphLinks.forEach(link => {
-        const linkId = link.data.id;
-
-        if (type === 'in') {
-          if (link.toId === nodeId && !results.includes(linkId)) {
-            results.push(linkId);
-          }
-        } else if (type === 'out') {
-          if (link.fromId === nodeId && !results.includes(linkId)) {
-            results.push(linkId);
-          }
-        } else {
-          if (!results.includes(linkId)) {
-            results.push(linkId);
-          }
-        }
-
-        if (type === 'out' || type === 'all') {
-          const toId = link.toId;
-          if (!results.includes(toId)) {
-            results.push(toId);
-          }
-        }
-
-        if (type === 'in' || type === 'all') {
-          const fromId = link.fromId;
-          if (!results.includes(fromId)) {
-            results.push(fromId);
-          }
-        }
-      });
+    if (!graphLinks) {
+      continue;
     }
+
+    graphLinks.forEach(link => {
+      const linkId = link.data.id;
+
+      if (type === 'in') {
+        if (link.toId === nodeId && !edges.includes(linkId)) {
+          edges.push(linkId);
+        }
+      } else if (type === 'out') {
+        if (link.fromId === nodeId && !edges.includes(linkId)) {
+          edges.push(linkId);
+        }
+      } else {
+        if (!edges.includes(linkId)) {
+          edges.push(linkId);
+        }
+      }
+
+      if (type === 'out' || type === 'all') {
+        const toId = link.toId;
+        if (!nodes.includes(toId as string)) {
+          nodes.push(toId as string);
+        }
+      }
+
+      if (type === 'in' || type === 'all') {
+        const fromId = link.fromId;
+        if (!nodes.includes(fromId as string)) {
+          nodes.push(fromId as string);
+        }
+      }
+    });
   }
 
-  return results;
+  return [...nodes, ...edges];
 };

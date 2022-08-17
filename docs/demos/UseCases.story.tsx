@@ -66,7 +66,7 @@ export const CyberSecurity = () => {
     return [n, e];
   }, []);
 
-  const { selections, actives, onNodeClick, onCanvasClick } = useSelection({
+  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
     ref: graphRef,
     nodes,
     edges,
@@ -79,6 +79,8 @@ export const CyberSecurity = () => {
       actives={actives}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
+      onNodePointerOver={onNodePointerOver}
+      onNodePointerOut={onNodePointerOut}
       ref={graphRef}
       labelType="nodes"
       nodes={nodes}

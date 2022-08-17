@@ -69,6 +69,11 @@ export interface SelectionProps {
   pathSelectionType?: PathSelectionTypes;
 
   /**
+   * Whether it should active on hover or not.
+   */
+  pathHoverType?: PathSelectionTypes;
+
+  /**
    * On selection change.
    */
   onSelection?: (selectionIds: string[]) => void;
@@ -134,6 +139,16 @@ export interface SelectionResult {
    * When the lasso ended.
    */
   onLassoEnd?: (selections: string[]) => void;
+
+  /**
+   * When node got a pointer over.
+   */
+  onNodePointerOver?: (node: GraphNode) => void;
+
+  /**
+   * When node lost pointer over.
+   */
+  onNodePointerOut?: (node: GraphNode) => void;
 }
 
 export const useSelection = ({
@@ -142,12 +157,14 @@ export const useSelection = ({
   actives = [],
   focusOnSelect = true,
   type = 'single',
+  pathHoverType = 'out',
   pathSelectionType = 'direct',
   ref,
   hotkeys = ['selectAll', 'deselect', 'delete'],
   disabled,
   onSelection
 }: SelectionProps): SelectionResult => {
+  const [internalHovers, setInternalHovers] = useState<string[]>([]);
   const [internalActives, setInternalActives] = useState<string[]>(actives);
   const [internalSelections, setInternalSelections] =
     useState<string[]>(selections);
@@ -340,6 +357,37 @@ export const useSelection = ({
     [clearSelections]
   );
 
+  const onNodePointerOver = useCallback(
+    (data: GraphNode) => {
+      if (pathHoverType) {
+        const graph = ref.current.getGraph();
+        if (!graph) {
+          throw new Error('No ref found for the graph canvas.');
+        }
+
+        setInternalHovers(getAdjacents(graph, [data.id], pathHoverType));
+      }
+    },
+    [pathHoverType, ref]
+  );
+
+  const onNodePointerOut = useCallback(() => {
+    if (pathHoverType) {
+      setInternalHovers([]);
+    }
+  }, [pathHoverType]);
+
+  useEffect(() => {
+    if (pathSelectionType !== 'direct' && internalSelections.length > 0) {
+      const graph = ref.current?.getGraph();
+      if (graph) {
+        setInternalActives(
+          getAdjacents(graph, internalSelections, pathSelectionType)
+        );
+      }
+    }
+  }, [internalSelections, pathSelectionType, ref]);
+
   useHotkeys([
     {
       name: 'Select All',
@@ -373,17 +421,16 @@ export const useSelection = ({
     }
   ]);
 
-  useEffect(() => {
-    if (pathSelectionType !== 'direct' && internalSelections.length > 0) {
-      setInternalActives(
-        getAdjacents(ref, internalSelections, pathSelectionType)
-      );
-    }
-  }, [internalSelections, pathSelectionType, ref]);
+  const joinedActives = useMemo(
+    () => [...internalActives, ...internalHovers],
+    [internalActives, internalHovers]
+  );
 
   return {
-    actives: internalActives,
+    actives: joinedActives,
     onNodeClick,
+    onNodePointerOver,
+    onNodePointerOut,
     onLasso,
     onLassoEnd,
     selectNodePaths,

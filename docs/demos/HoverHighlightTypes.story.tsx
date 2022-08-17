@@ -1,37 +1,19 @@
-import React, { Fragment, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {
-  title: 'Demos/Selection/Types',
+  title: 'Demos/Selection/Highlight/Hover',
   component: GraphCanvas
 };
 
 export const Direct = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, onNodeClick, onCanvasClick } = useSelection({
-    ref: graphRef,
-    nodes: complexNodes,
-    edges: complexEdges
-  });
-
-  return (
-    <GraphCanvas
-      nodes={complexNodes}
-      edges={complexEdges}
-      selections={selections}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-    />
-  );
-};
-export const NoFocus = () => {
-  const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, onNodeClick, onCanvasClick } = useSelection({
+  const { selections, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
-    focusOnSelect: false
+    pathHoverType: 'direct'
   });
 
   return (
@@ -40,19 +22,21 @@ export const NoFocus = () => {
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
-      onCanvasClick={onCanvasClick}
+      onNodePointerOver={onNodePointerOver}
+      onNodePointerOut={onNodePointerOut}
       onNodeClick={onNodeClick}
+      onCanvasClick={onCanvasClick}
     />
   );
 };
 
 export const Inwards = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, onNodeClick, onCanvasClick } = useSelection({
+  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
-    pathSelectionType: 'in'
+    pathHoverType: 'in'
   });
 
   return (
@@ -62,6 +46,8 @@ export const Inwards = () => {
       edges={complexEdges}
       selections={selections}
       actives={actives}
+      onNodePointerOver={onNodePointerOver}
+      onNodePointerOut={onNodePointerOut}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
     />
@@ -70,11 +56,11 @@ export const Inwards = () => {
 
 export const Outwards = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, onNodeClick, onCanvasClick } = useSelection({
+  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
-    pathSelectionType: 'out'
+    pathHoverType: 'out'
   });
 
   return (
@@ -84,6 +70,8 @@ export const Outwards = () => {
       edges={complexEdges}
       selections={selections}
       actives={actives}
+      onNodePointerOver={onNodePointerOver}
+      onNodePointerOut={onNodePointerOut}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
     />
@@ -92,11 +80,11 @@ export const Outwards = () => {
 
 export const All = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, onNodeClick, onCanvasClick } = useSelection({
+  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
-    pathSelectionType: 'all'
+    pathHoverType: 'all'
   });
 
   return (
@@ -106,6 +94,8 @@ export const All = () => {
       edges={complexEdges}
       selections={selections}
       actives={actives}
+      onNodePointerOver={onNodePointerOver}
+      onNodePointerOut={onNodePointerOut}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
     />
