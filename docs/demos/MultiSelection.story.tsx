@@ -19,6 +19,7 @@ export const Defaults = () => {
 
   return (
     <GraphCanvas
+      ref={graphRef}
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
@@ -39,6 +40,7 @@ export const ModifierKey = () => {
 
   return (
     <GraphCanvas
+      ref={graphRef}
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
