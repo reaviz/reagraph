@@ -16,6 +16,7 @@ import { useDrag } from '../utils/useDrag';
 export interface NodeProps {
   id: string;
   theme: Theme;
+  parent?: string;
   disabled?: boolean;
   animated?: boolean;
   draggable?: boolean;
@@ -43,14 +44,21 @@ export const Node: FC<NodeProps> = ({
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
 
-  const [draggingId, setDraggingId, setNodePosition, panning] = useStore(
-    state => [
-      state.draggingId,
-      state.setDraggingId,
-      state.setNodePosition,
-      state.panning
-    ]
-  );
+  const [
+    draggingId,
+    expandedParents,
+    setDraggingId,
+    setNodePosition,
+    setExpandedParents,
+    panning
+  ] = useStore(state => [
+    state.draggingId,
+    state.expandedParents,
+    state.setDraggingId,
+    state.setNodePosition,
+    state.setExpandedParents,
+    state.panning
+  ]);
 
   const isDragging = draggingId === id;
   const {
@@ -147,6 +155,12 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
+              if (expandedParents.includes(id)) {
+                setExpandedParents([...expandedParents].filter(p => p !== id));
+              } else {
+                setExpandedParents([...expandedParents, id]);
+              }
+
               onClick?.(node);
             }
           }}
@@ -170,6 +184,12 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
+              if (expandedParents.includes(id)) {
+                setExpandedParents([...expandedParents].filter(p => p !== id));
+              } else {
+                setExpandedParents([...expandedParents, id]);
+              }
+
               onClick?.(node);
             }
           }}

@@ -66,7 +66,7 @@ export function transformGraph({
   graph.forEachNode((node: any) => {
     if (node.data) {
       const position = layout.getNodePosition(node.id);
-      const { data, fill, icon, label, size, ...rest } = node.data;
+      const { data, fill, icon, label, size, parent, ...rest } = node.data;
       const nodeSize = sizes.get(node.id);
       const labelVisible = checkVisibility('node', nodeSize);
 
@@ -77,6 +77,7 @@ export function transformGraph({
         label,
         icon,
         fill,
+        parent,
         data: {
           ...rest,
           ...(data || {})

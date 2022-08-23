@@ -13,6 +13,7 @@ export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
   graph: Graph;
+  expandedParents?: string[];
   selections?: string[];
   actives?: string[];
   draggingId?: string | null;
@@ -26,6 +27,7 @@ export interface GraphState {
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
+  setExpandedParents: (nodeIds: string[]) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -34,6 +36,7 @@ export const createStore = () =>
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
+    expandedParents: [],
     panning: false,
     draggingId: null,
     selections: [],
@@ -56,6 +59,31 @@ export const createStore = () =>
           ...state,
           drags: { ...state.drags, [id]: newNode },
           nodes: [...state.nodes.filter(n => n.id !== id), newNode]
+        };
+      }),
+    setExpandedParents: nodeIds =>
+      set(state => {
+        const expandedParents = nodeIds || [];
+        // Dynamically add/remove edges from state
+        const baseEdges = state.edges.filter(e => !e.id.includes('expanded'));
+        const curNodes = state.nodes;
+        const newEdges = [...baseEdges];
+        for (const parent of expandedParents) {
+          const childNodes = curNodes.filter(n => n.parent === parent);
+          newEdges.push(
+            ...childNodes.map(c => ({
+              id: `expanded-${parent}-${c.id}`,
+              fromId: parent,
+              toId: c.id,
+              label: `Edge ${parent}-${c.id}`
+            }))
+          );
+        }
+
+        return {
+          ...state,
+          edges: newEdges,
+          expandedParents
         };
       })
   }));

@@ -14,6 +14,57 @@ export const simpleNodes: GraphNode[] =
     }
   }));
 
+export const parentNodes: GraphNode[] = [
+  ...range(5).map(i => {
+    if (i === 2) {
+      return {
+        id: `n-${i}`,
+        label: `Node ${i} - 3 Children`,
+        data: {
+          priority: random(0, 10)
+        }
+      };
+    }
+
+    return {
+      id: `n-${i}`,
+      label: `Node ${i}`,
+      data: {
+        priority: random(0, 10)
+      }
+    };
+  }),
+  ...range(3).map(i => {
+    if (i === 0) {
+      return {
+        id: `n-2-n-${i}`,
+        label: `Node 2 > ${i} - 1 Child`,
+        parent: 'n-2',
+        data: {
+          priority: random(0, 10)
+        }
+      };
+    }
+
+    return {
+      id: `n-2-n-${i}`,
+      label: `Node 2 > ${i}`,
+      parent: 'n-2',
+      data: {
+        priority: random(0, 10)
+      }
+    };
+  }),
+  {
+    id: `n-2-n-0-n-0`,
+    label: `Node 2 > Node 0 > Node 0`,
+    parent: 'n-2-n-0',
+    data: {
+      priority: random(0, 10)
+    }
+  }
+]
+
 const types = ['IP', 'URL', 'Email', 'MD5'];
 const colors = ['blue', 'green', 'red', 'orange'];
 

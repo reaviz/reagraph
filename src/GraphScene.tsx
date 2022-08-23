@@ -44,6 +44,11 @@ export interface GraphSceneProps {
   actives?: string[];
 
   /**
+   * List of node ids that are expanded.
+   */
+  expandedParents?: string[];
+
+  /**
    * Animate or not the graph positions.
    */
   animated?: boolean;
@@ -126,6 +131,11 @@ export interface GraphSceneProps {
   draggable?: boolean;
 
   /**
+   * Display all parent nodes as expanded
+   */
+  expanded?: boolean;
+
+  /**
    * When a node was clicked.
    */
   onNodeClick?: (node: InternalGraphNode) => void;
@@ -197,6 +207,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         draggable,
         edgeLabelPosition,
         edgeArrowPosition,
+        expanded = true,
         labelFontUrl,
         ...rest
       },
@@ -204,10 +215,23 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     ) => {
       const { mounted } = useGraph(rest);
 
-      const [graph, nodeIds, edgeIds] = useStore(state => [
+      const [graph, nodeIds, edgeIds, expandedParents] = useStore(state => [
         state.graph,
-        state.nodes.map(n => n.id),
-        state.edges.map(e => e.id)
+        state.nodes
+          .map(n => {
+            if (!expanded) {
+              // If we are not showing all nodes, filter out nodes with parents that are not expanded
+              if (!n.parent || state.expandedParents.includes(n.parent)) {
+                return n.id;
+              }
+
+              return null;
+            }
+            return n.id;
+          })
+          .filter(n => n),
+        state.edges.map(e => e.id),
+        state.expandedParents
       ]);
 
       const { centerNodesById: centerGraph } = useCenterGraph({

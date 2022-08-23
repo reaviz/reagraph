@@ -27,6 +27,11 @@ export interface GraphElementBaseAttributes<T = any> {
 
 export interface GraphNode extends GraphElementBaseAttributes {
   /**
+   * ID of the parent node.
+   */
+  parent?: string;
+
+  /**
    * Icon URL for the node.
    */
   icon?: string;

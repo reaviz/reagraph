@@ -10,6 +10,7 @@ import { DragReferences, useStore } from './store';
 export interface GraphInputs {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  expandedParents?: string[];
   layoutType?: LayoutTypes;
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
@@ -32,6 +33,7 @@ export const useGraph = ({
   nodes,
   edges,
   actives,
+  expandedParents,
   defaultNodeSize,
   maxNodeSize,
   minNodeSize
@@ -43,7 +45,8 @@ export const useGraph = ({
     setSelections,
     setActives,
     drags,
-    setDrags
+    setDrags,
+    setExpandedParents
   ] = useStore(state => [
     state.graph,
     state.setEdges,
@@ -51,7 +54,8 @@ export const useGraph = ({
     state.setSelections,
     state.setActives,
     state.drags,
-    state.setDrags
+    state.setDrags,
+    state.setExpandedParents
   ]);
 
   const [mounted, setMounted] = useState<boolean>(false);
@@ -115,6 +119,11 @@ export const useGraph = ({
     // Let's set the store actives so its easier to access
     setActives(actives);
   }, [actives, setActives]);
+
+  useEffect(() => {
+    // Let's set the store expanded parents so its easier to access
+    setExpandedParents(expandedParents);
+  }, [expandedParents, setExpandedParents]);
 
   // Create the nggraph graph object
   useEffect(() => {

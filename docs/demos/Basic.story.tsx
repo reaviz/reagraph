@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GraphCanvas, lightTheme } from '../../src';
-import { simpleEdges, simpleNodes } from '../assets/demo';
+import { parentNodes, simpleEdges, simpleNodes } from '../assets/demo';
 import random from 'lodash/random';
 import { range } from 'd3-array';
 
@@ -97,4 +97,8 @@ export const LiveUpdates = () => {
 
 export const NoAnimation = () => (
   <GraphCanvas animated={false} nodes={simpleNodes} edges={simpleEdges} />
+);
+
+export const ExpandCollapse = () => (
+  <GraphCanvas nodes={parentNodes} edges={simpleEdges} expanded={false} />
 );
