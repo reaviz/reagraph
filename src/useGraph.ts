@@ -160,6 +160,8 @@ export const useGraph = ({
   }, [graph, sizingType, sizingAttribute, labelType, updateLayout]);
 
   return {
-    mounted
+    mounted,
+    buildGraph,
+    updateLayout
   };
 };

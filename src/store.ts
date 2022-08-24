@@ -63,7 +63,24 @@ export const createStore = () =>
       }),
     setExpandedParents: nodeIds =>
       set(state => {
-        const expandedParents = nodeIds || [];
+        let expandedParents = nodeIds || [];
+
+        // Remove any expanded node ids that are nested parents that had their parent removed
+        // ie gradparent -> parent -> node and grandparent was collapsed
+        expandedParents = expandedParents.filter(id => {
+          const node = state.nodes.find(n => n.id === id);
+
+          if (!node) {
+            return false;
+          }
+
+          if (node.parent && !expandedParents.includes(node.parent)) {
+            return false;
+          }
+
+          return true;
+        });
+
         // Dynamically add/remove edges from state
         const baseEdges = state.edges.filter(e => !e.id.includes('expanded'));
         const curNodes = state.nodes;

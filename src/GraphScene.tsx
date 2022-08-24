@@ -3,7 +3,9 @@ import React, {
   forwardRef,
   Fragment,
   Ref,
-  useImperativeHandle
+  useEffect,
+  useImperativeHandle,
+  useMemo
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout';
@@ -213,26 +215,33 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref
     ) => {
-      const { mounted } = useGraph(rest);
+      const { mounted, buildGraph, updateLayout } = useGraph(rest);
 
-      const [graph, nodeIds, edgeIds, expandedParents] = useStore(state => [
+      const [graph, nodes, edges, expandedParents] = useStore(state => [
         state.graph,
-        state.nodes
-          .map(n => {
-            if (!expanded) {
-              // If we are not showing all nodes, filter out nodes with parents that are not expanded
-              if (!n.parent || state.expandedParents.includes(n.parent)) {
-                return n.id;
-              }
-
-              return null;
-            }
-            return n.id;
-          })
-          .filter(n => n),
-        state.edges.map(e => e.id),
+        state.nodes,
+        state.edges,
         state.expandedParents
       ]);
+
+      const nodeIds = useMemo(
+        () =>
+          nodes.reduce((arr, cur) => {
+            if (!expanded) {
+              // If we are not showing all nodes, filter out nodes with parents that are not expanded
+              if (!cur.parent || expandedParents.includes(cur.parent)) {
+                arr.push(cur.id);
+              }
+            } else {
+              arr.push(cur.id);
+            }
+
+            return arr;
+          }, []),
+        [expanded, expandedParents, nodes]
+      );
+
+      const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
 
       const { centerNodesById: centerGraph } = useCenterGraph({
         animated
@@ -246,6 +255,21 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         }),
         [centerGraph, graph]
       );
+
+      useEffect(() => {
+        if (expandedParents.length > 0) {
+          const graphEdges = edges.map(e => ({
+            ...e,
+            source: e.fromId,
+            target: e.toId,
+            fromId: undefined,
+            toId: undefined
+          }));
+          buildGraph(graph, nodes, graphEdges);
+          updateLayout();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [expandedParents, updateLayout]);
 
       return (
         <Fragment>
