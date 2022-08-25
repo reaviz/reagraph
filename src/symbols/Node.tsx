@@ -161,7 +161,9 @@ export const Node: FC<NodeProps> = ({
                 setExpandedParents([...expandedParents, id]);
               }
 
-              onClick?.(node);
+              requestAnimationFrame(() => {
+                onClick?.(node);
+              });
             }
           }}
           onContextMenu={() => {
@@ -190,7 +192,9 @@ export const Node: FC<NodeProps> = ({
                 setExpandedParents([...expandedParents, id]);
               }
 
-              onClick?.(node);
+              requestAnimationFrame(() => {
+                onClick?.(node);
+              });
             }
           }}
           onContextMenu={() => {
