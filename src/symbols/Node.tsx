@@ -46,17 +46,17 @@ export const Node: FC<NodeProps> = ({
 
   const [
     draggingId,
-    expandedParents,
+    collapsedNodeIds,
     setDraggingId,
     setNodePosition,
-    setExpandedParents,
+    setCollapsedNodeIds,
     panning
   ] = useStore(state => [
     state.draggingId,
-    state.expandedParents,
+    state.collapsedNodeIds,
     state.setDraggingId,
     state.setNodePosition,
-    state.setExpandedParents,
+    state.setCollapsedNodeIds,
     state.panning
   ]);
 
@@ -155,10 +155,12 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
-              if (expandedParents.includes(id)) {
-                setExpandedParents([...expandedParents].filter(p => p !== id));
+              if (collapsedNodeIds.includes(id)) {
+                setCollapsedNodeIds(
+                  [...collapsedNodeIds].filter(p => p !== id)
+                );
               } else {
-                setExpandedParents([...expandedParents, id]);
+                setCollapsedNodeIds([...collapsedNodeIds, id]);
               }
 
               requestAnimationFrame(() => {
@@ -186,10 +188,12 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
-              if (expandedParents.includes(id)) {
-                setExpandedParents([...expandedParents].filter(p => p !== id));
+              if (collapsedNodeIds.includes(id)) {
+                setCollapsedNodeIds(
+                  [...collapsedNodeIds].filter(p => p !== id)
+                );
               } else {
-                setExpandedParents([...expandedParents, id]);
+                setCollapsedNodeIds([...collapsedNodeIds, id]);
               }
 
               requestAnimationFrame(() => {

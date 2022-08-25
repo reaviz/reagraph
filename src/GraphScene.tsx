@@ -3,7 +3,6 @@ import React, {
   forwardRef,
   Fragment,
   Ref,
-  useEffect,
   useImperativeHandle,
   useMemo
 } from 'react';
@@ -46,9 +45,9 @@ export interface GraphSceneProps {
   actives?: string[];
 
   /**
-   * List of node ids that are expanded.
+   * List of node ids that are collapsed.
    */
-  expandedParents?: string[];
+  collapsedNodeIds?: string[];
 
   /**
    * Animate or not the graph positions.
@@ -133,11 +132,6 @@ export interface GraphSceneProps {
   draggable?: boolean;
 
   /**
-   * Display all parent nodes as expanded
-   */
-  expanded?: boolean;
-
-  /**
    * When a node was clicked.
    */
   onNodeClick?: (node: InternalGraphNode) => void;
@@ -209,36 +203,30 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         draggable,
         edgeLabelPosition,
         edgeArrowPosition,
-        expanded = true,
         labelFontUrl,
         ...rest
       },
       ref
     ) => {
-      const { mounted, buildGraph, updateLayout } = useGraph(rest);
+      const { mounted } = useGraph(rest);
 
-      const [graph, nodes, edges, expandedParents] = useStore(state => [
+      const [graph, nodes, edges, collapsedNodeIds] = useStore(state => [
         state.graph,
         state.nodes,
         state.edges,
-        state.expandedParents
+        state.collapsedNodeIds
       ]);
 
       const nodeIds = useMemo(
         () =>
           nodes.reduce((arr, cur) => {
-            if (!expanded) {
-              // If we are not showing all nodes, filter out nodes with parents that are not expanded
-              if (!cur.parent || expandedParents.includes(cur.parent)) {
-                arr.push(cur.id);
-              }
-            } else {
+            if (!cur.parent || !collapsedNodeIds.includes(cur.parent)) {
               arr.push(cur.id);
             }
 
             return arr;
           }, []),
-        [expanded, expandedParents, nodes]
+        [collapsedNodeIds, nodes]
       );
 
       const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
@@ -255,21 +243,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         }),
         [centerGraph, graph]
       );
-
-      useEffect(() => {
-        if (expandedParents.length > 0) {
-          const graphEdges = edges.map(e => ({
-            ...e,
-            source: e.fromId,
-            target: e.toId,
-            fromId: undefined,
-            toId: undefined
-          }));
-          buildGraph(graph, nodes, graphEdges);
-          updateLayout();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [expandedParents, updateLayout]);
 
       return (
         <Fragment>

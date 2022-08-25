@@ -9,11 +9,24 @@ import ngraph, { Graph } from 'ngraph.graph';
 
 export type DragReferences = { [key: string]: InternalGraphNode };
 
+function getNestedParents(nodeId: string, nodes: InternalGraphNode[]) {
+  const parentNodeIds = [];
+  const childNodes = nodes.filter(n => n.parent === nodeId);
+  if (childNodes.length > 0) {
+    parentNodeIds.push(nodeId);
+    for (const child of childNodes) {
+      parentNodeIds.push(...getNestedParents(child.id, nodes));
+    }
+  }
+
+  return parentNodeIds;
+}
+
 export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
   graph: Graph;
-  expandedParents?: string[];
+  collapsedNodeIds?: string[];
   selections?: string[];
   actives?: string[];
   draggingId?: string | null;
@@ -27,7 +40,7 @@ export interface GraphState {
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
-  setExpandedParents: (nodeIds: string[]) => void;
+  setCollapsedNodeIds: (nodeIds: string[]) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -36,7 +49,7 @@ export const createStore = () =>
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
-    expandedParents: [],
+    collapsedNodeIds: [],
     panning: false,
     draggingId: null,
     selections: [],
@@ -61,46 +74,36 @@ export const createStore = () =>
           nodes: [...state.nodes.filter(n => n.id !== id), newNode]
         };
       }),
-    setExpandedParents: nodeIds =>
+    setCollapsedNodeIds: (nodeIds = []) =>
       set(state => {
-        let expandedParents = nodeIds || [];
+        let collapsedNodeIds = [];
 
-        // Remove any expanded node ids that are nested parents that had their parent removed
+        // Add any node ids that are nested parents that had their parent collapsed
         // ie gradparent -> parent -> node and grandparent was collapsed
-        expandedParents = expandedParents.filter(id => {
-          const node = state.nodes.find(n => n.id === id);
-
-          if (!node) {
-            return false;
-          }
-
-          if (node.parent && !expandedParents.includes(node.parent)) {
-            return false;
-          }
-
-          return true;
-        });
+        for (const collapsedId of nodeIds) {
+          collapsedNodeIds.push(...getNestedParents(collapsedId, state.nodes));
+        }
 
         // Dynamically add/remove edges from state
         const baseEdges = state.edges.filter(e => !e.id.includes('expanded'));
         const curNodes = state.nodes;
         const newEdges = [...baseEdges];
-        for (const parent of expandedParents) {
-          const childNodes = curNodes.filter(n => n.parent === parent);
-          newEdges.push(
-            ...childNodes.map(c => ({
-              id: `expanded-${parent}-${c.id}`,
-              fromId: parent,
-              toId: c.id,
-              label: `Edge ${parent}-${c.id}`
-            }))
-          );
+        const childrenNodes = state.nodes.filter(n => n.parent);
+        for (const child of childrenNodes) {
+          if (!collapsedNodeIds.includes(child.parent)) {
+            newEdges.push({
+              id: `expanded-${child.parent}-${child.id}`,
+              fromId: child.parent,
+              toId: child.id,
+              label: `Edge ${child.parent}-${child.id}`
+            });
+          }
         }
 
         return {
           ...state,
           edges: newEdges,
-          expandedParents
+          collapsedNodeIds
         };
       })
   }));

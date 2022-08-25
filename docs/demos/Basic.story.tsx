@@ -100,5 +100,5 @@ export const NoAnimation = () => (
 );
 
 export const ExpandCollapse = () => (
-  <GraphCanvas nodes={parentNodes} edges={simpleEdges} expanded={false} />
+  <GraphCanvas nodes={parentNodes} edges={simpleEdges} />
 );
