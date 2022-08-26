@@ -16,7 +16,7 @@ import { useDrag } from '../utils/useDrag';
 export interface NodeProps {
   id: string;
   theme: Theme;
-  parent?: string;
+  parents?: string[];
   disabled?: boolean;
   animated?: boolean;
   draggable?: boolean;

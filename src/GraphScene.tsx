@@ -220,7 +220,10 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const nodeIds = useMemo(
         () =>
           nodes.reduce((arr, cur) => {
-            if (!cur.parent || !collapsedNodeIds.includes(cur.parent)) {
+            if (
+              !cur.parents ||
+              !collapsedNodeIds.some(id => cur.parents.includes(id))
+            ) {
               arr.push(cur.id);
             }
 

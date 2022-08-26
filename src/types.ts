@@ -29,7 +29,7 @@ export interface GraphNode extends GraphElementBaseAttributes {
   /**
    * ID of the parent node.
    */
-  parent?: string;
+  parents?: string[];
 
   /**
    * Icon URL for the node.

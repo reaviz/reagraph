@@ -11,7 +11,7 @@ export type DragReferences = { [key: string]: InternalGraphNode };
 
 function getNestedParents(nodeId: string, nodes: InternalGraphNode[]) {
   const parentNodeIds = [];
-  const childNodes = nodes.filter(n => n.parent === nodeId);
+  const childNodes = nodes.filter(n => n.parents?.includes(nodeId));
   if (childNodes.length > 0) {
     parentNodeIds.push(nodeId);
     for (const child of childNodes) {
@@ -88,15 +88,17 @@ export const createStore = () =>
         const baseEdges = state.edges.filter(e => !e.id.includes('expanded'));
         const curNodes = state.nodes;
         const newEdges = [...baseEdges];
-        const childrenNodes = state.nodes.filter(n => n.parent);
+        const childrenNodes = state.nodes.filter(n => n.parents);
         for (const child of childrenNodes) {
-          if (!collapsedNodeIds.includes(child.parent)) {
-            newEdges.push({
-              id: `expanded-${child.parent}-${child.id}`,
-              fromId: child.parent,
-              toId: child.id,
-              label: `Edge ${child.parent}-${child.id}`
-            });
+          if (!collapsedNodeIds.some(id => child.parents.includes(id))) {
+            for (const parent of child.parents) {
+              newEdges.push({
+                id: `expanded-${parent}-${child.id}`,
+                fromId: parent,
+                toId: child.id,
+                label: `Edge ${parent}-${child.id}`
+              });
+            }
           }
         }
 

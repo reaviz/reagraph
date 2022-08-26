@@ -26,6 +26,16 @@ export const parentNodes: GraphNode[] = [
       };
     }
 
+    if (i === 3) {
+      return {
+        id: `n-${i}`,
+        label: `Node ${i} - 1 Child`,
+        data: {
+          priority: random(0, 10)
+        }
+      };
+    }
+
     return {
       id: `n-${i}`,
       label: `Node ${i}`,
@@ -39,7 +49,7 @@ export const parentNodes: GraphNode[] = [
       return {
         id: `n-2-n-${i}`,
         label: `Node 2 > ${i} - 1 Child`,
-        parent: 'n-2',
+        parents: ['n-2'],
         data: {
           priority: random(0, 10)
         }
@@ -49,7 +59,7 @@ export const parentNodes: GraphNode[] = [
     return {
       id: `n-2-n-${i}`,
       label: `Node 2 > ${i}`,
-      parent: 'n-2',
+      parents: ['n-2'],
       data: {
         priority: random(0, 10)
       }
@@ -58,7 +68,7 @@ export const parentNodes: GraphNode[] = [
   {
     id: `n-2-n-0-n-0`,
     label: `Node 2 > Node 0 > Node 0`,
-    parent: 'n-2-n-0',
+    parents: ['n-3', 'n-2-n-0'],
     data: {
       priority: random(0, 10)
     }
