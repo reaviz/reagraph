@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { animationConfig } from '../..//utils/animation';
+import { animationConfig } from '../../utils/animation';
 import { Color, ColorRepresentation, DoubleSide } from 'three';
 
 export interface SphereProps {
