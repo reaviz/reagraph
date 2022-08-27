@@ -9,6 +9,7 @@ import React, {
 import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout';
 import {
+  CollapsibleMenuProps,
   ContextMenuEvent,
   GraphEdge,
   GraphNode,
@@ -68,11 +69,6 @@ export interface GraphSceneProps {
    * Context menu element.
    */
   contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
-
-  /**
-   * Whether nodes with outbound edges can be collapsed
-   */
-  collapsible?: boolean;
 
   /**
    * Type of sizing for nodes.
@@ -144,7 +140,10 @@ export interface GraphSceneProps {
   /**
    * When a node context menu happened.
    */
-  onNodeContextMenu?: (node: InternalGraphNode) => void;
+  onNodeContextMenu?: (
+    node: InternalGraphNode,
+    collapsibleMenuProps?: CollapsibleMenuProps
+  ) => void;
 
   /**
    * When node got a pointer over.
@@ -204,7 +203,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         contextMenu,
         theme,
         animated,
-        collapsible,
         disabled,
         draggable,
         edgeLabelPosition,
@@ -250,7 +248,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   draggable={draggable}
                   disabled={disabled}
                   animated={animated}
-                  collapsible={collapsible}
                   theme={theme}
                   contextMenu={contextMenu}
                   onClick={onNodeClick}

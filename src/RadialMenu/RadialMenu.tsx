@@ -2,12 +2,14 @@ import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
 import { RadialSlice, MenuItem } from './RadialSlice';
 import { calculateRadius } from './utils';
 import css from './RadialMenu.module.css';
+import { CollapsibleMenuProps } from 'types';
 
 interface RadialMenuProps {
   items: MenuItem[];
   radius?: number;
   innerRadius?: number;
   startOffsetAngle?: number;
+  collapsibleMenuProps?: CollapsibleMenuProps;
   onClose?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -16,11 +18,28 @@ export const RadialMenu: FC<RadialMenuProps> = ({
   radius,
   innerRadius,
   startOffsetAngle,
+  collapsibleMenuProps,
   onClose
 }) => {
+  const { canCollapse, isCollapsed, onCollapse } = collapsibleMenuProps;
+  const radialItems = useMemo(() => {
+    if (canCollapse) {
+      return [
+        ...items,
+        {
+          label: isCollapsed ? 'Expand Node' : 'Collapse Node',
+          onClick: () => {
+            onCollapse();
+          }
+        }
+      ];
+    }
+
+    return items;
+  }, [canCollapse, isCollapsed, items, onCollapse]);
   const { centralAngle, polar, startAngle, deltaAngle } = useMemo(
-    () => calculateRadius(items, startOffsetAngle),
-    [items, startOffsetAngle]
+    () => calculateRadius(radialItems, startOffsetAngle),
+    [radialItems, startOffsetAngle]
   );
   const timeout = useRef<any | null>(null);
 
@@ -43,7 +62,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
         timeout.current = setTimeout(() => onClose?.(event), 500);
       }}
     >
-      {items.map((slice, index) => (
+      {radialItems.map((slice, index) => (
         <RadialSlice
           key={index}
           {...slice}

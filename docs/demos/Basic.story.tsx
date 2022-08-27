@@ -98,7 +98,3 @@ export const LiveUpdates = () => {
 export const NoAnimation = () => (
   <GraphCanvas animated={false} nodes={simpleNodes} edges={simpleEdges} />
 );
-
-export const ExpandCollapse = () => (
-  <GraphCanvas nodes={parentNodes} edges={parentEdges} collapsible />
-);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraphCanvas, RadialMenu } from '../../src';
-import { simpleEdges, simpleNodes } from '../assets/demo';
+import { parentEdges, parentNodes, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Context Menu/Radial',
@@ -54,6 +54,35 @@ export const Disabled = () => (
           {
             label: 'Remove Node',
             disabled: true,
+            onClick: () => {
+              alert('Remove the node');
+              onClose();
+            }
+          }
+        ]}
+      />
+    )}
+  />
+);
+
+export const Collapsible = () => (
+  <GraphCanvas
+    nodes={parentNodes}
+    edges={parentEdges}
+    contextMenu={({ data, collapsibleMenuProps, onClose }) => (
+      <RadialMenu
+        onClose={onClose}
+        collapsibleMenuProps={collapsibleMenuProps}
+        items={[
+          {
+            label: 'Add Node',
+            onClick: () => {
+              alert('Add a node');
+              onClose();
+            }
+          },
+          {
+            label: 'Remove Node',
             onClick: () => {
               alert('Remove the node');
               onClose();
