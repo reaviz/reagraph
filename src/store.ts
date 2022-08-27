@@ -84,27 +84,92 @@ export const createStore = () =>
           collapsedNodeIds.push(...getNestedParents(collapsedId, state.nodes));
         }
 
-        // Dynamically add/remove edges from state
-        const baseEdges = state.edges.filter(e => !e.id.includes('expanded'));
-        const curNodes = state.nodes;
-        const newEdges = [...baseEdges];
-        const childrenNodes = state.nodes.filter(n => n.parents);
-        for (const child of childrenNodes) {
-          if (!collapsedNodeIds.some(id => child.parents.includes(id))) {
-            for (const parent of child.parents) {
-              newEdges.push({
-                id: `expanded-${parent}-${child.id}`,
-                fromId: parent,
-                toId: child.id,
-                label: `Edge ${parent}-${child.id}`
-              });
+        // Reset hidden state of edges/nodes
+        let newEdges = [...state.edges].map(e => ({
+          ...e,
+          hidden: false
+        }));
+        let newNodes = [...state.nodes].map(n => ({
+          ...n,
+          hidden: false
+        }));
+
+        // Keep track of which edges and nodes were hidden from this change
+        const curHiddenEdgeIds = [];
+        const curHiddenNodeIds = [];
+
+        for (const collapsedId of collapsedNodeIds) {
+          const nodeLinks = state.graph.getLinks(collapsedId);
+          const outboundEdges = [...nodeLinks].filter(
+            l => l.data.source === collapsedId
+          );
+          const outboundEdgeIds = outboundEdges.map(l => l.data.id);
+          const outboundEdgeNodeIds = outboundEdges.map(l => l.data.target);
+
+          newEdges = newEdges.map(e => {
+            if (outboundEdgeIds.includes(e.id)) {
+              curHiddenEdgeIds.push(e.id);
+              return {
+                ...e,
+                hidden: true
+              };
+            } else if (curHiddenEdgeIds.includes(e.id)) {
+              return e;
             }
-          }
+
+            return {
+              ...e,
+              hidden: false
+            };
+          });
+          newNodes = newNodes.map(n => {
+            if (
+              !outboundEdgeNodeIds.includes(n.id) &&
+              !curHiddenNodeIds.includes(n.id)
+            ) {
+              return {
+                ...n,
+                hidden: false
+              };
+            }
+
+            // Determine if there is another edge going to this node
+            const curNodeLinks = state.graph.getLinks(n.id);
+            const inboundNodeLinks = [...curNodeLinks].filter(
+              l => l.data.target === n.id
+            );
+            if (
+              inboundNodeLinks.length > 1 &&
+              !curHiddenNodeIds.includes(n.id)
+            ) {
+              // If all inbound links are hidden, hide this node as well
+              const inboundNodeLinkIds = inboundNodeLinks.map(l => l.data.id);
+              if (
+                !inboundNodeLinkIds.every(i => curHiddenEdgeIds.includes(i))
+              ) {
+                return {
+                  ...n,
+                  hidden: false
+                };
+              }
+            }
+
+            if (!curHiddenNodeIds.includes(n.id)) {
+              curHiddenNodeIds.push(n.id);
+              return {
+                ...n,
+                hidden: true
+              };
+            }
+
+            return n;
+          });
         }
 
         return {
           ...state,
           edges: newEdges,
+          nodes: newNodes,
           collapsedNodeIds
         };
       })

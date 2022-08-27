@@ -49,7 +49,6 @@ export const parentNodes: GraphNode[] = [
       return {
         id: `n-2-n-${i}`,
         label: `Node 2 > ${i} - 1 Child`,
-        parents: ['n-2'],
         data: {
           priority: random(0, 10)
         }
@@ -59,7 +58,6 @@ export const parentNodes: GraphNode[] = [
     return {
       id: `n-2-n-${i}`,
       label: `Node 2 > ${i}`,
-      parents: ['n-2'],
       data: {
         priority: random(0, 10)
       }
@@ -68,7 +66,6 @@ export const parentNodes: GraphNode[] = [
   {
     id: `n-2-n-0-n-0`,
     label: `Node 2 > Node 0 > Node 0`,
-    parents: ['n-3', 'n-2-n-0'],
     data: {
       priority: random(0, 10)
     }
@@ -151,6 +148,40 @@ export const simpleEdges: GraphEdge[] = [
     label: 'Edge 0-4'
   }
 ];
+
+export const parentEdges: GraphEdge[] = [
+  ...simpleEdges,
+  {
+    id: '2->2-0',
+    source: 'n-2',
+    target: 'n-2-n-0',
+    label: 'Edge 2-2-0'
+  },
+  {
+    id: '2->2-1',
+    source: 'n-2',
+    target: 'n-2-n-1',
+    label: 'Edge 2-2-1'
+  },
+  {
+    id: '2->2-2',
+    source: 'n-2',
+    target: 'n-2-n-2',
+    label: 'Edge 2-2-2'
+  },
+  {
+    id: '2->2-0->2-0-0',
+    source: 'n-2-n-0',
+    target: 'n-2-n-0-n-0',
+    label: 'Edge 2-2-0'
+  },
+  {
+    id: '3->2-0->2-0-0',
+    source: 'n-3',
+    target: 'n-2-n-0-n-0',
+    label: 'Edge 3-2-0'
+  }
+]
 
 export const treeEdges: GraphEdge[] = [
   {

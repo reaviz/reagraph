@@ -70,6 +70,11 @@ export interface GraphSceneProps {
   contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
 
   /**
+   * Whether nodes with outbound edges can be collapsed
+   */
+  collapsible?: boolean;
+
+  /**
    * Type of sizing for nodes.
    */
   sizingType?: SizingType;
@@ -199,6 +204,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         contextMenu,
         theme,
         animated,
+        collapsible,
         disabled,
         draggable,
         edgeLabelPosition,
@@ -210,28 +216,13 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     ) => {
       const { mounted } = useGraph(rest);
 
-      const [graph, nodes, edges, collapsedNodeIds] = useStore(state => [
+      const [graph, nodes, edges] = useStore(state => [
         state.graph,
         state.nodes,
-        state.edges,
-        state.collapsedNodeIds
+        state.edges
       ]);
 
-      const nodeIds = useMemo(
-        () =>
-          nodes.reduce((arr, cur) => {
-            if (
-              !cur.parents ||
-              !collapsedNodeIds.some(id => cur.parents.includes(id))
-            ) {
-              arr.push(cur.id);
-            }
-
-            return arr;
-          }, []),
-        [collapsedNodeIds, nodes]
-      );
-
+      const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);
       const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
 
       const { centerNodesById: centerGraph } = useCenterGraph({
@@ -259,6 +250,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   draggable={draggable}
                   disabled={disabled}
                   animated={animated}
+                  collapsible={collapsible}
                   theme={theme}
                   contextMenu={contextMenu}
                   onClick={onNodeClick}

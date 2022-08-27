@@ -19,6 +19,7 @@ export interface NodeProps {
   parents?: string[];
   disabled?: boolean;
   animated?: boolean;
+  collapsible?: boolean;
   draggable?: boolean;
   labelFontUrl?: string;
   contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
@@ -30,6 +31,7 @@ export interface NodeProps {
 
 export const Node: FC<NodeProps> = ({
   animated,
+  collapsible,
   disabled,
   id,
   draggable,
@@ -80,11 +82,12 @@ export const Node: FC<NodeProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
-  const selectionOpacity = hasSelections
+  let selectionOpacity = hasSelections
     ? isSelected || active || isActive
       ? theme.node.selectedOpacity
       : theme.node.inactiveOpacity
     : theme.node.opacity;
+  selectionOpacity = node.hidden ? 0 : selectionOpacity;
 
   const [{ nodePosition, labelPosition }] = useSpring(
     () => ({
@@ -155,11 +158,11 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
-              if (collapsedNodeIds.includes(id)) {
+              if (collapsedNodeIds.includes(id) && collapsible) {
                 setCollapsedNodeIds(
                   [...collapsedNodeIds].filter(p => p !== id)
                 );
-              } else {
+              } else if (collapsible) {
                 setCollapsedNodeIds([...collapsedNodeIds, id]);
               }
 
@@ -188,11 +191,11 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
-              if (collapsedNodeIds.includes(id)) {
+              if (collapsedNodeIds.includes(id) && collapsible) {
                 setCollapsedNodeIds(
                   [...collapsedNodeIds].filter(p => p !== id)
                 );
-              } else {
+              } else if (collapsible) {
                 setCollapsedNodeIds([...collapsedNodeIds, id]);
               }
 

@@ -31,6 +31,11 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   cameraMode?: CameraMode;
 
   /**
+   * Whether nodes with outbound edges can be collapsed
+   */
+  collapsible?: boolean;
+
+  /**
    * When the canvas was clicked but didn't hit a node/edge.
    */
   onCanvasClick?: (event: MouseEvent) => void;
