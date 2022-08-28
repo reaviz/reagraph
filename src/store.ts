@@ -6,21 +6,9 @@ import {
   InternalGraphPosition
 } from './types';
 import ngraph, { Graph } from 'ngraph.graph';
+import { getUpdatedCollapsedState } from './utils';
 
 export type DragReferences = { [key: string]: InternalGraphNode };
-
-function getNestedParents(nodeId: string, nodes: InternalGraphNode[]) {
-  const parentNodeIds = [];
-  const childNodes = nodes.filter(n => n.parents?.includes(nodeId));
-  if (childNodes.length > 0) {
-    parentNodeIds.push(nodeId);
-    for (const child of childNodes) {
-      parentNodeIds.push(...getNestedParents(child.id, nodes));
-    }
-  }
-
-  return parentNodeIds;
-}
 
 export interface GraphState {
   nodes: InternalGraphNode[];
@@ -76,100 +64,18 @@ export const createStore = () =>
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
       set(state => {
-        let collapsedNodeIds = [];
-
-        // Add any node ids that are nested parents that had their parent collapsed
-        // ie gradparent -> parent -> node and grandparent was collapsed
-        for (const collapsedId of nodeIds) {
-          collapsedNodeIds.push(...getNestedParents(collapsedId, state.nodes));
-        }
-
-        // Reset hidden state of edges/nodes
-        let newEdges = [...state.edges].map(e => ({
-          ...e,
-          hidden: false
-        }));
-        let newNodes = [...state.nodes].map(n => ({
-          ...n,
-          hidden: false
-        }));
-
-        // Keep track of which edges and nodes were hidden from this change
-        const curHiddenEdgeIds = [];
-        const curHiddenNodeIds = [];
-
-        for (const collapsedId of collapsedNodeIds) {
-          const nodeLinks = state.graph.getLinks(collapsedId);
-          const outboundEdges = [...nodeLinks].filter(
-            l => l.data.source === collapsedId
-          );
-          const outboundEdgeIds = outboundEdges.map(l => l.data.id);
-          const outboundEdgeNodeIds = outboundEdges.map(l => l.data.target);
-
-          newEdges = newEdges.map(e => {
-            if (outboundEdgeIds.includes(e.id)) {
-              curHiddenEdgeIds.push(e.id);
-              return {
-                ...e,
-                hidden: true
-              };
-            } else if (curHiddenEdgeIds.includes(e.id)) {
-              return e;
-            }
-
-            return {
-              ...e,
-              hidden: false
-            };
+        const { updatedNodes, updatedEdges, collapsedNodeIds } =
+          getUpdatedCollapsedState({
+            nodeIds,
+            nodes: [...state.nodes],
+            edges: [...state.edges],
+            graph: state.graph
           });
-          newNodes = newNodes.map(n => {
-            if (
-              !outboundEdgeNodeIds.includes(n.id) &&
-              !curHiddenNodeIds.includes(n.id)
-            ) {
-              return {
-                ...n,
-                hidden: false
-              };
-            }
-
-            // Determine if there is another edge going to this node
-            const curNodeLinks = state.graph.getLinks(n.id);
-            const inboundNodeLinks = [...curNodeLinks].filter(
-              l => l.data.target === n.id
-            );
-            if (
-              inboundNodeLinks.length > 1 &&
-              !curHiddenNodeIds.includes(n.id)
-            ) {
-              // If all inbound links are hidden, hide this node as well
-              const inboundNodeLinkIds = inboundNodeLinks.map(l => l.data.id);
-              if (
-                !inboundNodeLinkIds.every(i => curHiddenEdgeIds.includes(i))
-              ) {
-                return {
-                  ...n,
-                  hidden: false
-                };
-              }
-            }
-
-            if (!curHiddenNodeIds.includes(n.id)) {
-              curHiddenNodeIds.push(n.id);
-              return {
-                ...n,
-                hidden: true
-              };
-            }
-
-            return n;
-          });
-        }
 
         return {
           ...state,
-          edges: newEdges,
-          nodes: newNodes,
+          edges: updatedEdges,
+          nodes: updatedNodes,
           collapsedNodeIds
         };
       })

@@ -9,7 +9,7 @@ import React, {
 import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout';
 import {
-  CollapsibleMenuProps,
+  NodeContextMenuProps,
   ContextMenuEvent,
   GraphEdge,
   GraphNode,
@@ -142,7 +142,7 @@ export interface GraphSceneProps {
    */
   onNodeContextMenu?: (
     node: InternalGraphNode,
-    collapsibleMenuProps?: CollapsibleMenuProps
+    additional?: NodeContextMenuProps
   ) => void;
 
   /**

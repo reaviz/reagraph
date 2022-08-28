@@ -187,9 +187,20 @@ export interface InternalGraphNode extends GraphNode {
   fz?: number;
 }
 
-export interface CollapsibleMenuProps {
+export interface NodeContextMenuProps {
+  /**
+   * Whether a node can be collapsed based on if it has any outbound edges
+   */
   canCollapse: boolean;
+
+  /**
+   * Whether a node has been collapsed via a context menu action
+   */
   isCollapsed: boolean;
+
+  /**
+   * Callback to hide a node's ancestors which are not accessible via another node's edges
+   */
   onCollapse: () => void;
 }
 
@@ -203,7 +214,7 @@ export interface ContextMenuEvent {
    * Information relevant for determining if a node is collapsible and the action to perform
    * when collapsed
    */
-  collapsibleMenuProps?: CollapsibleMenuProps;
+  additional?: NodeContextMenuProps;
 
   /**
    * Close event callback.

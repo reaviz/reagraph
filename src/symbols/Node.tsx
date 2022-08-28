@@ -8,7 +8,7 @@ import { Icon } from './Icon';
 import { Theme } from '../utils';
 import { Ring } from './Ring';
 import {
-  CollapsibleMenuProps,
+  NodeContextMenuProps,
   ContextMenuEvent,
   InternalGraphNode
 } from '../types';
@@ -31,7 +31,7 @@ export interface NodeProps {
   onClick?: (node: InternalGraphNode) => void;
   onContextMenu?: (
     node?: InternalGraphNode,
-    collapsibleMenuProps?: CollapsibleMenuProps
+    additional?: NodeContextMenuProps
   ) => void;
 }
 
@@ -238,7 +238,7 @@ export const Node: FC<NodeProps> = ({
         <Html prepend={true} center={true}>
           {contextMenu({
             data: node,
-            collapsibleMenuProps: { canCollapse, isCollapsed, onCollapse },
+            additional: { canCollapse, isCollapsed, onCollapse },
             onClose: () => setMenuVisible(false)
           })}
         </Html>

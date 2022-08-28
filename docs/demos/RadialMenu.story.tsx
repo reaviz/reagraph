@@ -64,32 +64,3 @@ export const Disabled = () => (
     )}
   />
 );
-
-export const Collapsible = () => (
-  <GraphCanvas
-    nodes={parentNodes}
-    edges={parentEdges}
-    contextMenu={({ data, collapsibleMenuProps, onClose }) => (
-      <RadialMenu
-        onClose={onClose}
-        collapsibleMenuProps={collapsibleMenuProps}
-        items={[
-          {
-            label: 'Add Node',
-            onClick: () => {
-              alert('Add a node');
-              onClose();
-            }
-          },
-          {
-            label: 'Remove Node',
-            onClick: () => {
-              alert('Remove the node');
-              onClose();
-            }
-          }
-        ]}
-      />
-    )}
-  />
-);
