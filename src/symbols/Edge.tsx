@@ -90,11 +90,12 @@ export const Edge: FC<EdgeProps> = ({
     isActive: state.actives?.includes(id)
   }));
 
-  const selectionOpacity = hasSelections
+  let selectionOpacity = hasSelections
     ? isSelected || isActive
       ? theme.edge.selectedOpacity
       : theme.edge.inactiveOpacity
     : theme.edge.opacity;
+  selectionOpacity = edge.hidden ? 0 : selectionOpacity;
 
   const [{ labelPosition }] = useSpring(
     () => ({

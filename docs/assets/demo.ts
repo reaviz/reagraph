@@ -14,6 +14,64 @@ export const simpleNodes: GraphNode[] =
     }
   }));
 
+export const parentNodes: GraphNode[] = [
+  ...range(5).map(i => {
+    if (i === 2) {
+      return {
+        id: `n-${i}`,
+        label: `Node ${i} - 3 Children`,
+        data: {
+          priority: random(0, 10)
+        }
+      };
+    }
+
+    if (i === 3) {
+      return {
+        id: `n-${i}`,
+        label: `Node ${i} - 1 Child`,
+        data: {
+          priority: random(0, 10)
+        }
+      };
+    }
+
+    return {
+      id: `n-${i}`,
+      label: `Node ${i}`,
+      data: {
+        priority: random(0, 10)
+      }
+    };
+  }),
+  ...range(3).map(i => {
+    if (i === 0) {
+      return {
+        id: `n-2-n-${i}`,
+        label: `Node 2 > ${i} - 1 Child`,
+        data: {
+          priority: random(0, 10)
+        }
+      };
+    }
+
+    return {
+      id: `n-2-n-${i}`,
+      label: `Node 2 > ${i}`,
+      data: {
+        priority: random(0, 10)
+      }
+    };
+  }),
+  {
+    id: `n-2-n-0-n-0`,
+    label: `Node 2 > Node 0 > Node 0`,
+    data: {
+      priority: random(0, 10)
+    }
+  }
+]
+
 const types = ['IP', 'URL', 'Email', 'MD5'];
 const colors = ['blue', 'green', 'red', 'orange'];
 
@@ -90,6 +148,40 @@ export const simpleEdges: GraphEdge[] = [
     label: 'Edge 0-4'
   }
 ];
+
+export const parentEdges: GraphEdge[] = [
+  ...simpleEdges,
+  {
+    id: '2->2-0',
+    source: 'n-2',
+    target: 'n-2-n-0',
+    label: 'Edge 2-2-0'
+  },
+  {
+    id: '2->2-1',
+    source: 'n-2',
+    target: 'n-2-n-1',
+    label: 'Edge 2-2-1'
+  },
+  {
+    id: '2->2-2',
+    source: 'n-2',
+    target: 'n-2-n-2',
+    label: 'Edge 2-2-2'
+  },
+  {
+    id: '2->2-0->2-0-0',
+    source: 'n-2-n-0',
+    target: 'n-2-n-0-n-0',
+    label: 'Edge 2-2-0'
+  },
+  {
+    id: '3->2-0->2-0-0',
+    source: 'n-3',
+    target: 'n-2-n-0-n-0',
+    label: 'Edge 3-2-0'
+  }
+]
 
 export const treeEdges: GraphEdge[] = [
   {

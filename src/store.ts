@@ -6,6 +6,7 @@ import {
   InternalGraphPosition
 } from './types';
 import ngraph, { Graph } from 'ngraph.graph';
+import { getUpdatedCollapsedState } from './utils';
 
 export type DragReferences = { [key: string]: InternalGraphNode };
 
@@ -13,6 +14,7 @@ export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
   graph: Graph;
+  collapsedNodeIds?: string[];
   selections?: string[];
   actives?: string[];
   draggingId?: string | null;
@@ -26,6 +28,7 @@ export interface GraphState {
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
+  setCollapsedNodeIds: (nodeIds: string[]) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -34,6 +37,7 @@ export const createStore = () =>
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
+    collapsedNodeIds: [],
     panning: false,
     draggingId: null,
     selections: [],
@@ -56,6 +60,23 @@ export const createStore = () =>
           ...state,
           drags: { ...state.drags, [id]: newNode },
           nodes: [...state.nodes.filter(n => n.id !== id), newNode]
+        };
+      }),
+    setCollapsedNodeIds: (nodeIds = []) =>
+      set(state => {
+        const { updatedNodes, updatedEdges, collapsedNodeIds } =
+          getUpdatedCollapsedState({
+            nodeIds,
+            nodes: [...state.nodes],
+            edges: [...state.edges],
+            graph: state.graph
+          });
+
+        return {
+          ...state,
+          edges: updatedEdges,
+          nodes: updatedNodes,
+          collapsedNodeIds
         };
       })
   }));

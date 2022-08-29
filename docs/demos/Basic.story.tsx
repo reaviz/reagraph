@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GraphCanvas, lightTheme } from '../../src';
-import { simpleEdges, simpleNodes } from '../assets/demo';
+import { parentEdges, parentNodes, simpleEdges, simpleNodes } from '../assets/demo';
 import random from 'lodash/random';
 import { range } from 'd3-array';
 

@@ -27,6 +27,16 @@ export interface GraphElementBaseAttributes<T = any> {
 
 export interface GraphNode extends GraphElementBaseAttributes {
   /**
+   * ID of the parent node.
+   */
+  parents?: string[];
+
+  /**
+   * Whether the node is hidden after being collapsed
+   */
+  hidden?: boolean;
+
+  /**
    * Icon URL for the node.
    */
   icon?: string;
@@ -47,6 +57,11 @@ export interface GraphEdge extends GraphElementBaseAttributes {
    * Target ID of the node.
    */
   target: string;
+
+  /**
+   * Whether the edge is hidden after being collapsed
+   */
+  hidden?: boolean;
 }
 
 export interface Graph {
@@ -172,11 +187,34 @@ export interface InternalGraphNode extends GraphNode {
   fz?: number;
 }
 
+export interface NodeContextMenuProps {
+  /**
+   * Whether a node can be collapsed based on if it has any outbound edges
+   */
+  canCollapse: boolean;
+
+  /**
+   * Whether a node has been collapsed via a context menu action
+   */
+  isCollapsed: boolean;
+
+  /**
+   * Callback to hide a node's ancestors which are not accessible via another node's edges
+   */
+  onCollapse: () => void;
+}
+
 export interface ContextMenuEvent {
   /**
    * Data the node was invoked on.
    */
   data: InternalGraphNode | InternalGraphEdge;
+
+  /**
+   * Information relevant for determining if a node is collapsible and the action to perform
+   * when collapsed
+   */
+  additional?: NodeContextMenuProps;
 
   /**
    * Close event callback.

@@ -10,6 +10,7 @@ import { DragReferences, useStore } from './store';
 export interface GraphInputs {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  collapsedNodeIds?: string[];
   layoutType?: LayoutTypes;
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
@@ -32,26 +33,35 @@ export const useGraph = ({
   nodes,
   edges,
   actives,
+  collapsedNodeIds,
   defaultNodeSize,
   maxNodeSize,
   minNodeSize
 }: GraphInputs) => {
   const [
     graph,
+    stateNodes,
+    stateEdges,
+    stateCollapsedNodeIds,
     setEdges,
     setNodes,
     setSelections,
     setActives,
     drags,
-    setDrags
+    setDrags,
+    setCollapsedNodeIds
   ] = useStore(state => [
     state.graph,
+    state.nodes,
+    state.edges,
+    state.collapsedNodeIds,
     state.setEdges,
     state.setNodes,
     state.setSelections,
     state.setActives,
     state.drags,
-    state.setDrags
+    state.setDrags,
+    state.setCollapsedNodeIds
   ]);
 
   const [mounted, setMounted] = useState<boolean>(false);
@@ -130,6 +140,27 @@ export const useGraph = ({
 
     // eslint-disable-next-line
   }, [nodes, edges, graph]);
+
+  useEffect(() => {
+    // Let's set the store collapsedNodeIds so its easier to access
+    setCollapsedNodeIds(collapsedNodeIds);
+  }, [collapsedNodeIds, setCollapsedNodeIds]);
+
+  useEffect(() => {
+    if (mounted) {
+      // Update the layout of the graph when nodes are expanded/collapsed
+      const graphEdges = stateEdges.map(e => ({
+        ...e,
+        source: e.fromId,
+        target: e.toId,
+        fromId: undefined,
+        toId: undefined
+      }));
+      buildGraph(graph, stateNodes, graphEdges);
+      updateLayout();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateCollapsedNodeIds]);
 
   // Update layout on type changes
   useEffect(() => {

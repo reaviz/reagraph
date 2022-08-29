@@ -25,8 +25,8 @@ body {
 ```
 
 Once those are defined, we can use the `contextMenu` callback prop
-to return a radial menu component. The callback provides the model (node/edge)
-along with a callback to close the menu.
+to return a radial menu component. The callback provides the model (node/edge),
+contextual information around a node's collapse state, and a callback to close the menu.
 
 ```tsx
 import { GraphCanvas, RadialMenu } from 'reagraph';
@@ -35,7 +35,7 @@ export const MyApp = () => (
   <GraphCanvas
     nodes={nodes}
     edges={edges}
-    contextMenu={({ data, onClose }) => (
+    contextMenu={({ data, additional, onClose }) => (
       <RadialMenu
         onClose={onClose}
         items={[
@@ -71,7 +71,7 @@ export const Node = () => (
   <GraphCanvas
     nodes={nodes}
     edges={edges}
-    contextMenu={({ data, onClose }) => (
+    contextMenu={({ data, additional, onClose }) => (
       <div
         style={{
           background: 'white',

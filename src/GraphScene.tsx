@@ -3,11 +3,13 @@ import React, {
   forwardRef,
   Fragment,
   Ref,
-  useImperativeHandle
+  useImperativeHandle,
+  useMemo
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutTypes } from './layout';
 import {
+  NodeContextMenuProps,
   ContextMenuEvent,
   GraphEdge,
   GraphNode,
@@ -42,6 +44,11 @@ export interface GraphSceneProps {
    * List of ids that are active.
    */
   actives?: string[];
+
+  /**
+   * List of node ids that are collapsed.
+   */
+  collapsedNodeIds?: string[];
 
   /**
    * Animate or not the graph positions.
@@ -133,7 +140,10 @@ export interface GraphSceneProps {
   /**
    * When a node context menu happened.
    */
-  onNodeContextMenu?: (node: InternalGraphNode) => void;
+  onNodeContextMenu?: (
+    node: InternalGraphNode,
+    additional?: NodeContextMenuProps
+  ) => void;
 
   /**
    * When node got a pointer over.
@@ -204,11 +214,14 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     ) => {
       const { mounted } = useGraph(rest);
 
-      const [graph, nodeIds, edgeIds] = useStore(state => [
+      const [graph, nodes, edges] = useStore(state => [
         state.graph,
-        state.nodes.map(n => n.id),
-        state.edges.map(e => e.id)
+        state.nodes,
+        state.edges
       ]);
+
+      const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);
+      const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
 
       const { centerNodesById: centerGraph } = useCenterGraph({
         animated

@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { Group } from 'three';
 import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
@@ -7,7 +7,11 @@ import { Label } from './Label';
 import { Icon } from './Icon';
 import { Theme } from '../utils';
 import { Ring } from './Ring';
-import { ContextMenuEvent, InternalGraphNode } from '../types';
+import {
+  NodeContextMenuProps,
+  ContextMenuEvent,
+  InternalGraphNode
+} from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
@@ -16,6 +20,7 @@ import { useDrag } from '../utils/useDrag';
 export interface NodeProps {
   id: string;
   theme: Theme;
+  parents?: string[];
   disabled?: boolean;
   animated?: boolean;
   draggable?: boolean;
@@ -24,7 +29,10 @@ export interface NodeProps {
   onPointerOver?: (node: InternalGraphNode) => void;
   onPointerOut?: (node: InternalGraphNode) => void;
   onClick?: (node: InternalGraphNode) => void;
-  onContextMenu?: (node?: InternalGraphNode) => void;
+  onContextMenu?: (
+    node?: InternalGraphNode,
+    additional?: NodeContextMenuProps
+  ) => void;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -43,14 +51,23 @@ export const Node: FC<NodeProps> = ({
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
 
-  const [draggingId, setDraggingId, setNodePosition, panning] = useStore(
-    state => [
-      state.draggingId,
-      state.setDraggingId,
-      state.setNodePosition,
-      state.panning
-    ]
-  );
+  const [
+    graph,
+    draggingId,
+    collapsedNodeIds,
+    setDraggingId,
+    setNodePosition,
+    setCollapsedNodeIds,
+    panning
+  ] = useStore(state => [
+    state.graph,
+    state.draggingId,
+    state.collapsedNodeIds,
+    state.setDraggingId,
+    state.setNodePosition,
+    state.setCollapsedNodeIds,
+    state.panning
+  ]);
 
   const isDragging = draggingId === id;
   const {
@@ -72,11 +89,37 @@ export const Node: FC<NodeProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
-  const selectionOpacity = hasSelections
+  let selectionOpacity = hasSelections
     ? isSelected || active || isActive
       ? theme.node.selectedOpacity
       : theme.node.inactiveOpacity
     : theme.node.opacity;
+  selectionOpacity = node.hidden ? 0 : selectionOpacity;
+
+  const canCollapse = useMemo(() => {
+    // If the node has outgoing edges, it can collapse via context menu
+    const links = graph.getLinks(id);
+    const outboundLinks = links
+      ? [...links].filter(l => l.data.source === id)
+      : [];
+
+    return outboundLinks.length > 0;
+  }, [graph, id]);
+
+  const isCollapsed = useMemo(
+    () => collapsedNodeIds.includes(id),
+    [collapsedNodeIds, id]
+  );
+
+  const onCollapse = useCallback(() => {
+    if (canCollapse) {
+      if (collapsedNodeIds.includes(id)) {
+        setCollapsedNodeIds([...collapsedNodeIds].filter(p => p !== id));
+      } else {
+        setCollapsedNodeIds([...collapsedNodeIds, id]);
+      }
+    }
+  }, [canCollapse, collapsedNodeIds, id, setCollapsedNodeIds]);
 
   const [{ nodePosition, labelPosition }] = useSpring(
     () => ({
@@ -147,13 +190,15 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
-              onClick?.(node);
+              requestAnimationFrame(() => {
+                onClick?.(node);
+              });
             }
           }}
           onContextMenu={() => {
             if (!disabled) {
               setMenuVisible(true);
-              onContextMenu?.(node);
+              onContextMenu?.(node, { canCollapse, isCollapsed, onCollapse });
             }
           }}
         />
@@ -170,13 +215,15 @@ export const Node: FC<NodeProps> = ({
           animated={animated}
           onClick={() => {
             if (!disabled && !isDragging) {
-              onClick?.(node);
+              requestAnimationFrame(() => {
+                onClick?.(node);
+              });
             }
           }}
           onContextMenu={() => {
             if (!disabled) {
               setMenuVisible(true);
-              onContextMenu?.(node);
+              onContextMenu?.(node, { canCollapse, isCollapsed, onCollapse });
             }
           }}
         />
@@ -189,7 +236,11 @@ export const Node: FC<NodeProps> = ({
       />
       {menuVisible && contextMenu && (
         <Html prepend={true} center={true}>
-          {contextMenu({ data: node, onClose: () => setMenuVisible(false) })}
+          {contextMenu({
+            data: node,
+            additional: { canCollapse, isCollapsed, onCollapse },
+            onClose: () => setMenuVisible(false)
+          })}
         </Html>
       )}
       {(labelVisible || isSelected || active) && label && (
