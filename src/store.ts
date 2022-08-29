@@ -6,7 +6,7 @@ import {
   InternalGraphPosition
 } from './types';
 import ngraph, { Graph } from 'ngraph.graph';
-import { getUpdatedCollapsedState } from './utils';
+import { getUpdatedCollapsedState } from './utils/collapse';
 
 export type DragReferences = { [key: string]: InternalGraphNode };
 

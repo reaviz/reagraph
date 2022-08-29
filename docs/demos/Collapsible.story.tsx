@@ -11,7 +11,7 @@ export const ContextMenu = () => (
   <GraphCanvas
     nodes={parentNodes}
     edges={parentEdges}
-    contextMenu={({ data, additional, onClose }) => (
+    contextMenu={({ data, canCollapse, isCollapsed, onCollapse, onClose }) => (
       <div
         style={{
           background: 'white',
@@ -23,8 +23,8 @@ export const ContextMenu = () => (
         }}
       >
         <h1>{data.label}</h1>
-        {additional.canCollapse && (
-          <button onClick={additional.onCollapse}>{additional.isCollapsed ? 'Expand Node' : 'Collapse Node'}</button>
+        {canCollapse && (
+          <button onClick={onCollapse}>{isCollapsed ? 'Expand Node' : 'Collapse Node'}</button>
         )}
         <button onClick={onClose}>Close Menu</button>
       </div>
@@ -36,7 +36,7 @@ export const RadialContextMenu = () => (
   <GraphCanvas
     nodes={parentNodes}
     edges={parentEdges}
-    contextMenu={({ data, additional, onClose }) => (
+    contextMenu={({ data, canCollapse, isCollapsed, onCollapse, onClose }) => (
       <RadialMenu
         onClose={onClose}
         items={[
@@ -48,16 +48,16 @@ export const RadialContextMenu = () => (
             }
           },
           {
-            label: 'Remove Node',
+            label: 'Remove',
             onClick: () => {
               alert('Remove the node');
               onClose();
             }
           },
-          ...(additional.canCollapse
+          ...(canCollapse
             ? [{
-              label: additional.isCollapsed ? 'Expand Node' : 'Collapse Node',
-              onClick: additional.onCollapse
+              label: isCollapsed ? 'Expand' : 'Collapse',
+              onClick: onCollapse
             }]
             : [])
         ]}

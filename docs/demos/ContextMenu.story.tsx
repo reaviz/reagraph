@@ -33,7 +33,7 @@ export const Collapsible = () => (
   <GraphCanvas
     nodes={parentNodes}
     edges={parentEdges}
-    contextMenu={({ data, additional, onClose }) => (
+    contextMenu={({ data, props, onClose }) => (
       <div
         style={{
           background: 'white',
@@ -45,8 +45,8 @@ export const Collapsible = () => (
         }}
       >
         <h1>{data.label}</h1>
-        {additional.canCollapse && (
-          <button onClick={additional.onCollapse}>{additional.isCollapsed ? 'Expand Node' : 'Collapse Node'}</button>
+        {props.canCollapse && (
+          <button onClick={props.onCollapse}>{props.isCollapsed ? 'Expand Node' : 'Collapse Node'}</button>
         )}
         <button onClick={onClose}>Close Menu</button>
       </div>

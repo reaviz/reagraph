@@ -3,4 +3,4 @@ export * from './visibility';
 export * from './position';
 export * from './layout';
 export * from './themes';
-export * from './store';
+export * from './collapse';

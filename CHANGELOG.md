@@ -1,3 +1,6 @@
+# 4.2.0 - 9/17/22
+- [feature] add collapse / expand for nodes #69
+
 # 4.1.0 - 9/17/22
 - [feature] add `pathHoverType` to `useSelection` which allows for custom highlighting
 - [fix] decreased precision of animation to 0.1 from 0.0001 for performance

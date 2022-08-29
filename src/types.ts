@@ -204,17 +204,11 @@ export interface NodeContextMenuProps {
   onCollapse: () => void;
 }
 
-export interface ContextMenuEvent {
+export interface ContextMenuEvent extends NodeContextMenuProps {
   /**
    * Data the node was invoked on.
    */
   data: InternalGraphNode | InternalGraphEdge;
-
-  /**
-   * Information relevant for determining if a node is collapsible and the action to perform
-   * when collapsed
-   */
-  additional?: NodeContextMenuProps;
 
   /**
    * Close event callback.

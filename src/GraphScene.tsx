@@ -142,7 +142,7 @@ export interface GraphSceneProps {
    */
   onNodeContextMenu?: (
     node: InternalGraphNode,
-    additional?: NodeContextMenuProps
+    props?: NodeContextMenuProps
   ) => void;
 
   /**

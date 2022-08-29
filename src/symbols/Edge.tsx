@@ -34,7 +34,7 @@ export interface EdgeProps {
   disabled?: boolean;
   labelPlacement?: EdgeLabelPosition;
   arrowPlacement?: EdgeArrowPosition;
-  contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
+  contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
   onClick?: (edge: InternalGraphEdge) => void;
   onContextMenu?: (edge?: InternalGraphEdge) => void;
   onPointerOver?: (edge: InternalGraphEdge) => void;

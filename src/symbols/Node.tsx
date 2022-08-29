@@ -31,7 +31,7 @@ export interface NodeProps {
   onClick?: (node: InternalGraphNode) => void;
   onContextMenu?: (
     node?: InternalGraphNode,
-    additional?: NodeContextMenuProps
+    props?: NodeContextMenuProps
   ) => void;
 }
 
@@ -238,7 +238,9 @@ export const Node: FC<NodeProps> = ({
         <Html prepend={true} center={true}>
           {contextMenu({
             data: node,
-            additional: { canCollapse, isCollapsed, onCollapse },
+            canCollapse,
+            isCollapsed,
+            onCollapse,
             onClose: () => setMenuVisible(false)
           })}
         </Html>
