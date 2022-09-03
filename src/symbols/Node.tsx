@@ -48,15 +48,7 @@ export const Node: FC<NodeProps> = ({
   onPointerOver,
   onPointerOut,
   onContextMenu,
-  renderNode = ({ theme, node, nodeSize, active, opacity, animated }) => (
-    <Sphere
-      id={id}
-      size={nodeSize}
-      color={active ? theme.node.activeFill : node.fill || theme.node.fill}
-      opacity={opacity}
-      animated={animated}
-    />
-  )
+  renderNode
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
@@ -249,5 +241,14 @@ export const Node: FC<NodeProps> = ({
 };
 
 Node.defaultProps = {
-  draggable: false
+  draggable: false,
+  renderNode: ({ id, theme, node, nodeSize, active, opacity, animated }) => (
+    <Sphere
+      id={id}
+      size={nodeSize}
+      color={active ? theme.node.activeFill : node.fill || theme.node.fill}
+      opacity={opacity}
+      animated={animated}
+    />
+  )
 };
