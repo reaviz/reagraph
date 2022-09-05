@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef } from 'react';
+import React, { Fragment, useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 

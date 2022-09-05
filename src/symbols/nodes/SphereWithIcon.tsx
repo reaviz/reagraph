@@ -2,23 +2,11 @@ import React, { FC, useMemo, useRef } from 'react';
 import { useFrame, useThree, useLoader } from '@react-three/fiber';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig } from '../../utils/animation';
-import {
-  Color,
-  ColorRepresentation,
-  DoubleSide,
-  Group,
-  TextureLoader
-} from 'three';
+import { Color, DoubleSide, Group, TextureLoader } from 'three';
+import { NodeRendererProps } from '../../types';
 
-export interface SphereWithIconProps {
-  size?: number;
-  color?: ColorRepresentation;
-  opacity?: number;
-  id: string;
-  animated?: boolean;
-  onClick?: () => void;
-  onContextMenu?: () => void;
-  iconSrc: string;
+export interface SphereWithIconProps extends NodeRendererProps {
+  image: string;
 }
 
 export const SphereWithIcon: FC<SphereWithIconProps> = ({
@@ -27,8 +15,7 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
   size,
   opacity,
   animated,
-  iconSrc,
-  onClick
+  image
 }) => {
   const { scale, nodeOpacity } = useSpring({
     from: {
@@ -46,7 +33,7 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
     }
   });
   const normalizedColor = useMemo(() => new Color(color), [color]);
-  const iconTexture = useLoader(TextureLoader, iconSrc);
+  const iconTexture = useLoader(TextureLoader, image);
   const meshRef = useRef<Group>();
   const { camera } = useThree();
   useFrame(() => {
@@ -55,7 +42,7 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
 
   return (
     <a.group ref={meshRef}>
-      <a.mesh userData={{ id }} scale={scale as any} onClick={onClick}>
+      <a.mesh userData={{ id }} scale={scale as any}>
         <sphereBufferGeometry
           attach="geometry"
           args={[1, 25, 25, Math.PI, Math.PI]}

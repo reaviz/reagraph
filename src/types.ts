@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Theme } from 'utils';
+import { ColorRepresentation } from 'three';
 
 export interface GraphElementBaseAttributes<T = any> {
   /**
@@ -219,12 +219,41 @@ export interface ContextMenuEvent extends NodeContextMenuProps {
   onClose: () => void;
 }
 
-export type NodeRenderProp = (args: {
-  theme: Theme;
+export interface NodeRendererProps {
+  /**
+   * Color of the node. Handles selected/etc.
+   */
+  color: ColorRepresentation;
+
+  /**
+   * The internal node model.
+   */
   node: InternalGraphNode;
-  nodeSize: number;
+
+  /**
+   * Size of the node.
+   */
+  size: number;
+
+  /**
+   * Whether the node is active or not.
+   */
   active: boolean;
+
+  /**
+   * Opacity of the node. Mainly used for selection.
+   */
   opacity: number;
+
+  /**
+   * Animation of the node.
+   */
   animated: boolean;
+
+  /**
+   * ID of the node.
+   */
   id: string;
-}) => ReactNode;
+}
+
+export type NodeRenderer = (args: NodeRendererProps) => ReactNode;

@@ -15,7 +15,7 @@ import {
   GraphNode,
   InternalGraphEdge,
   InternalGraphNode,
-  NodeRenderProp
+  NodeRenderer
 } from './types';
 import { SizingType } from './sizing';
 import { Edge, EdgeArrowPosition, EdgeLabelPosition, Node } from './symbols';
@@ -179,7 +179,7 @@ export interface GraphSceneProps {
   /**
    * Render a custom node
    */
-  renderNode?: NodeRenderProp;
+  renderNode?: NodeRenderer;
 }
 
 export interface GraphSceneRef {

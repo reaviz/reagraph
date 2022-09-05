@@ -47,6 +47,7 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 - Highlight and Selection Hook
 - Dragging Nodes
 - Expand Collapse Nodes
+- Customizable Nodes
 
 with the following built in layouts:
 

@@ -2,20 +2,21 @@ import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
 import { Group } from 'three';
 import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
-import { Sphere } from './Sphere';
+import { Sphere } from './nodes/Sphere';
 import { Label } from './Label';
-import { Icon } from './Icon';
 import { Theme } from '../themes';
 import { Ring } from './Ring';
 import {
   NodeContextMenuProps,
   ContextMenuEvent,
-  InternalGraphNode
+  InternalGraphNode,
+  NodeRenderer
 } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { useDrag } from '../utils/useDrag';
+import { Icon } from './nodes';
 
 export interface NodeProps {
   id: string;
@@ -33,6 +34,7 @@ export interface NodeProps {
     node?: InternalGraphNode,
     props?: NodeContextMenuProps
   ) => void;
+  renderNode?: NodeRenderer;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -46,7 +48,8 @@ export const Node: FC<NodeProps> = ({
   onClick,
   onPointerOver,
   onPointerOut,
-  onContextMenu
+  onContextMenu,
+  renderNode
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
@@ -57,23 +60,20 @@ export const Node: FC<NodeProps> = ({
     collapsedNodeIds,
     setDraggingId,
     setNodePosition,
-    setCollapsedNodeIds,
-    panning
+    setCollapsedNodeIds
   ] = useStore(state => [
     state.graph,
     state.draggingId,
     state.collapsedNodeIds,
     state.setDraggingId,
     state.setNodePosition,
-    state.setCollapsedNodeIds,
-    state.panning
+    state.setCollapsedNodeIds
   ]);
 
   const isDragging = draggingId === id;
   const {
     position,
     label,
-    icon,
     size: nodeSize = 7,
     fill,
     labelVisible = true
@@ -165,6 +165,11 @@ export const Node: FC<NodeProps> = ({
   );
   useCursor(isDragging, 'grabbing');
 
+  const combinedActiveState = isSelected || active || isDragging || isActive;
+  const color = combinedActiveState
+    ? theme.node.activeFill
+    : node.fill || theme.node.fill;
+
   return (
     <a.group
       ref={group}
@@ -179,54 +184,40 @@ export const Node: FC<NodeProps> = ({
         setActive(false);
         onPointerOut?.(node);
       }}
+      onClick={() => {
+        if (!disabled) {
+          onClick?.(node);
+        }
+      }}
+      onContextMenu={() => {
+        if (!disabled) {
+          setMenuVisible(true);
+          onContextMenu?.(node);
+        }
+      }}
       {...(bind() as any)}
     >
-      {icon ? (
+      {node.icon ? (
         <Icon
           id={id}
-          image={icon}
+          image={node.icon || ''}
           size={nodeSize + 8}
           opacity={selectionOpacity}
           animated={animated}
-          onClick={() => {
-            if (!disabled && !isDragging) {
-              requestAnimationFrame(() => {
-                onClick?.(node);
-              });
-            }
-          }}
-          onContextMenu={() => {
-            if (!disabled) {
-              setMenuVisible(true);
-              onContextMenu?.(node, { canCollapse, isCollapsed, onCollapse });
-            }
-          }}
+          color={color}
+          node={node}
+          active={combinedActiveState}
         />
       ) : (
-        <Sphere
-          id={id}
-          size={nodeSize}
-          color={
-            isSelected || active || isDragging || isActive
-              ? theme.node.activeFill
-              : fill || theme.node.fill
-          }
-          opacity={selectionOpacity}
-          animated={animated}
-          onClick={() => {
-            if (!disabled && !isDragging) {
-              requestAnimationFrame(() => {
-                onClick?.(node);
-              });
-            }
-          }}
-          onContextMenu={() => {
-            if (!disabled) {
-              setMenuVisible(true);
-              onContextMenu?.(node, { canCollapse, isCollapsed, onCollapse });
-            }
-          }}
-        />
+        renderNode({
+          id,
+          color,
+          size: nodeSize,
+          active: combinedActiveState,
+          opacity: selectionOpacity,
+          animated,
+          node
+        })
       )}
       <Ring
         opacity={isSelected ? 0.5 : 0}
@@ -266,5 +257,6 @@ export const Node: FC<NodeProps> = ({
 };
 
 Node.defaultProps = {
-  draggable: false
+  draggable: false,
+  renderNode: props => <Sphere {...props} />
 };

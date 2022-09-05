@@ -1,17 +1,10 @@
 import React, { FC, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { animationConfig } from '../../utils/animation';
-import { Color, ColorRepresentation, DoubleSide } from 'three';
+import { Color, DoubleSide } from 'three';
+import { NodeRendererProps } from '../../types';
 
-export interface SphereProps {
-  size?: number;
-  color?: ColorRepresentation;
-  opacity?: number;
-  id: string;
-  animated?: boolean;
-}
-
-export const Sphere: FC<SphereProps> = ({
+export const Sphere: FC<NodeRendererProps> = ({
   color,
   id,
   size,

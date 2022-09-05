@@ -2,26 +2,13 @@ import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
 import { TextureLoader, LinearFilter, DoubleSide } from 'three';
 import { animationConfig } from '../../utils';
+import { NodeRendererProps } from '../../types';
 
-export interface IconProps {
+export interface IconProps extends NodeRendererProps {
   image: string;
-  opacity?: number;
-  id: string;
-  animated?: boolean;
-  size?: number;
-  onClick?: () => void;
-  onContextMenu?: () => void;
 }
 
-export const Icon: FC<IconProps> = ({
-  image,
-  id,
-  size,
-  opacity,
-  animated,
-  onClick,
-  onContextMenu
-}) => {
+export const Icon: FC<IconProps> = ({ image, id, size, opacity, animated }) => {
   const texture = useMemo(() => new TextureLoader().load(image), [image]);
 
   const { scale, spriteOpacity } = useSpring({
@@ -40,18 +27,7 @@ export const Icon: FC<IconProps> = ({
   });
 
   return (
-    <a.sprite
-      userData={{ id, type: 'node' }}
-      scale={scale as any}
-      onClick={onClick}
-      onPointerDown={event => {
-        // context menu controls
-        if (event.nativeEvent.buttons === 2) {
-          event.stopPropagation();
-          onContextMenu?.();
-        }
-      }}
-    >
+    <a.sprite userData={{ id, type: 'node' }} scale={scale as any}>
       <a.spriteMaterial
         attach="material"
         opacity={spriteOpacity}

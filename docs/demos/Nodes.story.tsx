@@ -19,15 +19,6 @@ export const Icons = () => (
   <GraphCanvas
     nodes={iconNodes}
     edges={simpleEdges}
-    renderNode={({ id, node, animated, nodeSize, opacity }) => (
-      <Icon
-        id={id}
-        image={node.icon || ''}
-        size={nodeSize + 8}
-        opacity={opacity}
-        animated={animated}
-      />
-    )}
   />
 );
 
@@ -36,15 +27,13 @@ export const Custom3DNode = () => (
     nodes={simpleNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({ node, active, nodeSize, theme, opacity }) => (
+    renderNode={({ size, color, opacity }) => (
       <group>
         <mesh>
-          <torusKnotGeometry attach="geometry" args={[nodeSize, 1.25, 50, 8]} />
+          <torusKnotGeometry attach="geometry" args={[size, 1.25, 50, 8]} />
           <meshBasicMaterial
             attach="material"
-            color={
-              active ? theme.node.activeFill : node.fill || theme.node.fill
-            }
+            color={color}
             opacity={opacity}
             transparent
           />
@@ -59,14 +48,11 @@ export const SphereWithIconNode = () => (
     nodes={iconNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({ id, node, active, nodeSize, theme, opacity, animated }) => (
+    renderNode={({  node, ...rest }) => (
       <SphereWithIcon
-        id={id}
-        size={nodeSize}
-        color={active ? theme.node.activeFill : node.fill || theme.node.fill}
-        opacity={opacity}
-        animated={animated}
-        iconSrc={node.icon || ''}
+        {...rest}
+        node={node}
+        image={node.icon || ''}
       />
     )}
   />
