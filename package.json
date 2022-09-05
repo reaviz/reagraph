@@ -1,6 +1,6 @@
 {
   "name": "reagraph",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
     "build": "rollup -c",

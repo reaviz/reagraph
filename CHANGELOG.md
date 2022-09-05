@@ -1,3 +1,6 @@
+# 4.3.0 - 9/17/22
+- [feature] Add new API to customize nodes: `renderNode` #58
+
 # 4.2.0 - 9/17/22
 - [feature] add collapse / expand for nodes #69
 
