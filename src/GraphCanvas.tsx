@@ -13,11 +13,11 @@ import {
   CameraControls,
   CameraControlsRef
 } from './CameraControls';
-import { Theme, lightTheme } from './utils';
+import { Theme, lightTheme } from './themes';
 import { createStore, Provider } from './store';
 import { Graph } from 'ngraph.graph';
-import css from './GraphCanvas.module.css';
 import { Lasso, LassoType } from './selection';
+import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**

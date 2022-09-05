@@ -9,3 +9,4 @@ export * from './selection';
 export * from './RadialMenu';
 export * from './CameraControls';
 export * from './useGraph';
+export * from './themes';

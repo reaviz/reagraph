@@ -20,7 +20,7 @@ import { SizingType } from './sizing';
 import { Edge, EdgeArrowPosition, EdgeLabelPosition, Node } from './symbols';
 import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
-import { Theme } from './utils';
+import { Theme } from './themes';
 import { useStore } from './store';
 import { Graph } from 'ngraph.graph';
 

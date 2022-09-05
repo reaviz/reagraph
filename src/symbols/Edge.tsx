@@ -9,7 +9,7 @@ import {
   getPoints
 } from '../utils';
 import { Line } from './Line';
-import { Theme } from '../utils';
+import { Theme } from '../themes';
 import { useStore } from '../store';
 import { Euler } from 'three';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';

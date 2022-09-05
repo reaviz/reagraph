@@ -61,6 +61,10 @@ CustomTheme.args = {
       fill: '#54616D',
       activeFill: '#1DE9AC'
     },
+    lasso: {
+      border: '1px solid #55aaff',
+      background: 'rgba(75, 160, 255, 0.1)'
+    },
     edge: {
       fill: '#54616D',
       activeFill: '#1DE9AC',

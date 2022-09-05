@@ -5,7 +5,8 @@ import { BufferGeometry, Group, Material, Mesh, Scene, Vector2 } from 'three';
 import shallow from 'zustand/shallow';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
-import { Theme } from '../utils/themes';
+import { Theme } from '../themes';
+import { createElement, prepareRay } from './utils';
 
 export type LassoType = 'none' | 'all' | 'node' | 'edge';
 
@@ -16,21 +17,6 @@ export interface LassoProps {
   type?: LassoType;
   onLasso?: (selections: string[]) => void;
   onLassoEnd?: (selections: string[]) => void;
-}
-
-function prepareRay(event, vec, size) {
-  const { offsetX, offsetY } = event;
-  const { width, height } = size;
-  vec.set((offsetX / width) * 2 - 1, -(offsetY / height) * 2 + 1);
-}
-
-function createElement(theme: Theme) {
-  const element = document.createElement('div');
-  element.style.pointerEvents = 'none';
-  element.style.border = theme.lasso.border;
-  element.style.backgroundColor = theme.lasso.background;
-  element.style.position = 'fixed';
-  return element;
 }
 
 export const Lasso: FC<LassoProps> = ({

@@ -5,7 +5,7 @@ import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './Sphere';
 import { Label } from './Label';
 import { Icon } from './Icon';
-import { Theme } from '../utils';
+import { Theme } from '../themes';
 import { Ring } from './Ring';
 import {
   NodeContextMenuProps,
