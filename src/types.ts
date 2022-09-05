@@ -1,3 +1,6 @@
+import { ReactNode } from 'react';
+import { Theme } from 'utils';
+
 export interface GraphElementBaseAttributes<T = any> {
   /**
    * ID of the element.
@@ -215,3 +218,13 @@ export interface ContextMenuEvent extends NodeContextMenuProps {
    */
   onClose: () => void;
 }
+
+export type NodeRenderProp = (args: {
+  theme: Theme;
+  node: InternalGraphNode;
+  nodeSize: number;
+  active: boolean;
+  opacity: number;
+  animated: boolean;
+  id: string;
+}) => ReactNode;

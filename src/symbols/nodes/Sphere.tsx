@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { animationConfig } from '../utils/animation';
+import { animationConfig } from '../../utils/animation';
 import { Color, ColorRepresentation, DoubleSide } from 'three';
 
 export interface SphereProps {
@@ -9,8 +9,6 @@ export interface SphereProps {
   opacity?: number;
   id: string;
   animated?: boolean;
-  onClick?: () => void;
-  onContextMenu?: () => void;
 }
 
 export const Sphere: FC<SphereProps> = ({
@@ -18,9 +16,7 @@ export const Sphere: FC<SphereProps> = ({
   id,
   size,
   opacity,
-  animated,
-  onClick,
-  onContextMenu
+  animated
 }) => {
   const { scale, nodeOpacity } = useSpring({
     from: {
@@ -40,18 +36,7 @@ export const Sphere: FC<SphereProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
   return (
-    <a.mesh
-      userData={{ id, type: 'node' }}
-      scale={scale as any}
-      onClick={onClick}
-      onPointerDown={event => {
-        // context menu controls
-        if (event.nativeEvent.buttons === 2) {
-          event.stopPropagation();
-          onContextMenu?.();
-        }
-      }}
-    >
+    <a.mesh userData={{ id }} scale={scale as any}>
       <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
       <a.meshPhongMaterial
         attach="material"
