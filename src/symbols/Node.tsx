@@ -197,18 +197,7 @@ export const Node: FC<NodeProps> = ({
       }}
       {...(bind() as any)}
     >
-      {node.icon ? (
-        <Icon
-          id={id}
-          image={node.icon || ''}
-          size={nodeSize + 8}
-          opacity={selectionOpacity}
-          animated={animated}
-          color={color}
-          node={node}
-          active={combinedActiveState}
-        />
-      ) : (
+      {renderNode ? (
         renderNode({
           id,
           color,
@@ -218,6 +207,31 @@ export const Node: FC<NodeProps> = ({
           animated,
           node
         })
+      ) : (
+        <>
+          {node.icon ? (
+            <Icon
+              id={id}
+              image={node.icon || ''}
+              size={nodeSize + 8}
+              opacity={selectionOpacity}
+              animated={animated}
+              color={color}
+              node={node}
+              active={combinedActiveState}
+            />
+          ) : (
+            <Sphere
+              id={id}
+              size={nodeSize}
+              opacity={selectionOpacity}
+              animated={animated}
+              color={color}
+              node={node}
+              active={combinedActiveState}
+            />
+          )}
+        </>
       )}
       <Ring
         opacity={isSelected ? 0.5 : 0}
@@ -257,6 +271,5 @@ export const Node: FC<NodeProps> = ({
 };
 
 Node.defaultProps = {
-  draggable: false,
-  renderNode: props => <Sphere {...props} />
+  draggable: false
 };
