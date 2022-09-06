@@ -40,6 +40,7 @@ export const getUpdatedCollapsedState = ({
     ...e,
     hidden: false
   }));
+
   let updatedNodes = nodes.map(n => ({
     ...n,
     hidden: false
@@ -73,6 +74,7 @@ export const getUpdatedCollapsedState = ({
         hidden: false
       };
     });
+
     updatedNodes = updatedNodes.map(n => {
       if (
         !outboundEdgeNodeIds.includes(n.id) &&
@@ -89,6 +91,7 @@ export const getUpdatedCollapsedState = ({
       const inboundNodeLinks = [...curNodeLinks].filter(
         l => l.data.target === n.id
       );
+
       if (inboundNodeLinks.length > 1 && !curHiddenNodeIds.includes(n.id)) {
         // If all inbound links are hidden, hide this node as well
         const inboundNodeLinkIds = inboundNodeLinks.map(l => l.data.id);

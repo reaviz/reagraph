@@ -156,6 +156,7 @@ export const useGraph = ({
         fromId: undefined,
         toId: undefined
       }));
+
       buildGraph(graph, stateNodes, graphEdges);
       updateLayout();
     }

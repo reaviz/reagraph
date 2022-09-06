@@ -60,22 +60,24 @@ export const Node: FC<NodeProps> = ({
     collapsedNodeIds,
     setDraggingId,
     setNodePosition,
-    setCollapsedNodeIds
+    setCollapsedNodeIds,
+    isCollapsed
   ] = useStore(state => [
     state.graph,
     state.draggingId,
     state.collapsedNodeIds,
     state.setDraggingId,
     state.setNodePosition,
-    state.setCollapsedNodeIds
+    state.setCollapsedNodeIds,
+    state.collapsedNodeIds.includes(id)
   ]);
 
   const isDragging = draggingId === id;
   const {
     position,
     label,
+    hidden,
     size: nodeSize = 7,
-    fill,
     labelVisible = true
   } = node;
 
@@ -94,7 +96,7 @@ export const Node: FC<NodeProps> = ({
       ? theme.node.selectedOpacity
       : theme.node.inactiveOpacity
     : theme.node.opacity;
-  selectionOpacity = node.hidden ? 0 : selectionOpacity;
+  selectionOpacity = hidden ? 0 : selectionOpacity;
 
   const canCollapse = useMemo(() => {
     // If the node has outgoing edges, it can collapse via context menu
@@ -106,20 +108,15 @@ export const Node: FC<NodeProps> = ({
     return outboundLinks.length > 0;
   }, [graph, id]);
 
-  const isCollapsed = useMemo(
-    () => collapsedNodeIds.includes(id),
-    [collapsedNodeIds, id]
-  );
-
   const onCollapse = useCallback(() => {
     if (canCollapse) {
-      if (collapsedNodeIds.includes(id)) {
-        setCollapsedNodeIds([...collapsedNodeIds].filter(p => p !== id));
+      if (isCollapsed) {
+        setCollapsedNodeIds(collapsedNodeIds.filter(p => p !== id));
       } else {
         setCollapsedNodeIds([...collapsedNodeIds, id]);
       }
     }
-  }, [canCollapse, collapsedNodeIds, id, setCollapsedNodeIds]);
+  }, [canCollapse, collapsedNodeIds, id, isCollapsed, setCollapsedNodeIds]);
 
   const [{ nodePosition, labelPosition }] = useSpring(
     () => ({
@@ -158,9 +155,12 @@ export const Node: FC<NodeProps> = ({
     }
   });
 
-  useCursor(active && !draggingId && onClick !== undefined, 'pointer');
   useCursor(
-    active && draggable && !isDragging && onClick === undefined,
+    active && !draggingId && onClick !== undefined && !hidden,
+    'pointer'
+  );
+  useCursor(
+    active && draggable && !isDragging && onClick === undefined && !hidden,
     'grab'
   );
   useCursor(isDragging, 'grabbing');
@@ -173,24 +173,29 @@ export const Node: FC<NodeProps> = ({
   return (
     <a.group
       ref={group}
+      opacity={node.hidden ? 0 : 1}
       position={nodePosition as any}
       onPointerOver={() => {
-        if (!disabled && !isDragging) {
-          setActive(true);
+        if (!hidden) {
+          if (!disabled && !isDragging) {
+            setActive(true);
+          }
+          onPointerOver?.(node);
         }
-        onPointerOver?.(node);
       }}
       onPointerOut={() => {
-        setActive(false);
-        onPointerOut?.(node);
+        if (!hidden) {
+          setActive(false);
+          onPointerOut?.(node);
+        }
       }}
       onClick={() => {
-        if (!disabled) {
+        if (!disabled && !hidden) {
           onClick?.(node);
         }
       }}
       onContextMenu={() => {
-        if (!disabled) {
+        if (!disabled && !hidden) {
           setMenuVisible(true);
           onContextMenu?.(node);
         }
