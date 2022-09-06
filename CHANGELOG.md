@@ -1,10 +1,13 @@
-# 4.3.0 - 9/17/22
+# 4.3.1 - 9/6/22
+- [fix] fix nodes/edges still clickable when hidden
+
+# 4.3.0 - 9/5/22
 - [feature] Add new API to customize nodes: `renderNode` #58
 
-# 4.2.0 - 9/17/22
+# 4.2.0 - 8/17/22
 - [feature] add collapse / expand for nodes #69
 
-# 4.1.0 - 9/17/22
+# 4.1.0 - 8/17/22
 - [feature] add `pathHoverType` to `useSelection` which allows for custom highlighting
 - [fix] decreased precision of animation to 0.1 from 0.0001 for performance
 
