@@ -14,6 +14,7 @@ import { useStore } from '../store';
 import { Euler } from 'three';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
+import { useHoverIntent } from '../utils/useHoverIntent';
 
 const LABEL_FONT_SIZE = 6;
 
@@ -139,6 +140,18 @@ export const Edge: FC<EdgeProps> = ({
     'pointer'
   );
 
+  const { pointerOver, pointerOut } = useHoverIntent({
+    disabled: hidden || disabled,
+    onPointerOver: () => {
+      setActive(true);
+      onPointerOver?.(edge);
+    },
+    onPointerOut: () => {
+      setActive(false);
+      onPointerOut?.(edge);
+    }
+  });
+
   return (
     <group>
       <Line
@@ -147,7 +160,6 @@ export const Edge: FC<EdgeProps> = ({
         points={points}
         size={size}
         animated={animated}
-        onActive={setActive}
         color={
           isSelected || active || isActive
             ? theme.edge.activeFill
@@ -158,16 +170,8 @@ export const Edge: FC<EdgeProps> = ({
             onClick?.(edge);
           }
         }}
-        onPointerOut={() => {
-          if (!hidden) {
-            onPointerOut?.(edge);
-          }
-        }}
-        onPointerOver={() => {
-          if (!hidden) {
-            onPointerOver?.(edge);
-          }
-        }}
+        onPointerOver={pointerOver}
+        onPointerOut={pointerOut}
         onContextMenu={() => {
           if (!disabled && !hidden) {
             setMenuVisible(true);

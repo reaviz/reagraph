@@ -17,6 +17,7 @@ import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { useDrag } from '../utils/useDrag';
 import { Icon } from './nodes';
+import { useHoverIntent } from '../utils/useHoverIntent';
 
 export interface NodeProps {
   id: string;
@@ -170,25 +171,25 @@ export const Node: FC<NodeProps> = ({
     ? theme.node.activeFill
     : node.fill || theme.node.fill;
 
+  const { pointerOver, pointerOut } = useHoverIntent({
+    disabled: hidden || disabled || isDragging,
+    onPointerOver: () => {
+      setActive(true);
+      onPointerOver?.(node);
+    },
+    onPointerOut: () => {
+      setActive(false);
+      onPointerOut?.(node);
+    }
+  });
+
   return (
     <a.group
       ref={group}
       opacity={node.hidden ? 0 : 1}
       position={nodePosition as any}
-      onPointerOver={() => {
-        if (!hidden) {
-          if (!disabled && !isDragging) {
-            setActive(true);
-          }
-          onPointerOver?.(node);
-        }
-      }}
-      onPointerOut={() => {
-        if (!hidden) {
-          setActive(false);
-          onPointerOut?.(node);
-        }
-      }}
+      onPointerOver={pointerOver}
+      onPointerOut={pointerOut}
       onClick={() => {
         if (!disabled && !hidden) {
           onClick?.(node);

@@ -9,6 +9,7 @@ import {
   Color
 } from 'three';
 import { useStore } from '../store';
+import { ThreeEvent } from '@react-three/fiber';
 
 export interface LineProps {
   color?: ColorRepresentation;
@@ -18,10 +19,9 @@ export interface LineProps {
   opacity?: number;
   points: EdgeVectors3;
   onClick?: () => void;
-  onActive?: (state: boolean) => void;
   onContextMenu?: () => void;
-  onPointerOver?: () => void;
-  onPointerOut?: () => void;
+  onPointerOver?: (event: ThreeEvent<PointerEvent>) => void;
+  onPointerOut?: (event: ThreeEvent<PointerEvent>) => void;
 }
 
 export const Line: FC<LineProps> = ({
@@ -32,7 +32,6 @@ export const Line: FC<LineProps> = ({
   points,
   animated,
   onContextMenu,
-  onActive,
   onClick,
   onPointerOver,
   onPointerOut
@@ -91,14 +90,8 @@ export const Line: FC<LineProps> = ({
   return (
     <mesh
       userData={{ id, type: 'edge' }}
-      onPointerOver={() => {
-        onActive(true);
-        onPointerOver?.();
-      }}
-      onPointerOut={() => {
-        onActive(false);
-        onPointerOut?.();
-      }}
+      onPointerOver={onPointerOver}
+      onPointerOut={onPointerOut}
       onClick={onClick}
       onPointerDown={event => {
         // context menu controls
