@@ -1,3 +1,11 @@
+# 4.4.0 - 9/7/22
+- [feature] nodes and edges use hover intent for activation events
+- [feature] add ability to override layouts
+- [feature] expose `nodeLevelRatio` in overrides
+- [feature] expose collapse props on node click event
+- [fix] fix context menu event not passing collapse props
+- [fix] tweak tree 2d/radial 2d for much better layouts
+
 # 4.3.1 - 9/6/22
 - [fix] fix nodes/edges still clickable when hidden
 
