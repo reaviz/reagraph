@@ -134,6 +134,16 @@ export interface GraphSceneProps {
   draggable?: boolean;
 
   /**
+   * Render a custom node
+   */
+  renderNode?: NodeRenderer;
+
+  /**
+   * Advanced overrides for the layout.
+   */
+  layoutOverrides?: LayoutOverrides;
+
+  /**
    * When a node was clicked.
    */
   onNodeClick?: (node: InternalGraphNode) => void;
@@ -175,16 +185,6 @@ export interface GraphSceneProps {
    * When edge lost pointer over.
    */
   onEdgePointerOut?: (edge: InternalGraphEdge) => void;
-
-  /**
-   * Render a custom node
-   */
-  renderNode?: NodeRenderer;
-
-  /**
-   * Advanced overrides for the layout.
-   */
-  layoutOverrides?: LayoutOverrides;
 }
 
 export interface GraphSceneRef {
