@@ -17,6 +17,24 @@ reagraph has the following layout types:
 - Hierarchical Top Down 2D
 - Hierarchical Left Right 2D
 
+## Layout Overrides
+You can override the default layout options for each respective layout using
+the `layoutOverrides` property on the `GraphCanvas` component. Below
+are the respective interfaces for the different options.
+
+```ts
+export interface ForceDirectedLayoutInputs {
+  linkDistance?: number;
+  nodeStrength?: number;
+  clusterPadding?: number;
+  clusterStrength?: number;
+}
+
+export interface CircularLayoutInputs {
+  radius: number;
+}
+```
+
 ## Layout Types
 Below are examples of each layout type and corresponding descriptions.
 

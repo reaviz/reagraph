@@ -7,7 +7,7 @@ import React, {
   useMemo
 } from 'react';
 import { useGraph } from './useGraph';
-import { LayoutTypes } from './layout';
+import { LayoutOverrides, LayoutTypes } from './layout';
 import {
   NodeContextMenuProps,
   ContextMenuEvent,
@@ -180,6 +180,11 @@ export interface GraphSceneProps {
    * Render a custom node
    */
   renderNode?: NodeRenderer;
+
+  /**
+   * Advanced overrides for the layout.
+   */
+  layoutOverrides?: LayoutOverrides;
 }
 
 export interface GraphSceneRef {

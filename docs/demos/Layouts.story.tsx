@@ -19,3 +19,15 @@ export const Recommender = () => {
     />
   );
 };
+
+export const Overrides = () => (
+  <GraphCanvas
+    layoutType="forceDirected2d"
+    layoutOverrides={{
+      nodeStrength: -50,
+      linkDistance: 500
+    }}
+    nodes={complexNodes}
+    edges={complexEdges}
+  />
+);

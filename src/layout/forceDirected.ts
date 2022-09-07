@@ -12,16 +12,16 @@ import { forceRadial, DagMode } from './forceUtils';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
 
-export interface ForceDirectedD3Inputs extends LayoutFactoryProps {
+export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   dimensions?: number;
   mode?: DagMode;
   linkDistance?: number;
   nodeStrength?: number;
+  clusterPadding?: number;
+  clusterStrength?: number;
 }
 
 const TICK_COUNT = 100;
-const CLUSTER_PADDING = 10;
-const CLUSTER_STRENGTH = 0.5;
 
 export function forceDirected({
   graph,
@@ -29,9 +29,11 @@ export function forceDirected({
   dimensions = 2,
   nodeStrength = -250,
   linkDistance = 50,
+  clusterPadding = 10,
+  clusterStrength = 0.5,
   drags,
   clusterAttribute
-}: ForceDirectedD3Inputs): LayoutStrategy {
+}: ForceDirectedLayoutInputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
   const cluster = new Map<string, InternalGraphNode>();
@@ -66,7 +68,7 @@ export function forceDirected({
     // Handles nodes not overlapping each other ( most relevant in clustering )
     .force(
       'collide',
-      forceCollide(d => d.radius + CLUSTER_PADDING)
+      forceCollide(d => d.radius + clusterPadding)
     )
     .force('dagRadial', forceRadial(nodes, links, mode as DagMode))
     .stop();
@@ -99,7 +101,7 @@ export function forceDirected({
             return centerNode;
           }
         })
-        .strength(CLUSTER_STRENGTH)
+        .strength(clusterStrength)
     );
 
   // Run the force on the links

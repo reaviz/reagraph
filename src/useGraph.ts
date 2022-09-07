@@ -1,6 +1,11 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { SizingType } from './sizing';
-import { LayoutTypes, layoutProvider, LayoutStrategy } from './layout';
+import {
+  LayoutTypes,
+  layoutProvider,
+  LayoutStrategy,
+  LayoutOverrides
+} from './layout';
 import { LabelVisibilityType } from './utils/visibility';
 import { tick } from './layout/layoutUtils';
 import { GraphEdge, GraphNode } from './types';
@@ -21,6 +26,7 @@ export interface GraphInputs {
   defaultNodeSize?: number;
   minNodeSize?: number;
   maxNodeSize?: number;
+  layoutOverrides?: LayoutOverrides;
 }
 
 export const useGraph = ({
@@ -36,7 +42,8 @@ export const useGraph = ({
   collapsedNodeIds,
   defaultNodeSize,
   maxNodeSize,
-  minNodeSize
+  minNodeSize,
+  layoutOverrides
 }: GraphInputs) => {
   const [
     graph,
@@ -79,6 +86,7 @@ export const useGraph = ({
       layout.current =
         curLayout ||
         layoutProvider({
+          ...layoutOverrides,
           type: layoutType,
           graph,
           drags: dragRef.current,
@@ -102,15 +110,16 @@ export const useGraph = ({
       });
     },
     [
-      defaultNodeSize,
-      maxNodeSize,
-      minNodeSize,
+      layoutOverrides,
       layoutType,
       graph,
-      sizingType,
       clusterAttribute,
+      sizingType,
       labelType,
       sizingAttribute,
+      maxNodeSize,
+      minNodeSize,
+      defaultNodeSize,
       setEdges,
       setNodes
     ]
