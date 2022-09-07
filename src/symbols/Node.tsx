@@ -1,4 +1,11 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  FC,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { Group } from 'three';
 import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
@@ -10,7 +17,8 @@ import {
   NodeContextMenuProps,
   ContextMenuEvent,
   InternalGraphNode,
-  NodeRenderer
+  NodeRenderer,
+  CollapseProps
 } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useCameraControls } from '../CameraControls';
@@ -27,10 +35,10 @@ export interface NodeProps {
   animated?: boolean;
   draggable?: boolean;
   labelFontUrl?: string;
-  contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
+  contextMenu?: (event: ContextMenuEvent) => ReactNode;
   onPointerOver?: (node: InternalGraphNode) => void;
   onPointerOut?: (node: InternalGraphNode) => void;
-  onClick?: (node: InternalGraphNode) => void;
+  onClick?: (node: InternalGraphNode, props?: CollapseProps) => void;
   onContextMenu?: (
     node?: InternalGraphNode,
     props?: NodeContextMenuProps
@@ -192,13 +200,20 @@ export const Node: FC<NodeProps> = ({
       onPointerOut={pointerOut}
       onClick={() => {
         if (!disabled && !hidden) {
-          onClick?.(node);
+          onClick?.(node, {
+            canCollapse,
+            isCollapsed
+          });
         }
       }}
       onContextMenu={() => {
         if (!disabled && !hidden) {
           setMenuVisible(true);
-          onContextMenu?.(node);
+          onContextMenu?.(node, {
+            canCollapse,
+            isCollapsed,
+            onCollapse
+          });
         }
       }}
       {...(bind() as any)}

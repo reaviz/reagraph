@@ -15,7 +15,8 @@ import {
   GraphNode,
   InternalGraphEdge,
   InternalGraphNode,
-  NodeRenderer
+  NodeRenderer,
+  CollapseProps
 } from './types';
 import { SizingType } from './sizing';
 import { Edge, EdgeArrowPosition, EdgeLabelPosition, Node } from './symbols';
@@ -146,7 +147,7 @@ export interface GraphSceneProps {
   /**
    * When a node was clicked.
    */
-  onNodeClick?: (node: InternalGraphNode) => void;
+  onNodeClick?: (node: InternalGraphNode, props?: CollapseProps) => void;
 
   /**
    * When a node context menu happened.
