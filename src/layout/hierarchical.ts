@@ -2,9 +2,10 @@ import { InternalGraphEdge, InternalGraphNode } from 'types';
 import { DepthNode, getNodeDepth } from './depthUtils';
 import { LayoutStrategy } from './types';
 import { hierarchy, stratify, tree } from 'd3-hierarchy';
+import { Graph } from 'ngraph.graph';
 
-interface HierarchicalInputs {
-  graph: any;
+export interface HierarchicalLayoutInputs {
+  graph: Graph;
   mode?: 'td' | 'lr';
 }
 
@@ -24,17 +25,22 @@ const DIRECTION_MAP = {
 export function hierarchical({
   graph,
   mode = 'td'
-}: HierarchicalInputs): LayoutStrategy {
+}: HierarchicalLayoutInputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
   const links: InternalGraphEdge[] = [];
 
   // Map the graph nodes / edges to D3 object
   graph.forEachNode(n => {
-    nodes.push({ ...n });
+    nodes.push({ ...n } as any);
   });
 
   graph.forEachLink(l => {
-    links.push({ ...l, id: l.data.id, source: l.fromId, target: l.toId });
+    links.push({
+      ...l,
+      id: l.data.id,
+      source: l.fromId,
+      target: l.toId
+    } as any);
   });
 
   const { depths } = getNodeDepth(nodes, links);

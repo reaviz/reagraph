@@ -1,7 +1,7 @@
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
 import { circular2d, CircularLayoutInputs } from './circular2d';
-import { hierarchical } from './hierarchical';
+import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
 
 export type LayoutOverrides = Partial<
   Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'> | CircularLayoutInputs
@@ -98,9 +98,9 @@ export function layoutProvider({
       radius: radius || 300
     } as CircularLayoutInputs);
   } else if (type === 'hierarchicalTd') {
-    return hierarchical({ ...rest, mode: 'td' });
+    return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);
   } else if (type === 'hierarchicalLr') {
-    return hierarchical({ ...rest, mode: 'lr' });
+    return hierarchical({ ...rest, mode: 'lr' } as HierarchicalLayoutInputs);
   }
 
   throw new Error(`Layout ${type} not found.`);
