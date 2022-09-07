@@ -1,9 +1,9 @@
-import React, { Fragment, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {
-  title: 'Demos/Selection/Highlight/Click',
+  title: 'Demos/Highlight/Click',
   component: GraphCanvas
 };
 

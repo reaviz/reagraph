@@ -3,7 +3,7 @@ import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {
-  title: 'Demos/Selection/Highlight/Hover',
+  title: 'Demos/Highlight/Hover',
   component: GraphCanvas
 };
 
