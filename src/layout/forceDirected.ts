@@ -19,12 +19,14 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   nodeStrength?: number;
   clusterPadding?: number;
   clusterStrength?: number;
+  nodeLevelRatio?: number;
 }
 
 const TICK_COUNT = 100;
 
 export function forceDirected({
   graph,
+  nodeLevelRatio = 2,
   mode = null,
   dimensions = 2,
   nodeStrength = -250,
@@ -70,7 +72,15 @@ export function forceDirected({
       'collide',
       forceCollide(d => d.radius + clusterPadding)
     )
-    .force('dagRadial', forceRadial(nodes, links, mode as DagMode))
+    .force(
+      'dagRadial',
+      forceRadial({
+        nodes,
+        links,
+        mode,
+        nodeLevelRatio
+      })
+    )
     .stop();
 
   // Initialize the simulation

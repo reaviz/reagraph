@@ -23,13 +23,19 @@ export function layoutProvider({
   ...rest
 }: LayoutFactoryProps | LayoutOverrides): LayoutStrategy {
   if (FORCE_LAYOUTS.includes(type)) {
-    const { nodeStrength, linkDistance, clusterPadding, clusterStrength } =
-      rest as ForceDirectedLayoutInputs;
+    const {
+      nodeStrength,
+      linkDistance,
+      clusterPadding,
+      clusterStrength,
+      nodeLevelRatio
+    } = rest as ForceDirectedLayoutInputs;
 
     if (type === 'forceDirected2d') {
       return forceDirected({
         ...rest,
         dimensions: 2,
+        nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
         linkDistance: linkDistance || 50,
         clusterPadding: clusterPadding || 10,
@@ -40,23 +46,26 @@ export function layoutProvider({
         ...rest,
         mode: 'td',
         dimensions: 2,
+        nodeLevelRatio: nodeLevelRatio || 5,
         nodeStrength: nodeStrength || -250,
-        linkDistance: linkDistance || 100
+        linkDistance: linkDistance || 50
       } as ForceDirectedLayoutInputs);
     } else if (type === 'treeLr2d') {
       return forceDirected({
         ...rest,
         mode: 'lr',
         dimensions: 2,
+        nodeLevelRatio: nodeLevelRatio || 5,
         nodeStrength: nodeStrength || -250,
-        linkDistance: linkDistance || 100
+        linkDistance: linkDistance || 50
       } as ForceDirectedLayoutInputs);
     } else if (type === 'radialOut2d') {
       return forceDirected({
         ...rest,
         mode: 'radialout',
         dimensions: 2,
-        nodeStrength: nodeStrength || -250,
+        nodeLevelRatio: nodeLevelRatio || 5,
+        nodeStrength: nodeStrength || -500,
         linkDistance: linkDistance || 100
       } as ForceDirectedLayoutInputs);
     } else if (type === 'treeTd3d') {
@@ -64,6 +73,7 @@ export function layoutProvider({
         ...rest,
         mode: 'td',
         dimensions: 3,
+        nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -500,
         linkDistance: linkDistance || 50
       } as ForceDirectedLayoutInputs);
@@ -72,6 +82,7 @@ export function layoutProvider({
         ...rest,
         mode: 'lr',
         dimensions: 3,
+        nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -500,
         linkDistance: linkDistance || 50
       } as ForceDirectedLayoutInputs);
@@ -80,6 +91,7 @@ export function layoutProvider({
         ...rest,
         mode: 'radialout',
         dimensions: 3,
+        nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -500,
         linkDistance: linkDistance || 100
       } as ForceDirectedLayoutInputs);
@@ -87,6 +99,7 @@ export function layoutProvider({
       return forceDirected({
         ...rest,
         dimensions: 3,
+        nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
         linkDistance: linkDistance || 50
       } as ForceDirectedLayoutInputs);
