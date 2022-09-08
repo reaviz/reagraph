@@ -304,9 +304,11 @@ export const useSelection = ({
       element.tagName !== 'TEXTAREA' &&
       !element.isContentEditable;
 
-    if (isSafe) {
+    const isMeta = event.metaKey || event.ctrlKey;
+
+    if (isSafe && isMeta) {
       event.preventDefault();
-      setMetaKeyDown(event.metaKey || event.ctrlKey);
+      setMetaKeyDown(true);
     }
   }, []);
 
