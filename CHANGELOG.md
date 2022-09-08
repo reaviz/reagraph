@@ -1,3 +1,6 @@
+# Master
+- [fix] fix graph eating global keyboard events not in inputs
+
 # 4.4.0 - 9/7/22
 - [feature] nodes and edges use hover intent for activation events
 - [feature] add ability to override layouts
