@@ -51,7 +51,7 @@ export const getUpdatedCollapsedState = ({
   const curHiddenNodeIds = [];
 
   for (const collapsedId of collapsedNodeIds) {
-    const nodeLinks = graph.getLinks(collapsedId);
+    const nodeLinks = graph.getLinks(collapsedId) || [];
     const outboundEdges = [...nodeLinks].filter(
       l => l.data.source === collapsedId
     );
@@ -87,7 +87,7 @@ export const getUpdatedCollapsedState = ({
       }
 
       // Determine if there is another edge going to this node
-      const curNodeLinks = graph.getLinks(n.id);
+      const curNodeLinks = graph.getLinks(n.id) || [];
       const inboundNodeLinks = [...curNodeLinks].filter(
         l => l.data.target === n.id
       );
@@ -116,8 +116,8 @@ export const getUpdatedCollapsedState = ({
   }
 
   return {
-    updatedEdges,
-    updatedNodes,
+    updatedEdges: updatedEdges.filter(e => !e.hidden),
+    updatedNodes: updatedNodes.filter(n => !n.hidden),
     collapsedNodeIds
   };
 };

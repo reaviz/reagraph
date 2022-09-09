@@ -93,7 +93,9 @@ export function transformGraph({
       };
 
       map.set(node.id, n);
-      nodes.push(n);
+      if (!hidden) {
+        nodes.push(n);
+      }
     }
   });
 
@@ -105,19 +107,21 @@ export function transformGraph({
       const { data, id, label, size, hidden, ...rest } = link.data;
       const labelVisible = checkVisibility('edge', link.size);
 
-      edges.push({
-        ...link,
-        id,
-        label,
-        labelVisible,
-        size,
-        hidden,
-        data: {
-          ...rest,
+      if (!hidden) {
+        edges.push({
+          ...link,
           id,
-          ...(data || {})
-        }
-      });
+          label,
+          labelVisible,
+          size,
+          hidden,
+          data: {
+            ...rest,
+            id,
+            ...(data || {})
+          }
+        });
+      }
     }
   });
 
