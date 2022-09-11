@@ -47,7 +47,6 @@ export const useGraph = ({
 }: GraphInputs) => {
   const [
     graph,
-    fullGraph,
     internalNodes,
     internalEdges,
     stateCollapsedNodeIds,
@@ -62,7 +61,6 @@ export const useGraph = ({
     setCollapsedNodeIds
   ] = useStore(state => [
     state.graph,
-    state.fullGraph,
     state.internalNodes,
     state.internalEdges,
     state.collapsedNodeIds,
@@ -153,7 +151,6 @@ export const useGraph = ({
   useEffect(() => {
     layoutMounted.current = false;
     buildGraph(graph, nodes, edges);
-    buildGraph(fullGraph, nodes, edges);
     updateLayout();
 
     // queue this in a frame so it only happens after the graph is built
@@ -164,7 +161,7 @@ export const useGraph = ({
     });
 
     // eslint-disable-next-line
-  }, [nodes, edges, graph, fullGraph]);
+  }, [nodes, edges, graph]);
 
   useEffect(() => {
     // Let's set the store collapsedNodeIds so its easier to access

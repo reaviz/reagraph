@@ -5,7 +5,6 @@ interface UpdateCollapsedStateInput {
   nodeIds: string[];
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
-  graph: Graph;
 }
 
 function getNestedParents(nodeId: string, nodes: InternalGraphNode[]) {
@@ -24,8 +23,7 @@ function getNestedParents(nodeId: string, nodes: InternalGraphNode[]) {
 export const getUpdatedCollapsedState = ({
   nodeIds,
   nodes,
-  edges,
-  graph
+  edges
 }: UpdateCollapsedStateInput) => {
   let collapsedNodeIds = [];
 
@@ -51,10 +49,7 @@ export const getUpdatedCollapsedState = ({
   const curHiddenNodeIds = [];
 
   for (const collapsedId of collapsedNodeIds) {
-    const nodeLinks = graph.getLinks(collapsedId) || [];
-    const outboundEdges = [...nodeLinks].filter(
-      l => l.data.source === collapsedId
-    );
+    const outboundEdges = edges.filter(l => l.data.source === collapsedId);
     const outboundEdgeIds = outboundEdges.map(l => l.data.id);
     const outboundEdgeNodeIds = outboundEdges.map(l => l.data.target);
 
@@ -87,10 +82,7 @@ export const getUpdatedCollapsedState = ({
       }
 
       // Determine if there is another edge going to this node
-      const curNodeLinks = graph.getLinks(n.id) || [];
-      const inboundNodeLinks = [...curNodeLinks].filter(
-        l => l.data.target === n.id
-      );
+      const inboundNodeLinks = edges.filter(l => l.data.target === n.id);
 
       if (inboundNodeLinks.length > 1 && !curHiddenNodeIds.includes(n.id)) {
         // If all inbound links are hidden, hide this node as well

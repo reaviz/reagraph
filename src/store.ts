@@ -16,7 +16,6 @@ export interface GraphState {
   internalNodes: InternalGraphNode[];
   internalEdges: InternalGraphEdge[];
   graph: Graph;
-  fullGraph: Graph;
   collapsedNodeIds?: string[];
   selections?: string[];
   actives?: string[];
@@ -51,7 +50,6 @@ export const createStore = () =>
     actives: [],
     drags: {},
     graph: ngraph(),
-    fullGraph: ngraph(),
     setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
@@ -83,8 +81,7 @@ export const createStore = () =>
           getUpdatedCollapsedState({
             nodeIds,
             nodes: [...state.nodes],
-            edges: [...state.edges],
-            graph: state.fullGraph
+            edges: [...state.edges]
           });
         return {
           ...state,
