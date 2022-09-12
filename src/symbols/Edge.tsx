@@ -56,7 +56,7 @@ export const Edge: FC<EdgeProps> = ({
   onPointerOut
 }) => {
   const edge = useStore(state => state.internalEdges.find(e => e.id === id));
-  const { toId, fromId, label, labelVisible = false, hidden, size = 1 } = edge;
+  const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
 
   const from = useStore(store =>
     store.internalNodes.find(node => node.id === fromId)
@@ -95,12 +95,11 @@ export const Edge: FC<EdgeProps> = ({
     isActive: state.actives?.includes(id)
   }));
 
-  let selectionOpacity = hasSelections
+  const selectionOpacity = hasSelections
     ? isSelected || isActive
       ? theme.edge.selectedOpacity
       : theme.edge.inactiveOpacity
     : theme.edge.opacity;
-  selectionOpacity = hidden ? 0 : selectionOpacity;
 
   const [{ labelPosition }] = useSpring(
     () => ({
@@ -139,13 +138,10 @@ export const Edge: FC<EdgeProps> = ({
     ]
   );
 
-  useCursor(
-    active && !draggingId && onClick !== undefined && !hidden,
-    'pointer'
-  );
+  useCursor(active && !draggingId && onClick !== undefined, 'pointer');
 
   const { pointerOver, pointerOut } = useHoverIntent({
-    disabled: hidden || disabled,
+    disabled,
     onPointerOver: () => {
       setActive(true);
       onPointerOver?.(edge);
@@ -170,14 +166,14 @@ export const Edge: FC<EdgeProps> = ({
             : theme.edge.fill
         }
         onClick={() => {
-          if (!disabled && !hidden) {
+          if (!disabled) {
             onClick?.(edge);
           }
         }}
         onPointerOver={pointerOver}
         onPointerOut={pointerOut}
         onContextMenu={() => {
-          if (!disabled && !hidden) {
+          if (!disabled) {
             setMenuVisible(true);
             onContextMenu?.(edge);
           }

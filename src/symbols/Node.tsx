@@ -82,13 +82,7 @@ export const Node: FC<NodeProps> = ({
   ]);
 
   const isDragging = draggingId === id;
-  const {
-    position,
-    label,
-    hidden,
-    size: nodeSize = 7,
-    labelVisible = true
-  } = node;
+  const { position, label, size: nodeSize = 7, labelVisible = true } = node;
 
   const { isSelected, hasSelections, isActive } = useStore(state => ({
     hasSelections: state.selections?.length,
@@ -100,12 +94,11 @@ export const Node: FC<NodeProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
-  let selectionOpacity = hasSelections
+  const selectionOpacity = hasSelections
     ? isSelected || active || isActive
       ? theme.node.selectedOpacity
       : theme.node.inactiveOpacity
     : theme.node.opacity;
-  selectionOpacity = hidden ? 0 : selectionOpacity;
 
   const canCollapse = useMemo(() => {
     // If the node has outgoing edges, it can collapse via context menu
@@ -161,12 +154,9 @@ export const Node: FC<NodeProps> = ({
     }
   });
 
+  useCursor(active && !draggingId && onClick !== undefined, 'pointer');
   useCursor(
-    active && !draggingId && onClick !== undefined && !hidden,
-    'pointer'
-  );
-  useCursor(
-    active && draggable && !isDragging && onClick === undefined && !hidden,
+    active && draggable && !isDragging && onClick === undefined,
     'grab'
   );
   useCursor(isDragging, 'grabbing');
@@ -177,7 +167,7 @@ export const Node: FC<NodeProps> = ({
     : node.fill || theme.node.fill;
 
   const { pointerOver, pointerOut } = useHoverIntent({
-    disabled: hidden || disabled || isDragging,
+    disabled: disabled || isDragging,
     onPointerOver: () => {
       setActive(true);
       onPointerOver?.(node);
@@ -191,12 +181,11 @@ export const Node: FC<NodeProps> = ({
   return (
     <a.group
       ref={group}
-      opacity={node.hidden ? 0 : 1}
       position={nodePosition as any}
       onPointerOver={pointerOver}
       onPointerOut={pointerOut}
       onClick={() => {
-        if (!disabled && !hidden) {
+        if (!disabled && !isDragging) {
           onClick?.(node, {
             canCollapse,
             isCollapsed
@@ -204,7 +193,7 @@ export const Node: FC<NodeProps> = ({
         }
       }}
       onContextMenu={() => {
-        if (!disabled && !hidden) {
+        if (!disabled) {
           setMenuVisible(true);
           onContextMenu?.(node, {
             canCollapse,
