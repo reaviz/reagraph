@@ -1,3 +1,6 @@
+# 4.4.4 - 9/12/22
+- [feature] add ability to pass classnames to radial menus
+
 # 4.4.3 - 9/12/22
 - [fix] fix initial graph layout not considering collapsed states
 
