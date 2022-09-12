@@ -1,5 +1,6 @@
-# Master
+# 4.4.1 - 9/12/22
 - [fix] fix graph eating global keyboard events not in inputs
+- [fix] fix graph nodes being hidden affecting perf/layout
 
 # 4.4.0 - 9/7/22
 - [feature] nodes and edges use hover intent for activation events
