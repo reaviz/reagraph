@@ -9,14 +9,16 @@ export default {
 
 export const Basic = () => {
   const [active, setActive] = useState<any>(null);
-  const [collapsed, setCollapsed] = useState<string[]>([]);
+  const [collapsed, setCollapsed] = useState<string[]>(['n-2']);
 
   return (
     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
-    <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 1, color: 'white' }}>
+    <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 10, color: 'white' }}>
+      <h3>Node Actions</h3>
       {active ? (
         <>
-          <h2>{active.node.id}</h2>
+          Selected: {active.node.id}
+          <br />
           <button
             style={{ display: 'block', width: '100%' }}
             onClick={() => {
@@ -43,6 +45,12 @@ export const Basic = () => {
           Click a node to see options
         </>
       )}
+      <h3>Collapsed Nodes</h3>
+      <code>
+        <pre>
+          {JSON.stringify(collapsed, null, 2)}
+        </pre>
+      </code>
     </div>
     <GraphCanvas
       collapsedNodeIds={collapsed}
