@@ -55,11 +55,15 @@ export const Edge: FC<EdgeProps> = ({
   onPointerOver,
   onPointerOut
 }) => {
-  const edge = useStore(state => state.edges.find(e => e.id === id));
+  const edge = useStore(state => state.internalEdges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, hidden, size = 1 } = edge;
 
-  const from = useStore(store => store.nodes.find(node => node.id === fromId));
-  const to = useStore(store => store.nodes.find(node => node.id === toId));
+  const from = useStore(store =>
+    store.internalNodes.find(node => node.id === fromId)
+  );
+  const to = useStore(store =>
+    store.internalNodes.find(node => node.id === toId)
+  );
   const draggingId = useStore(state => state.draggingId);
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);

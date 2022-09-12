@@ -229,8 +229,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
 
       const [graph, nodes, edges] = useStore(state => [
         state.graph,
-        state.nodes,
-        state.edges
+        state.internalNodes,
+        state.internalEdges
       ]);
 
       const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);

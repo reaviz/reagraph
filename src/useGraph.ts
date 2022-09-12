@@ -47,9 +47,11 @@ export const useGraph = ({
 }: GraphInputs) => {
   const [
     graph,
-    stateNodes,
-    stateEdges,
+    internalNodes,
+    internalEdges,
     stateCollapsedNodeIds,
+    setInternalEdges,
+    setInternalNodes,
     setEdges,
     setNodes,
     setSelections,
@@ -59,9 +61,11 @@ export const useGraph = ({
     setCollapsedNodeIds
   ] = useStore(state => [
     state.graph,
-    state.nodes,
-    state.edges,
+    state.internalNodes,
+    state.internalEdges,
     state.collapsedNodeIds,
+    state.setInternalEdges,
+    state.setInternalNodes,
     state.setEdges,
     state.setNodes,
     state.setSelections,
@@ -105,8 +109,13 @@ export const useGraph = ({
           defaultNodeSize
         });
 
-        setEdges(result.edges);
-        setNodes(result.nodes);
+        if (layoutMounted.current) {
+          setInternalEdges(result.edges);
+          setInternalNodes(result.nodes);
+        } else {
+          setEdges(result.edges);
+          setNodes(result.nodes);
+        }
       });
     },
     [
@@ -120,6 +129,9 @@ export const useGraph = ({
       maxNodeSize,
       minNodeSize,
       defaultNodeSize,
+      layoutMounted,
+      setInternalEdges,
+      setInternalNodes,
       setEdges,
       setNodes
     ]
@@ -137,6 +149,7 @@ export const useGraph = ({
 
   // Create the nggraph graph object
   useEffect(() => {
+    layoutMounted.current = false;
     buildGraph(graph, nodes, edges);
     updateLayout();
 
@@ -158,7 +171,7 @@ export const useGraph = ({
   useEffect(() => {
     if (mounted) {
       // Update the layout of the graph when nodes are expanded/collapsed
-      const graphEdges = stateEdges.map(e => ({
+      const graphEdges = internalEdges.map(e => ({
         ...e,
         source: e.fromId,
         target: e.toId,
@@ -166,7 +179,7 @@ export const useGraph = ({
         toId: undefined
       }));
 
-      buildGraph(graph, stateNodes, graphEdges);
+      buildGraph(graph, internalNodes, graphEdges);
       updateLayout();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
