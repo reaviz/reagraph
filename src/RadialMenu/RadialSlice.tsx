@@ -9,6 +9,11 @@ export interface MenuItem {
   label: string;
 
   /**
+   * CSS Classname to apply to the slice.
+   */
+  className?: string;
+
+  /**
    * Optional icon to display on the menu item.
    */
   icon?: ReactNode;
@@ -41,6 +46,7 @@ export const RadialSlice: FC<RadialSliceProps> = ({
   endAngle,
   polar,
   radius,
+  className,
   icon,
   innerRadius,
   skew,
@@ -49,7 +55,9 @@ export const RadialSlice: FC<RadialSliceProps> = ({
 }) => (
   <div
     role="menuitem"
-    className={classNames(css.container, { [css.disabled]: disabled })}
+    className={classNames(css.container, className, {
+      [css.disabled]: disabled
+    })}
     style={{
       width: centralAngle > 90 ? '100%' : '50%',
       height: centralAngle > 90 ? '100%' : '50%',

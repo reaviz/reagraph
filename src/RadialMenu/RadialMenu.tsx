@@ -2,18 +2,21 @@ import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
 import { RadialSlice, MenuItem } from './RadialSlice';
 import { calculateRadius } from './utils';
 import css from './RadialMenu.module.css';
+import classNames from 'classnames';
 
 interface RadialMenuProps {
   items: MenuItem[];
   radius?: number;
   innerRadius?: number;
   startOffsetAngle?: number;
+  className?: string;
   onClose?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const RadialMenu: FC<RadialMenuProps> = ({
   items,
   radius,
+  className,
   innerRadius,
   startOffsetAngle,
   onClose
@@ -36,7 +39,7 @@ export const RadialMenu: FC<RadialMenuProps> = ({
   return (
     <div
       role="menu"
-      className={css.container}
+      className={classNames(css.container, className)}
       onPointerEnter={() => clearTimeout(timeout.current)}
       onPointerLeave={event => {
         clearTimeout(timeout.current);
