@@ -108,6 +108,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         getGraph: () => rendererRef.current?.graph
       }));
 
+      // Defaults to pass to the store
+      const { selections, actives, collapsedNodeIds } = rest;
+
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
       return (
@@ -120,7 +123,15 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
           >
-            <Provider createStore={createStore}>
+            <Provider
+              createStore={() =>
+                createStore({
+                  selections,
+                  actives,
+                  collapsedNodeIds
+                })
+              }
+            >
               <color attach="background" args={[theme.canvas.background]} />
               <ambientLight intensity={1} />
               <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />

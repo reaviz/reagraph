@@ -37,17 +37,21 @@ export interface GraphState {
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
 
-export const createStore = () =>
+export const createStore = ({
+  actives = [],
+  selections = [],
+  collapsedNodeIds = []
+}: Partial<GraphState>) =>
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
     internalEdges: [],
     internalNodes: [],
-    collapsedNodeIds: [],
+    collapsedNodeIds,
     panning: false,
     draggingId: null,
-    selections: [],
-    actives: [],
+    selections,
+    actives,
     drags: {},
     graph: ngraph(),
     setPanning: panning => set(state => ({ ...state, panning })),
