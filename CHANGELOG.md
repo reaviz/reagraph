@@ -1,3 +1,6 @@
+# 4.4.3 - 9/12/22
+- [fix] fix initial graph layout not considering collapsed states
+
 # 4.4.2 - 9/12/22
 - [fix] fix dragging trigger click
 - [chore] cleanup old hidden logic in node/edge
