@@ -183,12 +183,13 @@ export const useGraph = ({
       updateLayout();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateCollapsedNodeIds]);
+  }, [mounted, stateCollapsedNodeIds]);
 
   // Update layout on type changes
   useEffect(() => {
     if (layoutMounted.current) {
-      // Set the transient and the state
+      // When a update is changed, discard all the previous drag positions
+      // NOTE: This sets the transient and the state
       dragRef.current = {};
       setDrags({});
 
