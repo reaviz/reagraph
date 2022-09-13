@@ -61,7 +61,7 @@ export const Node: FC<NodeProps> = ({
   renderNode
 }) => {
   const cameraControls = useCameraControls();
-  const node = useStore(state => state.internalNodes.find(n => n.id === id));
+  const node = useStore(state => state.nodes.find(n => n.id === id));
 
   const [
     edges,

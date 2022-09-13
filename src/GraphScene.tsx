@@ -228,8 +228,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
 
       const [graph, nodeIds, edgeIds] = useStore(state => [
         state.graph,
-        state.internalNodes.map(n => n.id),
-        state.internalEdges.map(e => e.id)
+        state.nodes.map(n => n.id),
+        state.edges.map(e => e.id)
       ]);
 
       const { centerNodesById } = useCenterGraph({

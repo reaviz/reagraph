@@ -13,8 +13,6 @@ export type DragReferences = { [key: string]: InternalGraphNode };
 export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
-  internalNodes: InternalGraphNode[];
-  internalEdges: InternalGraphEdge[];
   graph: Graph;
   collapsedNodeIds?: string[];
   selections?: string[];
@@ -29,8 +27,6 @@ export interface GraphState {
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
-  setInternalNodes: (nodes: InternalGraphNode[]) => void;
-  setInternalEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
   setCollapsedNodeIds: (nodeIds: string[]) => void;
 }
@@ -45,8 +41,6 @@ export const createStore = ({
   create<GraphState>(set => ({
     edges: [],
     nodes: [],
-    internalEdges: [],
-    internalNodes: [],
     collapsedNodeIds,
     panning: false,
     draggingId: null,
@@ -61,22 +55,15 @@ export const createStore = ({
     setSelections: selections => set(state => ({ ...state, selections })),
     setNodes: nodes => set(state => ({ ...state, nodes })),
     setEdges: edges => set(state => ({ ...state, edges })),
-    setInternalNodes: nodes =>
-      set(state => ({ ...state, internalNodes: nodes.filter(n => !n.hidden) })),
-    setInternalEdges: edges =>
-      set(state => ({ ...state, internalEdges: edges.filter(e => !e.hidden) })),
     setNodePosition: (id, position) =>
       set(state => {
-        const node = state.internalNodes.find(n => n.id === id);
+        const node = state.nodes.find(n => n.id === id);
         // TODO: Come back and fix this so we don't have to double project
         const newNode = { ...node, ...position, position };
         return {
           ...state,
           drags: { ...state.drags, [id]: newNode },
-          internalNodes: [
-            ...state.internalNodes.filter(n => n.id !== id),
-            newNode
-          ]
+          nodes: [...state.nodes.filter(n => n.id !== id), newNode]
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
@@ -89,8 +76,8 @@ export const createStore = ({
           });
         return {
           ...state,
-          internalEdges: updatedEdges,
-          internalNodes: updatedNodes,
+          edges: updatedEdges,
+          nodes: updatedNodes,
           collapsedNodeIds
         };
       })

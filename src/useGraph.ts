@@ -47,11 +47,9 @@ export const useGraph = ({
 }: GraphInputs) => {
   const [
     graph,
-    internalNodes,
-    internalEdges,
+    stateNodes,
+    stateEdges,
     stateCollapsedNodeIds,
-    setInternalEdges,
-    setInternalNodes,
     setEdges,
     setNodes,
     setSelections,
@@ -61,11 +59,9 @@ export const useGraph = ({
     setCollapsedNodeIds
   ] = useStore(state => [
     state.graph,
-    state.internalNodes,
-    state.internalEdges,
+    state.nodes,
+    state.edges,
     state.collapsedNodeIds,
-    state.setInternalEdges,
-    state.setInternalNodes,
     state.setEdges,
     state.setNodes,
     state.setSelections,
@@ -109,13 +105,8 @@ export const useGraph = ({
           defaultNodeSize
         });
 
-        if (layoutMounted.current) {
-          setInternalEdges(result.edges);
-          setInternalNodes(result.nodes);
-        } else {
-          setEdges(result.edges);
-          setNodes(result.nodes);
-        }
+        setEdges(result.edges);
+        setNodes(result.nodes);
       });
     },
     [
@@ -129,9 +120,6 @@ export const useGraph = ({
       maxNodeSize,
       minNodeSize,
       defaultNodeSize,
-      layoutMounted,
-      setInternalEdges,
-      setInternalNodes,
       setEdges,
       setNodes
     ]
@@ -171,7 +159,7 @@ export const useGraph = ({
   useEffect(() => {
     if (mounted) {
       // Update the layout of the graph when nodes are expanded/collapsed
-      const graphEdges = internalEdges.map(e => ({
+      const graphEdges = stateEdges.map(e => ({
         ...e,
         source: e.fromId,
         target: e.toId,
@@ -179,7 +167,7 @@ export const useGraph = ({
         toId: undefined
       }));
 
-      buildGraph(graph, internalNodes, graphEdges);
+      buildGraph(graph, stateNodes, graphEdges);
       updateLayout();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
