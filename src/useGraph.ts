@@ -48,8 +48,6 @@ export const useGraph = ({
 }: GraphInputs) => {
   const [
     graph,
-    stateNodes,
-    stateEdges,
     stateCollapsedNodeIds,
     setEdges,
     setNodes,
@@ -60,8 +58,6 @@ export const useGraph = ({
     setCollapsedNodeIds
   ] = useStore(state => [
     state.graph,
-    state.nodes,
-    state.edges,
     state.collapsedNodeIds,
     state.setEdges,
     state.setNodes,
@@ -75,18 +71,18 @@ export const useGraph = ({
   const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
-  const { visibleEdgeIds, visibleNodeIds } = useMemo(() => {
+  const { visibleEdges, visibleNodes } = useMemo(() => {
     const { visibleEdges, visibleNodes } = getVisibleEntities({
       collapsedIds: stateCollapsedNodeIds,
-      nodes: stateNodes,
-      edges: stateEdges
+      nodes,
+      edges
     });
 
     return {
-      visibleEdgeIds: visibleEdges.map(e => e.id),
-      visibleNodeIds: visibleNodes.map(n => n.id)
+      visibleEdges,
+      visibleNodes
     };
-  }, [stateCollapsedNodeIds, stateNodes, stateEdges]);
+  }, [stateCollapsedNodeIds, nodes, edges]);
 
   // Transient updates
   const dragRef = useRef<DragReferences>(drags);
@@ -151,7 +147,7 @@ export const useGraph = ({
   // Create the nggraph graph object
   useEffect(() => {
     layoutMounted.current = false;
-    buildGraph(graph, nodes, edges);
+    buildGraph(graph, visibleNodes, visibleEdges);
     updateLayout();
 
     // queue this in a frame so it only happens after the graph is built
@@ -162,29 +158,12 @@ export const useGraph = ({
     });
 
     // eslint-disable-next-line
-  }, [nodes, edges, graph]);
+  }, [visibleNodes, visibleEdges, graph]);
 
   useEffect(() => {
     // Let's set the store collapsedNodeIds so its easier to access
     setCollapsedNodeIds(collapsedNodeIds);
   }, [collapsedNodeIds, setCollapsedNodeIds]);
-
-  useEffect(() => {
-    if (mounted) {
-      // Update the layout of the graph when nodes are expanded/collapsed
-      const graphEdges = stateEdges.map(e => ({
-        ...e,
-        source: e.fromId,
-        target: e.toId,
-        fromId: undefined,
-        toId: undefined
-      }));
-
-      buildGraph(graph, stateNodes, graphEdges);
-      updateLayout();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, stateCollapsedNodeIds]);
 
   // Update layout on type changes
   useEffect(() => {
@@ -207,8 +186,6 @@ export const useGraph = ({
   }, [graph, sizingType, sizingAttribute, labelType, updateLayout]);
 
   return {
-    mounted,
-    visibleEdgeIds,
-    visibleNodeIds
+    mounted
   };
 };

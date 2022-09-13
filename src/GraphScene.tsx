@@ -3,7 +3,8 @@ import React, {
   forwardRef,
   Fragment,
   Ref,
-  useImperativeHandle
+  useImperativeHandle,
+  useMemo
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutOverrides, LayoutTypes } from './layout';
@@ -224,9 +225,15 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref
     ) => {
-      const { mounted, visibleEdgeIds, visibleNodeIds } = useGraph(rest);
+      const { mounted } = useGraph(rest);
 
-      const [graph] = useStore(state => [state.graph]);
+      const [graph, nodes, edges] = useStore(state => [
+        state.graph,
+        state.nodes,
+        state.edges
+      ]);
+      const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);
+      const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
 
       const { centerNodesById } = useCenterGraph({
         animated
@@ -245,7 +252,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         <Fragment>
           {mounted && (
             <Fragment>
-              {visibleNodeIds.map(n => (
+              {nodeIds.map(n => (
                 <Node
                   key={n}
                   id={n}
@@ -262,7 +269,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   renderNode={renderNode}
                 />
               ))}
-              {visibleEdgeIds.map(e => (
+              {edgeIds.map(e => (
                 <Edge
                   theme={theme}
                   key={e}

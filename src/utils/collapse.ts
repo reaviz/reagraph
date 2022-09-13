@@ -1,18 +1,18 @@
 import { uniqBy } from 'lodash';
-import { InternalGraphEdge, InternalGraphNode } from '../types';
+import { GraphEdge, GraphNode } from '../types';
 
 interface GetHiddenChildrenInput {
   nodeId: string;
-  nodes: InternalGraphNode[];
-  edges: InternalGraphEdge[];
-  currentHiddenNodes: InternalGraphNode[];
-  currentHiddenEdges: InternalGraphEdge[];
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  currentHiddenNodes: GraphNode[];
+  currentHiddenEdges: GraphEdge[];
 }
 
 interface GetVisibleIdsInput {
   collapsedIds: string[];
-  nodes: InternalGraphNode[];
-  edges: InternalGraphEdge[];
+  nodes: GraphNode[];
+  edges: GraphEdge[];
 }
 
 function getHiddenChildren({
@@ -22,18 +22,18 @@ function getHiddenChildren({
   currentHiddenNodes,
   currentHiddenEdges
 }: GetHiddenChildrenInput) {
-  const hiddenNodes: InternalGraphNode[] = [];
-  const hiddenEdges: InternalGraphEdge[] = [];
+  const hiddenNodes: GraphNode[] = [];
+  const hiddenEdges: GraphEdge[] = [];
   const curHiddenNodeIds = currentHiddenNodes.map(n => n.id);
   const curHiddenEdgeIds = currentHiddenEdges.map(e => e.id);
 
-  const outboundEdges = edges.filter(l => l.data.source === nodeId);
-  const outboundEdgeNodeIds = outboundEdges.map(l => l.data.target);
+  const outboundEdges = edges.filter(l => l.source === nodeId);
+  const outboundEdgeNodeIds = outboundEdges.map(l => l.target);
 
   hiddenEdges.push(...outboundEdges);
   for (const outboundEdgeNodeId of outboundEdgeNodeIds) {
     const incomingEdges = edges.filter(
-      l => l.data.target === outboundEdgeNodeId && l.data.source !== nodeId
+      l => l.target === outboundEdgeNodeId && l.source !== nodeId
     );
     let hideNode = false;
 
@@ -45,7 +45,7 @@ function getHiddenChildren({
       !curHiddenNodeIds.includes(outboundEdgeNodeId)
     ) {
       // If all inbound links are hidden, hide this node as well
-      const inboundNodeLinkIds = incomingEdges.map(l => l.data.id);
+      const inboundNodeLinkIds = incomingEdges.map(l => l.id);
       if (inboundNodeLinkIds.every(i => curHiddenEdgeIds.includes(i))) {
         hideNode = true;
       }
