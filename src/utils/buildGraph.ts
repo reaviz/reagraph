@@ -66,7 +66,7 @@ export function transformGraph({
   graph.forEachNode((node: any) => {
     if (node.data) {
       const position = layout.getNodePosition(node.id);
-      const { data, fill, icon, label, size, hidden, ...rest } = node.data;
+      const { data, fill, icon, label, size, ...rest } = node.data;
       const nodeSize = sizes.get(node.id);
       const labelVisible = checkVisibility('node', nodeSize);
       const nodeLinks = graph.getLinks(node.id);
@@ -81,7 +81,6 @@ export function transformGraph({
         icon,
         fill,
         parents,
-        hidden,
         data: {
           ...rest,
           ...(data || {})
@@ -93,9 +92,7 @@ export function transformGraph({
       };
 
       map.set(node.id, n);
-      if (!hidden) {
-        nodes.push(n);
-      }
+      nodes.push(n);
     }
   });
 
@@ -104,24 +101,21 @@ export function transformGraph({
     const to = map.get(link.toId);
 
     if (from && to) {
-      const { data, id, label, size, hidden, ...rest } = link.data;
+      const { data, id, label, size, ...rest } = link.data;
       const labelVisible = checkVisibility('edge', link.size);
 
-      if (!hidden) {
-        edges.push({
-          ...link,
+      edges.push({
+        ...link,
+        id,
+        label,
+        labelVisible,
+        size,
+        data: {
+          ...rest,
           id,
-          label,
-          labelVisible,
-          size,
-          hidden,
-          data: {
-            ...rest,
-            id,
-            ...(data || {})
-          }
-        });
-      }
+          ...(data || {})
+        }
+      });
     }
   });
 

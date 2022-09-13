@@ -224,13 +224,9 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref
     ) => {
-      const { mounted } = useGraph(rest);
+      const { mounted, visibleEdgeIds, visibleNodeIds } = useGraph(rest);
 
-      const [graph, nodeIds, edgeIds] = useStore(state => [
-        state.graph,
-        state.nodes.map(n => n.id),
-        state.edges.map(e => e.id)
-      ]);
+      const [graph] = useStore(state => [state.graph]);
 
       const { centerNodesById } = useCenterGraph({
         animated
@@ -249,7 +245,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         <Fragment>
           {mounted && (
             <Fragment>
-              {nodeIds.map(n => (
+              {visibleNodeIds.map(n => (
                 <Node
                   key={n}
                   id={n}
@@ -266,7 +262,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   renderNode={renderNode}
                 />
               ))}
-              {edgeIds.map(e => (
+              {visibleEdgeIds.map(e => (
                 <Edge
                   theme={theme}
                   key={e}

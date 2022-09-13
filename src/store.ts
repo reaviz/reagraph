@@ -6,7 +6,6 @@ import {
   InternalGraphPosition
 } from './types';
 import ngraph, { Graph } from 'ngraph.graph';
-import { getUpdatedCollapsedState } from './utils/collapse';
 
 export type DragReferences = { [key: string]: InternalGraphNode };
 
@@ -67,18 +66,5 @@ export const createStore = ({
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
-      set(state => {
-        const { updatedNodes, updatedEdges, collapsedNodeIds } =
-          getUpdatedCollapsedState({
-            nodeIds,
-            nodes: [...state.nodes],
-            edges: [...state.edges]
-          });
-        return {
-          ...state,
-          edges: updatedEdges,
-          nodes: updatedNodes,
-          collapsedNodeIds
-        };
-      })
+      set(state => ({ ...state, collapsedNodeIds: nodeIds }))
   }));

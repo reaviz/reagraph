@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { SizingType } from './sizing';
 import {
   LayoutTypes,
@@ -11,6 +11,7 @@ import { tick } from './layout/layoutUtils';
 import { GraphEdge, GraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/buildGraph';
 import { DragReferences, useStore } from './store';
+import { getVisibleEntities } from './utils/collapse';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -74,6 +75,18 @@ export const useGraph = ({
   const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
+  const { visibleEdgeIds, visibleNodeIds } = useMemo(() => {
+    const { visibleEdges, visibleNodes } = getVisibleEntities({
+      collapsedIds: stateCollapsedNodeIds,
+      nodes: stateNodes,
+      edges: stateEdges
+    });
+
+    return {
+      visibleEdgeIds: visibleEdges.map(e => e.id),
+      visibleNodeIds: visibleNodes.map(n => n.id)
+    };
+  }, [stateCollapsedNodeIds, stateNodes, stateEdges]);
 
   // Transient updates
   const dragRef = useRef<DragReferences>(drags);
@@ -194,6 +207,8 @@ export const useGraph = ({
   }, [graph, sizingType, sizingAttribute, labelType, updateLayout]);
 
   return {
-    mounted
+    mounted,
+    visibleEdgeIds,
+    visibleNodeIds
   };
 };
