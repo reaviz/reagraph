@@ -35,11 +35,6 @@ export interface GraphNode extends GraphElementBaseAttributes {
   parents?: string[];
 
   /**
-   * Whether the node is hidden after being collapsed
-   */
-  hidden?: boolean;
-
-  /**
    * Icon URL for the node.
    */
   icon?: string;
@@ -60,11 +55,6 @@ export interface GraphEdge extends GraphElementBaseAttributes {
    * Target ID of the node.
    */
   target: string;
-
-  /**
-   * Whether the edge is hidden after being collapsed
-   */
-  hidden?: boolean;
 }
 
 export interface Graph {

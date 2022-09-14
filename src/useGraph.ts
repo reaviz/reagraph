@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
 import { SizingType } from './sizing';
 import {
   LayoutTypes,
@@ -11,6 +11,7 @@ import { tick } from './layout/layoutUtils';
 import { GraphEdge, GraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/buildGraph';
 import { DragReferences, useStore } from './store';
+import { getVisibleEntities } from './utils/collapse';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -47,11 +48,7 @@ export const useGraph = ({
 }: GraphInputs) => {
   const [
     graph,
-    internalNodes,
-    internalEdges,
     stateCollapsedNodeIds,
-    setInternalEdges,
-    setInternalNodes,
     setEdges,
     setNodes,
     setSelections,
@@ -61,11 +58,7 @@ export const useGraph = ({
     setCollapsedNodeIds
   ] = useStore(state => [
     state.graph,
-    state.internalNodes,
-    state.internalEdges,
     state.collapsedNodeIds,
-    state.setInternalEdges,
-    state.setInternalNodes,
     state.setEdges,
     state.setNodes,
     state.setSelections,
@@ -78,6 +71,18 @@ export const useGraph = ({
   const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
+  const { visibleEdges, visibleNodes } = useMemo(() => {
+    const { visibleEdges, visibleNodes } = getVisibleEntities({
+      collapsedIds: stateCollapsedNodeIds,
+      nodes,
+      edges
+    });
+
+    return {
+      visibleEdges,
+      visibleNodes
+    };
+  }, [stateCollapsedNodeIds, nodes, edges]);
 
   // Transient updates
   const dragRef = useRef<DragReferences>(drags);
@@ -109,13 +114,8 @@ export const useGraph = ({
           defaultNodeSize
         });
 
-        if (layoutMounted.current) {
-          setInternalEdges(result.edges);
-          setInternalNodes(result.nodes);
-        } else {
-          setEdges(result.edges);
-          setNodes(result.nodes);
-        }
+        setEdges(result.edges);
+        setNodes(result.nodes);
       });
     },
     [
@@ -129,9 +129,6 @@ export const useGraph = ({
       maxNodeSize,
       minNodeSize,
       defaultNodeSize,
-      layoutMounted,
-      setInternalEdges,
-      setInternalNodes,
       setEdges,
       setNodes
     ]
@@ -150,7 +147,7 @@ export const useGraph = ({
   // Create the nggraph graph object
   useEffect(() => {
     layoutMounted.current = false;
-    buildGraph(graph, nodes, edges);
+    buildGraph(graph, visibleNodes, visibleEdges);
     updateLayout();
 
     // queue this in a frame so it only happens after the graph is built
@@ -161,29 +158,12 @@ export const useGraph = ({
     });
 
     // eslint-disable-next-line
-  }, [nodes, edges, graph]);
+  }, [visibleNodes, visibleEdges, graph]);
 
   useEffect(() => {
     // Let's set the store collapsedNodeIds so its easier to access
     setCollapsedNodeIds(collapsedNodeIds);
   }, [collapsedNodeIds, setCollapsedNodeIds]);
-
-  useEffect(() => {
-    if (mounted) {
-      // Update the layout of the graph when nodes are expanded/collapsed
-      const graphEdges = internalEdges.map(e => ({
-        ...e,
-        source: e.fromId,
-        target: e.toId,
-        fromId: undefined,
-        toId: undefined
-      }));
-
-      buildGraph(graph, internalNodes, graphEdges);
-      updateLayout();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounted, stateCollapsedNodeIds]);
 
   // Update layout on type changes
   useEffect(() => {

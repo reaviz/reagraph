@@ -1,115 +1,106 @@
-import { Graph } from 'ngraph.graph';
-import { InternalGraphEdge, InternalGraphNode } from '../types';
+import uniqBy from 'lodash/uniqBy';
+import { GraphEdge, GraphNode } from '../types';
 
-interface UpdateCollapsedStateInput {
-  nodeIds: string[];
-  nodes: InternalGraphNode[];
-  edges: InternalGraphEdge[];
+interface GetHiddenChildrenInput {
+  nodeId: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  currentHiddenNodes: GraphNode[];
+  currentHiddenEdges: GraphEdge[];
 }
 
-function getNestedParents(nodeId: string, nodes: InternalGraphNode[]) {
-  const parentNodeIds = [];
-  const childNodes = nodes.filter(n => n.parents?.includes(nodeId));
-  if (childNodes.length > 0) {
-    parentNodeIds.push(nodeId);
-    for (const child of childNodes) {
-      parentNodeIds.push(...getNestedParents(child.id, nodes));
+interface GetVisibleIdsInput {
+  collapsedIds: string[];
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
+function getHiddenChildren({
+  nodeId,
+  nodes,
+  edges,
+  currentHiddenNodes,
+  currentHiddenEdges
+}: GetHiddenChildrenInput) {
+  const hiddenNodes: GraphNode[] = [];
+  const hiddenEdges: GraphEdge[] = [];
+  const curHiddenNodeIds = currentHiddenNodes.map(n => n.id);
+  const curHiddenEdgeIds = currentHiddenEdges.map(e => e.id);
+
+  const outboundEdges = edges.filter(l => l.source === nodeId);
+  const outboundEdgeNodeIds = outboundEdges.map(l => l.target);
+
+  hiddenEdges.push(...outboundEdges);
+  for (const outboundEdgeNodeId of outboundEdgeNodeIds) {
+    const incomingEdges = edges.filter(
+      l => l.target === outboundEdgeNodeId && l.source !== nodeId
+    );
+    let hideNode = false;
+
+    // Check to see if any other edge is coming into this node
+    if (incomingEdges.length === 0) {
+      hideNode = true;
+    } else if (
+      incomingEdges.length > 0 &&
+      !curHiddenNodeIds.includes(outboundEdgeNodeId)
+    ) {
+      // If all inbound links are hidden, hide this node as well
+      const inboundNodeLinkIds = incomingEdges.map(l => l.id);
+      if (inboundNodeLinkIds.every(i => curHiddenEdgeIds.includes(i))) {
+        hideNode = true;
+      }
+    }
+    if (hideNode) {
+      // Need to hide this node and any children of this node
+      const node = nodes.find(n => n.id === outboundEdgeNodeId);
+      if (node) {
+        hiddenNodes.push(node);
+      }
+      const nested = getHiddenChildren({
+        nodeId: outboundEdgeNodeId,
+        nodes,
+        edges,
+        currentHiddenEdges,
+        currentHiddenNodes
+      });
+      hiddenEdges.push(...nested.hiddenEdges);
+      hiddenNodes.push(...nested.hiddenNodes);
     }
   }
 
-  return parentNodeIds;
+  return {
+    hiddenEdges: uniqBy(hiddenEdges, 'id'),
+    hiddenNodes: uniqBy(hiddenNodes, 'id')
+  };
 }
 
-export const getUpdatedCollapsedState = ({
-  nodeIds,
+export const getVisibleEntities = ({
+  collapsedIds,
   nodes,
   edges
-}: UpdateCollapsedStateInput) => {
-  let collapsedNodeIds = [];
+}: GetVisibleIdsInput) => {
+  const curHiddenNodes = [];
+  const curHiddenEdges = [];
 
-  // Add any node ids that are nested parents that had their parent collapsed
-  // ie gradparent -> parent -> node and grandparent was collapsed
-  for (const collapsedId of nodeIds) {
-    collapsedNodeIds.push(...getNestedParents(collapsedId, nodes));
+  for (const collapsedId of collapsedIds) {
+    const { hiddenEdges, hiddenNodes } = getHiddenChildren({
+      nodeId: collapsedId,
+      nodes,
+      edges,
+      currentHiddenEdges: curHiddenEdges,
+      currentHiddenNodes: curHiddenNodes
+    });
+    curHiddenNodes.push(...hiddenNodes);
+    curHiddenEdges.push(...hiddenEdges);
   }
 
-  // Reset hidden state of edges/nodes
-  let updatedEdges = edges.map(e => ({
-    ...e,
-    hidden: false
-  }));
-
-  let updatedNodes = nodes.map(n => ({
-    ...n,
-    hidden: false
-  }));
-
-  // Keep track of which edges and nodes were hidden from this change
-  const curHiddenEdgeIds = [];
-  const curHiddenNodeIds = [];
-
-  for (const collapsedId of collapsedNodeIds) {
-    const outboundEdges = edges.filter(l => l.data.source === collapsedId);
-    const outboundEdgeIds = outboundEdges.map(l => l.data.id);
-    const outboundEdgeNodeIds = outboundEdges.map(l => l.data.target);
-
-    updatedEdges = updatedEdges.map(e => {
-      if (outboundEdgeIds.includes(e.id)) {
-        curHiddenEdgeIds.push(e.id);
-        return {
-          ...e,
-          hidden: true
-        };
-      } else if (curHiddenEdgeIds.includes(e.id)) {
-        return e;
-      }
-
-      return {
-        ...e,
-        hidden: false
-      };
-    });
-
-    updatedNodes = updatedNodes.map(n => {
-      if (
-        !outboundEdgeNodeIds.includes(n.id) &&
-        !curHiddenNodeIds.includes(n.id)
-      ) {
-        return {
-          ...n,
-          hidden: false
-        };
-      }
-
-      // Determine if there is another edge going to this node
-      const inboundNodeLinks = edges.filter(l => l.data.target === n.id);
-
-      if (inboundNodeLinks.length > 1 && !curHiddenNodeIds.includes(n.id)) {
-        // If all inbound links are hidden, hide this node as well
-        const inboundNodeLinkIds = inboundNodeLinks.map(l => l.data.id);
-        if (!inboundNodeLinkIds.every(i => curHiddenEdgeIds.includes(i))) {
-          return {
-            ...n,
-            hidden: false
-          };
-        }
-      }
-
-      if (!curHiddenNodeIds.includes(n.id)) {
-        curHiddenNodeIds.push(n.id);
-        return {
-          ...n,
-          hidden: true
-        };
-      }
-
-      return n;
-    });
-  }
+  const hiddenNodeIds = curHiddenNodes.map(n => n.id);
+  const hiddenEdgeIds = curHiddenEdges.map(e => e.id);
+  const visibleNodes = nodes.filter(n => !hiddenNodeIds.includes(n.id));
+  const visibleEdges = edges.filter(e => !hiddenEdgeIds.includes(e.id));
 
   return {
-    updatedEdges: updatedEdges.filter(e => !e.hidden),
-    updatedNodes: updatedNodes.filter(n => !n.hidden),
-    collapsedNodeIds
+    visibleNodes,
+    visibleEdges
   };
 };
