@@ -1,3 +1,6 @@
+# 4.4.5 - 9/13/22
+- [fix] Collapsible refactor #74
+
 # 4.4.4 - 9/12/22
 - [feature] add ability to pass classnames to radial menus
 
