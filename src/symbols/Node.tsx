@@ -104,8 +104,8 @@ export const Node: FC<NodeProps> = ({
     // If the node has outgoing edges, it can collapse via context menu
     const outboundLinks = edges.filter(l => l.data.source === id);
 
-    return outboundLinks.length > 0;
-  }, [edges, id]);
+    return outboundLinks.length > 0 || isCollapsed;
+  }, [edges, id, isCollapsed]);
 
   const onCollapse = useCallback(() => {
     if (canCollapse) {
