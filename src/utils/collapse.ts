@@ -1,4 +1,4 @@
-import { uniqBy } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
 import { GraphEdge, GraphNode } from '../types';
 
 interface GetHiddenChildrenInput {
