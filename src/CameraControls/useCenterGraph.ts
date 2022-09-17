@@ -33,7 +33,7 @@ export const useCenterGraph = ({
   }, [nodes]);
 
   const centerNodes = useCallback(
-    (centerNodes: InternalGraphNode[], padding = 50) => {
+    (centerNodes: InternalGraphNode[], padding = 50, fill = false) => {
       requestAnimationFrame(() => {
         // Centers the graph based on the central most node
         const { minX, maxX, minY, maxY, minZ, maxZ } =
@@ -46,6 +46,7 @@ export const useCenterGraph = ({
           ),
           animated,
           {
+            cover: fill,
             paddingLeft: padding,
             paddingRight: padding,
             paddingBottom: padding,
@@ -80,7 +81,7 @@ export const useCenterGraph = ({
         }, []);
       }
 
-      centerNodes(mappedNodes || nodes, padding);
+      centerNodes(mappedNodes || nodes, padding, !!mappedNodes);
     },
     [centerNodes, nodes, centerPadding]
   );
