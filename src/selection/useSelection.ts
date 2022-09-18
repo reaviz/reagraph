@@ -257,7 +257,13 @@ export const useSelection = ({
           throw new Error('No ref found for the graph canvas.');
         }
 
-        ref.current?.centerGraph([data.id]);
+        const graph = ref.current.getGraph();
+        const { nodes: adjacents } = getAdjacents(
+          graph,
+          [data.id],
+          pathSelectionType
+        );
+        ref.current?.centerGraph([data.id, ...adjacents]);
       }
     },
     [
@@ -266,6 +272,7 @@ export const useSelection = ({
       focusOnSelect,
       isMulti,
       metaKeyDown,
+      pathSelectionType,
       ref,
       type
     ]
@@ -367,7 +374,8 @@ export const useSelection = ({
           throw new Error('No ref found for the graph canvas.');
         }
 
-        setInternalHovers(getAdjacents(graph, [data.id], pathHoverType));
+        const { nodes, edges } = getAdjacents(graph, [data.id], pathHoverType);
+        setInternalHovers([...nodes, ...edges]);
       }
     },
     [pathHoverType, ref]
@@ -383,9 +391,12 @@ export const useSelection = ({
     if (pathSelectionType !== 'direct' && internalSelections.length > 0) {
       const graph = ref.current?.getGraph();
       if (graph) {
-        setInternalActives(
-          getAdjacents(graph, internalSelections, pathSelectionType)
+        const { nodes, edges } = getAdjacents(
+          graph,
+          internalSelections,
+          pathSelectionType
         );
+        setInternalActives([...nodes, ...edges]);
       }
     }
   }, [internalSelections, pathSelectionType, ref]);

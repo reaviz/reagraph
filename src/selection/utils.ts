@@ -53,7 +53,10 @@ export function getAdjacents(
     });
   }
 
-  return [...nodes, ...edges];
+  return {
+    nodes,
+    edges
+  };
 }
 
 export function prepareRay(event, vec, size) {
