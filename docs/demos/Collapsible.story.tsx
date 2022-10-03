@@ -155,7 +155,7 @@ export const ExpandToHiddenNode = () => {
       <h3>Hidden Nodes</h3>
       <ul>
         {hiddenNodeIds.map(id => (
-          <li>
+          <li key={id}>
             {id}
             <button
               style={{ display: 'block', width: '100%' }}
