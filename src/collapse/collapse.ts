@@ -15,6 +15,12 @@ interface GetVisibleIdsInput {
   edges: GraphEdge[];
 }
 
+interface GetExpandPathInput {
+  nodeId: string;
+  edges: GraphEdge[];
+  visibleEdgeIds: string[];
+}
+
 function getHiddenChildren({
   nodeId,
   nodes,
@@ -103,4 +109,41 @@ export const getVisibleEntities = ({
     visibleNodes,
     visibleEdges
   };
+};
+
+export const getExpandPath = ({
+  nodeId,
+  edges,
+  visibleEdgeIds
+}: GetExpandPathInput) => {
+  const parentIds = [];
+  const inboundEdges = edges.filter(l => l.target === nodeId);
+  const inboundEdgeIds = inboundEdges.map(e => e.id);
+  const hasVisibleInboundEdge = inboundEdgeIds.some(id =>
+    visibleEdgeIds.includes(id)
+  );
+
+  if (hasVisibleInboundEdge) {
+    // If there is a visible edge to this node, that means the node is visible so no parents need to be expanded
+    return parentIds;
+  }
+
+  const inboundEdgeNodeIds = inboundEdges.map(l => l.source);
+  let addedParent = false;
+
+  for (const inboundNodeId of inboundEdgeNodeIds) {
+    if (!addedParent) {
+      // Only want to expand a single path to the node, so if there are multiple hidden incoming edges, only expand the first
+      // to reduce how many nodes are expanded to get to the node
+      parentIds.push(
+        ...[
+          inboundNodeId,
+          ...getExpandPath({ nodeId: inboundNodeId, edges, visibleEdgeIds })
+        ]
+      );
+      addedParent = true;
+    }
+  }
+
+  return parentIds;
 };
