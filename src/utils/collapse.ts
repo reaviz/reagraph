@@ -60,8 +60,8 @@ function getHiddenChildren({
         nodeId: outboundEdgeNodeId,
         nodes,
         edges,
-        currentHiddenEdges,
-        currentHiddenNodes
+        currentHiddenEdges: hiddenEdges,
+        currentHiddenNodes: hiddenNodes
       });
       hiddenEdges.push(...nested.hiddenEdges);
       hiddenNodes.push(...nested.hiddenNodes);
