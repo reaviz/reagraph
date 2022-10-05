@@ -1,3 +1,7 @@
+# 4.5.0 - 10/5/22
+- [improvement] rewrote edges for performance
+- [improvement] add `useCollapse` hook
+
 # 4.4.5 - 9/13/22
 - [fix] Collapsible refactor #74
 
