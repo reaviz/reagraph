@@ -1,0 +1,63 @@
+import { Meta, Story, ArgsTable } from '@storybook/addon-docs';
+import { GraphCanvas } from '../src';
+
+<Meta title="Docs/Advanced/Collapse" />
+
+# Collapse
+reagraph supports the ability to expand and collapse nodes and edges.
+To collapse a node and its edges, simply pass a array of node ids to
+the graph component like:
+
+```jsx
+const App = () => {
+  const nodes = [];
+  const edges = [];
+
+  // List of node ids
+  const [collapsed, setCollapsed] = useState<string[]>([]);
+
+  return (
+    <GraphCanvas
+      collapsedNodeIds={collapsed}
+      nodes={nodes}
+      edges={edges}
+    />
+  );
+};
+```
+
+For more complex scenarios, you expose a `useCollapse` hook:
+
+```jsx
+
+const App = () => {
+  const nodes = [];
+  const edges = [];
+  const [collapsedNodeIds, setCollapsedNodeIds] = useState<string[]>([]);
+
+  // Helper hook
+  const { getExpandPathIds } = useCollapse({
+    collapsedNodeIds,
+    nodes,
+    edges
+  });
+
+  function onExpandClick() {
+    // Use the helper method to determine the ids to expand
+    setCollapsedNodeIds(getExpandPathIds('some node id'))
+  }
+
+  return (
+    <>
+      <button onClick={onExpandClick}>
+        Expand Node
+      </button>
+      <GraphCanvas
+        collapsedNodeIds={collapsedNodeIds}
+        nodes={nodes}
+        edges={edges}
+      />
+    </>
+  );
+};
+```
