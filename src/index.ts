@@ -6,6 +6,7 @@ export * from './layout';
 export * from './symbols';
 export * from './sizing';
 export * from './selection';
+export * from './collapse';
 export * from './RadialMenu';
 export * from './CameraControls';
 export * from './useGraph';
