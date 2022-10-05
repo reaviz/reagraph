@@ -93,7 +93,7 @@ export const Arrow: FC<ArrowProps> = ({
       }}
     >
       <cylinderGeometry
-        args={[0, arrowSize, arrowLength, 20, 20, true]}
+        args={[0, arrowSize, arrowLength, 20, 1, true]}
         attach="geometry"
       />
       <a.meshBasicMaterial
