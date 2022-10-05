@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { GraphEdge, GraphNode } from 'types';
-import { getExpandPath, getVisibleEntities } from './collapse';
+import { getExpandPath, getVisibleEntities } from './utils';
 
 export interface UseCollapseProps {
   /**
@@ -23,7 +23,7 @@ export interface CollpaseResult {
   /**
    * Determine if a node is currently collapsed
    */
-  isCollapsed: (nodeId: string) => boolean;
+  getIsCollapsed: (nodeId: string) => boolean;
 
   /**
    * Return a list of ids required to expand in order to view the provided node
@@ -36,7 +36,7 @@ export const useCollapse = ({
   nodes = [],
   edges = []
 }: UseCollapseProps): CollpaseResult => {
-  const isCollapsed = useCallback(
+  const getIsCollapsed = useCallback(
     (nodeId: string) => {
       const { visibleNodes } = getVisibleEntities({
         nodes,
@@ -65,7 +65,7 @@ export const useCollapse = ({
   );
 
   return {
-    isCollapsed,
+    getIsCollapsed,
     getExpandPathIds
   };
 };

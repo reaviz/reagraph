@@ -11,7 +11,7 @@ import { tick } from './layout/layoutUtils';
 import { GraphEdge, GraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/buildGraph';
 import { DragReferences, useStore } from './store';
-import { getVisibleEntities } from './collapse/collapse';
+import { getVisibleEntities } from './collapse';
 
 export interface GraphInputs {
   nodes: GraphNode[];
