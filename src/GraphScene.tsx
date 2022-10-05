@@ -19,7 +19,13 @@ import {
   CollapseProps
 } from './types';
 import { SizingType } from './sizing';
-import { Edge, EdgeArrowPosition, EdgeLabelPosition, Node } from './symbols';
+import {
+  Edge,
+  EdgeArrowPosition,
+  EdgeLabelPosition,
+  Edges,
+  Node
+} from './symbols';
 import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { Theme } from './themes';
@@ -269,11 +275,27 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   renderNode={renderNode}
                 />
               ))}
-              {edgeIds.map(e => (
-                <Edge
+              {animated ? (
+                edgeIds.map(e => (
+                  <Edge
+                    theme={theme}
+                    key={e}
+                    id={e}
+                    disabled={disabled}
+                    animated={animated}
+                    labelPlacement={edgeLabelPosition}
+                    arrowPlacement={edgeArrowPosition}
+                    contextMenu={contextMenu}
+                    onClick={onEdgeClick}
+                    onContextMenu={onEdgeContextMenu}
+                    onPointerOver={onEdgePointerOver}
+                    onPointerOut={onEdgePointerOut}
+                  />
+                ))
+              ) : (
+                <Edges
                   theme={theme}
-                  key={e}
-                  id={e}
+                  edges={edges}
                   disabled={disabled}
                   animated={animated}
                   labelPlacement={edgeLabelPosition}
@@ -284,7 +306,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   onPointerOver={onEdgePointerOver}
                   onPointerOut={onEdgePointerOut}
                 />
-              ))}
+              )}
             </Fragment>
           )}
         </Fragment>

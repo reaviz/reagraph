@@ -39,9 +39,7 @@ export const CyberSecurity = () => {
     const n: GraphNode[] = [];
     const e: GraphEdge[] = [];
 
-    // TODO: Make it work better w/ entire dataset
-    const subset = cyberJson.slice(0, 100);
-    for (const node of subset) {
+    for (const node of cyberJson) {
       const node1 = {
         id: node.ItemIdA,
         label: node.ItemDescriptionA,

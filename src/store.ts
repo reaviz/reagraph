@@ -6,6 +6,7 @@ import {
   InternalGraphPosition
 } from './types';
 import ngraph, { Graph } from 'ngraph.graph';
+import { BufferGeometry, Mesh } from 'three';
 
 export type DragReferences = { [key: string]: InternalGraphNode };
 
@@ -14,15 +15,19 @@ export interface GraphState {
   edges: InternalGraphEdge[];
   graph: Graph;
   collapsedNodeIds?: string[];
-  selections?: string[];
   actives?: string[];
+  selections?: string[];
+  edgeContextMenus?: Set<string>;
+  setEdgeContextMenus: (edges: Set<string>) => void;
+  edgeMeshes: Array<Mesh<BufferGeometry>>;
+  setEdgeMeshes: (edgeMeshes: Array<Mesh<BufferGeometry>>) => void;
   draggingId?: string | null;
   drags?: DragReferences;
   panning?: boolean;
   setPanning: (panning: boolean) => void;
   setDrags: (drags: DragReferences) => void;
   setDraggingId: (id: string | null) => void;
-  setActives: (selections: string[]) => void;
+  setActives: (actives: string[]) => void;
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
@@ -43,8 +48,16 @@ export const createStore = ({
     collapsedNodeIds,
     panning: false,
     draggingId: null,
-    selections,
     actives,
+    edgeContextMenus: new Set(),
+    setEdgeContextMenus: edgeContextMenus =>
+      set(state => ({
+        ...state,
+        edgeContextMenus
+      })),
+    edgeMeshes: [],
+    setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
+    selections,
     drags: {},
     graph: ngraph(),
     setPanning: panning => set(state => ({ ...state, panning })),
@@ -57,12 +70,13 @@ export const createStore = ({
     setNodePosition: (id, position) =>
       set(state => {
         const node = state.nodes.find(n => n.id === id);
-        // TODO: Come back and fix this so we don't have to double project
-        const newNode = { ...node, ...position, position };
+        const nodeIndex = state.nodes.indexOf(node);
+        const nodes = [...state.nodes];
+        nodes[nodeIndex] = { ...node, position };
         return {
           ...state,
-          drags: { ...state.drags, [id]: newNode },
-          nodes: [...state.nodes.filter(n => n.id !== id), newNode]
+          drags: { ...state.drags, [id]: node },
+          nodes
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
