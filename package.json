@@ -72,11 +72,11 @@
     "react-dom": ">=16"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "6.5.10",
-    "@storybook/addon-storysource": "^6.5.10",
-    "@storybook/addons": "6.5.10",
-    "@storybook/react": "6.5.10",
-    "@storybook/theming": "6.5.10",
+    "@storybook/addon-essentials": "6.5.12",
+    "@storybook/addon-storysource": "^6.5.12",
+    "@storybook/addons": "6.5.12",
+    "@storybook/react": "6.5.12",
+    "@storybook/theming": "6.5.12",
     "@testing-library/react": "^13.3.0",
     "@types/classnames": "^2.3.1",
     "@types/d3-array": "^3.0.3",
