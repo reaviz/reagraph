@@ -45,7 +45,7 @@ export const useCollapse = ({
       });
       const visibleNodeIds = visibleNodes.map(n => n.id);
 
-      return visibleNodeIds.includes(nodeId);
+      return !visibleNodeIds.includes(nodeId);
     },
     [collapsedNodeIds, edges, nodes]
   );
