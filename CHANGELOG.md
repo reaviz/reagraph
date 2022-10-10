@@ -1,3 +1,6 @@
+# 4.5.1 - 10/10/22
+- [fix] getIsCollapsed missing a not #80
+
 # 4.5.0 - 10/5/22
 - [improvement] rewrote edges for performance
 - [improvement] add `useCollapse` hook
