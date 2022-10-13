@@ -12,13 +12,9 @@ import { mergeBufferGeometries } from 'three-stdlib';
 
 import { GraphState, useStore } from '../../store';
 import { InternalGraphEdge } from '../../types';
-import {
-  getArrowPosition,
-  getMidPoint,
-  getPoints,
-  getQuaternion
-} from '../../utils';
-import { EdgeArrowPosition, LABEL_FONT_SIZE } from './Edge';
+import { getCurvePoints } from '../../utils';
+import { EdgeArrowPosition, getArrowSize, getArrowVectors } from '../Arrow';
+import { EdgeShape } from '../Edge';
 
 export type UseEdgeGeometry = {
   getGeometries(edges: Array<InternalGraphEdge>): Array<BufferGeometry>;
@@ -31,7 +27,8 @@ export type UseEdgeGeometry = {
 const NULL_GEOMETRY = new BoxGeometry(0, 0, 0);
 
 export function useEdgeGeometry(
-  arrowPlacement: EdgeArrowPosition
+  arrowPlacement: EdgeArrowPosition,
+  shape: EdgeShape
 ): UseEdgeGeometry {
   // We don't want to rerun everything when the state changes,
   // but we do want to use the most recent nodes whenever `getGeometries`
@@ -43,6 +40,7 @@ export function useEdgeGeometry(
 
   const geometryCacheRef = useRef(new Map<string, BufferGeometry>());
 
+  const curved = shape === 'curve';
   const getGeometries = useCallback(
     (edges: Array<InternalGraphEdge>): Array<BufferGeometry> => {
       const geometries: Array<BufferGeometry> = [];
@@ -68,29 +66,22 @@ export function useEdgeGeometry(
           return;
         }
 
-        // Handle arrow position offset
-        const offset = arrowPlacement === 'end' ? to.size : 0;
-        const curvePoints = getPoints({
-          from,
-          to: { ...to, size: offset + size + LABEL_FONT_SIZE }
-        });
+        const fromVector = new Vector3(
+          from?.position.x,
+          from?.position.y,
+          from?.position.z || 0
+        );
+        const toVector = new Vector3(
+          to?.position.x,
+          to?.position.y,
+          to?.position.z || 0
+        );
 
-        const fromVertices = [
-          curvePoints.from?.x,
-          curvePoints.from?.y,
-          curvePoints.from?.z || 0
-        ];
-        const toVertices = [
-          curvePoints.to?.x,
-          curvePoints.to?.y,
-          curvePoints.to?.z || 0
-        ];
+        const curve = curved
+          ? new CatmullRomCurve3(getCurvePoints(fromVector, toVector))
+          : new CatmullRomCurve3([fromVector, toVector]);
 
-        const curve = new CatmullRomCurve3([
-          new Vector3(...fromVertices),
-          new Vector3(...toVertices)
-        ]);
-        const edgeGeometry = new TubeBufferGeometry(
+        let edgeGeometry = new TubeBufferGeometry(
           curve,
           20,
           size / 2,
@@ -104,19 +95,16 @@ export function useEdgeGeometry(
           return;
         }
 
-        const arrowPoints = getPoints({ from, to });
+        const [arrowLength, arrowSize] = getArrowSize(size);
 
-        const arrowLength = size + 6;
-        const arrowSize = 2 + size / 1.5;
-
-        let position =
-          arrowPlacement === 'mid'
-            ? getMidPoint(arrowPoints)
-            : getArrowPosition(arrowPoints, arrowLength);
-
-        const [fromVector, toVector] = getQuaternion(arrowPoints);
+        const [arrowPosition, arrowRotation] = getArrowVectors(
+          arrowPlacement,
+          curve,
+          arrowLength,
+          from.size
+        );
         const quaternion = new Quaternion();
-        quaternion.setFromUnitVectors(fromVector, toVector);
+        quaternion.setFromUnitVectors(new Vector3(0, 1, 0), arrowRotation);
 
         const arrowGeometry = new CylinderGeometry(
           0,
@@ -127,7 +115,19 @@ export function useEdgeGeometry(
           true
         );
         arrowGeometry.applyQuaternion(quaternion);
-        arrowGeometry.translate(position.x, position.y, position.z);
+        arrowGeometry.translate(
+          arrowPosition.x,
+          arrowPosition.y,
+          arrowPosition.z
+        );
+
+        // Move edge so it doesn't stick through the arrow:
+        if (arrowPlacement && arrowPlacement === 'end') {
+          const curve = curved
+            ? new CatmullRomCurve3(getCurvePoints(fromVector, arrowPosition))
+            : new CatmullRomCurve3([fromVector, arrowPosition]);
+          edgeGeometry = new TubeBufferGeometry(curve, 20, size / 2, 5, false);
+        }
 
         const merged = mergeBufferGeometries([edgeGeometry, arrowGeometry]);
         geometries.push(merged);
@@ -135,7 +135,7 @@ export function useEdgeGeometry(
       });
       return geometries;
     },
-    [arrowPlacement]
+    [arrowPlacement, curved]
   );
 
   const getGeometry = useCallback(

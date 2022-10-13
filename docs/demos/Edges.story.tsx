@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
-import { simpleEdges, simpleNodes } from '../assets/demo';
+import { simpleEdges, simpleNodes, treeEdges } from '../assets/demo';
 
 export default {
   title: 'Demos/Edges',
@@ -37,29 +37,30 @@ export const Sizes = () => (
         source: '1',
         target: '2',
         id: '1-2',
-        label: '1-2',
+        label: '1-2'
       },
       {
         source: '2',
         target: '3',
         id: '2-3',
         label: '2-3',
-        size: 5,
+        size: 5
       },
       {
         source: '3',
         target: '4',
         id: '3-4',
         label: '3-4',
-        size: 3,
+        size: 3
       },
       {
         source: '4',
         target: '5',
         id: '4-5',
         label: '4-5',
-        size: 10,
-      }]}
+        size: 10
+      }
+    ]}
   />
 );
 
@@ -67,6 +68,15 @@ export const Events = () => (
   <GraphCanvas
     nodes={simpleNodes}
     edges={simpleEdges}
+    onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
+  />
+);
+
+export const Curved = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={treeEdges}
+    edgeShape="curve"
     onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
   />
 );

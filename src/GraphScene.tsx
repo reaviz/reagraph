@@ -23,6 +23,7 @@ import {
   Edge,
   EdgeArrowPosition,
   EdgeLabelPosition,
+  EdgeShape,
   Edges,
   Node
 } from './symbols';
@@ -97,6 +98,11 @@ export interface GraphSceneProps {
    * Placement of edge arrows.
    */
   edgeArrowPosition?: EdgeArrowPosition;
+
+  /**
+   * Shape of edge.
+   */
+  edgeShape?: EdgeShape;
 
   /**
    * Font of label, same as troika-three-text
@@ -225,6 +231,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         draggable,
         edgeLabelPosition,
         edgeArrowPosition,
+        edgeShape = 'line',
         labelFontUrl,
         renderNode,
         ...rest
@@ -285,6 +292,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                     animated={animated}
                     labelPlacement={edgeLabelPosition}
                     arrowPlacement={edgeArrowPosition}
+                    shape={edgeShape}
                     contextMenu={contextMenu}
                     onClick={onEdgeClick}
                     onContextMenu={onEdgeContextMenu}
@@ -300,6 +308,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   animated={animated}
                   labelPlacement={edgeLabelPosition}
                   arrowPlacement={edgeArrowPosition}
+                  shape={edgeShape}
                   contextMenu={contextMenu}
                   onClick={onEdgeClick}
                   onContextMenu={onEdgeContextMenu}
