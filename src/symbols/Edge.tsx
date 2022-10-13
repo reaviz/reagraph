@@ -91,7 +91,7 @@ export const Edge: FC<EdgeProps> = ({
     let curve = curved
       ? new CatmullRomCurve3(getCurvePoints(fromVector, toVector))
       : new CatmullRomCurve3([fromVector, toVector]);
-    console.log({ arrowLength });
+
     const [arrowPosition, arrowRotation] = getArrowVectors(
       arrowPlacement,
       curve,
