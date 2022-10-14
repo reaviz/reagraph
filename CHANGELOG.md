@@ -1,3 +1,6 @@
+# 4.6.0 - 10/14/22
+- [feature] add edge curve interpolation #81
+
 # 4.5.1 - 10/10/22
 - [fix] getIsCollapsed missing a not #80
 
