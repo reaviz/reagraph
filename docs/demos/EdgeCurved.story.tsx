@@ -3,12 +3,41 @@ import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
-  title: 'Demos/Edges',
+  title: 'Demos/Edges/Curved',
   component: GraphCanvas
 };
 
-export const Sizes = () => (
+export const Curved = () => (
   <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    edgeArrowPosition="none"
+    edgeInterpolation="curved"
+    onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
+  />
+);
+
+export const CurvedArrowsEnd = () => (
+  <GraphCanvas
+    edgeArrowPosition="end"
+    edgeInterpolation="curved"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
+);
+
+export const CurvedArrowsMid = () => (
+  <GraphCanvas
+    edgeArrowPosition="mid"
+    edgeInterpolation="curved"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
+);
+
+export const CurvedSizes = () => (
+  <GraphCanvas
+    edgeInterpolation="curved"
     labelType="all"
     nodes={[
       {
@@ -61,13 +90,5 @@ export const Sizes = () => (
         size: 10
       }
     ]}
-  />
-);
-
-export const Events = () => (
-  <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
-    onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
   />
 );

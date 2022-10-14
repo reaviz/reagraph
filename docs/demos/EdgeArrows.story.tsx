@@ -30,21 +30,3 @@ export const None = () => (
     edges={simpleEdges}
   />
 );
-
-export const CurvedEnd = () => (
-  <GraphCanvas
-    edgeShape="curve"
-    edgeArrowPosition="end"
-    nodes={simpleNodes}
-    edges={simpleEdges}
-  />
-);
-
-export const CurvedMid = () => (
-  <GraphCanvas
-    edgeShape="curve"
-    edgeArrowPosition="mid"
-    nodes={simpleNodes}
-    edges={simpleEdges}
-  />
-);

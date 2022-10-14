@@ -59,7 +59,8 @@ export const Edge: FC<EdgeProps> = ({
   const midPoint = useMemo(
     () =>
       getMidPoint(
-        { from: from.position, to: to.position },
+        from.position,
+        to.position,
         getLabelOffsetByType(labelOffset, labelPlacement)
       ),
     [from.position, to.position, labelOffset, labelPlacement]

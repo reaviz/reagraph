@@ -7,7 +7,7 @@ import { useStore } from '../../store';
 import { Theme } from '../../themes';
 import { ContextMenuEvent, InternalGraphEdge } from '../../types';
 import { EdgeArrowPosition } from '../Arrow';
-import { EdgeLabelPosition, EdgeShape } from '../Edge';
+import { EdgeLabelPosition, EdgeInterpolation } from '../Edge';
 import { useEdgeGeometry } from './useEdgeGeometry';
 import { EdgeEvents, useEdgeEvents } from './useEdgeEvents';
 import {
@@ -23,7 +23,7 @@ export type EdgesProps = {
   disabled?: boolean;
   edges: Array<InternalGraphEdge>;
   labelPlacement?: EdgeLabelPosition;
-  shape?: EdgeShape;
+  interpolation?: EdgeInterpolation;
   theme: Theme;
 } & EdgeEvents;
 
@@ -57,15 +57,18 @@ export const Edges: FC<EdgesProps> = ({
   contextMenu,
   disabled,
   edges,
+  interpolation = 'linear',
   labelPlacement = 'inline',
-  shape = 'line',
   theme,
   onClick,
   onContextMenu,
   onPointerOut,
   onPointerOver
 }) => {
-  const { getGeometries, getGeometry } = useEdgeGeometry(arrowPlacement, shape);
+  const { getGeometries, getGeometry } = useEdgeGeometry(
+    arrowPlacement,
+    interpolation
+  );
 
   const [draggingId, edgeMeshes, setEdgeMeshes, actives, selections] = useStore(
     state => [

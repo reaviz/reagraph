@@ -8,7 +8,7 @@ import {
   Vector3,
   Curve
 } from 'three';
-import { getRotation, animationConfig } from '../utils';
+import { animationConfig } from '../utils';
 import { useStore } from '../store';
 
 export type EdgeArrowPosition = 'none' | 'mid' | 'end';
@@ -102,29 +102,3 @@ Arrow.defaultProps = {
   opacity: 0.5,
   color: '#D8E6EA'
 };
-
-export function getArrowVectors(
-  placement: EdgeArrowPosition,
-  curve: Curve<Vector3>,
-  arrowLength: number,
-  radius: number
-): [Vector3, Vector3] {
-  const curveLength = curve.getLength();
-  const absSize = placement === 'end' ? curveLength : curveLength / 2;
-  const offset = placement === 'end' ? arrowLength / 2 + radius : 0;
-  const u = (absSize - offset) / curveLength;
-
-  // To get the rotation to follow the line, take a point just behind
-  // and just in front of the arrow position:
-  const position = curve.getPointAt(u);
-  const behind = curve.getPointAt(Math.max(0, u - 0.01));
-  const ahead = curve.getPointAt(Math.min(1, u + 0.01));
-
-  const rotation = getRotation({ from: behind, to: ahead });
-
-  return [position, rotation];
-}
-
-export function getArrowSize(size: number): [number, number] {
-  return [size + 6, 2 + size / 1.5];
-}

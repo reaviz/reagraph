@@ -2,8 +2,9 @@ import { useCallback, useRef } from 'react';
 import {
   BoxGeometry,
   BufferGeometry,
-  CatmullRomCurve3,
   CylinderGeometry,
+  LineCurve3,
+  QuadraticBezierCurve3,
   Quaternion,
   TubeBufferGeometry,
   Vector3
@@ -12,9 +13,9 @@ import { mergeBufferGeometries } from 'three-stdlib';
 
 import { GraphState, useStore } from '../../store';
 import { InternalGraphEdge } from '../../types';
-import { getCurvePoints } from '../../utils';
-import { EdgeArrowPosition, getArrowSize, getArrowVectors } from '../Arrow';
-import { EdgeShape } from '../Edge';
+import { getCurvePoints, getArrowSize, getArrowVectors } from '../../utils';
+import { EdgeArrowPosition } from '../Arrow';
+import { EdgeInterpolation } from '../Edge';
 
 export type UseEdgeGeometry = {
   getGeometries(edges: Array<InternalGraphEdge>): Array<BufferGeometry>;
@@ -28,7 +29,7 @@ const NULL_GEOMETRY = new BoxGeometry(0, 0, 0);
 
 export function useEdgeGeometry(
   arrowPlacement: EdgeArrowPosition,
-  shape: EdgeShape
+  interpolation: EdgeInterpolation
 ): UseEdgeGeometry {
   // We don't want to rerun everything when the state changes,
   // but we do want to use the most recent nodes whenever `getGeometries`
@@ -40,7 +41,7 @@ export function useEdgeGeometry(
 
   const geometryCacheRef = useRef(new Map<string, BufferGeometry>());
 
-  const curved = shape === 'curve';
+  const curved = interpolation === 'curved';
   const getGeometries = useCallback(
     (edges: Array<InternalGraphEdge>): Array<BufferGeometry> => {
       const geometries: Array<BufferGeometry> = [];
@@ -78,8 +79,8 @@ export function useEdgeGeometry(
         );
 
         const curve = curved
-          ? new CatmullRomCurve3(getCurvePoints(fromVector, toVector))
-          : new CatmullRomCurve3([fromVector, toVector]);
+          ? new QuadraticBezierCurve3(...getCurvePoints(fromVector, toVector))
+          : new LineCurve3(fromVector, toVector);
 
         let edgeGeometry = new TubeBufferGeometry(
           curve,
@@ -124,8 +125,10 @@ export function useEdgeGeometry(
         // Move edge so it doesn't stick through the arrow:
         if (arrowPlacement && arrowPlacement === 'end') {
           const curve = curved
-            ? new CatmullRomCurve3(getCurvePoints(fromVector, arrowPosition))
-            : new CatmullRomCurve3([fromVector, arrowPosition]);
+            ? new QuadraticBezierCurve3(
+              ...getCurvePoints(fromVector, arrowPosition)
+            )
+            : new LineCurve3(fromVector, arrowPosition);
           edgeGeometry = new TubeBufferGeometry(curve, 20, size / 2, 5, false);
         }
 

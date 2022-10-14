@@ -1,5 +1,12 @@
 import React, { useMemo, useRef } from 'react';
-import { darkTheme, GraphCanvas, GraphCanvasRef, GraphEdge, GraphNode, useSelection } from '../../src';
+import {
+  darkTheme,
+  GraphCanvas,
+  GraphCanvasRef,
+  GraphEdge,
+  GraphNode,
+  useSelection
+} from '../../src';
 import cyberJson from '../assets/cyber.json';
 import fireSvg from '../assets/fire.svg';
 import flagSvg from '../assets/flag.svg';
@@ -17,20 +24,20 @@ export default {
 };
 
 const iconMap = {
-  'Incident': fireSvg,
-  'Country': flagSvg,
-  'Province': flagSvg,
-  'Place': flagSvg,
-  'Continent': flagSvg,
-  'Username': userSvg,
-  'Person': userSvg,
+  Incident: fireSvg,
+  Country: flagSvg,
+  Province: flagSvg,
+  Place: flagSvg,
+  Continent: flagSvg,
+  Username: userSvg,
+  Person: userSvg,
   'twitter.com': twitterSvg,
-  'Keyphrase': keySvg,
+  Keyphrase: keySvg,
   'Donald Trump': trumpSvg,
-  'GovernmentBody': govSvg,
-  'MilitaryEquipment': missleSvg,
-  'Product': productSvg
-}
+  GovernmentBody: govSvg,
+  MilitaryEquipment: missleSvg,
+  Product: productSvg
+};
 
 export const CyberSecurity = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
@@ -64,7 +71,14 @@ export const CyberSecurity = () => {
     return [n, e];
   }, []);
 
-  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+  const {
+    selections,
+    actives,
+    onNodeClick,
+    onCanvasClick,
+    onNodePointerOver,
+    onNodePointerOut
+  } = useSelection({
     ref: graphRef,
     nodes,
     edges,
@@ -86,7 +100,7 @@ export const CyberSecurity = () => {
       theme={darkTheme}
       draggable
       layoutType="forceDirected2d"
-      edgeShape="curve"
+      edgeInterpolation="curved"
     />
   );
 };

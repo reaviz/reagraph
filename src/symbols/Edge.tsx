@@ -1,21 +1,18 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import {
-  Arrow,
-  EdgeArrowPosition,
-  getArrowSize,
-  getArrowVectors
-} from './Arrow';
+import { Arrow, EdgeArrowPosition } from './Arrow';
 import { Label } from './Label';
 import {
   animationConfig,
+  getArrowSize,
+  getArrowVectors,
   getCurvePoints,
   getLabelOffsetByType
 } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../themes';
 import { useStore } from '../store';
-import { CatmullRomCurve3, Euler, Vector3 } from 'three';
+import { Euler, LineCurve3, QuadraticBezierCurve3, Vector3 } from 'three';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
@@ -32,7 +29,7 @@ export const LABEL_FONT_SIZE = 6;
  */
 export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 
-export type EdgeShape = 'line' | 'curve';
+export type EdgeInterpolation = 'linear' | 'curved';
 
 export interface EdgeProps {
   id: string;
@@ -41,7 +38,7 @@ export interface EdgeProps {
   disabled?: boolean;
   labelPlacement?: EdgeLabelPosition;
   arrowPlacement?: EdgeArrowPosition;
-  shape: EdgeShape;
+  interpolation: EdgeInterpolation;
   contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
   onClick?: (edge: InternalGraphEdge) => void;
   onContextMenu?: (edge?: InternalGraphEdge) => void;
@@ -50,14 +47,14 @@ export interface EdgeProps {
 }
 
 export const Edge: FC<EdgeProps> = ({
-  id,
   animated,
-  theme,
+  arrowPlacement,
+  contextMenu,
   disabled,
   labelPlacement,
-  arrowPlacement,
-  shape,
-  contextMenu,
+  id,
+  interpolation,
+  theme,
   onContextMenu,
   onClick,
   onPointerOver,
@@ -65,7 +62,7 @@ export const Edge: FC<EdgeProps> = ({
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
-  const curved = shape === 'curve';
+  const curved = interpolation === 'curved';
 
   const from = useStore(store => store.nodes.find(node => node.id === fromId));
   const to = useStore(store => store.nodes.find(node => node.id === toId));
@@ -89,8 +86,8 @@ export const Edge: FC<EdgeProps> = ({
       to.position.z || 0
     );
     let curve = curved
-      ? new CatmullRomCurve3(getCurvePoints(fromVector, toVector))
-      : new CatmullRomCurve3([fromVector, toVector]);
+      ? new QuadraticBezierCurve3(...getCurvePoints(fromVector, toVector))
+      : new LineCurve3(fromVector, toVector);
 
     const [arrowPosition, arrowRotation] = getArrowVectors(
       arrowPlacement,
@@ -100,8 +97,10 @@ export const Edge: FC<EdgeProps> = ({
     );
     if (arrowPlacement === 'end') {
       curve = curved
-        ? new CatmullRomCurve3(getCurvePoints(fromVector, arrowPosition))
-        : new CatmullRomCurve3([fromVector, arrowPosition]);
+        ? new QuadraticBezierCurve3(
+          ...getCurvePoints(fromVector, arrowPosition)
+        )
+        : new LineCurve3(fromVector, arrowPosition);
     }
     return [curve, arrowPosition, arrowRotation];
   }, [curved, from, to, arrowPlacement, arrowLength]);

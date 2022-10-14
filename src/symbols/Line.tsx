@@ -1,13 +1,14 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { animationConfig, EdgeVectors3, getCurvePoints } from '../utils';
+import { animationConfig, getCurvePoints } from '../utils';
 import {
   Vector3,
   TubeBufferGeometry,
-  CatmullRomCurve3,
   ColorRepresentation,
   Color,
-  Curve
+  Curve,
+  LineCurve3,
+  QuadraticBezierCurve3
 } from 'three';
 import { useStore } from '../store';
 import { ThreeEvent } from '@react-three/fiber';
@@ -75,8 +76,8 @@ export const Line: FC<LineProps> = ({
         const toVector = new Vector3(...toVertices);
 
         const curve = curved
-          ? new CatmullRomCurve3(getCurvePoints(fromVector, toVector))
-          : new CatmullRomCurve3([fromVector, toVector]);
+          ? new QuadraticBezierCurve3(...getCurvePoints(fromVector, toVector))
+          : new LineCurve3(fromVector, toVector);
         tubeRef.current.copy(
           new TubeBufferGeometry(curve, 20, size / 2, 5, false)
         );
