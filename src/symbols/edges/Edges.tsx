@@ -1,32 +1,20 @@
-import React, {
-  FC,
-  RefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef
-} from 'react';
-import { a, SpringValue } from '@react-spring/three';
+import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
+import { a } from '@react-spring/three';
 import { useFrame } from '@react-three/fiber';
-import {
-  BufferGeometry,
-  ColorRepresentation,
-  DoubleSide,
-  Mesh,
-  Raycaster,
-  TubeBufferGeometry
-} from 'three';
+import { DoubleSide, Mesh, Raycaster, TubeBufferGeometry } from 'three';
 
 import { useStore } from '../../store';
 import { Theme } from '../../themes';
 import { ContextMenuEvent, InternalGraphEdge } from '../../types';
-import { Edge, EdgeArrowPosition, EdgeLabelPosition } from './Edge';
+import { EdgeArrowPosition } from '../Arrow';
+import { EdgeLabelPosition, EdgeInterpolation } from '../Edge';
 import { useEdgeGeometry } from './useEdgeGeometry';
 import { EdgeEvents, useEdgeEvents } from './useEdgeEvents';
 import {
   useEdgePositionAnimation,
   useEdgeOpacityAnimation
 } from './useEdgeAnimations';
+import { Edge } from './Edge';
 
 export type EdgesProps = {
   animated?: boolean;
@@ -35,6 +23,7 @@ export type EdgesProps = {
   disabled?: boolean;
   edges: Array<InternalGraphEdge>;
   labelPlacement?: EdgeLabelPosition;
+  interpolation?: EdgeInterpolation;
   theme: Theme;
 } & EdgeEvents;
 
@@ -68,6 +57,7 @@ export const Edges: FC<EdgesProps> = ({
   contextMenu,
   disabled,
   edges,
+  interpolation = 'linear',
   labelPlacement = 'inline',
   theme,
   onClick,
@@ -75,7 +65,10 @@ export const Edges: FC<EdgesProps> = ({
   onPointerOut,
   onPointerOver
 }) => {
-  const { getGeometries, getGeometry } = useEdgeGeometry(arrowPlacement);
+  const { getGeometries, getGeometry } = useEdgeGeometry(
+    arrowPlacement,
+    interpolation
+  );
 
   const [draggingId, edgeMeshes, setEdgeMeshes, actives, selections] = useStore(
     state => [

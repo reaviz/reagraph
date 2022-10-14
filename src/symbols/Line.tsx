@@ -1,23 +1,26 @@
 import React, { FC, useMemo, useRef } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { animationConfig, EdgeVectors3 } from '../utils';
+import { animationConfig, getCurvePoints } from '../utils';
 import {
   Vector3,
   TubeBufferGeometry,
-  CatmullRomCurve3,
   ColorRepresentation,
-  Color
+  Color,
+  Curve,
+  LineCurve3,
+  QuadraticBezierCurve3
 } from 'three';
 import { useStore } from '../store';
 import { ThreeEvent } from '@react-three/fiber';
 
 export interface LineProps {
-  color?: ColorRepresentation;
-  size?: number;
   animated?: boolean;
+  color?: ColorRepresentation;
+  curved: boolean;
+  curve: Curve<Vector3>;
   id: string;
   opacity?: number;
-  points: EdgeVectors3;
+  size?: number;
   onClick?: () => void;
   onContextMenu?: () => void;
   onPointerOver?: (event: ThreeEvent<PointerEvent>) => void;
@@ -25,12 +28,13 @@ export interface LineProps {
 }
 
 export const Line: FC<LineProps> = ({
-  color,
-  id,
-  size,
-  opacity,
-  points,
   animated,
+  color,
+  curve,
+  curved = false,
+  id,
+  opacity,
+  size,
   onContextMenu,
   onClick,
   onPointerOver,
@@ -54,38 +58,36 @@ export const Line: FC<LineProps> = ({
     }
   });
 
-  useSpring(
-    () => ({
+  useSpring(() => {
+    const from = curve.getPoint(0);
+    const to = curve.getPoint(1);
+    return {
       from: {
         fromVertices: [0, 0, 0],
         toVertices: [0, 0, 0]
       },
       to: {
-        fromVertices: [points.from?.x, points.from?.y, points.from?.z || 0],
-        toVertices: [points.to?.x, points.to?.y, points.to?.z || 0]
+        fromVertices: [from?.x, from?.y, from?.z || 0],
+        toVertices: [to?.x, to?.y, to?.z || 0]
       },
       onChange: event => {
         const { fromVertices, toVertices } = event.value;
-        // Reference: https://bit.ly/3ORuuBP
-        const t = new CatmullRomCurve3([
-          new Vector3(...fromVertices),
-          new Vector3(...toVertices)
-        ]);
+        const fromVector = new Vector3(...fromVertices);
+        const toVector = new Vector3(...toVertices);
 
-        tubeRef.current.copy(new TubeBufferGeometry(t, 20, size / 2, 5, false));
+        const curve = curved
+          ? new QuadraticBezierCurve3(...getCurvePoints(fromVector, toVector))
+          : new LineCurve3(fromVector, toVector);
+        tubeRef.current.copy(
+          new TubeBufferGeometry(curve, 20, size / 2, 5, false)
+        );
       },
       config: {
         ...animationConfig,
         duration: animated && !draggingId ? undefined : 0
       }
-    }),
-    [animated, draggingId, points, size]
-  );
-
-  const curve = useMemo(
-    () => new CatmullRomCurve3([new Vector3(0, 0, 0), new Vector3(0, 0, 0)]),
-    []
-  );
+    };
+  }, [animated, draggingId, curve, size]);
 
   return (
     <mesh
@@ -101,11 +103,7 @@ export const Line: FC<LineProps> = ({
         }
       }}
     >
-      <tubeBufferGeometry
-        attach="geometry"
-        args={[curve, 20, size / 2, 5, false]}
-        ref={tubeRef}
-      />
+      <tubeBufferGeometry attach="geometry" ref={tubeRef} />
       <a.meshBasicMaterial
         attach="material"
         opacity={lineOpacity}

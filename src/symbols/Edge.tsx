@@ -4,19 +4,20 @@ import { Arrow, EdgeArrowPosition } from './Arrow';
 import { Label } from './Label';
 import {
   animationConfig,
-  getLabelOffsetByType,
-  getMidPoint,
-  getPoints
+  getArrowSize,
+  getArrowVectors,
+  getCurvePoints,
+  getLabelOffsetByType
 } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../themes';
 import { useStore } from '../store';
-import { Euler } from 'three';
+import { Euler, LineCurve3, QuadraticBezierCurve3, Vector3 } from 'three';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 
-const LABEL_FONT_SIZE = 6;
+export const LABEL_FONT_SIZE = 6;
 
 /**
  * Label positions relatively edge
@@ -28,6 +29,8 @@ const LABEL_FONT_SIZE = 6;
  */
 export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 
+export type EdgeInterpolation = 'linear' | 'curved';
+
 export interface EdgeProps {
   id: string;
   theme: Theme;
@@ -35,6 +38,7 @@ export interface EdgeProps {
   disabled?: boolean;
   labelPlacement?: EdgeLabelPosition;
   arrowPlacement?: EdgeArrowPosition;
+  interpolation: EdgeInterpolation;
   contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
   onClick?: (edge: InternalGraphEdge) => void;
   onContextMenu?: (edge?: InternalGraphEdge) => void;
@@ -43,13 +47,14 @@ export interface EdgeProps {
 }
 
 export const Edge: FC<EdgeProps> = ({
-  id,
   animated,
-  theme,
-  disabled,
-  labelPlacement,
   arrowPlacement,
   contextMenu,
+  disabled,
+  labelPlacement,
+  id,
+  interpolation,
+  theme,
   onContextMenu,
   onClick,
   onPointerOver,
@@ -57,6 +62,7 @@ export const Edge: FC<EdgeProps> = ({
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
+  const curved = interpolation === 'curved';
 
   const from = useStore(store => store.nodes.find(node => node.id === fromId));
   const to = useStore(store => store.nodes.find(node => node.id === toId));
@@ -65,25 +71,45 @@ export const Edge: FC<EdgeProps> = ({
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;
-  const points = useMemo(() => {
-    // Handle arrow position offset
-    const offset = arrowPlacement === 'end' ? to.size : 0;
 
-    return getPoints({
-      from,
-      to: { ...to, size: offset + size + LABEL_FONT_SIZE }
-    });
-  }, [from, to, size, arrowPlacement]);
+  const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
 
-  const realPoints = useMemo(() => getPoints({ from, to }), [from, to]);
-  const midPoint = useMemo(
-    () =>
-      getMidPoint(
-        { from: from.position, to: to.position },
-        getLabelOffsetByType(labelOffset, labelPlacement)
-      ),
-    [from.position, to.position, labelOffset, labelPlacement]
-  );
+  const [curve, arrowPosition, arrowRotation] = useMemo(() => {
+    const fromVector = new Vector3(
+      from.position.x,
+      from.position.y,
+      from.position.z || 0
+    );
+    const toVector = new Vector3(
+      to.position.x,
+      to.position.y,
+      to.position.z || 0
+    );
+    let curve = curved
+      ? new QuadraticBezierCurve3(...getCurvePoints(fromVector, toVector))
+      : new LineCurve3(fromVector, toVector);
+
+    const [arrowPosition, arrowRotation] = getArrowVectors(
+      arrowPlacement,
+      curve,
+      arrowLength,
+      from.size
+    );
+    if (arrowPlacement === 'end') {
+      curve = curved
+        ? new QuadraticBezierCurve3(
+          ...getCurvePoints(fromVector, arrowPosition)
+        )
+        : new LineCurve3(fromVector, arrowPosition);
+    }
+    return [curve, arrowPosition, arrowRotation];
+  }, [curved, from, to, arrowPlacement, arrowLength]);
+
+  const midPoint = useMemo(() => {
+    const offset = getLabelOffsetByType(labelOffset, labelPlacement);
+    const t = 0.5 + offset / curve.getLength();
+    return curve.getPoint(t);
+  }, [curve, labelOffset, labelPlacement]);
 
   const { isSelected, hasSelections, isActive } = useStore(state => ({
     hasSelections: state.selections?.length,
@@ -151,16 +177,17 @@ export const Edge: FC<EdgeProps> = ({
   return (
     <group>
       <Line
-        id={id}
-        opacity={selectionOpacity}
-        points={points}
-        size={size}
         animated={animated}
         color={
           isSelected || active || isActive
             ? theme.edge.activeFill
             : theme.edge.fill
         }
+        curve={curve}
+        curved={curved}
+        id={id}
+        opacity={selectionOpacity}
+        size={size}
         onClick={() => {
           if (!disabled) {
             onClick?.(edge);
@@ -177,16 +204,18 @@ export const Edge: FC<EdgeProps> = ({
       />
       {arrowPlacement !== 'none' && (
         <Arrow
-          position={realPoints}
-          opacity={selectionOpacity}
-          size={size}
           animated={animated}
-          placement={arrowPlacement}
           color={
             isSelected || active || isActive
               ? theme.arrow.activeFill
               : theme.arrow.fill
           }
+          curve={curve}
+          length={arrowLength}
+          opacity={selectionOpacity}
+          position={arrowPosition}
+          rotation={arrowRotation}
+          size={arrowSize}
           onActive={setActive}
           onContextMenu={() => {
             if (!disabled) {
@@ -222,5 +251,6 @@ export const Edge: FC<EdgeProps> = ({
 };
 
 Edge.defaultProps = {
-  labelPlacement: 'inline'
+  labelPlacement: 'inline',
+  arrowPlacement: 'end'
 };

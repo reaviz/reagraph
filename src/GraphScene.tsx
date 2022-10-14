@@ -22,6 +22,7 @@ import { SizingType } from './sizing';
 import {
   Edge,
   EdgeArrowPosition,
+  EdgeInterpolation,
   EdgeLabelPosition,
   Edges,
   Node
@@ -97,6 +98,11 @@ export interface GraphSceneProps {
    * Placement of edge arrows.
    */
   edgeArrowPosition?: EdgeArrowPosition;
+
+  /**
+   * Shape of edge.
+   */
+  edgeInterpolation?: EdgeInterpolation;
 
   /**
    * Font of label, same as troika-three-text
@@ -225,6 +231,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         draggable,
         edgeLabelPosition,
         edgeArrowPosition,
+        edgeInterpolation = 'linear',
         labelFontUrl,
         renderNode,
         ...rest
@@ -285,6 +292,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                     animated={animated}
                     labelPlacement={edgeLabelPosition}
                     arrowPlacement={edgeArrowPosition}
+                    interpolation={edgeInterpolation}
                     contextMenu={contextMenu}
                     onClick={onEdgeClick}
                     onContextMenu={onEdgeContextMenu}
@@ -300,6 +308,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   animated={animated}
                   labelPlacement={edgeLabelPosition}
                   arrowPlacement={edgeArrowPosition}
+                  interpolation={edgeInterpolation}
                   contextMenu={contextMenu}
                   onClick={onEdgeClick}
                   onContextMenu={onEdgeContextMenu}

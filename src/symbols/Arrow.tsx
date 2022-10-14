@@ -1,54 +1,44 @@
 import React, { FC, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { Color, ColorRepresentation, Mesh, DoubleSide } from 'three';
 import {
-  getQuaternion,
-  animationConfig,
-  getMidPoint,
-  getArrowPosition,
-  EdgeVectors3
-} from '../utils';
+  Color,
+  ColorRepresentation,
+  Mesh,
+  DoubleSide,
+  Vector3,
+  Curve
+} from 'three';
+import { animationConfig } from '../utils';
 import { useStore } from '../store';
 
 export type EdgeArrowPosition = 'none' | 'mid' | 'end';
 
 export interface ArrowProps {
-  position: EdgeVectors3;
-  color?: ColorRepresentation;
   animated?: boolean;
+  color?: ColorRepresentation;
+  length: number;
   opacity?: number;
-  size?: number;
-  placement?: EdgeArrowPosition;
+  position: Vector3;
+  rotation: Vector3;
+  size: number;
   onContextMenu?: () => void;
   onActive?: (state: boolean) => void;
 }
 
 export const Arrow: FC<ArrowProps> = ({
-  position,
-  size,
   animated,
-  opacity,
-  placement,
   color,
+  length,
+  opacity,
+  position,
+  rotation,
+  size,
   onActive,
   onContextMenu
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const meshRef = useRef<Mesh | null>(null);
-  const quaternion = useMemo(() => getQuaternion(position), [position]);
   const draggingId = useStore(state => state.draggingId);
-  const [arrowLength, arrowSize] = useMemo(
-    () => [size + 6, 2 + size / 1.5],
-    [size]
-  );
-
-  const endPos = useMemo(() => {
-    if (placement === 'mid') {
-      return getMidPoint(position);
-    } else if (placement === 'end') {
-      return getArrowPosition(position, arrowLength);
-    }
-  }, [position, placement, arrowLength]);
 
   const [{ pos, arrowOpacity }] = useSpring(
     () => ({
@@ -57,7 +47,7 @@ export const Arrow: FC<ArrowProps> = ({
         arrowOpacity: 0
       },
       to: {
-        pos: [endPos.x, endPos.y, endPos.z],
+        pos: [position.x, position.y, position.z],
         arrowOpacity: opacity
       },
       config: {
@@ -65,17 +55,15 @@ export const Arrow: FC<ArrowProps> = ({
         duration: animated && !draggingId ? undefined : 0
       }
     }),
-    [animated, draggingId, opacity, endPos]
+    [animated, draggingId, opacity, position]
   );
 
   const setQuaternion = useCallback(() => {
-    meshRef.current?.quaternion.setFromUnitVectors(
-      quaternion[0],
-      quaternion[1]
-    );
-  }, [quaternion, meshRef]);
+    const axis = new Vector3(0, 1, 0);
+    meshRef.current?.quaternion.setFromUnitVectors(axis, rotation);
+  }, [rotation, meshRef]);
 
-  useEffect(() => setQuaternion(), [position, setQuaternion]);
+  useEffect(() => setQuaternion(), [setQuaternion]);
 
   return (
     <a.mesh
@@ -93,7 +81,7 @@ export const Arrow: FC<ArrowProps> = ({
       }}
     >
       <cylinderGeometry
-        args={[0, arrowSize, arrowLength, 20, 1, true]}
+        args={[0, size, length, 20, 1, true]}
         attach="geometry"
       />
       <a.meshBasicMaterial
@@ -112,6 +100,5 @@ export const Arrow: FC<ArrowProps> = ({
 Arrow.defaultProps = {
   size: 1,
   opacity: 0.5,
-  placement: 'end',
   color: '#D8E6EA'
 };
