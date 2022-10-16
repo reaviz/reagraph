@@ -6,13 +6,13 @@ import {
   animationConfig,
   getArrowSize,
   getArrowVectors,
-  getCurvePoints,
-  getLabelOffsetByType
+  getCurve,
+  getLabelOffsetByType,
+  getVector
 } from '../utils';
 import { Line } from './Line';
 import { Theme } from '../themes';
 import { useStore } from '../store';
-import { Euler, LineCurve3, QuadraticBezierCurve3, Vector3 } from 'three';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
@@ -75,19 +75,11 @@ export const Edge: FC<EdgeProps> = ({
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
 
   const [curve, arrowPosition, arrowRotation] = useMemo(() => {
-    const fromVector = new Vector3(
-      from.position.x,
-      from.position.y,
-      from.position.z || 0
-    );
-    const toVector = new Vector3(
-      to.position.x,
-      to.position.y,
-      to.position.z || 0
-    );
-    let curve = curved
-      ? new QuadraticBezierCurve3(...getCurvePoints(fromVector, toVector))
-      : new LineCurve3(fromVector, toVector);
+    const fromVector = getVector(from);
+    const fromOffset = from.size;
+    const toVector = getVector(to);
+    const toOffset = to.size;
+    let curve = getCurve(fromVector, fromOffset, toVector, toOffset, curved);
 
     const [arrowPosition, arrowRotation] = getArrowVectors(
       arrowPlacement,
@@ -96,11 +88,7 @@ export const Edge: FC<EdgeProps> = ({
       from.size
     );
     if (arrowPlacement === 'end') {
-      curve = curved
-        ? new QuadraticBezierCurve3(
-          ...getCurvePoints(fromVector, arrowPosition)
-        )
-        : new LineCurve3(fromVector, arrowPosition);
+      curve = getCurve(fromVector, fromOffset, arrowPosition, 0, curved);
     }
     return [curve, arrowPosition, arrowRotation];
   }, [curved, from, to, arrowPlacement, arrowLength]);
@@ -137,27 +125,6 @@ export const Edge: FC<EdgeProps> = ({
       }
     }),
     [midPoint, animated, draggingId]
-  );
-
-  const labelRotation = useMemo(
-    () =>
-      new Euler(
-        0,
-        0,
-        labelPlacement === 'natural'
-          ? 0
-          : Math.atan(
-            (to.position.y - from.position.y) /
-                (to.position.x - from.position.x)
-          )
-      ),
-    [
-      to.position.x,
-      to.position.y,
-      from.position.x,
-      from.position.y,
-      labelPlacement
-    ]
   );
 
   useCursor(active && !draggingId && onClick !== undefined, 'pointer');
@@ -226,7 +193,7 @@ export const Edge: FC<EdgeProps> = ({
         />
       )}
       {labelVisible && label && (
-        <a.group position={labelPosition as any} rotation={labelRotation}>
+        <a.group position={labelPosition as any}>
           <Label
             text={label}
             ellipsis={15}

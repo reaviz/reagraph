@@ -12,7 +12,7 @@ export function getArrowVectors(
 ): [Vector3, Vector3] {
   const curveLength = curve.getLength();
   const absSize = placement === 'end' ? curveLength : curveLength / 2;
-  const offset = placement === 'end' ? arrowLength / 2 + radius : 0;
+  const offset = placement === 'end' ? arrowLength / 2 : 0;
   const u = (absSize - offset) / curveLength;
 
   const position = curve.getPointAt(u);

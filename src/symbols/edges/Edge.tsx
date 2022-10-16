@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { Html } from '@react-three/drei';
-import { ColorRepresentation, Euler } from 'three';
+import { ColorRepresentation } from 'three';
 
 import { useStore } from '../../store';
 import { Theme } from '../../themes';
@@ -87,26 +87,6 @@ export const Edge: FC<EdgeProps> = ({
     [midPoint, animated, draggingId]
   );
 
-  const labelRotation = useMemo(() => {
-    const toY = to.position.y;
-    const fromY = from.position.y;
-    const toX = to.position.x;
-    const fromX = from.position.x;
-    return new Euler(
-      0,
-      0,
-      labelPlacement === 'natural'
-        ? 0
-        : Math.atan((toY - fromY) / (toX - fromX))
-    );
-  }, [
-    to.position.x,
-    to.position.y,
-    from.position.x,
-    from.position.y,
-    labelPlacement
-  ]);
-
   const removeContextMenu = useCallback(
     (edge: InternalGraphEdge) => {
       edgeContextMenus.delete(edge.id);
@@ -118,7 +98,7 @@ export const Edge: FC<EdgeProps> = ({
   return (
     <group>
       {labelVisible && label && (
-        <a.group position={labelPosition as any} rotation={labelRotation}>
+        <a.group position={labelPosition as any}>
           <Label
             text={label}
             ellipsis={15}

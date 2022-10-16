@@ -3,8 +3,6 @@ import {
   BoxGeometry,
   BufferGeometry,
   CylinderGeometry,
-  LineCurve3,
-  QuadraticBezierCurve3,
   Quaternion,
   TubeBufferGeometry,
   Vector3
@@ -13,9 +11,14 @@ import { mergeBufferGeometries } from 'three-stdlib';
 
 import { GraphState, useStore } from '../../store';
 import { InternalGraphEdge } from '../../types';
-import { getCurvePoints, getArrowSize, getArrowVectors } from '../../utils';
+import {
+  getArrowSize,
+  getArrowVectors,
+  getVector,
+  getCurve
+} from '../../utils';
 import { EdgeArrowPosition } from '../Arrow';
-import { EdgeInterpolation } from '../Edge';
+import { EdgeInterpolation, LABEL_FONT_SIZE } from '../Edge';
 
 export type UseEdgeGeometry = {
   getGeometries(edges: Array<InternalGraphEdge>): Array<BufferGeometry>;
@@ -67,20 +70,17 @@ export function useEdgeGeometry(
           return;
         }
 
-        const fromVector = new Vector3(
-          from?.position.x,
-          from?.position.y,
-          from?.position.z || 0
+        const fromVector = getVector(from);
+        const fromOffset = from.size + LABEL_FONT_SIZE;
+        const toVector = getVector(to);
+        const toOffset = to.size + LABEL_FONT_SIZE;
+        let curve = getCurve(
+          fromVector,
+          fromOffset,
+          toVector,
+          toOffset,
+          curved
         );
-        const toVector = new Vector3(
-          to?.position.x,
-          to?.position.y,
-          to?.position.z || 0
-        );
-
-        const curve = curved
-          ? new QuadraticBezierCurve3(...getCurvePoints(fromVector, toVector))
-          : new LineCurve3(fromVector, toVector);
 
         let edgeGeometry = new TubeBufferGeometry(
           curve,
@@ -124,11 +124,13 @@ export function useEdgeGeometry(
 
         // Move edge so it doesn't stick through the arrow:
         if (arrowPlacement && arrowPlacement === 'end') {
-          const curve = curved
-            ? new QuadraticBezierCurve3(
-              ...getCurvePoints(fromVector, arrowPosition)
-            )
-            : new LineCurve3(fromVector, arrowPosition);
+          const curve = getCurve(
+            fromVector,
+            fromOffset,
+            arrowPosition,
+            0,
+            curved
+          );
           edgeGeometry = new TubeBufferGeometry(curve, 20, size / 2, 5, false);
         }
 
