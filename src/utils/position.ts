@@ -1,5 +1,5 @@
-import { Vector3 } from 'three';
-import { InternalVector3 } from '../types';
+import { Curve, LineCurve3, QuadraticBezierCurve3, Vector3 } from 'three';
+import { InternalGraphNode, InternalVector3 } from '../types';
 
 export function getMidPoint(
   from: InternalVector3,
@@ -23,11 +23,11 @@ export function getMidPoint(
 //
 export function getCurvePoints(
   from: Vector3,
-  to: Vector3
+  to: Vector3,
+  offset = -1
 ): [Vector3, Vector3, Vector3] {
   const fromVector = from.clone();
   const toVector = to.clone();
-  const bend = -1;
   const v = new Vector3().subVectors(toVector, fromVector);
   const vlen = v.length();
   const vn = v.clone().normalize();
@@ -37,7 +37,35 @@ export function getCurvePoints(
   const vm = new Vector3()
     .add(fromVector)
     .add(vv)
-    .add(b.multiplyScalar(vlen / 4).multiplyScalar(bend));
+    .add(b.multiplyScalar(vlen / 4).multiplyScalar(offset));
 
   return [from, vm, to];
+}
+
+export function getCurve(
+  from: Vector3,
+  fromOffset: number,
+  to: Vector3,
+  toOffset: number,
+  curved: boolean
+): Curve<Vector3> {
+  const offsetFrom = getPointBetween(from, to, fromOffset);
+  const offsetTo = getPointBetween(to, from, toOffset);
+  return curved
+    ? new QuadraticBezierCurve3(...getCurvePoints(offsetFrom, offsetTo))
+    : new LineCurve3(offsetFrom, offsetTo);
+}
+
+export function getVector(node: InternalGraphNode): Vector3 {
+  return new Vector3(node.position.x, node.position.y, node.position.z || 0);
+}
+
+function getPointBetween(from: Vector3, to: Vector3, offset: number): Vector3 {
+  const distance = from.distanceTo(to);
+  return from.clone().add(
+    to
+      .clone()
+      .sub(from)
+      .multiplyScalar(offset / distance)
+  );
 }
