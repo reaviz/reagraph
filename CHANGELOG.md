@@ -1,3 +1,6 @@
+# 4.6.1 - 10/17/22
+- [fix] Fix edge ends and label rotation #83
+
 # 4.6.0 - 10/14/22
 - [feature] add edge curve interpolation #81
 
