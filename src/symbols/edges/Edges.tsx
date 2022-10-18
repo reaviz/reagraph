@@ -132,6 +132,10 @@ export const Edges: FC<EdgesProps> = ({
 
   const intersect = useCallback(
     (raycaster: Raycaster): Array<InternalGraphEdge> => {
+      // Handle initial raycaster state:
+      if (!raycaster.camera) {
+        return [];
+      }
       const intersections =
         raycaster.intersectObjects<Mesh<TubeBufferGeometry>>(edgeMeshes);
       if (!intersections.length) {
