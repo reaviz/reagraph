@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { Html } from '@react-three/drei';
-import { ColorRepresentation } from 'three';
+import { ColorRepresentation, Euler } from 'three';
 
 import { useStore } from '../../store';
 import { Theme } from '../../themes';
@@ -95,10 +95,31 @@ export const Edge: FC<EdgeProps> = ({
     [edgeContextMenus, setEdgeContextMenus]
   );
 
+  const labelRotation = useMemo(
+    () =>
+      new Euler(
+        0,
+        0,
+        labelPlacement === 'natural'
+          ? 0
+          : Math.atan(
+            (to.position.y - from.position.y) /
+                (to.position.x - from.position.x)
+          )
+      ),
+    [
+      to.position.x,
+      to.position.y,
+      from.position.x,
+      from.position.y,
+      labelPlacement
+    ]
+  );
+
   return (
     <group>
       {labelVisible && label && (
-        <a.group position={labelPosition as any}>
+        <a.group position={labelPosition as any} rotation={labelRotation}>
           <Label
             text={label}
             ellipsis={15}
