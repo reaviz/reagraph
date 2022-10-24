@@ -8,6 +8,7 @@ import {
   getArrowVectors,
   getCurve,
   getLabelOffsetByType,
+  getMidPoint,
   getVector
 } from '../utils';
 import { Line } from './Line';
@@ -16,6 +17,7 @@ import { useStore } from '../store';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
+import { Euler } from 'three';
 
 export const LABEL_FONT_SIZE = 6;
 
@@ -93,11 +95,15 @@ export const Edge: FC<EdgeProps> = ({
     return [curve, arrowPosition, arrowRotation];
   }, [curved, from, to, arrowPlacement, arrowLength]);
 
-  const midPoint = useMemo(() => {
-    const offset = getLabelOffsetByType(labelOffset, labelPlacement);
-    const t = 0.5 + offset / curve.getLength();
-    return curve.getPoint(t);
-  }, [curve, labelOffset, labelPlacement]);
+  const midPoint = useMemo(
+    () =>
+      getMidPoint(
+        from.position,
+        to.position,
+        getLabelOffsetByType(labelOffset, labelPlacement)
+      ),
+    [from.position, to.position, labelOffset, labelPlacement]
+  );
 
   const { isSelected, hasSelections, isActive } = useStore(state => ({
     hasSelections: state.selections?.length,
@@ -125,6 +131,27 @@ export const Edge: FC<EdgeProps> = ({
       }
     }),
     [midPoint, animated, draggingId]
+  );
+
+  const labelRotation = useMemo(
+    () =>
+      new Euler(
+        0,
+        0,
+        labelPlacement === 'natural'
+          ? 0
+          : Math.atan(
+            (to.position.y - from.position.y) /
+                (to.position.x - from.position.x)
+          )
+      ),
+    [
+      to.position.x,
+      to.position.y,
+      from.position.x,
+      from.position.y,
+      labelPlacement
+    ]
   );
 
   useCursor(active && !draggingId && onClick !== undefined, 'pointer');
@@ -193,7 +220,7 @@ export const Edge: FC<EdgeProps> = ({
         />
       )}
       {labelVisible && label && (
-        <a.group position={labelPosition as any}>
+        <a.group position={labelPosition as any} rotation={labelRotation}>
           <Label
             text={label}
             ellipsis={15}
