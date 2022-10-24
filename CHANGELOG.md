@@ -1,3 +1,6 @@
+# 4.6.3 - 10/24/22
+- [fix] Fix edge label positioning #86
+
 # 4.6.2 - 10/18/22
 - [fix] Don't intersect edges until scene is interacted with #84
 
