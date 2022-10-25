@@ -29,28 +29,6 @@ export const Defaults = () => {
   );
 };
 
-export const Dragging = () => {
-  const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, onNodeClick, onCanvasClick } = useSelection({
-    ref: graphRef,
-    nodes: complexNodes,
-    edges: complexEdges,
-    type: 'multi'
-  });
-
-  return (
-    <GraphCanvas
-      draggable
-      ref={graphRef}
-      nodes={complexNodes}
-      edges={complexEdges}
-      selections={selections}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-    />
-  );
-};
-
 export const ModifierKey = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
@@ -74,35 +52,21 @@ export const ModifierKey = () => {
 
 export const PathFinding = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, selectNodePaths, onNodeClick, onCanvasClick } =
-    useSelection({
-      ref: graphRef,
-      nodes: complexNodes,
-      edges: complexEdges,
-      pathSelectionType: 'direct',
-      type: 'multi'
-    });
+  const { selections, actives, selectNodePaths, onNodeClick, onCanvasClick } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    pathSelectionType: 'direct',
+    type: 'multi'
+  });
 
   const from = complexNodes[0].id;
   const to = complexNodes[8].id;
 
   return (
     <Fragment>
-      <div
-        style={{
-          zIndex: 9,
-          position: 'absolute',
-          top: 15,
-          right: 15,
-          background: 'rgba(0, 0, 0, .5)',
-          padding: 1,
-          color: 'white'
-        }}
-      >
-        <button
-          style={{ display: 'block', width: '100%' }}
-          onClick={() => selectNodePaths(from, to)}
-        >
+      <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 1, color: 'white' }}>
+        <button style={{ display: 'block', width: '100%' }} onClick={() => selectNodePaths(from, to)}>
           Select {from} to {to} Paths
         </button>
       </div>
