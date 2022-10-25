@@ -15,7 +15,6 @@ import {
   TubeBufferGeometry,
   Vector2
 } from 'three';
-import shallow from 'zustand/shallow';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { Theme } from '../themes';
@@ -49,12 +48,11 @@ export const Lasso: FC<LassoProps> = ({
   ]);
 
   const mountedRef = useRef<boolean>(false);
-  const nodeSelectionBoxRef = useRef<SelectionBox | null>(null);
-  const edgeSelectionBoxRef = useRef<SelectionBox | null>(null);
+  const selectionBoxRef = useRef<SelectionBox | null>(null);
+  const edgeMeshSelectionBoxRef = useRef<SelectionBox | null>(null);
   const elementRef = useRef<HTMLDivElement>(createElement(theme));
   const vectorsRef = useRef<[Vector2, Vector2, Vector2] | null>(null);
   const isDownRef = useRef(false);
-  const prevRef = useRef<Mesh<BufferGeometry, Material | Material[]>[]>([]);
   const oldRaycasterEnabledRef = useRef<boolean>(get().events.enabled);
   const oldControlsEnabledRef = useRef<boolean>(
     cameraControls.controls?.enabled
@@ -86,39 +84,32 @@ export const Lasso: FC<LassoProps> = ({
           pointBottomRight.y - pointTopLeft.y
         }px`;
 
-        prepareRay(event, nodeSelectionBoxRef.current.endPoint, size);
-        prepareRay(event, edgeSelectionBoxRef.current.endPoint, size);
+        prepareRay(event, selectionBoxRef.current.endPoint, size);
+        prepareRay(event, edgeMeshSelectionBoxRef.current.endPoint, size);
 
         const allSelected = [];
-        if (type === 'all' || type === 'node') {
-          const nodesSelected = nodeSelectionBoxRef.current
-            .select()
-            .sort(o => (o as any).uuid)
-            .filter(
-              o =>
-                o.isMesh &&
-                o.userData?.id &&
-                (o.userData?.type === type || type === 'all')
-            )
-            .map(o => o.userData.id);
-          allSelected.push(...nodesSelected);
-        }
+        const edgesSelected = edgeMeshSelectionBoxRef.current
+          .select()
+          .sort(o => (o as any).uuid)
+          .map(
+            edge =>
+              edges[edgeMeshes.indexOf(edge as Mesh<TubeBufferGeometry>)].id
+          );
+        allSelected.push(...edgesSelected);
 
-        if (type === 'all' || type === 'edge') {
-          const edgesSelected = edgeSelectionBoxRef.current
-            .select()
-            .sort(o => (o as any).uuid)
-            .map(
-              edge =>
-                edges[edgeMeshes.indexOf(edge as Mesh<TubeBufferGeometry>)].id
-            );
-          allSelected.push(...edgesSelected);
-        }
+        const selected = selectionBoxRef.current
+          .select()
+          .sort(o => (o as any).uuid)
+          .filter(
+            o =>
+              o.isMesh &&
+              o.userData?.id &&
+              (o.userData?.type === type || type === 'all')
+          )
+          .map(o => o.userData.id);
+        allSelected.push(...selected);
 
-        if (!shallow(allSelected, prevRef.current)) {
-          prevRef.current = allSelected;
-          setActives(allSelected);
-        }
+        setActives(allSelected);
 
         document.addEventListener('pointermove', onPointerMove, {
           passive: true,
@@ -150,13 +141,15 @@ export const Lasso: FC<LassoProps> = ({
         oldRaycasterEnabledRef.current = get().events.enabled;
         oldControlsEnabledRef.current = cameraControls.controls?.enabled;
 
-        // SelectionBox for all Node meshes
-        nodeSelectionBoxRef.current = new SelectionBox(camera, scene);
+        // SelectionBox for all meshes
+        selectionBoxRef.current = new SelectionBox(camera, scene);
 
         // SelectionBox for all Edge meshes (since they are combined into one geometry for rendering)
         const edgeScene = new Scene();
-        edgeScene.add(...edgeMeshes);
-        edgeSelectionBoxRef.current = new SelectionBox(camera, edgeScene);
+        if (edgeMeshes.length) {
+          edgeScene.add(...edgeMeshes);
+        }
+        edgeMeshSelectionBoxRef.current = new SelectionBox(camera, edgeScene);
 
         vectorsRef.current = [
           // start point
@@ -180,8 +173,8 @@ export const Lasso: FC<LassoProps> = ({
         startPoint.x = event.clientX;
         startPoint.y = event.clientY;
 
-        prepareRay(event, nodeSelectionBoxRef.current.startPoint, size);
-        prepareRay(event, edgeSelectionBoxRef.current.startPoint, size);
+        prepareRay(event, selectionBoxRef.current.startPoint, size);
+        prepareRay(event, edgeMeshSelectionBoxRef.current.startPoint, size);
 
         document.addEventListener('pointermove', onPointerMove, {
           passive: true,
@@ -211,9 +204,13 @@ export const Lasso: FC<LassoProps> = ({
     }
 
     document.addEventListener('pointerdown', onPointerDown, { passive: true });
+    document.addEventListener('pointermove', onPointerMove, { passive: true });
+    document.addEventListener('pointerup', onPointerUp, { passive: true });
 
     return () => {
       document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
     };
   }, [type, disabled, onPointerDown, onPointerMove, onPointerUp]);
 

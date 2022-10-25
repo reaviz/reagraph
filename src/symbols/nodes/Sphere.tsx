@@ -29,7 +29,7 @@ export const Sphere: FC<NodeRendererProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
   return (
-    <a.mesh userData={{ id }} scale={scale as any}>
+    <a.mesh userData={{ id, type: 'node' }} scale={scale as any}>
       <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
       <a.meshPhongMaterial
         attach="material"
