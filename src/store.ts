@@ -6,7 +6,8 @@ import {
   InternalGraphPosition
 } from './types';
 import ngraph, { Graph } from 'ngraph.graph';
-import { BufferGeometry, Mesh } from 'three';
+import { BufferGeometry, Mesh, Vector3 } from 'three';
+import { getVector } from './utils';
 
 export type DragReferences = { [key: string]: InternalGraphNode };
 
@@ -70,9 +71,21 @@ export const createStore = ({
     setNodePosition: (id, position) =>
       set(state => {
         const node = state.nodes.find(n => n.id === id);
-        const nodeIndex = state.nodes.indexOf(node);
+        const originalVector = getVector(node);
+        const newVector = new Vector3(position.x, position.y, position.z);
+        const offset = newVector.sub(originalVector);
+
         const nodes = [...state.nodes];
-        nodes[nodeIndex] = { ...node, position };
+        if (state.selections.includes(id)) {
+          state.selections.forEach(id => {
+            const node = state.nodes.find(n => n.id === id);
+            const nodeIndex = state.nodes.indexOf(node);
+            nodes[nodeIndex] = updateNodePosition(node, offset);
+          });
+        } else {
+          const nodeIndex = state.nodes.indexOf(node);
+          nodes[nodeIndex] = updateNodePosition(node, offset);
+        }
         return {
           ...state,
           drags: { ...state.drags, [id]: node },
@@ -82,3 +95,15 @@ export const createStore = ({
     setCollapsedNodeIds: (nodeIds = []) =>
       set(state => ({ ...state, collapsedNodeIds: nodeIds }))
   }));
+
+function updateNodePosition(node: InternalGraphNode, offset: Vector3) {
+  return {
+    ...node,
+    position: {
+      ...node.position,
+      x: node.position.x + offset.x,
+      y: node.position.y + offset.y,
+      z: node.position.z + offset.z
+    }
+  };
+}
