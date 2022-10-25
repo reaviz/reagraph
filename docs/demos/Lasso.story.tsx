@@ -57,6 +57,32 @@ export const NodesOnly = () => {
   );
 };
 
+export const Dragging = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    type: 'multi'
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      nodes={complexNodes}
+      draggable
+      edges={complexEdges}
+      selections={selections}
+      actives={actives}
+      onNodeClick={onNodeClick}
+      onCanvasClick={onCanvasClick}
+      lassoType="node"
+      onLasso={onLasso}
+      onLassoEnd={onLassoEnd}
+    />
+  );
+};
+
 export const EdgesOnly = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
