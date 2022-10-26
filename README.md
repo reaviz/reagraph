@@ -46,6 +46,7 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 - Radial Context Menu
 - Highlight and Selection Hook
 - Dragging Nodes
+- Lasso Selection
 - Expand/Collapse Nodes
 - Customizable Nodes
 - Advanced Label Placement

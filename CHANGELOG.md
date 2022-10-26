@@ -1,3 +1,7 @@
+# 4.7.0 - 10/26/22
+- [feature] Add Lasso + Drag #87
+- [improvement] Add `singleOnly` option to `focusOnSelect` on `useSelect`
+
 # 4.6.3 - 10/24/22
 - [fix] Fix edge label positioning #86
 
