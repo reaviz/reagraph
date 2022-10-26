@@ -102,7 +102,11 @@ export const Lasso: FC<LassoProps> = ({
           .map(o => o.userData.id);
         allSelected.push(...selected);
 
-        setActives(allSelected);
+        // Note: This probably isn't the best solution but
+        // it prevents the render thrashing and causing flickering
+        requestAnimationFrame(() => {
+          setActives(allSelected);
+        });
 
         document.addEventListener('pointermove', onPointerMove, {
           passive: true,
