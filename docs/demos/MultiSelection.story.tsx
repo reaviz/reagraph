@@ -57,6 +57,7 @@ export const ModifierKey = () => {
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
+    focusOnSelect: 'singleOnly',
     type: 'multiModifier'
   });
 

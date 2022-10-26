@@ -56,7 +56,7 @@ export interface SelectionProps {
   /**
    * Whether to focus on select or not.
    */
-  focusOnSelect?: boolean;
+  focusOnSelect?: boolean | 'singleOnly';
 
   /**
    * Type of selection.
@@ -252,7 +252,10 @@ export const useSelection = ({
         clearSelections(data.id);
       }
 
-      if (focusOnSelect) {
+      if (
+        focusOnSelect === true ||
+        (focusOnSelect === 'singleOnly' && !metaKeyDown)
+      ) {
         if (!ref.current) {
           throw new Error('No ref found for the graph canvas.');
         }
