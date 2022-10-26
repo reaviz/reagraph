@@ -1,13 +1,6 @@
 import React, { FC, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import {
-  Color,
-  ColorRepresentation,
-  Mesh,
-  DoubleSide,
-  Vector3,
-  Curve
-} from 'three';
+import { Color, ColorRepresentation, Mesh, DoubleSide, Vector3 } from 'three';
 import { animationConfig } from '../utils';
 import { useStore } from '../store';
 

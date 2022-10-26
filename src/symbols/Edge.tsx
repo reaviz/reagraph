@@ -204,7 +204,6 @@ export const Edge: FC<EdgeProps> = ({
               ? theme.arrow.activeFill
               : theme.arrow.fill
           }
-          curve={curve}
           length={arrowLength}
           opacity={selectionOpacity}
           position={arrowPosition}
