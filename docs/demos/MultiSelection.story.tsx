@@ -61,14 +61,19 @@ export const ModifierKey = () => {
   });
 
   return (
-    <GraphCanvas
-      ref={graphRef}
-      nodes={complexNodes}
-      edges={complexEdges}
-      selections={selections}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-    />
+    <>
+      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+        <h3 style={{ margin: 5 }}>Hold Command/CTRL and Click to Select Multiples</h3>
+      </div>
+      <GraphCanvas
+        ref={graphRef}
+        nodes={complexNodes}
+        edges={complexEdges}
+        selections={selections}
+        onNodeClick={onNodeClick}
+        onCanvasClick={onCanvasClick}
+      />
+    </>
   );
 };
 

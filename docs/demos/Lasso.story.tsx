@@ -17,18 +17,23 @@ export const NodesAndEdges = () => {
   });
 
   return (
-    <GraphCanvas
-      ref={graphRef}
-      nodes={complexNodes}
-      edges={complexEdges}
-      selections={selections}
-      actives={actives}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-      lassoType="all"
-      onLasso={onLasso}
-      onLassoEnd={onLassoEnd}
-    />
+    <>
+      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+        <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
+      </div>
+      <GraphCanvas
+        ref={graphRef}
+        nodes={complexNodes}
+        edges={complexEdges}
+        selections={selections}
+        actives={actives}
+        onNodeClick={onNodeClick}
+        onCanvasClick={onCanvasClick}
+        lassoType="all"
+        onLasso={onLasso}
+        onLassoEnd={onLassoEnd}
+      />
+    </>
   );
 };
 
@@ -42,18 +47,23 @@ export const NodesOnly = () => {
   });
 
   return (
-    <GraphCanvas
-      ref={graphRef}
-      nodes={complexNodes}
-      edges={complexEdges}
-      selections={selections}
-      actives={actives}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-      lassoType="node"
-      onLasso={onLasso}
-      onLassoEnd={onLassoEnd}
-    />
+    <>
+      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+        <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
+      </div>
+      <GraphCanvas
+        ref={graphRef}
+        nodes={complexNodes}
+        edges={complexEdges}
+        selections={selections}
+        actives={actives}
+        onNodeClick={onNodeClick}
+        onCanvasClick={onCanvasClick}
+        lassoType="node"
+        onLasso={onLasso}
+        onLassoEnd={onLassoEnd}
+      />
+    </>
   );
 };
 
@@ -67,19 +77,24 @@ export const Dragging = () => {
   });
 
   return (
-    <GraphCanvas
-      ref={graphRef}
-      nodes={complexNodes}
-      draggable
-      edges={complexEdges}
-      selections={selections}
-      actives={actives}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-      lassoType="node"
-      onLasso={onLasso}
-      onLassoEnd={onLassoEnd}
-    />
+    <>
+      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+        <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
+      </div>
+      <GraphCanvas
+        ref={graphRef}
+        nodes={complexNodes}
+        draggable
+        edges={complexEdges}
+        selections={selections}
+        actives={actives}
+        onNodeClick={onNodeClick}
+        onCanvasClick={onCanvasClick}
+        lassoType="node"
+        onLasso={onLasso}
+        onLassoEnd={onLassoEnd}
+      />
+    </>
   );
 };
 
@@ -93,17 +108,22 @@ export const EdgesOnly = () => {
   });
 
   return (
-    <GraphCanvas
-      ref={graphRef}
-      nodes={complexNodes}
-      edges={complexEdges}
-      selections={selections}
-      actives={actives}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-      lassoType="edge"
-      onLasso={onLasso}
-      onLassoEnd={onLassoEnd}
-    />
+    <>
+      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+        <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
+      </div>
+      <GraphCanvas
+        ref={graphRef}
+        nodes={complexNodes}
+        edges={complexEdges}
+        selections={selections}
+        actives={actives}
+        onNodeClick={onNodeClick}
+        onCanvasClick={onCanvasClick}
+        lassoType="edge"
+        onLasso={onLasso}
+        onLassoEnd={onLassoEnd}
+      />
+    </>
   );
 };
