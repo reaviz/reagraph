@@ -76,11 +76,14 @@ export const createStore = ({
         const offset = newVector.sub(originalVector);
 
         const nodes = [...state.nodes];
-        if (state.selections.includes(id)) {
-          state.selections.forEach(id => {
+        if (state.selections?.includes(id)) {
+          state.selections?.forEach(id => {
             const node = state.nodes.find(n => n.id === id);
-            const nodeIndex = state.nodes.indexOf(node);
-            nodes[nodeIndex] = updateNodePosition(node, offset);
+            // Selections can contain edges:
+            if (node) {
+              const nodeIndex = state.nodes.indexOf(node);
+              nodes[nodeIndex] = updateNodePosition(node, offset);
+            }
           });
         } else {
           const nodeIndex = state.nodes.indexOf(node);
