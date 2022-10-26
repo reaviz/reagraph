@@ -7,14 +7,7 @@ import React, {
 } from 'react';
 import { useThree } from '@react-three/fiber';
 import { SelectionBox } from 'three-stdlib';
-import {
-  BufferGeometry,
-  Material,
-  Mesh,
-  Scene,
-  TubeBufferGeometry,
-  Vector2
-} from 'three';
+import { Mesh, Scene, TubeBufferGeometry, Vector2 } from 'three';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { Theme } from '../themes';
