@@ -1,1 +1,1 @@
-export { Edges, EdgesProps } from './Edges';
+export * from './Edges';
