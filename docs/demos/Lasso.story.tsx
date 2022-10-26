@@ -18,7 +18,7 @@ export const NodesAndEdges = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
@@ -48,7 +48,7 @@ export const NodesOnly = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
@@ -78,7 +78,7 @@ export const Dragging = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
@@ -109,7 +109,7 @@ export const EdgesOnly = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
