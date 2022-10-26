@@ -1,4 +1,4 @@
-import { a, SpringValue, useSpring } from '@react-spring/three';
+import { SpringValue, useSpring } from '@react-spring/three';
 import { useCallback, useEffect, useRef } from 'react';
 import { BufferAttribute, BufferGeometry } from 'three';
 
