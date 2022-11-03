@@ -90,11 +90,11 @@ export default () => (
   <GraphCanvas
     nodes={[
       {
-        id: '1',
+        id: 'n-1',
         label: '1'
       },
       {
-        id: '2',
+        id: 'n-2',
         label: '2'
       }
     ]}
