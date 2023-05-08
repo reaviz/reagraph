@@ -11,7 +11,6 @@
     "lint": "eslint --ext js,ts,tsx",
     "lint:fix": "eslint --ext js,ts,tsx --fix src",
     "start": "storybook dev -p 9009",
-    "copy": "cp CNAME storybook-static/",
     "build-storybook": "storybook build",
     "copy": "cp CNAME storybook-static/",
     "prepare": "husky install",
