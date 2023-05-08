@@ -32,8 +32,7 @@ export default defineConfig({
     lib: {
       entry: resolve('src', 'index.ts'),
       name: 'reagraph',
-      fileName: format => `index.${format}.js`,
-      formats: ['es', 'umd']
+      fileName: 'reagraph'
     },
     rollupOptions: {
       plugins: [
