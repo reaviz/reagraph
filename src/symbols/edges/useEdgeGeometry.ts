@@ -101,8 +101,7 @@ export function useEdgeGeometry(
         const [arrowPosition, arrowRotation] = getArrowVectors(
           arrowPlacement,
           curve,
-          arrowLength,
-          from.size
+          arrowLength
         );
         const quaternion = new Quaternion();
         quaternion.setFromUnitVectors(new Vector3(0, 1, 0), arrowRotation);
