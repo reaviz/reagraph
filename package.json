@@ -13,6 +13,7 @@
     "start": "storybook dev -p 9009",
     "copy": "cp CNAME storybook-static/",
     "build-storybook": "storybook build",
+    "copy": "cp CNAME storybook-static/",
     "prepare": "husky install",
     "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes"
   },
@@ -48,7 +49,7 @@
     "@react-spring/three": "9.4.4",
     "@react-three/drei": "^9.17.1",
     "@react-three/fiber": "^8.2.0",
-    "camera-controls": "^1.36.1",
+    "camera-controls": "^2.3.4",
     "classnames": "^2.3.1",
     "d3-array": "^3.2.0",
     "d3-force-3d": "^3.0.3",

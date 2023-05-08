@@ -272,7 +272,8 @@ export const CameraControls: FC<
           ref={cameraRef}
           args={[camera, gl.domElement]}
           enabled={!disabled}
-          dampingFactor={0.4}
+          smoothTime={0.4}
+          maxDistance={50000}
         />
         {children}
       </CameraControlsContext.Provider>

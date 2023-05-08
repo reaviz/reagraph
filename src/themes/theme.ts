@@ -3,7 +3,7 @@ import { ColorRepresentation } from 'three';
 export interface Theme {
   canvas: {
     background: ColorRepresentation;
-    fog: ColorRepresentation;
+    fog?: ColorRepresentation | null;
   };
   node: {
     fill: ColorRepresentation;

@@ -2,8 +2,7 @@ import { Theme } from './theme';
 
 export const darkTheme: Theme = {
   canvas: {
-    background: '#1E2026',
-    fog: '#1E2026'
+    background: '#1E2026'
   },
   node: {
     fill: '#7A8C9E',
