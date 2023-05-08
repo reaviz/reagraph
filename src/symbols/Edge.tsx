@@ -86,8 +86,7 @@ export const Edge: FC<EdgeProps> = ({
     const [arrowPosition, arrowRotation] = getArrowVectors(
       arrowPlacement,
       curve,
-      arrowLength,
-      from.size
+      arrowLength
     );
     if (arrowPlacement === 'end') {
       curve = getCurve(fromVector, fromOffset, arrowPosition, 0, curved);

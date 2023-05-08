@@ -7,8 +7,7 @@ import { EdgeArrowPosition } from '../symbols/Arrow';
 export function getArrowVectors(
   placement: EdgeArrowPosition,
   curve: Curve<Vector3>,
-  arrowLength: number,
-  radius: number
+  arrowLength: number
 ): [Vector3, Vector3] {
   const curveLength = curve.getLength();
   const absSize = placement === 'end' ? curveLength : curveLength / 2;
