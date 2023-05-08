@@ -26,6 +26,7 @@ export default defineConfig({
     environment: 'jsdom'
   },
   build: {
+    minify: false,
     sourcemap: true,
     lib: {
       entry: resolve('src', 'index.ts'),
