@@ -8,11 +8,13 @@ import checker from 'vite-plugin-checker';
 import { resolve } from 'path';
 import external from 'rollup-plugin-peer-deps-external';
 import dts from 'vite-plugin-dts';
+import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 
 export default defineConfig({
   plugins: [
     svgrPlugin(),
     tsconfigPaths(),
+    cssInjectedByJsPlugin(),
     react(),
     dts({
       insertTypesEntry: true,
@@ -29,7 +31,6 @@ export default defineConfig({
   build: {
     minify: false,
     sourcemap: true,
-    cssCodeSplit: true,
     lib: {
       entry: resolve('src', 'index.ts'),
       name: 'reagraph',

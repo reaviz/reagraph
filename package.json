@@ -1,6 +1,6 @@
 {
   "name": "reagraph",
-  "version": "4.7.10",
+  "version": "4.7.11",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
     "build": "vite build",
@@ -17,7 +17,6 @@
   },
   "type": "module",
   "source": "src/index.ts",
-  "style": "dist/index.css",
   "types": "dist/index.d.ts",
   "main": "./dist/reagraph.umd.cjs",
   "module": "./dist/reagraph.js",
@@ -25,8 +24,7 @@
     ".": {
       "import": "./dist/reagraph.js",
       "require": "./dist/reagraph.umd.cjs"
-    },
-    "./dist/index.css": "./dist/index.css"
+    }
   },
   "repository": {
     "type": "git",
@@ -121,6 +119,7 @@
     "typescript": "^4.7.4",
     "vite": "^4.1.0",
     "vite-plugin-checker": "^0.6.0",
+    "vite-plugin-css-injected-by-js": "^3.1.1",
     "vite-plugin-dts": "^2.3.0",
     "vite-plugin-svgr": "^3.2.0",
     "vite-tsconfig-paths": "^4.0.5",
