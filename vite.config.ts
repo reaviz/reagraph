@@ -15,7 +15,8 @@ export default defineConfig({
     tsconfigPaths(),
     react(),
     dts({
-      insertTypesEntry: true
+      insertTypesEntry: true,
+      include: ['src']
     }),
     checker({
       typescript: true
