@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { GraphCanvas } from '../../src';
 import { transformGenerator } from '../assets/demo';
 import generators from 'ngraph.generators';
+import { range } from 'd3-array';
 
 export default {
   title: 'Demos/Data',
@@ -33,5 +34,12 @@ export const Ladder = () => {
   const [ladderNodes, ladderEdges] = useMemo(() => transformGenerator(generators.ladder(5)), []);
   return (
     <GraphCanvas nodes={ladderNodes} edges={ladderEdges} />
+  );
+};
+
+export const OneKNodes = () => {
+  const nodes = useMemo(() => range(500).map(i => ({ id: `node-${i}`, label: `Node ${i}` })), []);
+  return (
+    <GraphCanvas nodes={nodes} edges={[]} />
   );
 };
