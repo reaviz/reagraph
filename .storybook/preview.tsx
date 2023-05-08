@@ -17,6 +17,11 @@ const preview: Preview = {
     actions: { argTypesRegex: '^on.*' },
     docs: {
       theme
+    },
+    options: {
+      storySort: {
+        order: ['Docs', ['Intro', 'Getting Started', ['Installing'], 'API', 'Advanced'], '*']
+      },
     }
   }
 };
