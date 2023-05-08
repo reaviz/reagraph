@@ -73,7 +73,7 @@ const GL_DEFAULTS = {
 const CAMERA_DEFAULTS: any = {
   position: [0, 0, 1000],
   near: 5,
-  far: 10000,
+  far: 50000,
   fov: 10
 };
 
@@ -140,7 +140,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             >
               <color attach="background" args={[theme.canvas.background]} />
               <ambientLight intensity={1} />
-              <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
+              {theme.canvas.fog && (
+                <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
+              )}
               <CameraControls
                 mode={cameraMode}
                 ref={controlsRef}

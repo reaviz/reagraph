@@ -2,8 +2,7 @@ import { Theme } from './theme';
 
 export const lightTheme: Theme = {
   canvas: {
-    background: '#fff',
-    fog: '#fff'
+    background: '#fff'
   },
   node: {
     fill: '#7CA0AB',
