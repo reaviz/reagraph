@@ -1,3 +1,10 @@
+# 4.7.1 - 5/8/23
+- [fix] fix min zoom going out of range
+- [fix] improve min/max distances
+- [fix] allow fog to be optional
+- [chore] upgrade to sb latest
+- [chore] move to vite library build vs rollup
+
 # 4.7.0 - 10/26/22
 - [feature] Add Lasso + Drag #87
 - [improvement] Add `singleOnly` option to `focusOnSelect` on `useSelect`
