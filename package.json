@@ -3,7 +3,7 @@
   "version": "4.7.0",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
-    "build": "rollup -c",
+    "build": "vite build",
     "build:watch": "rollup -c -w",
     "test": "vitest --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
@@ -17,11 +17,17 @@
     "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes"
   },
   "source": "src/index.ts",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.esm.js",
-  "browser": "dist/index.js",
-  "style": "dist/index.css",
-  "typings": "dist/index.d.ts",
+  "main": "dist/index.umd.js",
+  "browser": "dist/index.umd.js",
+  "style": "dist/style.css",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.umd.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reaviz/reagraph.git"
@@ -46,8 +52,8 @@
   "homepage": "https://github.com/reaviz/reagraph#readme",
   "dependencies": {
     "@react-spring/three": "9.4.4",
-    "@react-three/drei": "^9.17.1",
-    "@react-three/fiber": "^8.2.0",
+    "@react-three/drei": "9.17.1",
+    "@react-three/fiber": "8.2.0",
     "camera-controls": "^2.3.4",
     "classnames": "^2.3.1",
     "d3-array": "^3.2.0",
@@ -81,7 +87,6 @@
     "@storybook/react": "7.0.9",
     "@storybook/react-vite": "^7.0.9",
     "@storybook/theming": "7.0.9",
-    "@testing-library/react": "^13.3.0",
     "@types/classnames": "^2.3.1",
     "@types/d3-array": "^3.0.3",
     "@types/d3-hierarchy": "^3.1.0",
@@ -91,8 +96,8 @@
     "@types/three": "^0.143.1",
     "@typescript-eslint/eslint-plugin": "^5.33.1",
     "@typescript-eslint/parser": "^5.33.1",
-    "@vitejs/plugin-react": "^3.1.0",
-    "@vitest/coverage-c8": "^0.30.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "@vitest/coverage-c8": "^0.31.0",
     "autoprefixer": "^9",
     "chromatic": "^6.7.4",
     "eslint": "^8.22.0",
@@ -100,9 +105,9 @@
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.12",
-    "husky": "^7.0.0",
-    "jsdom": "^21.1.1",
-    "lint-staged": "^12.4.1",
+    "husky": "^8.0.3",
+    "jsdom": "^22.0.0",
+    "lint-staged": "^13.2.2",
     "lodash": "^4.17.21",
     "ngraph.generators": "^20.1.0",
     "postcss-nested": "^4",
@@ -110,24 +115,16 @@
     "prettier": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "rollup": "^2.38.4",
-    "rollup-plugin-bundle-size": "^1.0.3",
-    "rollup-plugin-commonjs": "10.1.0",
-    "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-peer-deps-external": "2.2.4",
-    "rollup-plugin-postcss": "4.0.0",
-    "rollup-plugin-postcss-modules": "2.0.2",
-    "rollup-plugin-sourcemaps": "0.6.3",
-    "rollup-plugin-typescript2": "0.31.2",
     "stats.js": "^0.17.0",
     "storybook": "7.0.9",
-    "storybook-css-modules-preset": "^1.1.1",
     "typescript": "^4.7.4",
     "vite": "^4.1.0",
-    "vite-plugin-checker": "^0.5.6",
-    "vite-plugin-svgr": "^2.2.1",
+    "vite-plugin-checker": "^0.6.0",
+    "vite-plugin-dts": "^2.3.0",
+    "vite-plugin-svgr": "^3.2.0",
     "vite-tsconfig-paths": "^4.0.5",
-    "vitest": "^0.30.1"
+    "vitest": "^0.31.0"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
