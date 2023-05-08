@@ -1,4 +1,4 @@
-# 4.7.1 - 5/8/23
+# 4.7.1 to 4.7.10 - 5/8/23
 - [fix] fix min zoom going out of range
 - [fix] improve min/max distances
 - [fix] allow fog to be optional

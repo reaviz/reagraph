@@ -29,6 +29,7 @@ export default defineConfig({
   build: {
     minify: false,
     sourcemap: true,
+    cssCodeSplit: true,
     lib: {
       entry: resolve('src', 'index.ts'),
       name: 'reagraph',
