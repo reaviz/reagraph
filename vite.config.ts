@@ -15,7 +15,7 @@ export default defineConfig({
     tsconfigPaths(),
     react(),
     dts({
-      insertTypesEntry: true,
+      insertTypesEntry: true
     }),
     checker({
       typescript: true
@@ -28,10 +28,9 @@ export default defineConfig({
   build: {
     sourcemap: true,
     lib: {
-      // eslint-disable-next-line no-undef
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve('src', 'index.ts'),
       name: 'reagraph',
-      fileName: 'index',
+      fileName: format => `index.${format}.js`,
       formats: ['es', 'umd']
     },
     rollupOptions: {
