@@ -1,3 +1,6 @@
+# 4.8.1 - 5/9/23
+- [fix] fix init jumping
+
 # 4.8.0 - 5/9/23
 - [fix] set max zoom to 1k
 - [fix] improve performance
