@@ -3,7 +3,7 @@
   "version": "4.8.1",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
-    "build": "vite build",
+    "build": "vite build --mode library",
     "test": "vitest --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "prettier": "prettier --loglevel warn --write 'src/**/*.{ts,tsx,js,jsx}'",
