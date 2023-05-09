@@ -38,7 +38,7 @@ export const Ladder = () => {
 };
 
 export const OneKNodes = () => {
-  const nodes = useMemo(() => range(500).map(i => ({ id: `node-${i}`, label: `Node ${i}` })), []);
+  const nodes = useMemo(() => range(1000).map(i => ({ id: `node-${i}`, label: `Node ${i}` })), []);
   return (
     <GraphCanvas nodes={nodes} edges={[]} />
   );
