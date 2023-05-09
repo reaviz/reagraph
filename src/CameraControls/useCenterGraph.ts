@@ -1,6 +1,6 @@
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 import { Vector3, Box3 } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
@@ -36,28 +36,23 @@ export const useCenterGraph = ({
 
   const centerNodes = useCallback(
     (centerNodes: InternalGraphNode[], padding = PADDING, fill = false) => {
-      requestAnimationFrame(() => {
-        // Centers the graph based on the central most node
-        const { minX, maxX, minY, maxY, minZ, maxZ } =
-          getLayoutCenter(centerNodes);
+      // Centers the graph based on the central most node
+      const { minX, maxX, minY, maxY, minZ, maxZ } =
+        getLayoutCenter(centerNodes);
 
-        controls?.fitToBox(
-          new Box3(
-            new Vector3(minX, minY, minZ),
-            new Vector3(maxX, maxY, maxZ)
-          ),
-          animated,
-          {
-            cover: fill,
-            paddingLeft: padding,
-            paddingRight: padding,
-            paddingBottom: padding,
-            paddingTop: padding
-          }
-        );
+      controls?.fitToBox(
+        new Box3(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ)),
+        animated,
+        {
+          cover: fill,
+          paddingLeft: padding,
+          paddingRight: padding,
+          paddingBottom: padding,
+          paddingTop: padding
+        }
+      );
 
-        invalidate();
-      });
+      invalidate();
     },
     [invalidate, controls, animated]
   );
@@ -92,7 +87,7 @@ export const useCenterGraph = ({
   );
 
   const mounted = useRef<boolean>(false);
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Center the graph once nodes are loaded on mount
     if (controls && nodes?.length && !mounted.current) {
       centerNodes(nodes);

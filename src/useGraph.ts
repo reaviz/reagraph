@@ -1,4 +1,11 @@
-import { useRef, useState, useCallback, useEffect, useMemo } from 'react';
+import {
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useLayoutEffect
+} from 'react';
 import { SizingType } from './sizing';
 import {
   LayoutTypes,
@@ -133,7 +140,7 @@ export const useGraph = ({
   }, [actives, setActives]);
 
   // Create the nggraph graph object
-  useEffect(() => {
+  useLayoutEffect(() => {
     layoutMounted.current = false;
     buildGraph(graph, visibleNodes, visibleEdges);
     updateLayout();
