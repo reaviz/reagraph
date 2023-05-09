@@ -1,6 +1,6 @@
 {
   "name": "reagraph",
-  "version": "4.7.11",
+  "version": "4.7.12",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
     "build": "vite build",
