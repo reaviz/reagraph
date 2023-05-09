@@ -23,6 +23,7 @@ module.exports = {
     'react/no-children-prop': [0],
     'linebreak-style': ['error', 'unix'],
     'quotes': ['error', 'single'],
-    'semi': ['error', 'always']
+    'semi': ['error', 'always'],
+    'react/no-unknown-property': [0]
   }
 };
