@@ -19,7 +19,10 @@ export const useDrag = ({
   onDragStart,
   onDragEnd
 }: DragParams) => {
-  const { raycaster, size, camera, gl } = useThree();
+  const camera = useThree(state => state.camera);
+  const raycaster = useThree(state => state.raycaster);
+  const size = useThree(state => state.size);
+  const gl = useThree(state => state.gl);
 
   // Reference: https://codesandbox.io/s/react-three-draggable-cxu37
   const { mouse2D, mouse3D, offset, normal, plane } = useMemo(

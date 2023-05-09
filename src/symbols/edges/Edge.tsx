@@ -66,10 +66,8 @@ export const Edge: FC<EdgeProps> = ({
     [from.position, to.position, labelOffset, labelPlacement]
   );
 
-  const { edgeContextMenus, setEdgeContextMenus } = useStore(state => ({
-    edgeContextMenus: state.edgeContextMenus,
-    setEdgeContextMenus: state.setEdgeContextMenus
-  }));
+  const edgeContextMenus = useStore(state => state.edgeContextMenus);
+  const setEdgeContextMenus = useStore(state => state.setEdgeContextMenus);
 
   const [{ labelPosition }] = useSpring(
     () => ({

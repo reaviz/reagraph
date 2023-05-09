@@ -99,17 +99,20 @@ export const CameraControls: FC<
 > = forwardRef(
   ({ mode, children, animated, disabled }, ref: Ref<CameraControlsRef>) => {
     const cameraRef = useRef<ThreeCameraControls | null>(null);
-    const { camera, gl } = useThree();
+    const camera = useThree(state => state.camera);
+    const gl = useThree(state => state.gl);
     const isOrbiting = mode === 'orbit';
     const setPanning = useStore(state => state.setPanning);
 
     useFrame((_state, delta) => {
-      cameraRef.current?.update(delta);
+      if (cameraRef.current?.enabled) {
+        cameraRef.current?.update(delta);
+      }
 
       if (isOrbiting) {
         cameraRef.current.azimuthAngle += 20 * delta * MathUtils.DEG2RAD;
       }
-    });
+    }, -1);
 
     useEffect(() => () => cameraRef.current?.dispose(), []);
 

@@ -35,7 +35,8 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const iconTexture = useLoader(TextureLoader, image);
   const meshRef = useRef<Group>();
-  const { camera } = useThree();
+  const camera = useThree(state => state.camera);
+
   useFrame(() => {
     meshRef.current.lookAt(camera.position);
   });

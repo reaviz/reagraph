@@ -17,10 +17,8 @@ export function useEdgeEvents(
 ) {
   const { onClick, onContextMenu, onPointerOut, onPointerOver } = events;
 
-  const [edgeContextMenus, setEdgeContextMenus] = useStore(state => [
-    state.edgeContextMenus,
-    state.setEdgeContextMenus
-  ]);
+  const edgeContextMenus = useStore(state => state.edgeContextMenus);
+  const setEdgeContextMenus = useStore(state => state.setEdgeContextMenus);
 
   const clickRef = useRef(false);
   const handleClick = useCallback(() => {

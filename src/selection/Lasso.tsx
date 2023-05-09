@@ -31,14 +31,19 @@ export const Lasso: FC<LassoProps> = ({
   onLassoEnd,
   disabled
 }) => {
-  const { setEvents, camera, gl, size, get, scene } = useThree();
+  const camera = useThree(state => state.camera);
+  const gl = useThree(state => state.gl);
+  const setEvents = useThree(state => state.setEvents);
+  const size = useThree(state => state.size);
+  const get = useThree(state => state.get);
+  const scene = useThree(state => state.scene);
+
   const cameraControls = useCameraControls();
-  const [actives, setActives, edges, edgeMeshes] = useStore(state => [
-    state.actives,
-    state.setActives,
-    state.edges,
-    state.edgeMeshes
-  ]);
+
+  const actives = useStore(state => state.actives);
+  const setActives = useStore(state => state.setActives);
+  const edges = useStore(state => state.edges);
+  const edgeMeshes = useStore(state => state.edgeMeshes);
 
   const mountedRef = useRef<boolean>(false);
   const selectionBoxRef = useRef<SelectionBox | null>(null);

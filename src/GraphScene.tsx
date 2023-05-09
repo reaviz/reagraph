@@ -240,11 +240,10 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     ) => {
       const { mounted } = useGraph(rest);
 
-      const [graph, nodes, edges] = useStore(state => [
-        state.graph,
-        state.nodes,
-        state.edges
-      ]);
+      const graph = useStore(state => state.graph);
+      const nodes = useStore(state => state.nodes);
+      const edges = useStore(state => state.edges);
+
       const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);
       const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
 

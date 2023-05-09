@@ -46,27 +46,15 @@ export const useGraph = ({
   minNodeSize,
   layoutOverrides
 }: GraphInputs) => {
-  const [
-    graph,
-    stateCollapsedNodeIds,
-    setEdges,
-    setNodes,
-    setSelections,
-    setActives,
-    drags,
-    setDrags,
-    setCollapsedNodeIds
-  ] = useStore(state => [
-    state.graph,
-    state.collapsedNodeIds,
-    state.setEdges,
-    state.setNodes,
-    state.setSelections,
-    state.setActives,
-    state.drags,
-    state.setDrags,
-    state.setCollapsedNodeIds
-  ]);
+  const graph = useStore(state => state.graph);
+  const stateCollapsedNodeIds = useStore(state => state.collapsedNodeIds);
+  const setEdges = useStore(state => state.setEdges);
+  const setNodes = useStore(state => state.setNodes);
+  const setSelections = useStore(state => state.setSelections);
+  const setActives = useStore(state => state.setActives);
+  const drags = useStore(state => state.drags);
+  const setDrags = useStore(state => state.setDrags);
+  const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
 
   const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);

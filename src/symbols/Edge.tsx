@@ -104,11 +104,9 @@ export const Edge: FC<EdgeProps> = ({
     [from.position, to.position, labelOffset, labelPlacement]
   );
 
-  const { isSelected, hasSelections, isActive } = useStore(state => ({
-    hasSelections: state.selections?.length,
-    isSelected: state.selections?.includes(id),
-    isActive: state.actives?.includes(id)
-  }));
+  const isSelected = useStore(state => state.selections?.includes(id));
+  const hasSelections = useStore(state => state.selections?.length);
+  const isActive = useStore(state => state.actives?.includes(id));
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive

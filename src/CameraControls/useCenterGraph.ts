@@ -25,7 +25,7 @@ export const useCenterGraph = ({
   animated
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
-  const { invalidate } = useThree();
+  const invalidate = useThree(state => state.invalidate);
   const { controls } = useCameraControls();
 
   // Find the ideal spacing for focusing

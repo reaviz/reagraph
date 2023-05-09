@@ -62,33 +62,19 @@ export const Node: FC<NodeProps> = ({
 }) => {
   const cameraControls = useCameraControls();
   const node = useStore(state => state.nodes.find(n => n.id === id));
-
-  const [
-    edges,
-    draggingId,
-    collapsedNodeIds,
-    setDraggingId,
-    setNodePosition,
-    setCollapsedNodeIds,
-    isCollapsed
-  ] = useStore(state => [
-    state.edges,
-    state.draggingId,
-    state.collapsedNodeIds,
-    state.setDraggingId,
-    state.setNodePosition,
-    state.setCollapsedNodeIds,
-    state.collapsedNodeIds.includes(id)
-  ]);
+  const edges = useStore(state => state.edges);
+  const draggingId = useStore(state => state.draggingId);
+  const collapsedNodeIds = useStore(state => state.collapsedNodeIds);
+  const setDraggingId = useStore(state => state.setDraggingId);
+  const setNodePosition = useStore(state => state.setNodePosition);
+  const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
+  const isCollapsed = useStore(state => state.collapsedNodeIds.includes(id));
+  const isActive = useStore(state => state.actives?.includes(id));
+  const isSelected = useStore(state => state.selections?.includes(id));
+  const hasSelections = useStore(state => state.selections?.length);
 
   const isDragging = draggingId === id;
   const { position, label, size: nodeSize = 7, labelVisible = true } = node;
-
-  const { isSelected, hasSelections, isActive } = useStore(state => ({
-    hasSelections: state.selections?.length,
-    isSelected: state.selections?.includes(id),
-    isActive: state.actives?.includes(id)
-  }));
 
   const group = useRef<Group | null>(null);
   const [active, setActive] = useState<boolean>(false);

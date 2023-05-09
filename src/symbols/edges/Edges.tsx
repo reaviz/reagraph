@@ -70,15 +70,11 @@ export const Edges: FC<EdgesProps> = ({
     interpolation
   );
 
-  const [draggingId, edgeMeshes, setEdgeMeshes, actives, selections] = useStore(
-    state => [
-      state.draggingId,
-      state.edgeMeshes,
-      state.setEdgeMeshes,
-      state.actives || [],
-      state.selections || []
-    ]
-  );
+  const draggingId = useStore(state => state.draggingId);
+  const edgeMeshes = useStore(state => state.edgeMeshes);
+  const setEdgeMeshes = useStore(state => state.setEdgeMeshes);
+  const actives = useStore(state => state.actives || []);
+  const selections = useStore(state => state.selections || []);
 
   const [active, inactive, draggingActive, draggingInactive] = useMemo(() => {
     const active: Array<InternalGraphEdge> = [];
@@ -164,6 +160,7 @@ export const Edges: FC<EdgesProps> = ({
 
   useFrame(state => {
     staticEdgesRef.current.geometry = staticEdgesGeometry;
+
     if (disabled) {
       return;
     }
@@ -175,6 +172,7 @@ export const Edges: FC<EdgesProps> = ({
         draggingInactive
       );
     }
+
     draggingIdRef.current = draggingId;
     if (draggingId) {
       return;
@@ -187,6 +185,7 @@ export const Edges: FC<EdgesProps> = ({
     if (intersecting.join() !== previousIntersecting.join()) {
       dynamicEdgesRef.current.geometry = getGeometry(intersecting, []);
     }
+
     intersectingRef.current = intersecting;
   });
 
