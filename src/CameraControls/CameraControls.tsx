@@ -1,33 +1,8 @@
-import React, {
-  FC,
-  useRef,
-  useEffect,
-  useCallback,
-  forwardRef,
-  Ref,
-  useImperativeHandle,
-  useMemo,
-  ReactNode
-} from 'react';
+import React, { FC, useRef, useEffect, useCallback, forwardRef, Ref, useImperativeHandle, useMemo, ReactNode } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
-import {
-  MOUSE,
-  Vector2,
-  Vector3,
-  Vector4,
-  Quaternion,
-  Matrix4,
-  Spherical,
-  Box3,
-  Sphere,
-  Raycaster,
-  MathUtils
-} from 'three';
+import { MOUSE, Vector2, Vector3, Vector4, Quaternion, Matrix4, Spherical, Box3, Sphere, Raycaster, MathUtils } from 'three';
 import ThreeCameraControls from 'camera-controls';
-import {
-  CameraControlsContext,
-  CameraControlsContextProps
-} from './useCameraControls';
+import { CameraControlsContext, CameraControlsContextProps } from './useCameraControls';
 import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
@@ -94,192 +69,178 @@ export interface CameraControlsProps {
 
 export type CameraControlsRef = CameraControlsContextProps;
 
-export const CameraControls: FC<
-  CameraControlsProps & { ref?: Ref<CameraControlsRef> }
-> = forwardRef(
-  ({ mode, children, animated, disabled }, ref: Ref<CameraControlsRef>) => {
-    const cameraRef = useRef<ThreeCameraControls | null>(null);
-    const { camera, gl } = useThree();
-    const isOrbiting = mode === 'orbit';
-    const setPanning = useStore(state => state.setPanning);
+export const CameraControls: FC<CameraControlsProps & { ref?: Ref<CameraControlsRef> }> = forwardRef(({ mode, children, animated, disabled }, ref: Ref<CameraControlsRef>) => {
+  const cameraRef = useRef<ThreeCameraControls | null>(null);
+  const { camera, gl } = useThree();
+  const isOrbiting = mode === 'orbit';
+  const setPanning = useStore(state => state.setPanning);
 
-    useFrame((_state, delta) => {
-      cameraRef.current?.update(delta);
+  useFrame((_state, delta) => {
+    cameraRef.current?.update(delta);
 
-      if (isOrbiting) {
-        cameraRef.current.azimuthAngle += 20 * delta * MathUtils.DEG2RAD;
+    if (isOrbiting) {
+      cameraRef.current.azimuthAngle += 20 * delta * MathUtils.DEG2RAD;
+    }
+  });
+
+  useEffect(() => () => cameraRef.current?.dispose(), []);
+
+  const zoomIn = useCallback(() => {
+    cameraRef.current?.zoom(camera.zoom / 2, animated);
+  }, [animated, camera.zoom]);
+
+  const zoomOut = useCallback(() => {
+    cameraRef.current?.zoom(-camera.zoom / 2, animated);
+  }, [animated, camera.zoom]);
+
+  const panRight = useCallback(
+    event => {
+      if (!isOrbiting) {
+        cameraRef.current?.truck(-0.03 * event.deltaTime, 0, animated);
       }
-    });
+    },
+    [animated, isOrbiting]
+  );
 
-    useEffect(() => () => cameraRef.current?.dispose(), []);
+  const panLeft = useCallback(
+    event => {
+      if (!isOrbiting) {
+        cameraRef.current?.truck(0.03 * event.deltaTime, 0, animated);
+      }
+    },
+    [animated, isOrbiting]
+  );
 
-    const zoomIn = useCallback(() => {
-      cameraRef.current?.zoom(camera.zoom / 2, animated);
-    }, [animated, camera.zoom]);
+  const panUp = useCallback(
+    event => {
+      if (!isOrbiting) {
+        cameraRef.current?.truck(0, 0.03 * event.deltaTime, animated);
+      }
+    },
+    [animated, isOrbiting]
+  );
 
-    const zoomOut = useCallback(() => {
-      cameraRef.current?.zoom(-camera.zoom / 2, animated);
-    }, [animated, camera.zoom]);
+  const panDown = useCallback(
+    event => {
+      if (!isOrbiting) {
+        cameraRef.current?.truck(0, -0.03 * event.deltaTime, animated);
+      }
+    },
+    [animated, isOrbiting]
+  );
 
-    const panRight = useCallback(
-      event => {
-        if (!isOrbiting) {
-          cameraRef.current?.truck(-0.03 * event.deltaTime, 0, animated);
+  const onKeyDown = useCallback(
+    event => {
+      if (event.code === 'Space') {
+        if (mode === 'rotate') {
+          cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
+        } else {
+          cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.ROTATE;
         }
-      },
-      [animated, isOrbiting]
-    );
+      }
+    },
+    [mode]
+  );
 
-    const panLeft = useCallback(
-      event => {
-        if (!isOrbiting) {
-          cameraRef.current?.truck(0.03 * event.deltaTime, 0, animated);
+  const onKeyUp = useCallback(
+    event => {
+      if (event.code === 'Space') {
+        if (mode === 'rotate') {
+          cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.ROTATE;
+        } else {
+          cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
         }
-      },
-      [animated, isOrbiting]
-    );
+      }
+    },
+    [mode]
+  );
 
-    const panUp = useCallback(
-      event => {
-        if (!isOrbiting) {
-          cameraRef.current?.truck(0, 0.03 * event.deltaTime, animated);
-        }
-      },
-      [animated, isOrbiting]
-    );
+  useEffect(() => {
+    leftKey.addEventListener('holding', panLeft);
+    rightKey.addEventListener('holding', panRight);
+    upKey.addEventListener('holding', panUp);
+    downKey.addEventListener('holding', panDown);
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
 
-    const panDown = useCallback(
-      event => {
-        if (!isOrbiting) {
-          cameraRef.current?.truck(0, -0.03 * event.deltaTime, animated);
-        }
-      },
-      [animated, isOrbiting]
-    );
+    return () => {
+      leftKey.removeEventListener('holding', panLeft);
+      rightKey.removeEventListener('holding', panRight);
+      upKey.removeEventListener('holding', panUp);
+      downKey.removeEventListener('holding', panDown);
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+    };
+  }, [onKeyDown, onKeyUp, panDown, panLeft, panRight, panUp]);
 
-    const onKeyDown = useCallback(
-      event => {
-        if (event.code === 'Space') {
-          if (mode === 'rotate') {
-            cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.TRUCK;
-          } else {
-            cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.ROTATE;
-          }
-        }
-      },
-      [mode]
-    );
+  useEffect(() => {
+    const onControl = () => setPanning(true);
+    const onControlEnd = () => setPanning(false);
 
-    const onKeyUp = useCallback(
-      event => {
-        if (event.code === 'Space') {
-          if (mode === 'rotate') {
-            cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.ROTATE;
-          } else {
-            cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.TRUCK;
-          }
-        }
-      },
-      [mode]
-    );
+    const ref = cameraRef.current;
+    if (ref) {
+      ref.addEventListener('control', onControl);
+      ref.addEventListener('controlend', onControlEnd);
+    }
 
-    useEffect(() => {
-      leftKey.addEventListener('holding', panLeft);
-      rightKey.addEventListener('holding', panRight);
-      upKey.addEventListener('holding', panUp);
-      downKey.addEventListener('holding', panDown);
-      window.addEventListener('keydown', onKeyDown);
-      window.addEventListener('keyup', onKeyUp);
-
-      return () => {
-        leftKey.removeEventListener('holding', panLeft);
-        rightKey.removeEventListener('holding', panRight);
-        upKey.removeEventListener('holding', panUp);
-        downKey.removeEventListener('holding', panDown);
-        window.removeEventListener('keydown', onKeyDown);
-        window.removeEventListener('keyup', onKeyUp);
-      };
-    }, [onKeyDown, onKeyUp, panDown, panLeft, panRight, panUp]);
-
-    useEffect(() => {
-      const onControl = () => setPanning(true);
-      const onControlEnd = () => setPanning(false);
-
-      const ref = cameraRef.current;
+    return () => {
       if (ref) {
-        ref.addEventListener('control', onControl);
-        ref.addEventListener('controlend', onControlEnd);
+        ref.removeEventListener('control', onControl);
+        ref.removeEventListener('controlend', onControlEnd);
       }
+    };
+  }, [cameraRef, setPanning]);
 
-      return () => {
-        if (ref) {
-          ref.removeEventListener('control', onControl);
-          ref.removeEventListener('controlend', onControlEnd);
-        }
-      };
-    }, [cameraRef, setPanning]);
+  useEffect(() => {
+    if (mode === 'rotate') {
+      cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.ROTATE;
+    } else {
+      cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
+    }
+  }, [mode]);
 
-    useEffect(() => {
-      if (mode === 'rotate') {
-        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.ROTATE;
-      } else {
-        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
+  useHotkeys([
+    {
+      name: 'Zoom In',
+      keys: 'command+shift+i',
+      callback: event => {
+        event.preventDefault();
+        zoomIn();
       }
-    }, [mode]);
-
-    useHotkeys([
-      {
-        name: 'Zoom In',
-        keys: 'command+shift+i',
-        callback: event => {
-          event.preventDefault();
-          zoomIn();
-        }
-      },
-      {
-        name: 'Zoom Out',
-        keys: 'command+shift+o',
-        callback: event => {
-          event.preventDefault();
-          zoomOut();
-        }
+    },
+    {
+      name: 'Zoom Out',
+      keys: 'command+shift+o',
+      callback: event => {
+        event.preventDefault();
+        zoomOut();
       }
-    ]);
+    }
+  ]);
 
-    const values = useMemo(
-      () => ({
-        controls: cameraRef.current,
-        zoomIn: () => zoomIn(),
-        zoomOut: () => zoomOut(),
-        panLeft: () => panLeft({ deltaTime: 1 }),
-        panRight: () => panRight({ deltaTime: 1 }),
-        panDown: () => panDown({ deltaTime: 1 }),
-        panUp: () => panUp({ deltaTime: 1 })
-      }),
-      // eslint-disable-next-line
-      [zoomIn, zoomOut, panLeft, panRight, panDown, panUp, cameraRef.current]
-    );
+  const values = useMemo(
+    () => ({
+      controls: cameraRef.current,
+      zoomIn: () => zoomIn(),
+      zoomOut: () => zoomOut(),
+      panLeft: () => panLeft({ deltaTime: 1 }),
+      panRight: () => panRight({ deltaTime: 1 }),
+      panDown: () => panDown({ deltaTime: 1 }),
+      panUp: () => panUp({ deltaTime: 1 })
+    }),
+    // eslint-disable-next-line
+    [zoomIn, zoomOut, panLeft, panRight, panDown, panUp, cameraRef.current]
+  );
 
-    useImperativeHandle(ref, () => values);
+  useImperativeHandle(ref, () => values);
 
-    return (
-      <CameraControlsContext.Provider value={values}>
-        <threeCameraControls
-          ref={cameraRef}
-          args={[camera, gl.domElement]}
-          enabled={!disabled}
-          smoothTime={0.4}
-          maxDistance={50000}
-        />
-        {children}
-      </CameraControlsContext.Provider>
-    );
-  }
-);
+  return (
+    <CameraControlsContext.Provider value={values}>
+      <threeCameraControls ref={cameraRef} args={[camera, gl.domElement]} enabled={!disabled} smoothTime={0.4} minDistance={1000} maxDistance={50000} />
+      {children}
+    </CameraControlsContext.Provider>
+  );
+});
 
 CameraControls.defaultProps = {
   mode: 'rotate'
