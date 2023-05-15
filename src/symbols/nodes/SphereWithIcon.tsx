@@ -59,7 +59,12 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
       </a.mesh>
       <a.mesh>
         <planeBufferGeometry attach="geometry" args={[10, 10]} />
-        <meshBasicMaterial attach="material" map={iconTexture} transparent />
+        <a.meshBasicMaterial
+          attach="material"
+          map={iconTexture}
+          opacity={nodeOpacity}
+          transparent
+        />
       </a.mesh>
     </a.group>
   );
