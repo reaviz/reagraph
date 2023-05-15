@@ -71,7 +71,7 @@ export const Node: FC<NodeProps> = ({
   const isCollapsed = useStore(state => state.collapsedNodeIds.includes(id));
   const isActive = useStore(state => state.actives?.includes(id));
   const isSelected = useStore(state => state.selections?.includes(id));
-  const hasSelections = useStore(state => state.selections?.length);
+  const hasSelections = useStore(state => state.selections?.length > 0);
 
   const isDragging = draggingId === id;
   const { position, label, size: nodeSize = 7, labelVisible = true } = node;
