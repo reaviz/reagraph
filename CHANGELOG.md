@@ -1,3 +1,7 @@
+# 4.8.2 - 5/15/23
+- [fix] improve falsey check in node isSelected
+- [fix] fix SphereWithIcon not getting opacity
+
 # 4.8.1 - 5/9/23
 - [fix] fix init jumping
 
