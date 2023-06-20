@@ -1,5 +1,6 @@
 <div align="center">
-  <h1>🕸 reagraph</h1>
+  <img width="650" src="docs/assets/logo-light.png">
+  <br />
   <br />
   WebGL Network Graphs for React
   <br /><br />

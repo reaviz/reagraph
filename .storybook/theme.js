@@ -1,7 +1,9 @@
 import { create } from '@storybook/theming/create';
+import ReagraphLogo from '../docs/assets/logo.svg';
 
 export default create({
-  base: 'light',
+  base: 'dark',
   brandTitle: 'REAGRAPH',
-  brandUrl: 'https://github.com/reaviz/reagraph'
+  brandUrl: 'https://github.com/reaviz/reagraph',
+  brandImage: ReagraphLogo
 });
