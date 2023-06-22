@@ -29,8 +29,8 @@ jobs:
       - name: Build Storybook
         run: yarn build-storybook
 
-      - name: Publish Chromatic
-        run: yarn chromatic
+      # - name: Publish Chromatic
+      #  run: yarn chromatic
 
       - name: Copy Domain
         run: yarn copy
