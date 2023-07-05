@@ -1,6 +1,6 @@
-import { Graph } from 'ngraph.graph';
 import { DragReferences } from '../store';
 import { InternalGraphNode } from '../types';
+import Graph from 'graphology';
 
 export type LayoutTypes =
   | 'forceDirected2d'

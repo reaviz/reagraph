@@ -1,4 +1,5 @@
-import { Graph } from 'ngraph.graph';
+// import { Graph } from 'ngraph.graph';
+import Graph from 'graphology';
 import { nodeSizeProvider, SizingType } from '../sizing';
 import {
   GraphEdge,
@@ -13,6 +14,7 @@ export function buildGraph(
   nodes: GraphNode[],
   edges: GraphEdge[]
 ) {
+  /*
   graph.clear();
   graph.beginUpdate();
 
@@ -25,6 +27,7 @@ export function buildGraph(
   }
 
   graph.endUpdate();
+  */
 }
 
 interface TransformGraphInput {

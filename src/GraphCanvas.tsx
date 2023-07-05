@@ -15,7 +15,7 @@ import {
 } from './CameraControls';
 import { Theme, lightTheme } from './themes';
 import { createStore, Provider } from './store';
-import { Graph } from 'ngraph.graph';
+import Graph from 'graphology';
 import { Lasso, LassoType } from './selection';
 import css from './GraphCanvas.module.css';
 
@@ -54,7 +54,7 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
   Omit<CameraControlsRef, 'controls'> & {
     /**
-     * Get the ngraph object.
+     * Get the graph object.
      */
     getGraph: () => Graph;
 

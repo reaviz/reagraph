@@ -5,11 +5,14 @@ import {
   InternalGraphNode,
   InternalGraphPosition
 } from './types';
-import ngraph, { Graph } from 'ngraph.graph';
+// import ngraph, { Graph } from 'ngraph.graph';
 import { BufferGeometry, Mesh, Vector3 } from 'three';
 import { getVector } from './utils';
+import Graph from 'graphology';
 
-export type DragReferences = { [key: string]: InternalGraphNode };
+export type DragReferences = {
+  [key: string]: InternalGraphNode;
+};
 
 export interface GraphState {
   nodes: InternalGraphNode[];
@@ -60,7 +63,7 @@ export const createStore = ({
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
     selections,
     drags: {},
-    graph: ngraph(),
+    graph: new Graph(),
     setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),

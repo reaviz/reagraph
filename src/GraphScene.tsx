@@ -31,7 +31,7 @@ import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { Theme } from './themes';
 import { useStore } from './store';
-import { Graph } from 'ngraph.graph';
+import Graph from 'graphology';
 
 export interface GraphSceneProps {
   /**
@@ -202,7 +202,7 @@ export interface GraphSceneProps {
 
 export interface GraphSceneRef {
   /**
-   * Reference to the ngraph object.
+   * Reference to the graph object.
    */
   graph: Graph;
 
