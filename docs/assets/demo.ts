@@ -107,6 +107,7 @@ export const iconNodes: GraphNode[] =
   range(5).map(i => ({
     id: `n-${i}`,
     label: `Node ${i}`,
+    size: i % 2 === 0 ? 50 : 25,
     icon: i % 2 === 0 ? computerSvg : demonSvg,
     data: {
       priority: random(0, 10)
