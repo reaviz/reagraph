@@ -7,6 +7,9 @@ export interface DepthNode {
   depth: number;
 }
 
+/**
+ * Traverse the graph and get the depth of each node.
+ */
 function traverseGraph(nodes: DepthNode[], nodeStack: DepthNode[] = []) {
   const currentDepth = nodeStack.length;
 

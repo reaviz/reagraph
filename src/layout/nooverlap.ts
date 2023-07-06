@@ -2,9 +2,24 @@ import noverlapLayout from 'graphology-layout-noverlap';
 import { LayoutFactoryProps } from './types';
 
 export interface NoOverlapLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Grid size. Default 20.
+   */
   gridSize?: number;
+
+  /**
+   * Ratio of the layout. Default 10.
+   */
   ratio?: number;
+
+  /**
+   * Maximum number of iterations. Default 50.
+   */
   maxIterations?: number;
+
+  /**
+   * Margin between nodes. Default 10.
+   */
   margin?: number;
 }
 

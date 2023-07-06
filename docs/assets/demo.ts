@@ -78,13 +78,14 @@ const colors = ['blue', 'green', 'red', 'orange'];
 export const clusterNodes: GraphNode[] =
   range(25).map(i => {
     const idx = random(0, types.length - 1);
+    const type = types[idx];
 
     return {
     id: `n-${i}`,
-    label: `Node ${i}`,
+    label: `Node ${type} ${i}`,
     fill: colors[idx],
     data: {
-      type: types[idx]
+      type
     }
   }
 });

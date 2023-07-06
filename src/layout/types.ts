@@ -18,13 +18,35 @@ export type LayoutTypes =
   | 'forceatlas2';
 
 export interface LayoutFactoryProps {
+  /**
+   * The type of layout to use.
+   */
   type: LayoutTypes;
+
+  /**
+   * The cluster attribute to use.
+   */
   clusterAttribute?: string;
+
+  /**
+   * The graph object.
+   */
   graph: Graph;
+
+  /**
+   * Dragged node position refs.
+   */
   drags?: DragReferences;
 }
 
 export interface LayoutStrategy {
+  /**
+   * Given a node, get the position. If dragged, will fallback to drag position.
+   */
   getNodePosition: (id: string) => InternalGraphPosition;
+
+  /**
+   * Async stepper.
+   */
   step: () => boolean | undefined;
 }

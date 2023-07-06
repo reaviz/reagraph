@@ -2,10 +2,13 @@ import circular from 'graphology-layout/circular';
 import { LayoutFactoryProps } from './types';
 
 export interface CircularLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Radius of the circle.
+   */
   radius: 300;
 }
 
-export const circular2d = ({ graph, radius, drags }: CircularLayoutInputs) => {
+export function circular2d({ graph, radius, drags }: CircularLayoutInputs) {
   const layout = circular(graph, {
     scale: radius
   });
@@ -19,4 +22,4 @@ export const circular2d = ({ graph, radius, drags }: CircularLayoutInputs) => {
       return (drags?.[id]?.position as any) || layout?.[id];
     }
   };
-};
+}

@@ -13,12 +13,39 @@ import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Number of dimensions for the layout. 2d or 3d.
+   */
   dimensions?: number;
+
+  /**
+   * Mode for the dag layout. Only applicable for dag layouts.
+   */
   mode?: DagMode;
+
+  /**
+   * Distance between links.
+   */
   linkDistance?: number;
+
+  /**
+   * Strength of the node repulsion.
+   */
   nodeStrength?: number;
+
+  /**
+   * Padding between clusters.
+   */
   clusterPadding?: number;
+
+  /**
+   * Strength of the cluster repulsion.
+   */
   clusterStrength?: number;
+
+  /**
+   * Ratio of the distance between nodes on the same level.
+   */
   nodeLevelRatio?: number;
 }
 

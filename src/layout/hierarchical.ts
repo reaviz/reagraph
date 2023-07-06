@@ -4,6 +4,9 @@ import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { hierarchy, stratify, tree } from 'd3-hierarchy';
 
 export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Direction of the layout.
+   */
   mode?: 'td' | 'lr';
 }
 
