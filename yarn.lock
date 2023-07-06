@@ -5836,22 +5836,6 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-graphology-dag@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/graphology-dag/-/graphology-dag-0.3.0.tgz#e200640cbff89dc40a3525c1a8ad2254c1d2bfed"
-  integrity sha512-dg4JPb+/LDEbDinZIj7ezWzlEXDRokshdpTL8oAuftE9Uy0uTKGOKSmYULY8p3j/vw0HB31Wog9T/kpqprUQpg==
-  dependencies:
-    graphology-utils "^2.4.1"
-    mnemonist "^0.39.0"
-
-graphology-generators@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/graphology-generators/-/graphology-generators-0.11.2.tgz#eff2c97e4f5bf401e86ab045470dded95f2ebe24"
-  integrity sha512-hx+F0OZRkVdoQ0B1tWrpxoakmHZNex0c6RAoR0PrqJ+6fz/gz6CQ88Qlw78C6yD9nlZVRgepIoDYhRTFV+bEHg==
-  dependencies:
-    graphology-metrics "^2.0.0"
-    graphology-utils "^2.3.0"
-
 graphology-indices@^0.17.0:
   version "0.17.0"
   resolved "https://registry.yarnpkg.com/graphology-indices/-/graphology-indices-0.17.0.tgz#b93ad32162ff8b09814547aedb101248f0fcbd2e"
@@ -5889,7 +5873,7 @@ graphology-layout@^0.6.1:
     graphology-utils "^2.3.0"
     pandemonium "^2.4.0"
 
-graphology-metrics@^2.0.0, graphology-metrics@^2.1.0:
+graphology-metrics@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/graphology-metrics/-/graphology-metrics-2.1.0.tgz#7d00bae92d8970583afd020e6d40d8a16c378002"
   integrity sha512-E+y4kgVGxhYl/+bPHEftJeWLS8LgVno4/Wvg+C7IoDIjY6OlIZghgMKDR8LKsxU6GC43mlx08FTZs229cvEkwQ==
@@ -5913,7 +5897,7 @@ graphology-types@^0.24.7:
   resolved "https://registry.yarnpkg.com/graphology-types/-/graphology-types-0.24.7.tgz#7d630a800061666bfa70066310f56612e08b7bee"
   integrity sha512-tdcqOOpwArNjEr0gNQKCXwaNCWnQJrog14nJNQPeemcLnXQUUGrsCWpWkVKt46zLjcS6/KGoayeJfHHyPDlvwA==
 
-graphology-utils@^2.1.0, graphology-utils@^2.3.0, graphology-utils@^2.4.1, graphology-utils@^2.4.2, graphology-utils@^2.4.3, graphology-utils@^2.4.4:
+graphology-utils@^2.1.0, graphology-utils@^2.3.0, graphology-utils@^2.4.2, graphology-utils@^2.4.3, graphology-utils@^2.4.4:
   version "2.5.2"
   resolved "https://registry.yarnpkg.com/graphology-utils/-/graphology-utils-2.5.2.tgz#4d30d6e567d27c01f105e1494af816742e8d2440"
   integrity sha512-ckHg8MXrXJkOARk56ZaSCM1g1Wihe2d6iTmz1enGOz4W/l831MBCKSayeFQfowgF8wd+PQ4rlch/56Vs/VZLDQ==

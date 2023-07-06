@@ -13,7 +13,8 @@ export type LayoutTypes =
   | 'radialOut2d'
   | 'radialOut3d'
   | 'hierarchicalTd'
-  | 'hierarchicalLr';
+  | 'hierarchicalLr'
+  | 'nooverlap';
 
 export interface LayoutFactoryProps {
   type: LayoutTypes;

@@ -2,6 +2,7 @@ import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
 import { circular2d, CircularLayoutInputs } from './circular2d';
 import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
+import { NoOverlapLayoutInputs, nooverlap } from './nooverlap';
 
 export type LayoutOverrides = Partial<
   Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'> | CircularLayoutInputs
@@ -114,6 +115,18 @@ export function layoutProvider({
     return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);
   } else if (type === 'hierarchicalLr') {
     return hierarchical({ ...rest, mode: 'lr' } as HierarchicalLayoutInputs);
+  } else if (type === 'nooverlap') {
+    const { graph, maxIterations, ratio, margin, gridSize } =
+      rest as NoOverlapLayoutInputs;
+
+    return nooverlap({
+      type: 'nooverlap',
+      graph,
+      margin: margin || 10,
+      maxIterations: maxIterations || 50,
+      ratio: ratio || 10,
+      gridSize: gridSize || 20
+    });
   }
 
   throw new Error(`Layout ${type} not found.`);
