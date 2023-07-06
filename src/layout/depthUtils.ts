@@ -7,6 +7,9 @@ export interface DepthNode {
   depth: number;
 }
 
+/**
+ * Traverse the graph and get the depth of each node.
+ */
 function traverseGraph(nodes: DepthNode[], nodeStack: DepthNode[] = []) {
   const currentDepth = nodeStack.length;
 
@@ -49,11 +52,9 @@ export function getNodeDepth(
   );
 
   try {
-    links.forEach(link => {
-      // @ts-ignore
-      const from = link.fromId || link.source;
-      // @ts-ignore
-      const to = link.toId || link.target;
+    for (const link of links) {
+      const from = link.source;
+      const to = link.target;
 
       if (!graph.hasOwnProperty(from)) {
         throw new Error(`Missing source Node ${from}`);
@@ -67,7 +68,7 @@ export function getNodeDepth(
       const targetNode = graph[to];
       targetNode.ins.push(sourceNode);
       sourceNode.out.push(targetNode);
-    });
+    }
 
     traverseGraph(Object.values(graph));
   } catch (e) {

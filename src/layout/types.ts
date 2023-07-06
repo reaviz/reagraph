@@ -1,6 +1,6 @@
-import { Graph } from 'ngraph.graph';
 import { DragReferences } from '../store';
-import { InternalGraphNode } from '../types';
+import { InternalGraphPosition } from '../types';
+import Graph from 'graphology';
 
 export type LayoutTypes =
   | 'forceDirected2d'
@@ -13,16 +13,40 @@ export type LayoutTypes =
   | 'radialOut2d'
   | 'radialOut3d'
   | 'hierarchicalTd'
-  | 'hierarchicalLr';
+  | 'hierarchicalLr'
+  | 'nooverlap'
+  | 'forceatlas2';
 
 export interface LayoutFactoryProps {
+  /**
+   * The type of layout to use.
+   */
   type: LayoutTypes;
+
+  /**
+   * The cluster attribute to use.
+   */
   clusterAttribute?: string;
+
+  /**
+   * The graph object.
+   */
   graph: Graph;
+
+  /**
+   * Dragged node position refs.
+   */
   drags?: DragReferences;
 }
 
 export interface LayoutStrategy {
-  getNodePosition: (id: string) => InternalGraphNode;
+  /**
+   * Given a node, get the position. If dragged, will fallback to drag position.
+   */
+  getNodePosition: (id: string) => InternalGraphPosition;
+
+  /**
+   * Async stepper.
+   */
   step: () => boolean | undefined;
 }

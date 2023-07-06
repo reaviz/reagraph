@@ -88,7 +88,7 @@ export const Node: FC<NodeProps> = ({
 
   const canCollapse = useMemo(() => {
     // If the node has outgoing edges, it can collapse via context menu
-    const outboundLinks = edges.filter(l => l.data.source === id);
+    const outboundLinks = edges.filter(l => l.source === id);
 
     return outboundLinks.length > 0 || isCollapsed;
   }, [edges, id, isCollapsed]);

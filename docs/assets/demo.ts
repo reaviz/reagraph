@@ -1,9 +1,9 @@
 import { range } from 'd3-array';
 import { GraphEdge, GraphNode } from '../../src';
-import random from 'lodash/random';
 import demonSvg from './demon.svg';
 import computerSvg from './computer.svg';
-import generators from 'ngraph.generators';
+
+export const random = (floor, ceil) => Math.floor(Math.random() * ceil) + floor;
 
 export const simpleNodes: GraphNode[] =
   range(5).map(i => ({
@@ -78,13 +78,14 @@ const colors = ['blue', 'green', 'red', 'orange'];
 export const clusterNodes: GraphNode[] =
   range(25).map(i => {
     const idx = random(0, types.length - 1);
+    const type = types[idx];
 
     return {
     id: `n-${i}`,
-    label: `Node ${i}`,
+    label: `Node ${type} ${i}`,
     fill: colors[idx],
     data: {
-      type: types[idx]
+      type
     }
   }
 });
@@ -211,27 +212,52 @@ export const treeEdges: GraphEdge[] = [
   }
 ];
 
-export const [complexNodes, complexEdges] = transformGenerator(generators.balancedBinTree(3));
+export const complexNodes: GraphNode[] =
+  range(25).map(i => ({
+    id: `${i}`,
+    label: `Node ${i}`
+  }));
 
-export function transformGenerator(g) {
-  const nodes: any[] = [];
-  const edges: any[] = [];
-
-  g.forEachNode(node => {
-    nodes.push({
-      id: `${node.id}`,
-      label: `Node ${node.id}`
-    });
-
-    node.links.forEach(link => {
-      edges.push({
-        id: `${node.id}->${link.toId}`,
-        source: `${link.fromId}`,
-        target: `${link.toId}`,
-        label: `${link.fromId} -> ${link.toId}`
-      });
-    });
-  });
-
-  return [nodes, edges];
-}
+export const complexEdges = [
+  { id: '0->2', source: '0', target: '2', label: 'Edge 0-2' },
+  { id: '1->3', source: '1', target: '3', label: 'Edge 1-3' },
+  { id: '2->4', source: '2', target: '4', label: 'Edge 2-4' },
+  { id: '3->5', source: '3', target: '5', label: 'Edge 3-5' },
+  { id: '5->15', source: '5', target: '15', label: 'Edge 5-15' },
+  { id: '5->7', source: '5', target: '7', label: 'Edge 5-7' },
+  { id: '6->8', source: '6', target: '8', label: 'Edge 6-8' },
+  { id: '7->9', source: '7', target: '9', label: 'Edge 7-9' },
+  { id: '8->10', source: '8', target: '10', label: 'Edge 8-10' },
+  { id: '9->11', source: '9', target: '11', label: 'Edge 9-11' },
+  { id: '10->12', source: '10', target: '12', label: 'Edge 10-12' },
+  { id: '11->13', source: '11', target: '13', label: 'Edge 11-13' },
+  { id: '22->9', source: '22', target: '9', label: 'Edge 22-9' },
+  { id: '13->15', source: '13', target: '15', label: 'Edge 13-15' },
+  { id: '14->16', source: '14', target: '16', label: 'Edge 14-16' },
+  { id: '15->17', source: '15', target: '17', label: 'Edge 15-17' },
+  { id: '16->18', source: '16', target: '18', label: 'Edge 16-18' },
+  { id: '17->19', source: '17', target: '19', label: 'Edge 17-19' },
+  { id: '18->20', source: '18', target: '20', label: 'Edge 18-20' },
+  { id: '19->21', source: '19', target: '21', label: 'Edge 19-21' },
+  { id: '20->22', source: '20', target: '22', label: 'Edge 20-22' },
+  { id: '21->23', source: '21', target: '23', label: 'Edge 21-23' },
+  { id: '22->24', source: '22', target: '24', label: 'Edge 22-24' },
+  { id: '23->0', source: '23', target: '0', label: 'Edge 23-0' },
+  { id: '24->1', source: '24', target: '1', label: 'Edge 24-1' },
+  { id: '0->3', source: '0', target: '3', label: 'Edge 0-3' },
+  { id: '1->4', source: '1', target: '4', label: 'Edge 1-4' },
+  { id: '2->5', source: '2', target: '5', label: 'Edge 2-5' },
+  { id: '3->6', source: '3', target: '6', label: 'Edge 3-6' },
+  { id: '4->7', source: '4', target: '7', label: 'Edge 4-7' },
+  { id: '5->8', source: '5', target: '8', label: 'Edge 5-8' },
+  { id: '6->9', source: '6', target: '9', label: 'Edge 6-9' },
+  { id: '7->10', source: '7', target: '10', label: 'Edge 7-10' },
+  { id: '8->11', source: '8', target: '11', label: 'Edge 8-11' },
+  { id: '9->12', source: '9', target: '12', label: 'Edge 9-12' },
+  { id: '10->13', source: '10', target: '13', label: 'Edge 10-13' },
+  { id: '11->14', source: '11', target: '14', label: 'Edge 11-14' },
+  { id: '12->15', source: '12', target: '15', label: 'Edge 12-15' },
+  { id: '13->16', source: '13', target: '16', label: 'Edge 13-16' },
+  { id: '14->17', source: '14', target: '17', label: 'Edge 14-17' },
+  { id: '15->18', source: '15', target: '18', label: 'Edge 15-18' },
+];

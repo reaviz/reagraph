@@ -1,4 +1,4 @@
-import { Graph } from 'ngraph.graph';
+import Graph from 'graphology';
 
 export interface SizingStrategyInputs {
   graph: Graph;

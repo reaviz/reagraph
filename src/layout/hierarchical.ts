@@ -1,11 +1,12 @@
 import { InternalGraphEdge, InternalGraphNode } from 'types';
 import { DepthNode, getNodeDepth } from './depthUtils';
-import { LayoutStrategy } from './types';
+import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { hierarchy, stratify, tree } from 'd3-hierarchy';
-import { Graph } from 'ngraph.graph';
 
-export interface HierarchicalLayoutInputs {
-  graph: Graph;
+export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Direction of the layout.
+   */
   mode?: 'td' | 'lr';
 }
 
@@ -24,26 +25,21 @@ const DIRECTION_MAP = {
 
 export function hierarchical({
   graph,
+  drags,
   mode = 'td'
 }: HierarchicalLayoutInputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
-  const links: InternalGraphEdge[] = [];
+  const edges: InternalGraphEdge[] = [];
 
-  // Map the graph nodes / edges to D3 object
-  graph.forEachNode(n => {
-    nodes.push({ ...n } as any);
+  graph.forEachNode((id, n: any) => {
+    nodes.push({ ...n, id });
   });
 
-  graph.forEachLink(l => {
-    links.push({
-      ...l,
-      id: l.data.id,
-      source: l.fromId,
-      target: l.toId
-    } as any);
+  graph.forEachEdge((id, l: any) => {
+    edges.push({ ...l, id });
   });
 
-  const { depths } = getNodeDepth(nodes, links);
+  const { depths } = getNodeDepth(nodes, edges);
   const rootNodes = Object.keys(depths).map(d => depths[d]);
 
   const root = stratify<DepthNode>()
@@ -59,7 +55,7 @@ export function hierarchical({
 
   const mappedNodes = new Map<string, InternalGraphNode>(
     nodes.map(n => {
-      let { x, y } = treeNodes.find((t: any) => t.data.id === n.id);
+      const { x, y } = treeNodes.find((t: any) => t.data.id === n.id);
       return [
         n.id,
         {
@@ -77,7 +73,8 @@ export function hierarchical({
       return true;
     },
     getNodePosition(id: string) {
-      return mappedNodes.get(id);
+      // If we dragged, we need to use that position
+      return (drags?.[id]?.position as any) || mappedNodes.get(id);
     }
   };
 }

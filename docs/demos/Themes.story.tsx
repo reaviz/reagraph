@@ -42,7 +42,7 @@ CustomTheme.args = {
       fog: '#1E2026'
     },
     node: {
-      fill: '#7A8C9E',
+      fill: 'blue',
       activeFill: '#1DE9AC',
       label: {
         stroke: '#1E2026',

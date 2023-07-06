@@ -83,12 +83,12 @@ export interface InternalGraphLink {
   /**
    * ID of the from node.
    */
-  fromId: string;
+  source: string;
 
   /**
    * ID of the to node.
    */
-  toId: string;
+  target: string;
 }
 
 export interface InternalGraphEdge
@@ -96,12 +96,12 @@ export interface InternalGraphEdge
   /**
    * ID of the from node.
    */
-  fromId: string;
+  source: string;
 
   /**
    * ID of the to node.
    */
-  toId: string;
+  target: string;
 }
 
 export interface InternalGraphPosition extends InternalVector3 {
@@ -154,11 +154,6 @@ export interface InternalVector3 {
 }
 
 export interface InternalGraphNode extends GraphNode {
-  /**
-   * Link relationships of the element.
-   */
-  links: InternalGraphLink[];
-
   /**
    * Position of the node set by dragging or layout.
    */

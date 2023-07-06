@@ -53,10 +53,10 @@ export function useEdgeGeometry(
       const { nodes } = stateRef.current;
 
       edges.forEach(edge => {
-        const { toId, fromId, size = 1 } = edge;
+        const { target, source, size = 1 } = edge;
 
-        const from = nodes.find(node => node.id === fromId);
-        const to = nodes.find(node => node.id === toId);
+        const from = nodes.find(node => node.id === source);
+        const to = nodes.find(node => node.id === target);
 
         if (!from || !to) {
           return;

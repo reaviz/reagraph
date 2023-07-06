@@ -5,11 +5,13 @@ import {
   InternalGraphNode,
   InternalGraphPosition
 } from './types';
-import ngraph, { Graph } from 'ngraph.graph';
 import { BufferGeometry, Mesh, Vector3 } from 'three';
 import { getVector } from './utils';
+import Graph from 'graphology';
 
-export type DragReferences = { [key: string]: InternalGraphNode };
+export type DragReferences = {
+  [key: string]: InternalGraphNode;
+};
 
 export interface GraphState {
   nodes: InternalGraphNode[];
@@ -60,7 +62,7 @@ export const createStore = ({
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
     selections,
     drags: {},
-    graph: ngraph(),
+    graph: new Graph(),
     setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
@@ -74,8 +76,8 @@ export const createStore = ({
         const originalVector = getVector(node);
         const newVector = new Vector3(position.x, position.y, position.z);
         const offset = newVector.sub(originalVector);
-
         const nodes = [...state.nodes];
+
         if (state.selections?.includes(id)) {
           state.selections?.forEach(id => {
             const node = state.nodes.find(n => n.id === id);
@@ -89,9 +91,13 @@ export const createStore = ({
           const nodeIndex = state.nodes.indexOf(node);
           nodes[nodeIndex] = updateNodePosition(node, offset);
         }
+
         return {
           ...state,
-          drags: { ...state.drags, [id]: node },
+          drags: {
+            ...state.drags,
+            [id]: node
+          },
           nodes
         };
       }),

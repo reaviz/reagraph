@@ -1,5 +1,8 @@
 import { InternalGraphNode } from '../types';
 
+/**
+ * Given a collection of nodes, get the center point.
+ */
 export function getLayoutCenter(nodes: InternalGraphNode[]) {
   let minX = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;

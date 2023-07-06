@@ -16,7 +16,7 @@ export type DagMode =
 
 export interface ForceRadialInputs {
   nodes: InternalGraphNode[];
-  links: InternalGraphEdge[];
+  edges: InternalGraphEdge[];
   mode: DagMode;
   nodeLevelRatio: number;
 }
@@ -27,11 +27,11 @@ export interface ForceRadialInputs {
  */
 export function forceRadial({
   nodes,
-  links,
+  edges,
   mode = 'lr',
   nodeLevelRatio = 2
 }: ForceRadialInputs) {
-  const { depths, maxDepth, invalid } = getNodeDepth(nodes, links);
+  const { depths, maxDepth, invalid } = getNodeDepth(nodes, edges);
 
   if (invalid) {
     return null;

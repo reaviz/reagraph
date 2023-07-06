@@ -13,12 +13,39 @@ import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Number of dimensions for the layout. 2d or 3d.
+   */
   dimensions?: number;
+
+  /**
+   * Mode for the dag layout. Only applicable for dag layouts.
+   */
   mode?: DagMode;
+
+  /**
+   * Distance between links.
+   */
   linkDistance?: number;
+
+  /**
+   * Strength of the node repulsion.
+   */
   nodeStrength?: number;
+
+  /**
+   * Padding between clusters.
+   */
   clusterPadding?: number;
+
+  /**
+   * Strength of the cluster repulsion.
+   */
   clusterStrength?: number;
+
+  /**
+   * Ratio of the distance between nodes on the same level.
+   */
   nodeLevelRatio?: number;
 }
 
@@ -36,29 +63,27 @@ export function forceDirected({
   drags,
   clusterAttribute
 }: ForceDirectedLayoutInputs): LayoutStrategy {
-  const nodes: InternalGraphNode[] = [];
-  const links: InternalGraphEdge[] = [];
   const cluster = new Map<string, InternalGraphNode>();
+  const nodes: InternalGraphNode[] = [];
+  const edges: InternalGraphEdge[] = [];
 
-  // Map the graph nodes / edges to D3 object
-  graph.forEachNode(n => {
-    // @ts-ignore
+  graph.forEachNode((id, n: any) => {
     nodes.push({
       ...n,
+      id,
       // This is for the clustering
-      radius: n.data?.size || 1
+      radius: n.size || 1
     });
   });
 
-  graph.forEachLink(l => {
-    // @ts-ignore
-    links.push({ ...l, id: l.data.id, source: l.fromId, target: l.toId });
+  graph.forEachEdge((id, l: any) => {
+    edges.push({ ...l, id });
   });
 
   // Dynamically adjust node strength based on the number of edges
   const is2d = dimensions === 2;
   const nodeStrengthAdjustment =
-    is2d && links.length > 25 ? nodeStrength * 2 : nodeStrength;
+    is2d && edges.length > 25 ? nodeStrength * 2 : nodeStrength;
 
   // Create the simulation
   const sim = d3ForceSimulation()
@@ -76,7 +101,7 @@ export function forceDirected({
       'dagRadial',
       forceRadial({
         nodes,
-        links,
+        edges,
         mode,
         nodeLevelRatio
       })
@@ -93,12 +118,12 @@ export function forceDirected({
         .centers(node => {
           // Happens after nodes passed so they have the x/y/z
           if (clusterAttribute) {
-            const nodeClusterAttr = node.data?.data?.[clusterAttribute];
+            const nodeClusterAttr = node?.data?.[clusterAttribute];
             const centerNode = cluster.get(nodeClusterAttr);
 
             if (!centerNode) {
               const largestNode = nodes.reduce((last: any, cur: any) => {
-                if (cur.data?.data?.[clusterAttribute] === nodeClusterAttr) {
+                if (cur?.data?.[clusterAttribute] === nodeClusterAttr) {
                   return cur.radius > last.radius ? cur : last;
                 }
                 return last;
@@ -119,7 +144,7 @@ export function forceDirected({
   if (linkForce) {
     linkForce
       .id(d => d.id)
-      .links(links)
+      .links(edges)
       // When no mode passed, its a tree layout
       // so let's use a larger distance
       .distance(linkDistance);
@@ -136,7 +161,7 @@ export function forceDirected({
     },
     getNodePosition(id: string) {
       // If we dragged, we need to use that position
-      return drags?.[id] || nodeMap.get(id);
+      return (drags?.[id]?.position as any) || nodeMap.get(id);
     }
   };
 }

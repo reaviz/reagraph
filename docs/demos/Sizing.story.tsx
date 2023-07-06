@@ -21,8 +21,8 @@ const MinMaxSizesStory = (props) => (
 
 export const MinMaxSizes = MinMaxSizesStory.bind({});
 MinMaxSizes.args = {
-  minNodeSize: 25,
-  maxNodeSize: 100
+  minNodeSize: 10,
+  maxNodeSize: 25
 };
 
 export const PageRank = () => (

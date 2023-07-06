@@ -23,6 +23,14 @@ export const Circular = () => (
   <GraphCanvas layoutType="circular2d" nodes={complexNodes} edges={complexEdges} />
 );
 
+export const NoOverlap = () => (
+  <GraphCanvas layoutType="nooverlap" nodes={simpleNodes} edges={simpleEdges} />
+);
+
+export const ForceAtlas2 = () => (
+  <GraphCanvas layoutType="forceatlas2" nodes={complexNodes} edges={complexEdges} />
+);
+
 export const RadialOut = () => (
   <GraphCanvas layoutType="radialOut2d" nodes={simpleNodes} edges={simpleEdges} />
 );

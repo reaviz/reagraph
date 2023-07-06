@@ -6,3 +6,5 @@ export * from './layoutUtils';
 export * from './forceUtils';
 export * from './depthUtils';
 export * from './recommender';
+export * from './nooverlap';
+export * from './forceatlas2';

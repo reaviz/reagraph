@@ -66,6 +66,8 @@ with the following built in layouts:
 - Radial Out 3D
 - Hierarchical Top Down 2D
 - Hierarchical Left Right 2D
+- No Overlap 2D
+- Force Atlas 2 2D
 
 ## 📦 Usage
 

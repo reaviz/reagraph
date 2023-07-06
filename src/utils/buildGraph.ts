@@ -1,4 +1,4 @@
-import { Graph } from 'ngraph.graph';
+import Graph from 'graphology';
 import { nodeSizeProvider, SizingType } from '../sizing';
 import {
   GraphEdge,
@@ -7,29 +7,38 @@ import {
   InternalGraphNode
 } from '../types';
 import { calcLabelVisibility, LabelVisibilityType } from './visibility';
+import { LayoutStrategy } from '../layout';
 
+/**
+ * Initialize the graph with the nodes/edges.
+ */
 export function buildGraph(
   graph: Graph,
   nodes: GraphNode[],
   edges: GraphEdge[]
 ) {
+  // TODO: We probably want to make this
+  // smarter and only add/remove nodes
   graph.clear();
-  graph.beginUpdate();
 
   for (const node of nodes) {
-    graph.addNode(node.id, node);
+    try {
+      graph.addNode(node.id, node);
+    } catch ({ message }) {
+      console.error(`[Graph] ${message}`);
+    }
   }
 
   for (const edge of edges) {
-    graph.addLink(edge.source, edge.target, edge);
+    graph.addEdge(edge.source, edge.target, edge);
   }
 
-  graph.endUpdate();
+  return graph;
 }
 
 interface TransformGraphInput {
   graph: Graph;
-  layout: any;
+  layout: LayoutStrategy;
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
@@ -38,6 +47,9 @@ interface TransformGraphInput {
   defaultNodeSize?: number;
 }
 
+/**
+ * Transform the graph into a format that is easier to work with.
+ */
 export function transformGraph({
   graph,
   layout,
@@ -60,50 +72,52 @@ export function transformGraph({
     maxSize: maxNodeSize,
     defaultSize: defaultNodeSize
   });
-  const nodeCount = graph.getNodesCount();
+
+  const nodeCount = graph.nodes.length;
   const checkVisibility = calcLabelVisibility(nodeCount, labelType);
 
-  graph.forEachNode((node: any) => {
-    if (node.data) {
-      const position = layout.getNodePosition(node.id);
-      const { data, fill, icon, label, size, ...rest } = node.data;
-      const nodeSize = sizes.get(node.id);
-      const labelVisible = checkVisibility('node', nodeSize);
-      const nodeLinks = graph.getLinks(node.id);
-      const parents = nodeLinks
-        ? [...nodeLinks].filter(l => l.toId === node.id).map(l => l.fromId)
-        : null;
-      const n: InternalGraphNode = {
-        ...(node as any),
-        size: nodeSize,
-        labelVisible,
-        label,
-        icon,
-        fill,
-        parents,
-        data: {
-          ...rest,
-          ...(data || {})
-        },
-        position: {
-          ...position,
-          z: position.z || 1
-        }
-      };
+  graph.forEachNode((id, node) => {
+    const position = layout.getNodePosition(id);
+    const { data, fill, icon, label, size, ...rest } = node;
+    const nodeSize = sizes.get(node.id);
+    const labelVisible = checkVisibility('node', nodeSize);
 
-      map.set(node.id, n);
-      nodes.push(n);
-    }
+    const nodeLinks = graph.inboundNeighbors(node.id) || [];
+    const parents = nodeLinks.map(n => graph.getNodeAttributes(n));
+
+    const n: InternalGraphNode = {
+      ...(node as any),
+      size: nodeSize,
+      labelVisible,
+      label,
+      icon,
+      fill,
+      parents,
+      data: {
+        ...rest,
+        ...(data ?? {})
+      },
+      position: {
+        ...position,
+        x: position.x || 0,
+        y: position.y || 0,
+        z: position.z || 1
+      }
+    };
+
+    map.set(node.id, n);
+    nodes.push(n);
   });
 
-  graph.forEachLink((link: any) => {
-    const from = map.get(link.fromId);
-    const to = map.get(link.toId);
+  graph.forEachEdge((_id, link) => {
+    const from = map.get(link.source);
+    const to = map.get(link.target);
 
     if (from && to) {
-      const { data, id, label, size, ...rest } = link.data;
-      const labelVisible = checkVisibility('edge', link.size);
+      const { data, id, label, size, ...rest } = link;
+      const labelVisible = checkVisibility('edge', size);
 
+      // TODO: Fix type
       edges.push({
         ...link,
         id,
@@ -115,7 +129,7 @@ export function transformGraph({
           id,
           ...(data || {})
         }
-      });
+      } as any);
     }
   });
 

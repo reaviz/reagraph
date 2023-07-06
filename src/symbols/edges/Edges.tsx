@@ -82,7 +82,7 @@ export const Edges: FC<EdgesProps> = ({
     const draggingActive: Array<InternalGraphEdge> = [];
     const draggingInactive: Array<InternalGraphEdge> = [];
     edges.forEach(edge => {
-      if (draggingId === edge.fromId || draggingId === edge.toId) {
+      if (draggingId === edge.source || draggingId === edge.target) {
         if (selections.includes(edge.id) || actives.includes(edge.id)) {
           draggingActive.push(edge);
         } else {
