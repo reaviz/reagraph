@@ -24,6 +24,8 @@ export function buildGraph(
   for (const edge of edges) {
     graph.addEdge(edge.source, edge.target, edge);
   }
+
+  return graph;
 }
 
 interface TransformGraphInput {
@@ -81,11 +83,11 @@ export function transformGraph({
       parents,
       data: {
         ...rest,
-        ...(data || {})
+        ...(data ?? {})
       },
       position: {
-        ...position,
-        z: position.z || 1
+        ...(position ?? {}),
+        z: position?.z || 1
       }
     };
 

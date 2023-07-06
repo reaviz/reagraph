@@ -26,11 +26,20 @@ export function hierarchical({
   graph,
   mode = 'td'
 }: HierarchicalLayoutInputs): LayoutStrategy {
-  // TODO: Fix types
-  const nodes: InternalGraphNode[] = graph.nodeEntries() as any;
-  const links: InternalGraphEdge[] = graph.edgeEntries() as any;
+  const nodes: InternalGraphNode[] = [];
+  const edges: InternalGraphEdge[] = [];
 
-  const { depths } = getNodeDepth(nodes, links);
+  // Itterate over the nodes and edges of the graph
+  // and put in a array for calcs
+  for (const n of graph.nodeEntries()) {
+    nodes.push(n as any);
+  }
+
+  for (const e of graph.edgeEntries()) {
+    edges.push(e as any);
+  }
+
+  const { depths } = getNodeDepth(nodes, edges);
   const rootNodes = Object.keys(depths).map(d => depths[d]);
 
   const root = stratify<DepthNode>()
