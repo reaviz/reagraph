@@ -7,6 +7,7 @@ import {
   InternalGraphNode
 } from '../types';
 import { calcLabelVisibility, LabelVisibilityType } from './visibility';
+import { LayoutStrategy } from '../layout';
 
 export function buildGraph(
   graph: Graph,
@@ -30,7 +31,7 @@ export function buildGraph(
 
 interface TransformGraphInput {
   graph: Graph;
-  layout: any;
+  layout: LayoutStrategy;
   sizingType?: SizingType;
   labelType?: LabelVisibilityType;
   sizingAttribute?: string;
@@ -86,8 +87,8 @@ export function transformGraph({
         ...(data ?? {})
       },
       position: {
-        ...(position ?? {}),
-        z: position?.z || 1
+        ...position,
+        z: position.z || 1
       }
     };
 
