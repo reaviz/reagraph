@@ -19,7 +19,11 @@ export function buildGraph(
   graph.clear();
 
   for (const node of nodes) {
-    graph.addNode(node.id, node);
+    try {
+      graph.addNode(node.id, node);
+    } catch ({ message }) {
+      console.error(`[Graph] ${message}`);
+    }
   }
 
   for (const edge of edges) {

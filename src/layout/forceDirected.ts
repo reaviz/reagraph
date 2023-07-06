@@ -133,7 +133,6 @@ export function forceDirected({
       return true;
     },
     getNodePosition(id: string) {
-      console.log('here', drags?.[id], nodeMap.get(id));
       // If we dragged, we need to use that position
       return (drags?.[id]?.position as any) || nodeMap.get(id);
     }
