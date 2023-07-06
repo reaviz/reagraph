@@ -65,7 +65,6 @@
     "ellipsize": "^0.5.1",
     "graphology": "^0.25.1",
     "graphology-layout": "^0.6.1",
-    "graphology-layout-force": "^0.2.4",
     "graphology-layout-forceatlas2": "^0.10.1",
     "graphology-layout-noverlap": "^0.4.2",
     "graphology-metrics": "^2.1.0",

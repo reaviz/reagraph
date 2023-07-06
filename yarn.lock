@@ -5844,13 +5844,6 @@ graphology-indices@^0.17.0:
     graphology-utils "^2.4.2"
     mnemonist "^0.39.0"
 
-graphology-layout-force@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/graphology-layout-force/-/graphology-layout-force-0.2.4.tgz#a9b5f2aa5c7b56985503d302dbce4c73c76b9eb3"
-  integrity sha512-NYZz0YAnDkn5pkm30cvB0IScFoWGtbzJMrqaiH070dYlYJiag12Oc89dbVfaMaVR/w8DMIKxn/ix9Bqj+Umm9Q==
-  dependencies:
-    graphology-utils "^2.4.2"
-
 graphology-layout-forceatlas2@^0.10.1:
   version "0.10.1"
   resolved "https://registry.yarnpkg.com/graphology-layout-forceatlas2/-/graphology-layout-forceatlas2-0.10.1.tgz#741842135609d82d12db5a5fdf74672062c28205"
