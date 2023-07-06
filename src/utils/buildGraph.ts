@@ -9,6 +9,9 @@ import {
 import { calcLabelVisibility, LabelVisibilityType } from './visibility';
 import { LayoutStrategy } from '../layout';
 
+/**
+ * Initialize the graph with the nodes/edges.
+ */
 export function buildGraph(
   graph: Graph,
   nodes: GraphNode[],
@@ -44,6 +47,9 @@ interface TransformGraphInput {
   defaultNodeSize?: number;
 }
 
+/**
+ * Transform the graph into a format that is easier to work with.
+ */
 export function transformGraph({
   graph,
   layout,
@@ -66,6 +72,7 @@ export function transformGraph({
     maxSize: maxNodeSize,
     defaultSize: defaultNodeSize
   });
+
   const nodeCount = graph.nodes.length;
   const checkVisibility = calcLabelVisibility(nodeCount, labelType);
 
@@ -92,6 +99,8 @@ export function transformGraph({
       },
       position: {
         ...position,
+        x: position.x || 0,
+        y: position.y || 0,
         z: position.z || 1
       }
     };

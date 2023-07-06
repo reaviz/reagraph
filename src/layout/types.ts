@@ -1,5 +1,5 @@
 import { DragReferences } from '../store';
-import { InternalGraphNode } from '../types';
+import { InternalGraphPosition } from '../types';
 import Graph from 'graphology';
 
 export type LayoutTypes =
@@ -14,7 +14,8 @@ export type LayoutTypes =
   | 'radialOut3d'
   | 'hierarchicalTd'
   | 'hierarchicalLr'
-  | 'nooverlap';
+  | 'nooverlap'
+  | 'forceatlas2';
 
 export interface LayoutFactoryProps {
   type: LayoutTypes;
@@ -24,6 +25,6 @@ export interface LayoutFactoryProps {
 }
 
 export interface LayoutStrategy {
-  getNodePosition: (id: string) => InternalGraphNode;
+  getNodePosition: (id: string) => InternalGraphPosition;
   step: () => boolean | undefined;
 }

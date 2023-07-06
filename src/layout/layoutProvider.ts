@@ -3,6 +3,7 @@ import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
 import { circular2d, CircularLayoutInputs } from './circular2d';
 import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
 import { NoOverlapLayoutInputs, nooverlap } from './nooverlap';
+import { ForceAtlas2LayoutInputs, forceAtlas2 } from './forceatlas2';
 
 export type LayoutOverrides = Partial<
   Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'> | CircularLayoutInputs
@@ -126,6 +127,18 @@ export function layoutProvider({
       maxIterations: maxIterations || 50,
       ratio: ratio || 10,
       gridSize: gridSize || 20
+    });
+  } else if (type === 'forceatlas2') {
+    const { graph, iterations, gravity, scalingRatio, ...settings } =
+      rest as ForceAtlas2LayoutInputs;
+
+    return forceAtlas2({
+      type: 'forceatlas2',
+      graph,
+      ...settings,
+      scalingRatio: scalingRatio || 100,
+      gravity: gravity || 10,
+      iterations: iterations || 50
     });
   }
 

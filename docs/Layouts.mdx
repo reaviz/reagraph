@@ -16,6 +16,8 @@ reagraph has the following layout types:
 - Radial Out 3D
 - Hierarchical Top Down 2D
 - Hierarchical Left Right 2D
+- No Overlap 2D
+- Force Atlas 2 2D
 
 ## Layout Overrides
 You can override the default layout options for each respective layout using
@@ -110,4 +112,11 @@ This layout uses [d3-hierarchy](https://www.npmjs.com/package/d3-hierarchy).
   <Story id="demos-layouts-2d--no-overlap" />
 </div>
 
-This layout uses [d3-hierarchy](https://graphology.github.io/standard-library/layout-noverlap.html).
+This layout uses [graphology-layout-nooverlap](https://graphology.github.io/standard-library/layout-noverlap.html).
+
+### Force Atlas 2
+<div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
+  <Story id="demos-layouts-2d--force-atlas-2" />
+</div>
+
+This layout uses [graphology-layout-forceatlas2](https://graphology.github.io/standard-library/layout-forceatlas2.html).

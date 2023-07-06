@@ -155,11 +155,6 @@ export interface InternalVector3 {
 
 export interface InternalGraphNode extends GraphNode {
   /**
-   * Link relationships of the element.
-   */
-  links: InternalGraphLink[];
-
-  /**
    * Position of the node set by dragging or layout.
    */
   position: InternalGraphPosition;
