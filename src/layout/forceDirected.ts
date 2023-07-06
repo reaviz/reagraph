@@ -118,12 +118,12 @@ export function forceDirected({
         .centers(node => {
           // Happens after nodes passed so they have the x/y/z
           if (clusterAttribute) {
-            const nodeClusterAttr = node?.[clusterAttribute];
+            const nodeClusterAttr = node?.data?.[clusterAttribute];
             const centerNode = cluster.get(nodeClusterAttr);
 
             if (!centerNode) {
               const largestNode = nodes.reduce((last: any, cur: any) => {
-                if (cur?.[clusterAttribute] === nodeClusterAttr) {
+                if (cur?.data?.[clusterAttribute] === nodeClusterAttr) {
                   return cur.radius > last.radius ? cur : last;
                 }
                 return last;
