@@ -1,3 +1,9 @@
+# 4.9.0 - 7/6/23
+- [fix] node drag disappears
+- [feature] add no overlap layout
+- [feature] add forceatlas2 layout
+- [chore] migrate from ngraph to graphology
+
 # 4.8.3 - 6/14/23
 - [chore] fix exports
 
