@@ -1,8 +1,9 @@
 import { range } from 'd3-array';
 import { GraphEdge, GraphNode } from '../../src';
-import random from 'lodash/random';
 import demonSvg from './demon.svg';
 import computerSvg from './computer.svg';
+
+export const random = (floor, ceil) => Math.floor(Math.random() * ceil) + floor;
 
 export const simpleNodes: GraphNode[] =
   range(5).map(i => ({

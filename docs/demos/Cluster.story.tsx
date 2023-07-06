@@ -1,7 +1,6 @@
-import random from 'lodash/random';
 import React from 'react';
 import { GraphCanvas } from '../../src';
-import { clusterNodes, clusterEdges } from '../assets/demo';
+import { clusterNodes, clusterEdges, random } from '../assets/demo';
 
 export default {
   title: 'Demos/Cluster',

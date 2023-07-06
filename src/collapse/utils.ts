@@ -1,4 +1,3 @@
-import uniqBy from 'lodash/uniqBy';
 import { GraphEdge, GraphNode } from '../types';
 
 interface GetHiddenChildrenInput {
@@ -21,6 +20,9 @@ interface GetExpandPathInput {
   visibleEdgeIds: string[];
 }
 
+/**
+ * Get the children of a node id that is hidden.
+ */
 function getHiddenChildren({
   nodeId,
   nodes,
@@ -74,12 +76,35 @@ function getHiddenChildren({
     }
   }
 
+  const uniqueEdges: GraphEdge[] = Object.values(
+    hiddenEdges.reduce(
+      (acc, next) => ({
+        ...acc,
+        [next.id]: next
+      }),
+      {}
+    )
+  );
+
+  const uniqueNodes: GraphNode[] = Object.values(
+    hiddenNodes.reduce(
+      (acc, next) => ({
+        ...acc,
+        [next.id]: next
+      }),
+      {}
+    )
+  );
+
   return {
-    hiddenEdges: uniqBy(hiddenEdges, 'id'),
-    hiddenNodes: uniqBy(hiddenNodes, 'id')
+    hiddenEdges: uniqueEdges,
+    hiddenNodes: uniqueNodes
   };
 }
 
+/**
+ * Get the visible nodes and edges given a collapsed set of ids.
+ */
 export const getVisibleEntities = ({
   collapsedIds,
   nodes,
@@ -96,6 +121,7 @@ export const getVisibleEntities = ({
       currentHiddenEdges: curHiddenEdges,
       currentHiddenNodes: curHiddenNodes
     });
+
     curHiddenNodes.push(...hiddenNodes);
     curHiddenEdges.push(...hiddenEdges);
   }
@@ -111,6 +137,9 @@ export const getVisibleEntities = ({
   };
 };
 
+/**
+ * Get the path to expand a node.
+ */
 export const getExpandPath = ({
   nodeId,
   edges,
@@ -124,7 +153,8 @@ export const getExpandPath = ({
   );
 
   if (hasVisibleInboundEdge) {
-    // If there is a visible edge to this node, that means the node is visible so no parents need to be expanded
+    // If there is a visible edge to this node, that means the node is
+    // visible so no parents need to be expanded
     return parentIds;
   }
 
@@ -133,7 +163,8 @@ export const getExpandPath = ({
 
   for (const inboundNodeId of inboundEdgeNodeIds) {
     if (!addedParent) {
-      // Only want to expand a single path to the node, so if there are multiple hidden incoming edges, only expand the first
+      // Only want to expand a single path to the node, so if there
+      // are multiple hidden incoming edges, only expand the first
       // to reduce how many nodes are expanded to get to the node
       parentIds.push(
         ...[
