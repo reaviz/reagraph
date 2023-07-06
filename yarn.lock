@@ -4865,11 +4865,6 @@ dotenv@^16.0.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.0.3.tgz#115aec42bac5053db3c456db30cc243a5a836a07"
   integrity sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==
 
-dotparser@^1.0.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/dotparser/-/dotparser-1.1.1.tgz#c474942f329638b44ddb3dff27e9a6385dbab2f9"
-  integrity sha512-8ojhUts0HbLnXJgjTiJOddwVVBUk6hg4SJ5kGiuhzgK/f+y79TiWvICwx1oCWlVbBC8YI3nEaIQg9fjGYbGBXw==
-
 draco3d@^1.4.1:
   version "1.5.6"
   resolved "https://registry.yarnpkg.com/draco3d/-/draco3d-1.5.6.tgz#0d570a9792e3a3a9fafbfea065b692940441c626"
@@ -5912,6 +5907,11 @@ graphology-shortest-path@^2.0.0, graphology-shortest-path@^2.0.2:
     graphology-indices "^0.17.0"
     graphology-utils "^2.4.3"
     mnemonist "^0.39.0"
+
+graphology-types@^0.24.7:
+  version "0.24.7"
+  resolved "https://registry.yarnpkg.com/graphology-types/-/graphology-types-0.24.7.tgz#7d630a800061666bfa70066310f56612e08b7bee"
+  integrity sha512-tdcqOOpwArNjEr0gNQKCXwaNCWnQJrog14nJNQPeemcLnXQUUGrsCWpWkVKt46zLjcS6/KGoayeJfHHyPDlvwA==
 
 graphology-utils@^2.1.0, graphology-utils@^2.3.0, graphology-utils@^2.4.1, graphology-utils@^2.4.2, graphology-utils@^2.4.3, graphology-utils@^2.4.4:
   version "2.5.2"
@@ -7514,13 +7514,6 @@ minizlib@^2.1.1:
     minipass "^3.0.0"
     yallist "^4.0.0"
 
-miserables@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/miserables/-/miserables-2.0.0.tgz#1839925d92fc3ba860b974be11e1ed4f0993d414"
-  integrity sha512-J+4obMHbesciklE0SoVy4EJFsgeBW2RsRzrhBWGFhpBDcxCSJ3igSzDVz8SUaPx5PQaduImkt5UWus2Yx0a5/A==
-  dependencies:
-    ngraph.graph "^19.1.0"
-
 mkdirp-classic@^0.5.2:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/mkdirp-classic/-/mkdirp-classic-0.5.3.tgz#fa10c9115cc6d8865be221ba47ee9bed78601113"
@@ -7629,69 +7622,6 @@ neo-async@^2.5.0, neo-async@^2.6.0, neo-async@^2.6.1:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
-
-ngraph.centrality@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/ngraph.centrality/-/ngraph.centrality-2.1.0.tgz#e91964547e64836ad443e2868603f7feeebf1d47"
-  integrity sha512-sMpjulIKoyd64ICcaJyCJGMmfU97bsbGgsq7i3yGOjeruZvpUR4TR6ZGFDDpNBTV98Z29I8RfeScn4Nfe3R5NQ==
-
-ngraph.circular.fixed@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/ngraph.circular.fixed/-/ngraph.circular.fixed-1.0.1.tgz#ed68f437f28b6fd38ad3d8dd113bf0434db6912e"
-  integrity sha512-aL+n0cmKBCJGKGEHbgctyXxQHNWM3XIp+XzHRKbSauqn2ySQjie8QFBG4MckCMts+2oQuurHUj0ueXb/Pc+opQ==
-
-ngraph.events@^1.2.1:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/ngraph.events/-/ngraph.events-1.2.2.tgz#3ceb92d676a04a4e7ce60a09fa8e17a4f0346d7f"
-  integrity sha512-JsUbEOzANskax+WSYiAPETemLWYXmixuPAlmZmhIbIj6FH/WDgEGCGnRwUQBK0GjOnVm8Ui+e5IJ+5VZ4e32eQ==
-
-ngraph.fromdot@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/ngraph.fromdot/-/ngraph.fromdot-7.0.0.tgz#80bf1889a7d997e40ce0f5ee1834ac752ac2fec2"
-  integrity sha512-hFi3ZhAjBMfAVdRYLfsGryygNC5/yznbVCwyN6QJsMs+OJfXChsd3mGc8EaNdUBXbKp7lJ3rj4N2hEem+T3LvQ==
-  dependencies:
-    dotparser "^1.0.0"
-    ngraph.graph "^20.0.0"
-
-ngraph.generators@^20.1.0:
-  version "20.1.0"
-  resolved "https://registry.yarnpkg.com/ngraph.generators/-/ngraph.generators-20.1.0.tgz#8c9411a8cc2047eab92684ecc04d42fadf1f93c0"
-  integrity sha512-z/+R7HkNTFVgf5+o6KANgoKyr4FI9uiY+vSLYIzcLaTpz1scsCQuVbp+WsTf1MnJfeizlRjREhbgD4oeBZPqNA==
-  dependencies:
-    miserables "^2.0.0"
-    ngraph.graph "^20.0.0"
-    ngraph.random "^1.0.0"
-
-ngraph.graph@^19.1.0:
-  version "19.1.0"
-  resolved "https://registry.yarnpkg.com/ngraph.graph/-/ngraph.graph-19.1.0.tgz#88910ed53f6b4bc374f1b67296f4f81aab814e24"
-  integrity sha512-9cws84qfPkrYa7BaBtT+KgZfLXrd6pNL9Gl5Do+MBO/0Hm6rOM7qK78MZaO1uEoIK6p2pgUs6lu29zn/6tP59w==
-  dependencies:
-    ngraph.events "^1.2.1"
-
-ngraph.graph@^20.0.0:
-  version "20.0.1"
-  resolved "https://registry.yarnpkg.com/ngraph.graph/-/ngraph.graph-20.0.1.tgz#579470d1d805583239704dc913e2095540aaf371"
-  integrity sha512-VFsQ+EMkT+7lcJO1QP8Ik3w64WbHJl27Q53EO9hiFU9CRyxJ8HfcXtfWz/U8okuoYKDctbciL6pX3vG5dt1rYA==
-  dependencies:
-    ngraph.events "^1.2.1"
-
-ngraph.pagerank@^2.1.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/ngraph.pagerank/-/ngraph.pagerank-2.1.1.tgz#b10a00f234fc2b3b95a4826976f9f5bb36aeb707"
-  integrity sha512-6efFazZWqqogpnXmu+SatE9cdMY0qgb+TK/4sAL3UxZd2l26UEdgeXjK5K0JzqDKd7DO6BsOPtKY2CF0otFSfw==
-  dependencies:
-    ngraph.fromdot "^7.0.0"
-
-ngraph.path@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/ngraph.path/-/ngraph.path-1.4.0.tgz#0b6701b187d92d3e72ba8ecfe094a4154fc69aba"
-  integrity sha512-yJZay4tP0wcjqkkf8zlMQ/T+JOgU+EWfdE4w4TG8OS94B12J/+Z44UOYxVJErE8E6/wFunX1hMZEB1/GHsBYHg==
-
-ngraph.random@^1.0.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/ngraph.random/-/ngraph.random-1.1.0.tgz#5345c4bb63865c85d98ee6f13eab1395d8545a90"
-  integrity sha512-h25UdUN/g8U7y29TzQtRm/GvGr70lK37yQPvPKXXuVfs7gCm82WipYFZcksQfeKumtOemAzBIcT7lzzyK/edLw==
 
 node-dir@^0.1.10, node-dir@^0.1.17:
   version "0.1.17"

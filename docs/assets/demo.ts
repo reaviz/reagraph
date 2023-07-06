@@ -3,7 +3,8 @@ import { GraphEdge, GraphNode } from '../../src';
 import random from 'lodash/random';
 import demonSvg from './demon.svg';
 import computerSvg from './computer.svg';
-import generators from 'ngraph.generators';
+import { complete } from 'graphology-generators/classic';
+import Graph from 'graphology';
 
 export const simpleNodes: GraphNode[] =
   range(5).map(i => ({
@@ -211,25 +212,25 @@ export const treeEdges: GraphEdge[] = [
   }
 ];
 
-export const [complexNodes, complexEdges] = transformGenerator(generators.balancedBinTree(3));
+export const [complexNodes, complexEdges] = transformGenerator(complete(Graph, 10));
 
-export function transformGenerator(g) {
+export function transformGenerator(g: Graph) {
   const nodes: any[] = [];
   const edges: any[] = [];
 
-  g.forEachNode(node => {
+  g.forEachNode((id, node) => {
     nodes.push({
-      id: `${node.id}`,
+      id,
       label: `Node ${node.id}`
     });
+  });
 
-    node.links.forEach(link => {
-      edges.push({
-        id: `${node.id}->${link.toId}`,
-        source: `${link.fromId}`,
-        target: `${link.toId}`,
-        label: `${link.fromId} -> ${link.toId}`
-      });
+  g.forEachEdge((id, edge) => {
+    edges.push({
+      id: `${edge.source}->${edge.target}`,
+      source: `${edge.source}`,
+      target: `${edge.target}`,
+      label: `${edge.source} -> ${edge.target}`
     });
   });
 

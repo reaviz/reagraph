@@ -8,13 +8,13 @@ export function attributeSizing({
   const map = new Map();
 
   if (attribute) {
-    graph.forEachNode(node => {
-      const size = node.data.data[attribute];
+    graph.forEachNode((id, node) => {
+      const size = node[attribute];
       if (isNaN(size)) {
         console.warn(`Attribute ${size} is not a number for node ${node.id}`);
       }
 
-      map.set(node.id, size || 0);
+      map.set(id, size || 0);
     });
   } else {
     console.warn('Attribute sizing configured but no attribute provided');

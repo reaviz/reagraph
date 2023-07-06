@@ -41,18 +41,17 @@ export function forceDirected({
   const cluster = new Map<string, InternalGraphNode>();
 
   // Map the graph nodes / edges to D3 object
-  graph.forEachNode(n => {
+  graph.forEachNode((_id, n) => {
     // @ts-ignore
     nodes.push({
       ...n,
       // This is for the clustering
-      radius: n.data?.size || 1
+      radius: n.size || 1
     });
   });
 
-  graph.forEachLink(l => {
-    // @ts-ignore
-    links.push({ ...l, id: l.data.id, source: l.fromId, target: l.toId });
+  graph.forEachEdge((id, l: any) => {
+    links.push({ ...l, id });
   });
 
   // Dynamically adjust node strength based on the number of edges
@@ -93,12 +92,12 @@ export function forceDirected({
         .centers(node => {
           // Happens after nodes passed so they have the x/y/z
           if (clusterAttribute) {
-            const nodeClusterAttr = node.data?.data?.[clusterAttribute];
+            const nodeClusterAttr = node?.[clusterAttribute];
             const centerNode = cluster.get(nodeClusterAttr);
 
             if (!centerNode) {
               const largestNode = nodes.reduce((last: any, cur: any) => {
-                if (cur.data?.data?.[clusterAttribute] === nodeClusterAttr) {
+                if (cur?.[clusterAttribute] === nodeClusterAttr) {
                   return cur.radius > last.radius ? cur : last;
                 }
                 return last;

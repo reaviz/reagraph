@@ -30,8 +30,8 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
   let min;
   let max;
 
-  graph.forEachNode(node => {
-    const size = node.data?.size || provider.getSizeForNode(node.id as string);
+  graph.forEachNode((id, node) => {
+    const size = node?.size || provider.getSizeForNode(id);
 
     if (min === undefined || size < min) {
       min = size;
@@ -41,7 +41,7 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
       max = size;
     }
 
-    sizes.set(node.id, size);
+    sizes.set(id, size);
   });
 
   if (type !== 'none') {

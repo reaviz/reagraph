@@ -1,10 +1,6 @@
-// import { Graph } from 'ngraph.graph';
 import Graph from 'graphology';
-// import path from 'ngraph.path';
+import { bidirectional } from 'graphology-shortest-path';
 
-export function findPath(graph: Graph, fromId: string, toId: string) {
-  // const pathFinder = path.aStar(graph);
-  // const foundPath = pathFinder.find(fromId, toId);
-  // return foundPath;
-  return null;
+export function findPath(graph: Graph, source: string, target: string) {
+  return bidirectional(graph, source, target);
 }

@@ -1,12 +1,17 @@
-import circularLayout2d from 'ngraph.circular.fixed';
+import circular from 'graphology-layout/circular';
 import { LayoutFactoryProps } from './types';
 
-export interface CircularLayoutInputs extends LayoutFactoryProps {
-  radius: number;
-}
+export interface CircularLayoutInputs extends LayoutFactoryProps {}
 
-export const circular2d = ({ graph, radius = 300 }: CircularLayoutInputs) =>
-  circularLayout2d(graph, {
-    radius,
-    center: { x: 0, y: 0 }
-  });
+export const circular2d = ({ graph }: CircularLayoutInputs) => {
+  const layout = circular(graph);
+
+  return {
+    step() {
+      return true;
+    },
+    getNodePosition(id: string) {
+      return layout?.[id];
+    }
+  };
+};

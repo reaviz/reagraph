@@ -1,8 +1,13 @@
-import { Graph } from 'ngraph.graph';
 import { Theme } from '../themes';
+import Graph from 'graphology';
 
 export type PathSelectionTypes = 'direct' | 'out' | 'in' | 'all';
 
+/**
+ * Given a graph and a list of node ids, return the adjacent nodes and edges.
+ *
+ * TODO: This method could be improved with the introduction of graphology
+ */
 export function getAdjacents(
   graph: Graph,
   nodeIds: string | string[],
@@ -14,21 +19,24 @@ export function getAdjacents(
   const edges: string[] = [];
 
   for (const nodeId of nodeIds) {
-    const graphLinks = graph.getLinks(nodeId);
+    const graphLinks = [
+      ...(graph.inEdgeEntries(nodeId) ?? []),
+      ...(graph.outEdgeEntries(nodeId) ?? [])
+    ];
 
     if (!graphLinks) {
       continue;
     }
 
-    graphLinks.forEach(link => {
-      const linkId = link.data.id;
+    for (const link of graphLinks) {
+      const linkId = link.attributes.id;
 
       if (type === 'in') {
-        if (link.toId === nodeId && !edges.includes(linkId)) {
+        if (link.target === nodeId && !edges.includes(linkId)) {
           edges.push(linkId);
         }
       } else if (type === 'out') {
-        if (link.fromId === nodeId && !edges.includes(linkId)) {
+        if (link.source === nodeId && !edges.includes(linkId)) {
           edges.push(linkId);
         }
       } else {
@@ -38,19 +46,18 @@ export function getAdjacents(
       }
 
       if (type === 'out' || type === 'all') {
-        const toId = link.toId;
+        const toId = link.target;
         if (!nodes.includes(toId as string)) {
           nodes.push(toId as string);
         }
       }
 
       if (type === 'in' || type === 'all') {
-        const fromId = link.fromId;
-        if (!nodes.includes(fromId as string)) {
-          nodes.push(fromId as string);
+        if (!nodes.includes(link.source)) {
+          nodes.push(link.source as string);
         }
       }
-    });
+    }
   }
 
   return {
@@ -59,12 +66,18 @@ export function getAdjacents(
   };
 }
 
+/**
+ * Set the vectors.
+ */
 export function prepareRay(event, vec, size) {
   const { offsetX, offsetY } = event;
   const { width, height } = size;
   vec.set((offsetX / width) * 2 - 1, -(offsetY / height) * 2 + 1);
 }
 
+/**
+ * Create a lasso element.
+ */
 export function createElement(theme: Theme) {
   const element = document.createElement('div');
   element.style.pointerEvents = 'none';

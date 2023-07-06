@@ -1,12 +1,11 @@
-import centrality from 'ngraph.centrality';
 import { SizingStrategy, SizingStrategyInputs } from './types';
+import { degreeCentrality } from 'graphology-metrics/centrality/degree';
 
 export function centralitySizing({
-  graph,
-  minSize,
-  maxSize
+  graph
 }: SizingStrategyInputs): SizingStrategy {
-  const ranks = centrality.closeness(graph);
+  const ranks = degreeCentrality(graph);
+
   return {
     ranks,
     getSizeForNode: (nodeID: string) => ranks[nodeID] * 20

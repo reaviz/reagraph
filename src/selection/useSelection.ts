@@ -103,7 +103,7 @@ export interface SelectionResult {
   /**
    * Get the paths between two nodes.
    */
-  selectNodePaths: (fromId: string, toId: string) => void;
+  selectNodePaths: (source: string, target: string) => void;
 
   /**
    * Remove selection method.
@@ -282,26 +282,26 @@ export const useSelection = ({
   );
 
   const selectNodePaths = useCallback(
-    (fromId: string, toId: string) => {
+    (source: string, target: string) => {
       const graph = ref.current.getGraph();
       if (!graph) {
         throw new Error('Graph is not initialized');
       }
 
-      const path = findPath(graph, fromId, toId);
-      clearSelections([fromId, toId]);
+      const path = findPath(graph, source, target);
+      clearSelections([source, target]);
 
       const result = [];
       for (let i = 0; i < path.length - 1; i++) {
         const from = path[i];
         const to = path[i + 1];
-        const edge = graph.getLink(to.data.id, from.data.id);
+        const edge = graph.getEdgeAttributes(from, to);
         if (edge) {
-          result.push(edge.data.id);
+          result.push(edge.id);
         }
       }
 
-      setInternalActives([...path.map(p => p.id as string), ...result]);
+      setInternalActives([...path.map(p => p as string), ...result]);
     },
     [clearSelections, ref]
   );

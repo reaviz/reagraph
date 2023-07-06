@@ -47,11 +47,11 @@ export const Edge: FC<EdgeProps> = ({
   opacity,
   theme
 }) => {
-  const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
+  const { target, source, label, labelVisible = false, size = 1 } = edge;
 
   const nodes = useStore(store => store.nodes);
-  const from = nodes.find(node => node.id === fromId);
-  const to = nodes.find(node => node.id === toId);
+  const from = nodes.find(node => node.id === source);
+  const to = nodes.find(node => node.id === target);
   const draggingId = useStore(state => state.draggingId);
 
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;

@@ -5,7 +5,6 @@ import {
   InternalGraphNode,
   InternalGraphPosition
 } from './types';
-// import ngraph, { Graph } from 'ngraph.graph';
 import { BufferGeometry, Mesh, Vector3 } from 'three';
 import { getVector } from './utils';
 import Graph from 'graphology';

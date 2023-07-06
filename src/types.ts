@@ -83,12 +83,12 @@ export interface InternalGraphLink {
   /**
    * ID of the from node.
    */
-  fromId: string;
+  source: string;
 
   /**
    * ID of the to node.
    */
-  toId: string;
+  target: string;
 }
 
 export interface InternalGraphEdge
@@ -96,12 +96,12 @@ export interface InternalGraphEdge
   /**
    * ID of the from node.
    */
-  fromId: string;
+  source: string;
 
   /**
    * ID of the to node.
    */
-  toId: string;
+  target: string;
 }
 
 export interface InternalGraphPosition extends InternalVector3 {

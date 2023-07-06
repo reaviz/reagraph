@@ -22,15 +22,21 @@ import { Euler } from 'three';
 export const LABEL_FONT_SIZE = 6;
 
 /**
- * Label positions relatively edge
+ * Label positions relatively edge.
  *
- * below: show label under the edge line
- * above: show label above the edge line
- * inline: show label along the edge line
- * natural: normal text positions
+ * - below: show label under the edge line
+ * - above: show label above the edge line
+ * - inline: show label along the edge line
+ * - natural: normal text positions
  */
 export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 
+/**
+ * Type of edge interpolation.
+ *
+ * - Linear is straight
+ * - Curved is curved
+ */
 export type EdgeInterpolation = 'linear' | 'curved';
 
 export interface EdgeProps {
@@ -63,15 +69,14 @@ export const Edge: FC<EdgeProps> = ({
   onPointerOut
 }) => {
   const edge = useStore(state => state.edges.find(e => e.id === id));
-  const { toId, fromId, label, labelVisible = false, size = 1 } = edge;
+  const { target, source, label, labelVisible = false, size = 1 } = edge;
   const curved = interpolation === 'curved';
 
-  const from = useStore(store => store.nodes.find(node => node.id === fromId));
-  const to = useStore(store => store.nodes.find(node => node.id === toId));
+  const from = useStore(store => store.nodes.find(node => node.id === source));
+  const to = useStore(store => store.nodes.find(node => node.id === target));
   const draggingId = useStore(state => state.draggingId);
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-
   const labelOffset = (size + LABEL_FONT_SIZE) / 2;
 
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
