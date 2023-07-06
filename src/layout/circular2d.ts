@@ -5,7 +5,7 @@ export interface CircularLayoutInputs extends LayoutFactoryProps {
   radius: 300;
 }
 
-export const circular2d = ({ graph, radius }: CircularLayoutInputs) => {
+export const circular2d = ({ graph, radius, drags }: CircularLayoutInputs) => {
   const layout = circular(graph, {
     scale: radius
   });
@@ -15,7 +15,8 @@ export const circular2d = ({ graph, radius }: CircularLayoutInputs) => {
       return true;
     },
     getNodePosition(id: string) {
-      return layout?.[id];
+      // If we dragged, we need to use that position
+      return (drags?.[id]?.position as any) || layout?.[id];
     }
   };
 };

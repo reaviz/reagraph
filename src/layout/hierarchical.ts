@@ -1,11 +1,9 @@
 import { InternalGraphEdge, InternalGraphNode } from 'types';
 import { DepthNode, getNodeDepth } from './depthUtils';
-import { LayoutStrategy } from './types';
+import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { hierarchy, stratify, tree } from 'd3-hierarchy';
-import Graph from 'graphology';
 
-export interface HierarchicalLayoutInputs {
-  graph: Graph;
+export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
   mode?: 'td' | 'lr';
 }
 
@@ -24,20 +22,19 @@ const DIRECTION_MAP = {
 
 export function hierarchical({
   graph,
+  drags,
   mode = 'td'
 }: HierarchicalLayoutInputs): LayoutStrategy {
   const nodes: InternalGraphNode[] = [];
   const edges: InternalGraphEdge[] = [];
 
-  // Itterate over the nodes and edges of the graph
-  // and put in a array for calcs
-  for (const n of graph.nodeEntries()) {
-    nodes.push(n as any);
-  }
+  graph.forEachNode((id, n: any) => {
+    nodes.push({ ...n, id });
+  });
 
-  for (const e of graph.edgeEntries()) {
-    edges.push(e as any);
-  }
+  graph.forEachEdge((id, l: any) => {
+    edges.push({ ...l, id });
+  });
 
   const { depths } = getNodeDepth(nodes, edges);
   const rootNodes = Object.keys(depths).map(d => depths[d]);
@@ -55,7 +52,7 @@ export function hierarchical({
 
   const mappedNodes = new Map<string, InternalGraphNode>(
     nodes.map(n => {
-      let { x, y } = treeNodes.find((t: any) => t.data.id === n.id);
+      const { x, y } = treeNodes.find((t: any) => t.data.id === n.id);
       return [
         n.id,
         {
@@ -73,7 +70,8 @@ export function hierarchical({
       return true;
     },
     getNodePosition(id: string) {
-      return mappedNodes.get(id);
+      // If we dragged, we need to use that position
+      return (drags?.[id]?.position as any) || mappedNodes.get(id);
     }
   };
 }

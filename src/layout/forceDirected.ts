@@ -36,28 +36,27 @@ export function forceDirected({
   drags,
   clusterAttribute
 }: ForceDirectedLayoutInputs): LayoutStrategy {
-  const nodes: InternalGraphNode[] = [];
-  const links: InternalGraphEdge[] = [];
   const cluster = new Map<string, InternalGraphNode>();
+  const nodes: InternalGraphNode[] = [];
+  const edges: InternalGraphEdge[] = [];
 
-  // Map the graph nodes / edges to D3 object
-  graph.forEachNode((_id, n) => {
-    // @ts-ignore
+  graph.forEachNode((id, n: any) => {
     nodes.push({
       ...n,
+      id,
       // This is for the clustering
       radius: n.size || 1
     });
   });
 
   graph.forEachEdge((id, l: any) => {
-    links.push({ ...l, id });
+    edges.push({ ...l, id });
   });
 
   // Dynamically adjust node strength based on the number of edges
   const is2d = dimensions === 2;
   const nodeStrengthAdjustment =
-    is2d && links.length > 25 ? nodeStrength * 2 : nodeStrength;
+    is2d && edges.length > 25 ? nodeStrength * 2 : nodeStrength;
 
   // Create the simulation
   const sim = d3ForceSimulation()
@@ -75,7 +74,7 @@ export function forceDirected({
       'dagRadial',
       forceRadial({
         nodes,
-        links,
+        edges,
         mode,
         nodeLevelRatio
       })
@@ -118,7 +117,7 @@ export function forceDirected({
   if (linkForce) {
     linkForce
       .id(d => d.id)
-      .links(links)
+      .links(edges)
       // When no mode passed, its a tree layout
       // so let's use a larger distance
       .distance(linkDistance);
@@ -134,8 +133,9 @@ export function forceDirected({
       return true;
     },
     getNodePosition(id: string) {
+      console.log('here', drags?.[id], nodeMap.get(id));
       // If we dragged, we need to use that position
-      return drags?.[id] || nodeMap.get(id);
+      return (drags?.[id]?.position as any) || nodeMap.get(id);
     }
   };
 }
