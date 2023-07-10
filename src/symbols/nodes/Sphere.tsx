@@ -45,6 +45,5 @@ export const Sphere: FC<NodeRendererProps> = ({
 
 Sphere.defaultProps = {
   opacity: 1,
-  active: false,
-  selected: false
+  active: false
 };
