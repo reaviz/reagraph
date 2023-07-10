@@ -1,0 +1,37 @@
+import { Meta, Story, ArgsTable } from '@storybook/blocks';
+import { GraphCanvas } from '../src';
+
+<Meta title="Docs/Advanced/Sizing" />
+
+# Sizing
+reagraph supports the ability to dynamically size nodes. It supports
+the following sizing strategies out of the box:
+
+- Page Rank
+- Centrality
+- Attribute
+
+### Page Rank
+The Page Rank sizing strategy sizes nodes based on the page rank of the node. Under the hood,
+it uses [Graphology Metrics](https://graphology.github.io/standard-library/metrics.html#pagerank) to
+calculate the rank.
+
+<div style={{ height: 500, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
+  <Story id="demos-sizing--page-rank" />
+</div>
+
+### Centrality
+The Degree Centrality sizing strategy sizes nodes based on the degree of centrality of the node. Under the hood,
+it uses [Graphology Metrics](https://graphology.github.io/standard-library/metrics.html#degree-centrality) to
+calculate the rank.
+
+<div style={{ height: 500, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
+  <Story id="demos-sizing--centrality" />
+</div>
+
+### Attribute
+The attribute sizing strategy sizes nodes based on the value of a given attribute.
+
+<div style={{ height: 500, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
+  <Story id="demos-sizing--attribute" />
+</div>

@@ -33,7 +33,7 @@ export const Attribute = () => (
   <GraphCanvas
     sizingType="attribute"
     sizingAttribute="priority"
-    minNodeSize={5}
+    minNodeSize={2}
     maxNodeSize={25}
     nodes={simpleNodes}
     edges={simpleEdges}
