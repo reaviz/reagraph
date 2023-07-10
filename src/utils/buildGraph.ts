@@ -30,7 +30,11 @@ export function buildGraph(
   }
 
   for (const edge of edges) {
-    graph.addEdge(edge.source, edge.target, edge);
+    try {
+      graph.addEdge(edge.source, edge.target, edge);
+    } catch ({ message }) {
+      console.error(`[Graph] ${message}`);
+    }
   }
 
   return graph;
