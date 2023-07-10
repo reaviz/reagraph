@@ -278,7 +278,7 @@ export const Edge: FC<EdgeProps> = ({
           <Label
             text={label}
             ellipsis={15}
-            labelFontUrl={labelFontUrl}
+            fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
               isSelected || active || isActive

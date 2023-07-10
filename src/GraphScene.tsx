@@ -289,6 +289,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                     id={e}
                     disabled={disabled}
                     animated={animated}
+                    labelFontUrl={labelFontUrl}
                     labelPlacement={edgeLabelPosition}
                     arrowPlacement={edgeArrowPosition}
                     interpolation={edgeInterpolation}
