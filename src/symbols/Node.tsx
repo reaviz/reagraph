@@ -28,21 +28,72 @@ import { Icon } from './nodes';
 import { useHoverIntent } from '../utils/useHoverIntent';
 
 export interface NodeProps {
+  /**
+   * The unique identifier for the node.
+   */
   id: string;
+
+  /**
+   * The theme for the node.
+   */
   theme: Theme;
+
+  /**
+   * The parent nodes of the node.
+   */
   parents?: string[];
+
+  /**
+   * Whether the node is disabled.
+   */
   disabled?: boolean;
+
+  /**
+   * Whether the node is animated.
+   */
   animated?: boolean;
+
+  /**
+   * Whether the node is draggable.
+   */
   draggable?: boolean;
+
+  /**
+   * The url for the label font.
+   */
   labelFontUrl?: string;
+
+  /**
+   * The context menu for the node.
+   */
   contextMenu?: (event: ContextMenuEvent) => ReactNode;
+
+  /**
+   * The function to call when the pointer is over the node.
+   */
   onPointerOver?: (node: InternalGraphNode) => void;
+
+  /**
+   * The function to call when the pointer is out of the node.
+   */
   onPointerOut?: (node: InternalGraphNode) => void;
+
+  /**
+   * The function to call when the node is clicked.
+   */
   onClick?: (node: InternalGraphNode, props?: CollapseProps) => void;
+
+  /**
+   * The function to call when the node is right clicked.
+   */
   onContextMenu?: (
     node?: InternalGraphNode,
     props?: NodeContextMenuProps
   ) => void;
+
+  /**
+   * The function to use to render the node.
+   */
   renderNode?: NodeRenderer;
 }
 

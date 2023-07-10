@@ -40,17 +40,69 @@ export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 export type EdgeInterpolation = 'linear' | 'curved';
 
 export interface EdgeProps {
+  /**
+   * The url for the label font.
+   */
+  labelFontUrl?: string;
+
+  /**
+   * The unique identifier of the edge.
+   */
   id: string;
+
+  /**
+   * The visual theme of the edge.
+   */
   theme: Theme;
+
+  /**
+   * Whether the edge should be animated.
+   */
   animated?: boolean;
+
+  /**
+   * Whether the edge should be disabled.
+   */
   disabled?: boolean;
+
+  /**
+   * The placement of the edge label.
+   */
   labelPlacement?: EdgeLabelPosition;
+
+  /**
+   * The placement of the edge arrow.
+   */
   arrowPlacement?: EdgeArrowPosition;
+
+  /**
+   * The type of interpolation used to draw the edge.
+   */
   interpolation: EdgeInterpolation;
+
+  /**
+   * A function that returns the context menu for the edge.
+   */
   contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
+
+  /**
+   * A function that is called when the edge is clicked.
+   */
   onClick?: (edge: InternalGraphEdge) => void;
+
+  /**
+   * A function that is called when the edge is right-clicked.
+   */
   onContextMenu?: (edge?: InternalGraphEdge) => void;
+
+  /**
+   * A function that is called when the mouse pointer is moved over the edge.
+   */
   onPointerOver?: (edge: InternalGraphEdge) => void;
+
+  /**
+   * A function that is called when the mouse pointer is moved out of the edge.
+   */
   onPointerOut?: (edge: InternalGraphEdge) => void;
 }
 
@@ -63,6 +115,7 @@ export const Edge: FC<EdgeProps> = ({
   id,
   interpolation,
   theme,
+  labelFontUrl,
   onContextMenu,
   onClick,
   onPointerOver,
@@ -225,6 +278,7 @@ export const Edge: FC<EdgeProps> = ({
           <Label
             text={label}
             ellipsis={15}
+            labelFontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
               isSelected || active || isActive
