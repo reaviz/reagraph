@@ -98,6 +98,7 @@ export const useCenterGraph = ({
   useHotkeys([
     {
       name: 'Center',
+      category: 'Graph',
       keys: ['command+shift+c'],
       callback: () => centerNodes(nodes)
     }

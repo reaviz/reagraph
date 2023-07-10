@@ -237,6 +237,7 @@ export const CameraControls: FC<
     useHotkeys([
       {
         name: 'Zoom In',
+        category: 'Graph',
         keys: 'command+shift+i',
         callback: event => {
           event.preventDefault();
@@ -245,6 +246,7 @@ export const CameraControls: FC<
       },
       {
         name: 'Zoom Out',
+        category: 'Graph',
         keys: 'command+shift+o',
         callback: event => {
           event.preventDefault();
