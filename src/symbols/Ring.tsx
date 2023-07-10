@@ -5,9 +5,24 @@ import { useSpring, a } from '@react-spring/three';
 import { Billboard } from '@react-three/drei';
 
 export interface RingProps {
+  /**
+   * The color of the ring.
+   */
   color?: ColorRepresentation;
+
+  /**
+   * Whether the ring should be animated.
+   */
   animated?: boolean;
+
+  /**
+   * The size of the ring.
+   */
   size?: number;
+
+  /**
+   * The opacity of the ring.
+   */
   opacity?: number;
 }
 
