@@ -1,3 +1,6 @@
+# 4.9.2 - 7/10/23
+- [fix] better handle rogue edges
+
 # 4.9.1 - 7/10/23
 - [fix] fix attribute sizing using wrong prop
 - [chore] misc docs improvements
