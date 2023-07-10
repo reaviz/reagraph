@@ -1,3 +1,8 @@
+# 4.9.1 - 7/10/23
+- [fix] fix attribute sizing using wrong prop
+- [chore] misc docs improvements
+- [chore] make selection/camera control hotkey category `Graph`
+
 # 4.9.0 - 7/6/23
 - [fix] node drag disappears
 - [feature] add no overlap layout
