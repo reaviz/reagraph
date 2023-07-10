@@ -7,6 +7,9 @@ import { scaleLinear } from 'd3-scale';
 export type SizingType = 'none' | 'pagerank' | 'centrality' | 'attribute';
 
 export interface NodeSizeProviderInputs extends SizingStrategyInputs {
+  /**
+   * The sizing strategy to use.
+   */
   type: SizingType;
 }
 

@@ -30,5 +30,12 @@ export const PageRank = () => (
 );
 
 export const Attribute = () => (
-  <GraphCanvas sizingType="pagerank" sizingAttribute="priority" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas
+    sizingType="attribute"
+    sizingAttribute="priority"
+    minNodeSize={5}
+    maxNodeSize={25}
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );
