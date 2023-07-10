@@ -9,7 +9,7 @@ export function attributeSizing({
 
   if (attribute) {
     graph.forEachNode((id, node) => {
-      const size = node[attribute];
+      const size = node.data?.[attribute];
       if (isNaN(size)) {
         console.warn(`Attribute ${size} is not a number for node ${node.id}`);
       }
