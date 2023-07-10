@@ -2,3 +2,37 @@ import { Meta } from '@storybook/blocks';
 
 <Meta title="Docs/Advanced/Hotkeys" />
 
+# Hotkeys
+
+Under the hood the library uses [reakeys](https://github.com/reaviz/reakeys) for
+binding hotkeys.
+
+### Camera Controls
+
+```ts
+{
+  name: 'Zoom In',
+  keys: 'command+shift+i'
+},
+{
+  name: 'Zoom Out',
+  keys: 'command+shift+o'
+},
+{
+  name: 'Center',
+  keys: ['command+shift+c']
+}
+```
+
+### Selection
+
+```ts
+{
+  name: 'Select All',
+  keys: 'mod+a',
+},
+{
+  name: 'Deselect Selections',
+  keys: 'escape'
+}
+```
