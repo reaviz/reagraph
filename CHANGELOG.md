@@ -1,3 +1,6 @@
+# 4.9.3 - 7/11/23
+- [fix] fix clustering with edges not working
+
 # 4.9.2 - 7/10/23
 - [fix] better handle rogue edges
 
