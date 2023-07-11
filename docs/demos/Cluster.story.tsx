@@ -8,7 +8,7 @@ export default {
 };
 
 export const Simple = () => (
-  <GraphCanvas nodes={clusterNodes} edges={[]} clusterAttribute="type" />
+  <GraphCanvas nodes={clusterNodes} draggable edges={[]} clusterAttribute="type" />
 );
 
 const clusterNodesWithSizes = clusterNodes.map(node => ({
@@ -17,13 +17,13 @@ const clusterNodesWithSizes = clusterNodes.map(node => ({
 }));
 
 export const Sizes = () => (
-  <GraphCanvas nodes={clusterNodesWithSizes} edges={[]} clusterAttribute="type" />
+  <GraphCanvas nodes={clusterNodesWithSizes} draggable edges={[]} clusterAttribute="type" />
 );
 
 export const Edges = () => (
-  <GraphCanvas nodes={clusterNodes} edges={clusterEdges} clusterAttribute="type" />
+  <GraphCanvas nodes={clusterNodes} draggable edges={clusterEdges} clusterAttribute="type" />
 );
 
 export const ThreeDimensions = () => (
-  <GraphCanvas nodes={clusterNodesWithSizes} edges={[]} layoutType="forceDirected3d" clusterAttribute="type" />
+  <GraphCanvas nodes={clusterNodesWithSizes} draggable edges={[]} layoutType="forceDirected3d" clusterAttribute="type" />
 );

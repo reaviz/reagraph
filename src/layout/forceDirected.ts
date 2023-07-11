@@ -8,11 +8,16 @@ import {
   forceZ as d3ForceZ
 } from 'd3-force-3d';
 import { InternalGraphEdge, InternalGraphNode } from '../types';
-import { forceRadial, DagMode } from './forceUtils';
+import { forceRadial, DagMode, caluculateCenters } from './forceUtils';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Center inertia for the layout. Default: 1.
+   */
+  centerInertia?: number;
+
   /**
    * Number of dimensions for the layout. 2d or 3d.
    */
@@ -58,12 +63,12 @@ export function forceDirected({
   dimensions = 2,
   nodeStrength = -250,
   linkDistance = 50,
+  centerInertia = 1,
   clusterPadding = 10,
   clusterStrength = 0.5,
   drags,
   clusterAttribute
 }: ForceDirectedLayoutInputs): LayoutStrategy {
-  const cluster = new Map<string, InternalGraphNode>();
   const nodes: InternalGraphNode[] = [];
   const edges: InternalGraphEdge[] = [];
 
@@ -108,6 +113,8 @@ export function forceDirected({
     )
     .stop();
 
+  const centers = caluculateCenters(nodes, clusterAttribute);
+
   // Initialize the simulation
   const layout = sim
     .numDimensions(dimensions)
@@ -119,35 +126,24 @@ export function forceDirected({
           // Happens after nodes passed so they have the x/y/z
           if (clusterAttribute) {
             const nodeClusterAttr = node?.data?.[clusterAttribute];
-            const centerNode = cluster.get(nodeClusterAttr);
-
-            if (!centerNode) {
-              const largestNode = nodes.reduce((last: any, cur: any) => {
-                if (cur?.data?.[clusterAttribute] === nodeClusterAttr) {
-                  return cur.radius > last.radius ? cur : last;
-                }
-                return last;
-              }, node);
-
-              cluster.set(nodeClusterAttr, largestNode);
-              return largestNode;
-            }
-
-            return centerNode;
+            return centers.get(nodeClusterAttr);
           }
         })
+        .centerInertia(centerInertia)
         .strength(clusterStrength)
     );
 
   // Run the force on the links
-  const linkForce = layout.force('link');
-  if (linkForce) {
-    linkForce
-      .id(d => d.id)
-      .links(edges)
-      // When no mode passed, its a tree layout
-      // so let's use a larger distance
-      .distance(linkDistance);
+  if (linkDistance && !clusterAttribute) {
+    const linkForce = layout.force('link');
+    if (linkForce) {
+      linkForce
+        .id(d => d.id)
+        .links(edges)
+        // When no mode passed, its a tree layout
+        // so let's use a larger distance
+        .distance(linkDistance);
+    }
   }
 
   const nodeMap = new Map(nodes.map(n => [n.id, n]));

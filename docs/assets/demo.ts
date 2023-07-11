@@ -82,7 +82,7 @@ export const clusterNodes: GraphNode[] =
 
     return {
     id: `n-${i}`,
-    label: `Node ${type} ${i}`,
+    label: `${type} ${i}`,
     fill: colors[idx],
     data: {
       type
@@ -94,7 +94,7 @@ export const clusterEdges: GraphEdge[] = range(random(5, 25)).map(i => ({
   id: `e-${i}`,
   source: `n-${i}`,
   target: `n-${random(0, clusterNodes.length - 1)}`,
-  label: 'Edge 0-1'
+  label: '0-1'
 }));
 
 export const simpleNodesColors: GraphNode[] =

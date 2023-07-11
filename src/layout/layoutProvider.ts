@@ -39,7 +39,7 @@ export function layoutProvider({
         dimensions: 2,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
-        linkDistance: linkDistance || 50,
+        linkDistance,
         clusterPadding: clusterPadding || 10,
         clusterStrength: clusterStrength || 0.5
       } as ForceDirectedLayoutInputs);
@@ -103,7 +103,7 @@ export function layoutProvider({
         dimensions: 3,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
-        linkDistance: linkDistance || 50
+        linkDistance
       } as ForceDirectedLayoutInputs);
     }
   } else if (type === 'circular2d') {

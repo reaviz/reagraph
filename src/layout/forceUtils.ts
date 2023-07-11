@@ -70,3 +70,41 @@ export function forceRadial({
     }).strength(1)
     : null;
 }
+
+/**
+ * Takes a number n and calculates n x/y coordinates along a circle such
+ * that they are equally spaced from each other.
+ * Inspired by: https://github.com/ToxicJojo/github-issue-visualizer/blob/63c10b75551af57e557f52d9a9ccebbe05e3d12d/app/js/graph/calculate-centers.js
+ */
+export function caluculateCenters(
+  nodes: InternalGraphNode[],
+  clusterAttribute?: string
+) {
+  const centers = new Map<string, { x: number; y: number; z: number }>();
+
+  if (clusterAttribute) {
+    const groups = nodes.reduce((entryMap, e) => {
+      const val = e.data[clusterAttribute];
+      entryMap.set(val, [...(entryMap.get(val) || []), e]);
+      return entryMap;
+    }, new Map());
+
+    const count = groups.size;
+
+    let idx = 0;
+    for (const [key] of groups) {
+      const radiant = ((2 * Math.PI) / count) * idx;
+      const x = Math.cos(radiant) * 100;
+      const y = Math.sin(radiant) * 100;
+      idx++;
+
+      centers.set(key, {
+        x,
+        y,
+        z: 1
+      });
+    }
+  }
+
+  return centers;
+}
