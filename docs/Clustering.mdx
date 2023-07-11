@@ -1,0 +1,35 @@
+import { Meta, Story, ArgsTable } from '@storybook/blocks';
+import { GraphCanvas } from '../src';
+
+<Meta title="Docs/Advanced/Clustering" />
+
+# Clustering
+reagraph supports the ability to cluster nodes in a graph. This is useful for visualizing large graphs
+where the number of nodes is too large to display on the screen at once.
+
+Clustering is only available on the force directed layout and under the hood
+uses [d3-force-cluster-3d](https://github.com/vasturiano/d3-force-cluster-3d).
+
+In order to cluster nodes, you must provide a `clusterAttribute` property on the `GraphCanvas` component. For example:
+
+```tsx
+const nodes = [
+  { id: '1', label: 'Tesla', data: { category: 'EV' }},
+  { id: '2', label: 'C8', data: { category: 'ICE' }}
+];
+
+const App = () => (
+  <GraphCanvas
+    nodes={nodes}
+    edges={[]}
+    clusterAttribute="category"
+  />
+)
+```
+
+Below you can see an example of the clustered graph where each node is color
+coded to better show the clustering.
+
+<div style={{ height: 400, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
+  <Story id="demos-cluster--simple" />
+</div>
