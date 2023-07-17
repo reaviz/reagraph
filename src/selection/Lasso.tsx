@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { useThree } from '@react-three/fiber';
 import { SelectionBox } from 'three-stdlib';
-import { Mesh, Scene, TubeBufferGeometry, Vector2 } from 'three';
+import { Mesh, Scene, TubeGeometry, Vector2 } from 'three';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { Theme } from '../themes';
@@ -90,8 +90,7 @@ export const Lasso: FC<LassoProps> = ({
           .select()
           .sort(o => (o as any).uuid)
           .map(
-            edge =>
-              edges[edgeMeshes.indexOf(edge as Mesh<TubeBufferGeometry>)].id
+            edge => edges[edgeMeshes.indexOf(edge as Mesh<TubeGeometry>)].id
           );
         allSelected.push(...edgesSelected);
 

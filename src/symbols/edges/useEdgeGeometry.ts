@@ -4,7 +4,7 @@ import {
   BufferGeometry,
   CylinderGeometry,
   Quaternion,
-  TubeBufferGeometry,
+  TubeGeometry,
   Vector3
 } from 'three';
 import { mergeBufferGeometries } from 'three-stdlib';
@@ -82,13 +82,7 @@ export function useEdgeGeometry(
           curved
         );
 
-        let edgeGeometry = new TubeBufferGeometry(
-          curve,
-          20,
-          size / 2,
-          5,
-          false
-        );
+        let edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
 
         if (arrowPlacement === 'none') {
           geometries.push(edgeGeometry);
@@ -130,7 +124,7 @@ export function useEdgeGeometry(
             0,
             curved
           );
-          edgeGeometry = new TubeBufferGeometry(curve, 20, size / 2, 5, false);
+          edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
         }
 
         const merged = mergeBufferGeometries([edgeGeometry, arrowGeometry]);
