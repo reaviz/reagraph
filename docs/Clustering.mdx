@@ -10,6 +10,7 @@ where the number of nodes is too large to display on the screen at once.
 Clustering is only available on the force directed layout and under the hood
 uses [d3-force-cluster-3d](https://github.com/vasturiano/d3-force-cluster-3d).
 
+## Useage
 In order to cluster nodes, you must provide a `clusterAttribute` property on the `GraphCanvas` component. For example:
 
 ```tsx
@@ -33,3 +34,26 @@ coded to better show the clustering.
 <div style={{ height: 400, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
   <Story id="demos-cluster--simple" />
 </div>
+
+## Styling
+You can change the style of the clustering ( or turn it off completely ) by setting
+the `Theme` properties. For example:
+
+```tsx
+import { Theme } from 'reagraph';
+
+export const darkTheme: Theme = {
+  // ...Rest of your theme...
+  cluster: {
+
+    // Pass `null` to hide the stroke
+    stroke: '#474B56',
+
+    // Pass `null` to hide the labels
+    label: {
+      stroke: '#1E2026',
+      color: '#ACBAC7'
+    }
+  }
+};
+```

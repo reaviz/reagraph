@@ -39,5 +39,12 @@ export const lightTheme: Theme = {
   arrow: {
     fill: '#D8E6EA',
     activeFill: '#1DE9AC'
+  },
+  cluster: {
+    stroke: '#D8E6EA',
+    label: {
+      stroke: '#fff',
+      color: '#2A6475'
+    }
   }
 };

@@ -41,4 +41,11 @@ export interface Theme {
     background: string;
     border: string;
   };
+  cluster?: {
+    stroke?: ColorRepresentation;
+    label?: {
+      stroke?: ColorRepresentation;
+      color: ColorRepresentation;
+    };
+  };
 }

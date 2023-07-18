@@ -20,6 +20,7 @@ import {
 } from './types';
 import { SizingType } from './sizing';
 import {
+  Cluster,
   Edge,
   EdgeArrowPosition,
   EdgeInterpolation,
@@ -243,6 +244,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const graph = useStore(state => state.graph);
       const nodes = useStore(state => state.nodes);
       const edges = useStore(state => state.edges);
+      const clusters = useStore(state => [...state.clusters.values()]);
 
       const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);
       const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
@@ -272,7 +274,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   draggable={draggable}
                   disabled={disabled}
                   animated={animated}
-                  theme={theme}
                   contextMenu={contextMenu}
                   onClick={onNodeClick}
                   onContextMenu={onNodeContextMenu}
@@ -284,7 +285,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               {animated ? (
                 edgeIds.map(e => (
                   <Edge
-                    theme={theme}
                     key={e}
                     id={e}
                     disabled={disabled}
@@ -316,6 +316,14 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   onPointerOut={onEdgePointerOut}
                 />
               )}
+              {clusters.map(c => (
+                <Cluster
+                  key={c.label}
+                  animated={animated}
+                  labelFontUrl={labelFontUrl}
+                  {...c}
+                />
+              ))}
             </Fragment>
           )}
         </Fragment>

@@ -82,3 +82,18 @@ function getPointBetween(from: Vector3, to: Vector3, offset: number): Vector3 {
       .multiplyScalar(offset / distance)
   );
 }
+
+/**
+ * Given a node and a new vector set, update the node model.
+ */
+export function updateNodePosition(node: InternalGraphNode, offset: Vector3) {
+  return {
+    ...node,
+    position: {
+      ...node.position,
+      x: node.position.x + offset.x,
+      y: node.position.y + offset.y,
+      z: node.position.z + offset.z
+    }
+  };
+}

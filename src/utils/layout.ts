@@ -1,9 +1,25 @@
 import { InternalGraphNode } from '../types';
 
+export interface CenterPositionVector {
+  x: number;
+  y: number;
+  z: number;
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+  minZ: number;
+  maxZ: number;
+  height: number;
+  width: number;
+}
+
 /**
  * Given a collection of nodes, get the center point.
  */
-export function getLayoutCenter(nodes: InternalGraphNode[]) {
+export function getLayoutCenter(
+  nodes: InternalGraphNode[]
+): CenterPositionVector {
   let minX = Number.POSITIVE_INFINITY;
   let maxX = Number.NEGATIVE_INFINITY;
   let minY = Number.POSITIVE_INFINITY;
@@ -21,6 +37,8 @@ export function getLayoutCenter(nodes: InternalGraphNode[]) {
   }
 
   return {
+    height: maxY - minY,
+    width: maxX - minX,
     minX,
     maxX,
     minY,

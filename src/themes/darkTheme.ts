@@ -39,5 +39,12 @@ export const darkTheme: Theme = {
   arrow: {
     fill: '#474B56',
     activeFill: '#1DE9AC'
+  },
+  cluster: {
+    stroke: '#474B56',
+    label: {
+      stroke: '#1E2026',
+      color: '#ACBAC7'
+    }
   }
 };
