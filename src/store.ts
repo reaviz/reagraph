@@ -6,8 +6,9 @@ import {
   InternalGraphPosition
 } from './types';
 import { BufferGeometry, Mesh, Vector3 } from 'three';
-import { getVector } from './utils';
+import { ClusterGroup, getVector, updateNodePosition } from './utils';
 import Graph from 'graphology';
+import { Theme } from './themes';
 
 export type DragReferences = {
   [key: string]: InternalGraphNode;
@@ -17,6 +18,7 @@ export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
   graph: Graph;
+  clusters: Map<string, ClusterGroup>;
   collapsedNodeIds?: string[];
   actives?: string[];
   selections?: string[];
@@ -27,6 +29,9 @@ export interface GraphState {
   draggingId?: string | null;
   drags?: DragReferences;
   panning?: boolean;
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+  setClusters: (clusters: Map<string, ClusterGroup>) => void;
   setPanning: (panning: boolean) => void;
   setDrags: (drags: DragReferences) => void;
   setDraggingId: (id: string | null) => void;
@@ -43,26 +48,31 @@ export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
 export const createStore = ({
   actives = [],
   selections = [],
-  collapsedNodeIds = []
+  collapsedNodeIds = [],
+  theme
 }: Partial<GraphState>) =>
   create<GraphState>(set => ({
+    theme,
     edges: [],
     nodes: [],
     collapsedNodeIds,
+    clusters: new Map(),
     panning: false,
     draggingId: null,
     actives,
     edgeContextMenus: new Set(),
+    edgeMeshes: [],
+    selections,
+    drags: {},
+    graph: new Graph(),
+    setTheme: theme => set(state => ({ ...state, theme })),
+    setClusters: clusters => set(state => ({ ...state, clusters })),
     setEdgeContextMenus: edgeContextMenus =>
       set(state => ({
         ...state,
         edgeContextMenus
       })),
-    edgeMeshes: [],
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
-    selections,
-    drags: {},
-    graph: new Graph(),
     setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
@@ -104,15 +114,3 @@ export const createStore = ({
     setCollapsedNodeIds: (nodeIds = []) =>
       set(state => ({ ...state, collapsedNodeIds: nodeIds }))
   }));
-
-function updateNodePosition(node: InternalGraphNode, offset: Vector3) {
-  return {
-    ...node,
-    position: {
-      ...node.position,
-      x: node.position.x + offset.x,
-      y: node.position.y + offset.y,
-      z: node.position.z + offset.z
-    }
-  };
-}

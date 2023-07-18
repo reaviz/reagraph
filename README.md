@@ -52,6 +52,7 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 - Customizable Nodes
 - Advanced Label Placement
 - Edge Interpolation
+- Clustering
 
 with the following built in layouts:
 

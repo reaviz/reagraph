@@ -79,6 +79,17 @@ export const Disabled = () => (
   <GraphCanvas nodes={simpleNodes} edges={simpleEdges} disabled />
 );
 
+export const CustomLighting = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    layoutType="forceDirected3d"
+  >
+    <directionalLight position={[0, 5, -4]} intensity={1} />
+  </GraphCanvas>
+);
+
+
 export const Many = () => (
   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
     {range(10).map(i => (

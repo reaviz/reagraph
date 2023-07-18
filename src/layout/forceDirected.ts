@@ -8,7 +8,8 @@ import {
   forceZ as d3ForceZ
 } from 'd3-force-3d';
 import { InternalGraphEdge, InternalGraphNode } from '../types';
-import { forceRadial, DagMode, caluculateCenters } from './forceUtils';
+import { forceRadial, DagMode } from './forceUtils';
+import { caluculateCenters } from '../utils/cluster';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
 
@@ -65,7 +66,7 @@ export function forceDirected({
   linkDistance = 50,
   centerInertia = 1,
   clusterPadding = 10,
-  clusterStrength = 0.5,
+  clusterStrength = 1,
   drags,
   clusterAttribute
 }: ForceDirectedLayoutInputs): LayoutStrategy {
@@ -113,7 +114,7 @@ export function forceDirected({
     )
     .stop();
 
-  const centers = caluculateCenters(nodes, clusterAttribute);
+  const centers = caluculateCenters({ nodes, clusterAttribute });
 
   // Initialize the simulation
   const layout = sim

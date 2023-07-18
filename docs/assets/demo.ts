@@ -73,7 +73,7 @@ export const parentNodes: GraphNode[] = [
 ]
 
 const types = ['IP', 'URL', 'Email', 'MD5'];
-const colors = ['blue', 'green', 'red', 'orange'];
+const colors = ['#3730a3', '#c2410c', '#166534', '#075985'];
 
 export const clusterNodes: GraphNode[] =
   range(25).map(i => {

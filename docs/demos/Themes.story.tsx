@@ -77,6 +77,13 @@ CustomTheme.args = {
     arrow: {
       fill: '#54616D',
       activeFill: '#1DE9AC'
+    },
+    cluster: {
+      stroke: '#D8E6EA',
+      label: {
+        stroke: '#fff',
+        color: '#2A6475'
+      }
     }
   }
 };

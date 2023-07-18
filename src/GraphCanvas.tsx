@@ -1,6 +1,7 @@
 import React, {
   FC,
   forwardRef,
+  ReactNode,
   Ref,
   Suspense,
   useImperativeHandle,
@@ -49,6 +50,8 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * When the canvas had a lasso selection end.
    */
   onLassoEnd?: (selections: string[]) => void;
+
+  children?: ReactNode;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
@@ -83,6 +86,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       {
         cameraMode,
         edges,
+        children,
         nodes,
         theme,
         onCanvasClick,
@@ -134,12 +138,14 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 createStore({
                   selections,
                   actives,
+                  theme,
                   collapsedNodeIds
                 })
               }
             >
               <color attach="background" args={[theme.canvas.background]} />
               <ambientLight intensity={1} />
+              {children}
               {theme.canvas.fog && (
                 <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
               )}

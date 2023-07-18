@@ -34,11 +34,6 @@ export interface NodeProps {
   id: string;
 
   /**
-   * The theme for the node.
-   */
-  theme: Theme;
-
-  /**
    * The parent nodes of the node.
    */
   parents?: string[];
@@ -102,7 +97,6 @@ export const Node: FC<NodeProps> = ({
   disabled,
   id,
   draggable,
-  theme,
   labelFontUrl,
   contextMenu,
   onClick,
@@ -112,6 +106,7 @@ export const Node: FC<NodeProps> = ({
   renderNode
 }) => {
   const cameraControls = useCameraControls();
+  const theme = useStore(state => state.theme);
   const node = useStore(state => state.nodes.find(n => n.id === id));
   const edges = useStore(state => state.edges);
   const draggingId = useStore(state => state.draggingId);

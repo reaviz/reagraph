@@ -51,11 +51,6 @@ export interface EdgeProps {
   id: string;
 
   /**
-   * The visual theme of the edge.
-   */
-  theme: Theme;
-
-  /**
    * Whether the edge should be animated.
    */
   animated?: boolean;
@@ -114,13 +109,13 @@ export const Edge: FC<EdgeProps> = ({
   labelPlacement,
   id,
   interpolation,
-  theme,
   labelFontUrl,
   onContextMenu,
   onClick,
   onPointerOver,
   onPointerOut
 }) => {
+  const theme = useStore(state => state.theme);
   const edge = useStore(state => state.edges.find(e => e.id === id));
   const { target, source, label, labelVisible = false, size = 1 } = edge;
   const curved = interpolation === 'curved';
