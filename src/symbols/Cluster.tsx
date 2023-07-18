@@ -45,34 +45,31 @@ export const Cluster: FC<ClusterProps> = ({
   const rad = Math.max(position.width, position.height) / 2;
   const offset = rad - radius + padding;
 
-  const { circleOpacity, circlePosition, circleScale, labelPosition } =
-    useSpring({
-      from: {
-        circlePosition: [0, 0, -1],
-        circleOpacity: 0,
-        circleScale: [0.00001, 0.00001, 0.00001],
-        labelPosition: [0, 0, 2]
-      },
-      to: {
-        labelPosition: [0, -offset, 2],
-        circlePosition: position ? [position.x, position.y, -1] : [0, 0, -1],
-        circleOpacity: opacity,
-        circleScale: [1, 1, 1]
-      },
-      config: {
-        ...animationConfig,
-        duration: animated ? undefined : 0
-      }
-    });
+  const { circleOpacity, circlePosition, labelPosition } = useSpring({
+    from: {
+      circlePosition: [0, 0, -1],
+      circleOpacity: 0,
+      labelPosition: [0, 0, 2]
+    },
+    to: {
+      labelPosition: [0, -offset, 2],
+      circlePosition: position ? [position.x, position.y, -1] : [0, 0, -1],
+      circleOpacity: opacity
+    },
+    config: {
+      ...animationConfig,
+      duration: animated ? undefined : 0
+    }
+  });
 
   return (
     <>
       {theme.cluster && (
         <a.group position={circlePosition as any}>
-          <a.mesh scale={circleScale as any}>
+          <mesh>
             <ringBufferGeometry
               attach="geometry"
-              args={[offset, rad + padding, 32]}
+              args={[offset, rad + padding, 128]}
             />
             <a.meshBasicMaterial
               attach="material"
@@ -83,7 +80,7 @@ export const Cluster: FC<ClusterProps> = ({
               side={DoubleSide}
               fog={true}
             />
-          </a.mesh>
+          </mesh>
           {theme.cluster?.label && (
             <a.group position={labelPosition as any}>
               <Label
