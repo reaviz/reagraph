@@ -1,3 +1,7 @@
+# 4.10.0 - 7/18/23
+- [feature] clustering improvements
+- [feature] add ability to pass additional props
+
 # 4.9.3 - 7/11/23
 - [fix] fix clustering with edges not working
 
