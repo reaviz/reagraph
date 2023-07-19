@@ -1,3 +1,6 @@
+# 4.10.4 - 7/19/23
+- [fix] fix svg color passed wrong
+
 # 4.10.3 - 7/19/23
 - [feature] add ability to pass svg fill color seperately
 - [fix] fix color being applied to wrong prop in svg icon
