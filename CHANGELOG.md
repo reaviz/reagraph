@@ -1,3 +1,9 @@
+# 4.10.2 - 7/19/23
+- [feature] add svg icon node type
+- [feature] add `default` as sizing strategy and allow `none` to ignore size prop
+- [chore] upgrade depdencies
+- [fix] normalize cluster stroke color
+
 # 4.10.1 - 7/18/23
 - [fix] improve cluster ring jagged
 
