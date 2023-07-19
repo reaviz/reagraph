@@ -24,14 +24,12 @@ export const Svg: FC<SvgProps> = ({
 }) => {
   const normalizedSize = size / 25;
 
-  const { scale, svgOpacity } = useSpring({
+  const { scale } = useSpring({
     from: {
-      scale: [0.00001, 0.00001, 0.00001],
-      svgOpacity: 0
+      scale: [0.00001, 0.00001, 0.00001]
     },
     to: {
-      scale: [normalizedSize, normalizedSize, normalizedSize],
-      svgOpacity: opacity
+      scale: [normalizedSize, normalizedSize, normalizedSize]
     },
     config: {
       ...animationConfig,
@@ -42,11 +40,7 @@ export const Svg: FC<SvgProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
   return (
-    <a.group
-      userData={{ id, type: 'node' }}
-      opacity={svgOpacity as any}
-      scale={scale as any}
-    >
+    <a.group userData={{ id, type: 'node' }} scale={scale as any}>
       <DreiSvg
         {...rest}
         src={image}
@@ -54,6 +48,8 @@ export const Svg: FC<SvgProps> = ({
           fog: true,
           depthTest: false,
           transparent: true,
+          color: normalizedColor,
+          opacity,
           side: DoubleSide,
           ...(rest.fillMaterial || {})
         }}
@@ -61,8 +57,7 @@ export const Svg: FC<SvgProps> = ({
           // Note: This is a hack to get the svg to
           // render in the correct position.
           position: [-25, -25, 1],
-          ...(rest.fillMeshProps || {}),
-          color: normalizedColor
+          ...(rest.fillMeshProps || {})
         }}
       />
     </a.group>

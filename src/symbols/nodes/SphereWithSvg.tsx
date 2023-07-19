@@ -1,12 +1,18 @@
 import React, { FC } from 'react';
 import { Sphere } from './Sphere';
 import { Svg, SvgProps } from './Svg';
+import { ColorRepresentation } from 'three';
 
 export interface SphereWithSvgProps extends SvgProps {
   /**
    * The image to display on the icon.
    */
   image: string;
+
+  /**
+   * The color of the svg fill.
+   */
+  svgFill?: ColorRepresentation;
 }
 
 export const SphereWithSvg: FC<SphereWithSvgProps> = ({
