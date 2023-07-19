@@ -1,7 +1,7 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { ClusterGroup, animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
-import { DoubleSide } from 'three';
+import { Color, DoubleSide } from 'three';
 import { useStore } from '../store';
 import { Label } from './Label';
 
@@ -62,6 +62,11 @@ export const Cluster: FC<ClusterProps> = ({
     }
   });
 
+  const normalizedColor = useMemo(
+    () => new Color(theme.cluster.stroke),
+    [theme.cluster.stroke]
+  );
+
   return (
     <>
       {theme.cluster && (
@@ -73,7 +78,7 @@ export const Cluster: FC<ClusterProps> = ({
             />
             <a.meshBasicMaterial
               attach="material"
-              color={theme.cluster.stroke}
+              color={normalizedColor}
               transparent={true}
               depthTest={false}
               opacity={circleOpacity}
