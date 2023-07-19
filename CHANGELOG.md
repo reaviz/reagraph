@@ -1,3 +1,6 @@
+# 4.10.1 - 7/18/23
+- [fix] improve cluster ring jagged
+
 # 4.10.0 - 7/18/23
 - [feature] clustering improvements
 - [feature] add ability to pass additional props
