@@ -1,3 +1,6 @@
+# 4.10.5 - 7/19/23
+- [fix] fix svg sphere node not passing down all props
+
 # 4.10.4 - 7/19/23
 - [fix] fix svg color passed wrong
 
