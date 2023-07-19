@@ -24,7 +24,8 @@ export const SphereWithSvg: FC<SphereWithSvgProps> = ({
   svgFill,
   active,
   animated,
-  image
+  image,
+  ...rest
 }) => (
   <>
     <Sphere
@@ -37,6 +38,7 @@ export const SphereWithSvg: FC<SphereWithSvgProps> = ({
       active={active}
     />
     <Svg
+      {...rest}
       id={id}
       image={image}
       size={size}
