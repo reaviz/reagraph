@@ -1,3 +1,7 @@
+# 4.10.3 - 7/19/23
+- [feature] add ability to pass svg fill color seperately
+- [fix] fix color being applied to wrong prop in svg icon
+
 # 4.10.2 - 7/19/23
 - [feature] add svg icon node type
 - [feature] add `default` as sizing strategy and allow `none` to ignore size prop
