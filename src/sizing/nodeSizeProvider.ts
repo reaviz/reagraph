@@ -34,7 +34,12 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
   let max;
 
   graph.forEachNode((id, node) => {
-    const size = node?.size || provider.getSizeForNode(id);
+    let size;
+    if (node?.size && type !== 'none') {
+      size = node.size;
+    } else {
+      size = provider.getSizeForNode(id);
+    }
 
     if (min === undefined || size < min) {
       min = size;
@@ -47,6 +52,7 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
     sizes.set(id, size);
   });
 
+  // Relatively scale the sizes
   if (type !== 'none') {
     const scale = scaleLinear()
       .domain([min, max])
