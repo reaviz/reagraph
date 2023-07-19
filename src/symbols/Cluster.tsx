@@ -70,7 +70,7 @@ export const Cluster: FC<ClusterProps> = ({
       {theme.cluster && (
         <a.group position={circlePosition as any}>
           <a.mesh scale={circleScale as any}>
-            <ringBufferGeometry
+            <ringGeometry
               attach="geometry"
               args={[offset, rad + padding, 32]}
             />

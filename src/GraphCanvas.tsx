@@ -129,7 +129,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             legacy
             linear
             flat
-            frameloop="demand"
             gl={GL_DEFAULTS}
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
