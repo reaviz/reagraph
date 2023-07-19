@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphCanvas, Icon, LayoutTypes, SphereWithIcon } from '../../src';
+import { GraphCanvas, Svg, LayoutTypes, SphereWithIcon, SphereWithSvg } from '../../src';
 import {
   iconNodes,
   manyNodes,
@@ -50,6 +50,36 @@ export const SphereWithIconNode = () => (
     cameraMode="rotate"
     renderNode={({  node, ...rest }) => (
       <SphereWithIcon
+        {...rest}
+        node={node}
+        image={node.icon || ''}
+      />
+    )}
+  />
+);
+
+export const SphereSvgIconNode = () => (
+  <GraphCanvas
+    nodes={iconNodes}
+    edges={simpleEdges}
+    cameraMode="rotate"
+    renderNode={({  node, ...rest }) => (
+      <SphereWithSvg
+        {...rest}
+        node={node}
+        image={node.icon || ''}
+      />
+    )}
+  />
+);
+
+export const SvgIconNode = () => (
+  <GraphCanvas
+    nodes={iconNodes}
+    edges={simpleEdges}
+    cameraMode="rotate"
+    renderNode={({  node, ...rest }) => (
+      <Svg
         {...rest}
         node={node}
         image={node.icon || ''}

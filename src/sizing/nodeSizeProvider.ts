@@ -4,7 +4,12 @@ import { attributeSizing } from './attribute';
 import { SizingStrategyInputs } from './types';
 import { scaleLinear } from 'd3-scale';
 
-export type SizingType = 'none' | 'pagerank' | 'centrality' | 'attribute';
+export type SizingType =
+  | 'none'
+  | 'pagerank'
+  | 'centrality'
+  | 'attribute'
+  | 'default';
 
 export interface NodeSizeProviderInputs extends SizingStrategyInputs {
   /**
@@ -24,7 +29,7 @@ const providers = {
 
 export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
   const provider = providers[type]?.(rest);
-  if (!provider) {
+  if (!provider && type !== 'default') {
     throw new Error(`Unknown sizing strategy: ${type}`);
   }
 
@@ -35,8 +40,8 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
 
   graph.forEachNode((id, node) => {
     let size;
-    if (node?.size && type !== 'none') {
-      size = node.size;
+    if (type === 'default') {
+      size = node.size || rest.defaultSize;
     } else {
       size = provider.getSizeForNode(id);
     }

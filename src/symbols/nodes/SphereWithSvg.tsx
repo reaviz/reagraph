@@ -1,16 +1,15 @@
 import React, { FC } from 'react';
-import { NodeRendererProps } from '../../types';
 import { Sphere } from './Sphere';
-import { Icon } from './Icon';
+import { Svg, SvgProps } from './Svg';
 
-export interface SphereWithIconProps extends NodeRendererProps {
+export interface SphereWithSvgProps extends SvgProps {
   /**
    * The image to display on the icon.
    */
   image: string;
 }
 
-export const SphereWithIcon: FC<SphereWithIconProps> = ({
+export const SphereWithSvg: FC<SphereWithSvgProps> = ({
   color,
   id,
   size,
@@ -30,10 +29,10 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
       node={node}
       active={active}
     />
-    <Icon
+    <Svg
       id={id}
       image={image}
-      size={size + 8}
+      size={size}
       opacity={opacity}
       animated={animated}
       color={color}
@@ -43,7 +42,7 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
   </>
 );
 
-SphereWithIcon.defaultProps = {
+SphereWithSvg.defaultProps = {
   opacity: 1,
   active: false,
   selected: false

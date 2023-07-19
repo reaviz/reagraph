@@ -185,7 +185,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
 GraphCanvas.defaultProps = {
   cameraMode: 'pan',
   layoutType: 'forceDirected2d',
-  sizingType: 'none',
+  sizingType: 'default',
   labelType: 'auto',
   theme: lightTheme,
   animated: true,
