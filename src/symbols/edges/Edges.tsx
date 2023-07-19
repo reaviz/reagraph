@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import { a } from '@react-spring/three';
 import { useFrame } from '@react-three/fiber';
-import { DoubleSide, Mesh, Raycaster, TubeBufferGeometry } from 'three';
+import { DoubleSide, Mesh, Raycaster, TubeGeometry } from 'three';
 
 import { useStore } from '../../store';
 import { Theme } from '../../themes';
@@ -133,7 +133,7 @@ export const Edges: FC<EdgesProps> = ({
         return [];
       }
       const intersections =
-        raycaster.intersectObjects<Mesh<TubeBufferGeometry>>(edgeMeshes);
+        raycaster.intersectObjects<Mesh<TubeGeometry>>(edgeMeshes);
       if (!intersections.length) {
         return [];
       }

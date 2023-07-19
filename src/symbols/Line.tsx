@@ -3,7 +3,7 @@ import { useSpring, a } from '@react-spring/three';
 import { animationConfig, getCurve } from '../utils';
 import {
   Vector3,
-  TubeBufferGeometry,
+  TubeGeometry,
   ColorRepresentation,
   Color,
   Curve
@@ -71,7 +71,7 @@ export const Line: FC<LineProps> = ({
   onPointerOver,
   onPointerOut
 }) => {
-  const tubeRef = useRef<TubeBufferGeometry | null>(null);
+  const tubeRef = useRef<TubeGeometry | null>(null);
   const draggingId = useStore(state => state.draggingId);
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
@@ -107,9 +107,7 @@ export const Line: FC<LineProps> = ({
         const toVector = new Vector3(...toVertices);
 
         const curve = getCurve(fromVector, 0, toVector, 0, curved);
-        tubeRef.current.copy(
-          new TubeBufferGeometry(curve, 20, size / 2, 5, false)
-        );
+        tubeRef.current.copy(new TubeGeometry(curve, 20, size / 2, 5, false));
       },
       config: {
         ...animationConfig,
@@ -132,7 +130,7 @@ export const Line: FC<LineProps> = ({
         }
       }}
     >
-      <tubeBufferGeometry attach="geometry" ref={tubeRef} />
+      <tubeGeometry attach="geometry" ref={tubeRef} />
       <a.meshBasicMaterial
         attach="material"
         opacity={lineOpacity}

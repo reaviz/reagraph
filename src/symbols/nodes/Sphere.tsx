@@ -30,7 +30,7 @@ export const Sphere: FC<NodeRendererProps> = ({
 
   return (
     <a.mesh userData={{ id, type: 'node' }} scale={scale as any}>
-      <sphereBufferGeometry attach="geometry" args={[1, 25, 25]} />
+      <sphereGeometry attach="geometry" args={[1, 25, 25]} />
       <a.meshPhongMaterial
         attach="material"
         side={DoubleSide}
