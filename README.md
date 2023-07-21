@@ -40,6 +40,7 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 - Learn about updates from the [changelog](CHANGELOG.md)
 
 ## ✨ Features
+
 - WebGL based for high performance
 - Node Sizing based on attribute, page rank, centrality, custom
 - Light and Dark Mode with custom theme ability
@@ -121,8 +122,8 @@ Checkout an example on [CodeSandbox](https://codesandbox.io/s/reagraph-example-m
 If you want to run reagraph locally, its super easy!
 
 - Clone the repo
-- `yarn install`
-- `yarn start`
+- `npm install`
+- `npm run start`
 - Browser opens to Storybook page
 
 ## ❤️ Contributors
