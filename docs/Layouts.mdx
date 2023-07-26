@@ -17,25 +17,12 @@ reagraph has the following layout types:
 - Hierarchical Top Down 2D
 - Hierarchical Left Right 2D
 - No Overlap 2D
-- Force Atlas 2 2D
+- ForceAtlas2 2D
 
 ## Layout Overrides
 You can override the default layout options for each respective layout using
-the `layoutOverrides` property on the `GraphCanvas` component. Below
-are the respective interfaces for the different options.
-
-```ts
-export interface ForceDirectedLayoutInputs {
-  linkDistance?: number;
-  nodeStrength?: number;
-  clusterPadding?: number;
-  clusterStrength?: number;
-}
-
-export interface CircularLayoutInputs {
-  radius: number;
-}
-```
+the `layoutOverrides` property on the `GraphCanvas` component. In each layout
+description, it will list the available overrides for that layout if applicable.
 
 ## Layout Types
 Below are examples of each layout type and corresponding descriptions.
@@ -51,6 +38,52 @@ This is a modified version of the force directed library from d3 except adds sup
 This is a one of the most common layouts used because of the simplicity and flexibility that the layout
 can support.
 
+This layout supports the following overrides:
+
+```ts
+export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Center inertia for the layout. Default: 1.
+   */
+  centerInertia?: number;
+
+  /**
+   * Number of dimensions for the layout. 2d or 3d.
+   */
+  dimensions?: number;
+
+  /**
+   * Mode for the dag layout. Only applicable for dag layouts.
+   */
+  mode?: DagMode;
+
+  /**
+   * Distance between links.
+   */
+  linkDistance?: number;
+
+  /**
+   * Strength of the node repulsion.
+   */
+  nodeStrength?: number;
+
+  /**
+   * Padding between clusters.
+   */
+  clusterPadding?: number;
+
+  /**
+   * Strength of the cluster repulsion.
+   */
+  clusterStrength?: number;
+
+  /**
+   * Ratio of the distance between nodes on the same level.
+   */
+  nodeLevelRatio?: number;
+}
+```
+
 ### Force Directed 3D
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
   <Story id="demos-layouts-3d--force-directed" />
@@ -60,6 +93,8 @@ The force directed 3d layout is similar to the 2D version except it adds another
 the same library as the 2D version ( [d3-force-3d](https://github.com/vasturiano/d3-force-3d) ).
 The 3D version is useful for very large graphs where many nodes would overlap each other.
 
+This layout accepts the same layout overrides as the `forceDirected2d`.
+
 ### Circular 2d
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
   <Story id="demos-layouts-2d--circular" />
@@ -67,6 +102,17 @@ The 3D version is useful for very large graphs where many nodes would overlap ea
 
 The circular layout arranges nodes in a circular fashion drawing relationships between the nodes
 on the outside of the circle.
+
+This layout supports the following overrides:
+
+```ts
+export interface CircularLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Radius of the circle.
+   */
+  radius: 300;
+}
+```
 
 ### Tree 2D
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
@@ -76,6 +122,8 @@ on the outside of the circle.
 The tree layout is a good way to display a clear parent-child relationship between nodes. This layout uses
 [d3-force-3d](https://github.com/vasturiano/d3-force-3d).
 
+This layout accepts the same layout overrides as the `forceDirected2d`.
+
 ### Tree 3D
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
   <Story id="demos-layouts-3d--tree-top-down" />
@@ -83,6 +131,8 @@ The tree layout is a good way to display a clear parent-child relationship betwe
 
 This layout is the same as the tree 2d except adds another dimension. It uses
 [d3-force-3d](https://github.com/vasturiano/d3-force-3d) under the hood for the layout.
+
+This layout accepts the same layout overrides as the `forceDirected2d`.
 
 ### Radial 2D
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
@@ -93,12 +143,16 @@ The radial layout arranges nodes in a circular fashion around the focus node in 
 relationship extends to another level in the tree to show a depedency tree.
 This layout uses [d3-force-3d](https://github.com/vasturiano/d3-force-3d).
 
+This layout accepts the same layout overrides as the `forceDirected2d`.
+
 ### Radial 3D
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
   <Story id="demos-layouts-3d--radial-out" />
 </div>
 
 Similar to the Radial 2D but adds another dimension. This layout uses [d3-force-3d](https://github.com/vasturiano/d3-force-3d).
+
+This layout accepts the same layout overrides as the `forceDirected2d`.
 
 ### Hierarchical 2D
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
@@ -107,6 +161,17 @@ Similar to the Radial 2D but adds another dimension. This layout uses [d3-force-
 
 This layout uses [d3-hierarchy](https://www.npmjs.com/package/d3-hierarchy).
 
+This layout supports the following overrides:
+
+```ts
+export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Direction of the layout.
+   */
+  mode?: 'td' | 'lr';
+}
+```
+
 ### No Overlap
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
   <Story id="demos-layouts-2d--no-overlap" />
@@ -114,9 +179,99 @@ This layout uses [d3-hierarchy](https://www.npmjs.com/package/d3-hierarchy).
 
 This layout uses [graphology-layout-nooverlap](https://graphology.github.io/standard-library/layout-noverlap.html).
 
+This layout supports the following overrides:
+
+```ts
+export interface NoOverlapLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Grid size. Default 20.
+   */
+  gridSize?: number;
+
+  /**
+   * Ratio of the layout. Default 10.
+   */
+  ratio?: number;
+
+  /**
+   * Maximum number of iterations. Default 50.
+   */
+  maxIterations?: number;
+
+  /**
+   * Margin between nodes. Default 10.
+   */
+  margin?: number;
+}
+```
+
 ### Force Atlas 2
 <div style={{ height: 300, width: 500, position: 'relative', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
   <Story id="demos-layouts-2d--force-atlas-2" />
 </div>
 
 This layout uses [graphology-layout-forceatlas2](https://graphology.github.io/standard-library/layout-forceatlas2.html).
+
+This layout supports the following overrides:
+
+```ts
+export interface ForceAtlas2LayoutInputs extends LayoutFactoryProps {
+  /**
+   * Should the node’s sizes be taken into account. Default: false.
+   */
+  adjustSizes?: boolean;
+
+  /**
+   * whether to use the Barnes-Hut approximation to compute
+   * repulsion in O(n*log(n)) rather than default O(n^2),
+   * n being the number of nodes. Default: false.
+   */
+  barnesHutOptimize?: boolean;
+
+  /**
+   * Barnes-Hut approximation theta parameter. Default: 0.5.
+   */
+  barnesHutTheta?: number;
+
+  /**
+   * Influence of the edge’s weights on the layout. To consider edge weight, don’t
+   *  forget to pass weighted as true. Default: 1.
+   */
+  edgeWeightInfluence?: number;
+
+  /**
+   * Strength of the layout’s gravity. Default: 10.
+   */
+  gravity?: number;
+
+  /**
+   * Whether to use Noack’s LinLog model. Default: false.
+   */
+  linLogMode?: boolean;
+
+  /**
+   * Whether to consider edge weights when calculating repulsion. Default: false.
+   */
+  outboundAttractionDistribution?: boolean;
+
+  /**
+   * Scaling ratio for repulsion. Default: 100.
+   */
+  scalingRatio?: number;
+
+  /**
+   * Speed of the slowdown. Default: 1.
+   */
+  slowDown?: number;
+
+  /**
+   * Whether to use the strong gravity mode. Default: false.
+   */
+  strongGravityMode?: boolean;
+
+  /**
+   * Number of iterations to perform. Default: 50.
+   */
+  iterations?: number;
+}
+```
