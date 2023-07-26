@@ -2,7 +2,11 @@ import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
 import { animationConfig } from '../../utils';
 import { NodeRendererProps } from '../../types';
-import { Svg as DreiSvg, SvgProps as DreiSvgProps } from '@react-three/drei';
+import {
+  Billboard,
+  Svg as DreiSvg,
+  SvgProps as DreiSvgProps
+} from '@react-three/drei';
 import { Color, DoubleSide } from 'three';
 
 export type SvgProps = NodeRendererProps &
@@ -41,25 +45,27 @@ export const Svg: FC<SvgProps> = ({
 
   return (
     <a.group userData={{ id, type: 'node' }} scale={scale as any}>
-      <DreiSvg
-        {...rest}
-        src={image}
-        fillMaterial={{
-          fog: true,
-          depthTest: false,
-          transparent: true,
-          color: normalizedColor,
-          opacity,
-          side: DoubleSide,
-          ...(rest.fillMaterial || {})
-        }}
-        fillMeshProps={{
-          // Note: This is a hack to get the svg to
-          // render in the correct position.
-          position: [-25, -25, 1],
-          ...(rest.fillMeshProps || {})
-        }}
-      />
+      <Billboard position={[0, 0, 1]}>
+        <DreiSvg
+          {...rest}
+          src={image}
+          fillMaterial={{
+            fog: true,
+            depthTest: false,
+            transparent: true,
+            color: normalizedColor,
+            opacity,
+            side: DoubleSide,
+            ...(rest.fillMaterial || {})
+          }}
+          fillMeshProps={{
+            // Note: This is a hack to get the svg to
+            // render in the correct position.
+            position: [-25, -25, 1],
+            ...(rest.fillMeshProps || {})
+          }}
+        />
+      </Billboard>
     </a.group>
   );
 };
