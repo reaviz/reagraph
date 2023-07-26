@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react';
 
 export interface CameraControlsContextProps {
   controls: CameraControls | null;
+  resetControls: (animated?: boolean) => void;
   zoomIn: () => void;
   zoomOut: () => void;
   panLeft: () => void;
@@ -13,6 +14,7 @@ export interface CameraControlsContextProps {
 
 export const CameraControlsContext = createContext<CameraControlsContextProps>({
   controls: null,
+  resetControls: () => undefined,
   zoomIn: () => undefined,
   zoomOut: () => undefined,
   panLeft: () => undefined,

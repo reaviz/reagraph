@@ -24,6 +24,18 @@ export const Edges = () => (
   <GraphCanvas nodes={clusterNodes} draggable edges={clusterEdges} clusterAttribute="type" />
 );
 
+export const Events = () => (
+  <GraphCanvas
+    nodes={clusterNodes}
+    draggable
+    edges={clusterEdges}
+    clusterAttribute="type"
+    onClusterPointerOut={cluster => console.log('cluster pointer out', cluster)}
+    onClusterPointerOver={cluster => console.log('cluster pointer over', cluster)}
+    onClusterClick={cluster => console.log('cluster click', cluster)}
+  />
+);
+
 export const NoBoundary = () => (
   <GraphCanvas
     theme={{

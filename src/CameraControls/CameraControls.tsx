@@ -263,7 +263,9 @@ export const CameraControls: FC<
         panLeft: () => panLeft({ deltaTime: 1 }),
         panRight: () => panRight({ deltaTime: 1 }),
         panDown: () => panDown({ deltaTime: 1 }),
-        panUp: () => panUp({ deltaTime: 1 })
+        panUp: () => panUp({ deltaTime: 1 }),
+        resetControls: (animated?: boolean) =>
+          cameraRef.current?.reset(animated)
       }),
       // eslint-disable-next-line
       [zoomIn, zoomOut, panLeft, panRight, panDown, panUp, cameraRef.current]

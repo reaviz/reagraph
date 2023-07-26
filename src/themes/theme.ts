@@ -43,6 +43,7 @@ export interface Theme {
   };
   cluster?: {
     stroke?: ColorRepresentation;
+    fill?: ColorRepresentation;
     label?: {
       stroke?: ColorRepresentation;
       color: ColorRepresentation;

@@ -18,6 +18,7 @@ import { Theme, lightTheme } from './themes';
 import { createStore, Provider } from './store';
 import Graph from 'graphology';
 import { Lasso, LassoType } from './selection';
+import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
@@ -51,6 +52,9 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    */
   onLassoEnd?: (selections: string[]) => void;
 
+  /**
+   * Children to render in the canvas. Useful for things like lights.
+   */
   children?: ReactNode;
 }
 
@@ -64,7 +68,7 @@ export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
     /**
      * Get the camera controls.
      */
-    getControls: () => any;
+    getControls: () => ThreeCameraControls;
   };
 
 const GL_DEFAULTS = {
@@ -110,6 +114,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         panRight: () => controlsRef.current?.panRight(),
         panDown: () => controlsRef.current?.panDown(),
         panUp: () => controlsRef.current?.panUp(),
+        resetControls: (animated?: boolean) =>
+          controlsRef.current?.resetControls(animated),
         getControls: () => controlsRef.current?.controls,
         getGraph: () => rendererRef.current?.graph
       }));

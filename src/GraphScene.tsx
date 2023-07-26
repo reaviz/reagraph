@@ -21,6 +21,7 @@ import {
 import { SizingType } from './sizing';
 import {
   Cluster,
+  ClusterEventArgs,
   Edge,
   EdgeArrowPosition,
   EdgeInterpolation,
@@ -199,6 +200,21 @@ export interface GraphSceneProps {
    * When edge lost pointer over.
    */
   onEdgePointerOut?: (edge: InternalGraphEdge) => void;
+
+  /**
+   * When a cluster was clicked.
+   */
+  onClusterClick?: (cluster: ClusterEventArgs) => void;
+
+  /**
+   * When a cluster recieves a pointer over event.
+   */
+  onClusterPointerOver?: (cluster: ClusterEventArgs) => void;
+
+  /**
+   * When cluster recieves a pointer leave event.
+   */
+  onClusterPointerOut?: (cluster: ClusterEventArgs) => void;
 }
 
 export interface GraphSceneRef {
@@ -225,6 +241,9 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onEdgePointerOut,
         onNodePointerOver,
         onNodePointerOut,
+        onClusterClick,
+        onClusterPointerOver,
+        onClusterPointerOut,
         contextMenu,
         theme,
         animated,
@@ -320,7 +339,11 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                 <Cluster
                   key={c.label}
                   animated={animated}
+                  disabled={disabled}
                   labelFontUrl={labelFontUrl}
+                  onClick={onClusterClick}
+                  onPointerOver={onClusterPointerOver}
+                  onPointerOut={onClusterPointerOut}
                   {...c}
                 />
               ))}
