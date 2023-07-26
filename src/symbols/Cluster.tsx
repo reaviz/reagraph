@@ -92,13 +92,13 @@ export const Cluster: FC<ClusterProps> = ({
   });
 
   const normalizedStroke = useMemo(
-    () => new Color(theme.cluster.stroke),
-    [theme.cluster.stroke]
+    () => new Color(theme.cluster?.stroke),
+    [theme.cluster?.stroke]
   );
 
   const normalizedFill = useMemo(
-    () => new Color(theme.cluster.fill),
-    [theme.cluster.fill]
+    () => new Color(theme.cluster?.fill),
+    [theme.cluster?.fill]
   );
 
   useCursor(active && onClick !== undefined, 'pointer');
@@ -144,7 +144,7 @@ export const Cluster: FC<ClusterProps> = ({
               color={normalizedFill}
               transparent={true}
               depthTest={false}
-              opacity={circleOpacity}
+              opacity={theme.cluster?.fill ? circleOpacity : 0}
               side={DoubleSide}
               fog={true}
             />
