@@ -1,3 +1,9 @@
+# 4.11.0 - 7/26/23
+- [feature] expose `resetControls` in Graph ref
+- [feature] add click/over/out events to cluster props
+- [feature] add fill option cluster circles
+- [fix] fix SVG node not looking at camera at all times
+
 # 4.10.5 - 7/19/23
 - [fix] fix svg sphere node not passing down all props
 
