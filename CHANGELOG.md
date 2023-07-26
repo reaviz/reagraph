@@ -1,3 +1,6 @@
+# 4.11.1 - 7/26/23
+- [fix] fix cluster fill issue
+
 # 4.11.0 - 7/26/23
 - [feature] expose `resetControls` in Graph ref
 - [feature] add click/over/out events to cluster props
