@@ -2,6 +2,7 @@ import React, {
   FC,
   forwardRef,
   Fragment,
+  ReactNode,
   Ref,
   useImperativeHandle,
   useMemo
@@ -79,7 +80,7 @@ export interface GraphSceneProps {
   /**
    * Context menu element.
    */
-  contextMenu?: (event: ContextMenuEvent) => React.ReactNode;
+  contextMenu?: (event: ContextMenuEvent) => ReactNode;
 
   /**
    * Type of sizing for nodes.
@@ -182,6 +183,11 @@ export interface GraphSceneProps {
   onNodePointerOut?: (node: InternalGraphNode) => void;
 
   /**
+   * Triggered after a node was dragged.
+   */
+  onNodeDragged?: (node: InternalGraphNode) => void;
+
+  /**
    * When a edge context menu happened.
    */
   onEdgeContextMenu?: (edge?: InternalGraphEdge) => void;
@@ -242,6 +248,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onNodePointerOver,
         onNodePointerOut,
         onClusterClick,
+        onNodeDragged,
         onClusterPointerOver,
         onClusterPointerOut,
         contextMenu,
@@ -294,11 +301,12 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   disabled={disabled}
                   animated={animated}
                   contextMenu={contextMenu}
+                  renderNode={renderNode}
                   onClick={onNodeClick}
                   onContextMenu={onNodeContextMenu}
                   onPointerOver={onNodePointerOver}
                   onPointerOut={onNodePointerOut}
-                  renderNode={renderNode}
+                  onDragged={onNodeDragged}
                 />
               ))}
               {animated ? (

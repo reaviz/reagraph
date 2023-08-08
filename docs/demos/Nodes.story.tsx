@@ -22,6 +22,17 @@ export const Icons = () => (
   />
 );
 
+export const DragOverrides = () => (
+  <GraphCanvas
+    draggable
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    onNodeDragged={node => {
+      console.log('node dragged', node);
+    }}
+  />
+);
+
 export const Custom3DNode = () => (
   <GraphCanvas
     nodes={simpleNodes}

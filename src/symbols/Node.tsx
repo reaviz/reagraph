@@ -59,6 +59,11 @@ export interface NodeProps {
   labelFontUrl?: string;
 
   /**
+   * The function to use to render the node.
+   */
+  renderNode?: NodeRenderer;
+
+  /**
    * The context menu for the node.
    */
   contextMenu?: (event: ContextMenuEvent) => ReactNode;
@@ -87,9 +92,9 @@ export interface NodeProps {
   ) => void;
 
   /**
-   * The function to use to render the node.
+   * Triggered after a node was dragged.
    */
-  renderNode?: NodeRenderer;
+  onDragged?: (node: InternalGraphNode) => void;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -101,6 +106,7 @@ export const Node: FC<NodeProps> = ({
   contextMenu,
   onClick,
   onPointerOver,
+  onDragged,
   onPointerOut,
   onContextMenu,
   renderNode
@@ -183,6 +189,7 @@ export const Node: FC<NodeProps> = ({
       setDraggingId(null);
       setActive(false);
       cameraControls.controls.enabled = true;
+      onDragged?.(node);
     }
   });
 
