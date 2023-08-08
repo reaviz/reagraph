@@ -114,7 +114,11 @@ export function forceDirected({
     )
     .stop();
 
-  const centers = caluculateCenters({ nodes, clusterAttribute });
+  const centers = caluculateCenters({
+    nodes,
+    clusterAttribute,
+    strength: Math.abs(nodeStrengthAdjustment)
+  });
 
   // Initialize the simulation
   const layout = sim

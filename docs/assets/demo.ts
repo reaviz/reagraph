@@ -77,7 +77,7 @@ const colors = ['#3730a3', '#c2410c', '#166534', '#075985'];
 
 export const clusterNodes: GraphNode[] =
   range(25).map(i => {
-    const idx = random(0, types.length - 1);
+    const idx = random(0, types.length);
     const type = types[idx];
 
     return {

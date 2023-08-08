@@ -76,11 +76,17 @@ export function caluculateCenters({
     const groups = buildClusterGroups(nodes, clusterAttribute);
     const count = groups.size;
 
+    // Heuristics to adjust spacing between clusters
+    const nodeStrengthmultiplier = nodes?.length / 100;
+    const adjustedCenterStrength =
+      (Math.max(nodeStrengthmultiplier, 2) + Math.max(count / 2, 2)) *
+      Math.abs(strength);
+
     let idx = 0;
     for (const [key] of groups) {
       const radiant = ((2 * Math.PI) / count) * idx;
-      const x = Math.cos(radiant) * strength;
-      const y = Math.sin(radiant) * strength;
+      const x = Math.cos(radiant) * adjustedCenterStrength;
+      const y = Math.sin(radiant) * adjustedCenterStrength;
       idx++;
 
       centers.set(key, {
