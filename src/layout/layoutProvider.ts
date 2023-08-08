@@ -7,7 +7,10 @@ import { ForceAtlas2LayoutInputs, forceAtlas2 } from './forceatlas2';
 import { custom, CustomLayoutInputs } from './custom';
 
 export type LayoutOverrides = Partial<
-  Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'> | CircularLayoutInputs
+  | Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'>
+  | CircularLayoutInputs
+  | HierarchicalLayoutInputs
+  | CustomLayoutInputs
 >;
 
 const FORCE_LAYOUTS = [

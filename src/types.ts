@@ -160,17 +160,17 @@ export interface InternalGraphNode extends GraphNode {
   position: InternalGraphPosition;
 
   /**
-   * FX position of the element.
+   * FX position of the element. This is used for the force graph layout.
    */
   fx?: number;
 
   /**
-   * FY position of the element.
+   * FY position of the element. This is used for the force graph layout.
    */
   fy?: number;
 
   /**
-   * FZ position of the element.
+   * FZ position of the element. This is used for the force graph layout.
    */
   fz?: number;
 }
