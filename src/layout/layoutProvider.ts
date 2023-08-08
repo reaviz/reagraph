@@ -4,6 +4,7 @@ import { circular2d, CircularLayoutInputs } from './circular2d';
 import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
 import { NoOverlapLayoutInputs, nooverlap } from './nooverlap';
 import { ForceAtlas2LayoutInputs, forceAtlas2 } from './forceatlas2';
+import { custom, CustomLayoutInputs } from './custom';
 
 export type LayoutOverrides = Partial<
   Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'> | CircularLayoutInputs
@@ -140,6 +141,11 @@ export function layoutProvider({
       gravity: gravity || 10,
       iterations: iterations || 50
     });
+  } else if (type === 'custom') {
+    return custom({
+      type: 'custom',
+      ...rest
+    } as CustomLayoutInputs);
   }
 
   throw new Error(`Layout ${type} not found.`);

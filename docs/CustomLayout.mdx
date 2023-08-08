@@ -1,0 +1,84 @@
+import { Meta, Story, ArgsTable } from '@storybook/blocks';
+
+<Meta title="Docs/Advanced/Custom Layout" />
+
+# Custom Layout
+You can provide a custom layout for the graph. This is useful if
+you want to use a layout we don't provide out of the box or have
+a specific layout you wish to use.
+
+## Usage
+To use a custom layout, you need to set the `layoutType` to `custom` and
+provide `layoutOverrides` with a `getNodePosition` function that will return
+the `x/y/z` position for a given node id.
+
+Here is a basic example:
+
+```tsx
+import { GraphCanvas, CustomLayoutInputs, NodePositionArgs } from 'reagraph';
+
+const App = () => (
+  <GraphCanvas
+    layoutType="custom"
+    layoutOverrides={{
+      getNodePosition: (id: string, { nodes }: NodePositionArgs) => {
+        const idx = nodes.findIndex(n => n.id === id);
+        const node = nodes[idx];
+
+        // IMPORTANT CODE HERE
+        return {
+          x: 25 * idx,
+          y: idx % 2 === 0 ? 0 : 50,
+          z: 1
+        };
+      }
+    } as CustomLayoutInputs}
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
+);
+```
+
+In this example, the `getNodePosition` function returns a position
+based on the index found in the graph. This is just a simple example
+to show how to use the `getNodePosition` function.
+
+The interface for this is as follows:
+
+```ts
+export interface CustomLayoutInputs extends LayoutFactoryProps {
+  /**
+   * Get the node position for a given node id.
+   */
+  getNodePosition: (id: string, args: NodePositionArgs) => InternalGraphNode;
+}
+
+export interface NodePositionArgs {
+  /**
+   * The graphology object. Useful for any graph manipulation.
+   */
+  graph: Graph;
+
+  /**
+   * Any nodes that were dragged. This is useful if you want to override
+   * the position of a node when dragged.
+   */
+  drags?: DragReferences;
+
+  /**
+   * The nodes for the graph.
+   */
+  nodes: InternalGraphNode[];
+
+  /**
+   * The edges for the graph.
+   */
+  edges: InternalGraphEdge[];
+}
+```
+
+## Example
+
+<div style={{ height: 400, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
+  <Story id="demos-layouts--custom" />
+</div>

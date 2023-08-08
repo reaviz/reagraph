@@ -1,6 +1,6 @@
 import React from 'react';
-import { GraphCanvas, recommendLayout } from '../../src';
-import { complexEdges, complexNodes } from '../assets/demo';
+import { CustomLayoutInputs, GraphCanvas, NodePositionArgs, recommendLayout } from '../../src';
+import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Layouts',
@@ -8,7 +8,6 @@ export default {
 };
 
 export const Recommender = () => {
-  // TODO: Make this demo better
   const layout = recommendLayout(complexNodes, complexEdges);
 
   return (
@@ -29,5 +28,24 @@ export const Overrides = () => (
     }}
     nodes={complexNodes}
     edges={complexEdges}
+  />
+);
+
+export const Custom = () => (
+  <GraphCanvas
+    layoutType="custom"
+    layoutOverrides={{
+      getNodePosition: (id: string, { nodes }: NodePositionArgs) => {
+        const idx = nodes.findIndex(n => n.id === id);
+        const node = nodes[idx];
+        return {
+          x: 25 * idx,
+          y: idx % 2 === 0 ? 0 : 50,
+          z: 1
+        };
+      }
+    } as CustomLayoutInputs}
+    nodes={simpleNodes}
+    edges={simpleEdges}
   />
 );

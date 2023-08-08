@@ -15,7 +15,8 @@ export type LayoutTypes =
   | 'hierarchicalTd'
   | 'hierarchicalLr'
   | 'nooverlap'
-  | 'forceatlas2';
+  | 'forceatlas2'
+  | 'custom';
 
 export interface LayoutFactoryProps {
   /**
