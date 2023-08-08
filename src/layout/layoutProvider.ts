@@ -4,13 +4,12 @@ import { circular2d, CircularLayoutInputs } from './circular2d';
 import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
 import { NoOverlapLayoutInputs, nooverlap } from './nooverlap';
 import { ForceAtlas2LayoutInputs, forceAtlas2 } from './forceatlas2';
-import { custom, CustomLayoutInputs } from './custom';
+import { custom } from './custom';
 
 export type LayoutOverrides = Partial<
   | Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'>
   | CircularLayoutInputs
   | HierarchicalLayoutInputs
-  | CustomLayoutInputs
 >;
 
 const FORCE_LAYOUTS = [
@@ -121,7 +120,7 @@ export function layoutProvider({
   } else if (type === 'hierarchicalLr') {
     return hierarchical({ ...rest, mode: 'lr' } as HierarchicalLayoutInputs);
   } else if (type === 'nooverlap') {
-    const { graph, maxIterations, ratio, margin, gridSize } =
+    const { graph, maxIterations, ratio, margin, gridSize, ...settings } =
       rest as NoOverlapLayoutInputs;
 
     return nooverlap({
@@ -130,7 +129,8 @@ export function layoutProvider({
       margin: margin || 10,
       maxIterations: maxIterations || 50,
       ratio: ratio || 10,
-      gridSize: gridSize || 20
+      gridSize: gridSize || 20,
+      ...settings
     });
   } else if (type === 'forceatlas2') {
     const { graph, iterations, gravity, scalingRatio, ...settings } =
@@ -148,7 +148,7 @@ export function layoutProvider({
     return custom({
       type: 'custom',
       ...rest
-    } as CustomLayoutInputs);
+    } as LayoutFactoryProps);
   }
 
   throw new Error(`Layout ${type} not found.`);
