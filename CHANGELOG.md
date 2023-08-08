@@ -1,3 +1,10 @@
+# 4.12.0 - 8/8/23
+- [feature] add ability to override node positions
+- [feature] add custom layout option
+- [fix] improve cluster positioning
+- [fix] fix large edge code not accept font url
+- [chore] move to npm
+
 # 4.11.1 - 7/26/23
 - [fix] fix cluster fill issue
 
