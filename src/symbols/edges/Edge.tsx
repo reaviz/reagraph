@@ -33,6 +33,7 @@ export interface EdgeProps {
   color: ColorRepresentation;
   contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
   edge: InternalGraphEdge;
+  labelFontUrl?: string;
   labelPlacement?: EdgeLabelPosition;
   opacity?: number;
   theme: Theme;
@@ -43,6 +44,7 @@ export const Edge: FC<EdgeProps> = ({
   color,
   contextMenu,
   edge,
+  labelFontUrl,
   labelPlacement,
   opacity,
   theme
@@ -121,6 +123,7 @@ export const Edge: FC<EdgeProps> = ({
           <Label
             text={label}
             ellipsis={15}
+            fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={color}
             opacity={opacity}

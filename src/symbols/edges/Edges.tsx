@@ -22,6 +22,7 @@ export type EdgesProps = {
   contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
   disabled?: boolean;
   edges: Array<InternalGraphEdge>;
+  labelFontUrl?: string;
   labelPlacement?: EdgeLabelPosition;
   interpolation?: EdgeInterpolation;
   theme: Theme;
@@ -58,6 +59,7 @@ export const Edges: FC<EdgesProps> = ({
   disabled,
   edges,
   interpolation = 'linear',
+  labelFontUrl,
   labelPlacement = 'inline',
   theme,
   onClick,
@@ -243,6 +245,7 @@ export const Edges: FC<EdgesProps> = ({
           disabled={disabled}
           edge={edge}
           key={edge.id}
+          labelFontUrl={labelFontUrl}
           labelPlacement={labelPlacement}
           theme={theme}
         />
