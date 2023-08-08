@@ -1,5 +1,6 @@
 import circular from 'graphology-layout/circular';
 import { LayoutFactoryProps } from './types';
+import { buildNodeEdges } from './layoutUtils';
 
 export interface CircularLayoutInputs extends LayoutFactoryProps {
   /**
@@ -8,18 +9,36 @@ export interface CircularLayoutInputs extends LayoutFactoryProps {
   radius: 300;
 }
 
-export function circular2d({ graph, radius, drags }: CircularLayoutInputs) {
+export function circular2d({
+  graph,
+  radius,
+  drags,
+  getNodePosition
+}: CircularLayoutInputs) {
   const layout = circular(graph, {
     scale: radius
   });
+
+  const { nodes, edges } = buildNodeEdges(graph);
 
   return {
     step() {
       return true;
     },
     getNodePosition(id: string) {
-      // If we dragged, we need to use that position
-      return (drags?.[id]?.position as any) || layout?.[id];
+      if (getNodePosition) {
+        const pos = getNodePosition(id, { graph, drags, nodes, edges });
+        if (pos) {
+          return pos;
+        }
+      }
+
+      if (drags?.[id]?.position) {
+        // If we dragged, we need to use that position
+        return drags?.[id]?.position as any;
+      }
+
+      return layout?.[id];
     }
   };
 }

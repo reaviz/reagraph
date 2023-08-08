@@ -2,6 +2,7 @@ import { InternalGraphEdge, InternalGraphNode } from 'types';
 import { DepthNode, getNodeDepth } from './depthUtils';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { hierarchy, stratify, tree } from 'd3-hierarchy';
+import { buildNodeEdges } from './layoutUtils';
 
 export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
   /**
@@ -26,18 +27,10 @@ const DIRECTION_MAP = {
 export function hierarchical({
   graph,
   drags,
-  mode = 'td'
+  mode = 'td',
+  getNodePosition
 }: HierarchicalLayoutInputs): LayoutStrategy {
-  const nodes: InternalGraphNode[] = [];
-  const edges: InternalGraphEdge[] = [];
-
-  graph.forEachNode((id, n: any) => {
-    nodes.push({ ...n, id });
-  });
-
-  graph.forEachEdge((id, l: any) => {
-    edges.push({ ...l, id });
-  });
+  const { nodes, edges } = buildNodeEdges(graph);
 
   const { depths } = getNodeDepth(nodes, edges);
   const rootNodes = Object.keys(depths).map(d => depths[d]);
@@ -73,8 +66,19 @@ export function hierarchical({
       return true;
     },
     getNodePosition(id: string) {
-      // If we dragged, we need to use that position
-      return (drags?.[id]?.position as any) || mappedNodes.get(id);
+      if (getNodePosition) {
+        const pos = getNodePosition(id, { graph, drags, nodes, edges });
+        if (pos) {
+          return pos;
+        }
+      }
+
+      if (drags?.[id]?.position) {
+        // If we dragged, we need to use that position
+        return drags?.[id]?.position as any;
+      }
+
+      return mappedNodes.get(id);
     }
   };
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { GraphCanvas, Svg, LayoutTypes, SphereWithIcon, SphereWithSvg } from '../../src';
 import {
   iconNodes,
@@ -22,16 +22,41 @@ export const Icons = () => (
   />
 );
 
-export const DragOverrides = () => (
-  <GraphCanvas
-    draggable
-    nodes={simpleNodes}
-    edges={simpleEdges}
-    onNodeDragged={node => {
-      console.log('node dragged', node);
-    }}
-  />
-);
+export const DragOverrides = () => {
+  const nodeRef = useRef(new Map());
+  const [nodes, setNodes] = useState(simpleNodes);
+
+  return (
+    <>
+      <GraphCanvas
+        draggable
+        nodes={nodes}
+        edges={simpleEdges}
+        layoutOverrides={{
+          getNodePosition: (id) => {
+            console.log('custom position', nodeRef.current.get(id))
+            return nodeRef.current.get(id)?.position;
+          }
+        }}
+        onNodeDragged={node => {
+          console.log('node dragged', node);
+          nodeRef.current.set(node.id, node);
+        }}
+      />
+      <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
+        <button
+          type="button"
+          onClick={() => {
+            const next = nodes.length + 2;
+            setNodes([...nodes, { id: `${next}`, label: `Node ${next}` }])
+          }}
+        >
+          Reset Graph
+        </button>
+      </div>
+    </>
+  );
+};
 
 export const Custom3DNode = () => (
   <GraphCanvas

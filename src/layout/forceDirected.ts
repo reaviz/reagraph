@@ -12,6 +12,7 @@ import { forceRadial, DagMode } from './forceUtils';
 import { caluculateCenters } from '../utils/cluster';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import forceCluster from 'd3-force-cluster-3d';
+import { buildNodeEdges } from './layoutUtils';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**
@@ -67,24 +68,11 @@ export function forceDirected({
   centerInertia = 1,
   clusterPadding = 10,
   clusterStrength = 1,
+  getNodePosition,
   drags,
   clusterAttribute
 }: ForceDirectedLayoutInputs): LayoutStrategy {
-  const nodes: InternalGraphNode[] = [];
-  const edges: InternalGraphEdge[] = [];
-
-  graph.forEachNode((id, n: any) => {
-    nodes.push({
-      ...n,
-      id,
-      // This is for the clustering
-      radius: n.size || 1
-    });
-  });
-
-  graph.forEachEdge((id, l: any) => {
-    edges.push({ ...l, id });
-  });
+  const { nodes, edges } = buildNodeEdges(graph);
 
   // Dynamically adjust node strength based on the number of edges
   const is2d = dimensions === 2;
@@ -161,8 +149,19 @@ export function forceDirected({
       return true;
     },
     getNodePosition(id: string) {
-      // If we dragged, we need to use that position
-      return (drags?.[id]?.position as any) || nodeMap.get(id);
+      if (getNodePosition) {
+        const pos = getNodePosition(id, { graph, drags, nodes, edges });
+        if (pos) {
+          return pos;
+        }
+      }
+
+      if (drags?.[id]?.position) {
+        // If we dragged, we need to use that position
+        return drags?.[id]?.position as any;
+      }
+
+      return nodeMap.get(id);
     }
   };
 }

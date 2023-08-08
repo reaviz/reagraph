@@ -1,5 +1,6 @@
 import noverlapLayout from 'graphology-layout-noverlap';
 import { LayoutFactoryProps } from './types';
+import { buildNodeEdges } from './layoutUtils';
 
 export interface NoOverlapLayoutInputs extends LayoutFactoryProps {
   /**
@@ -27,10 +28,13 @@ export function nooverlap({
   graph,
   margin,
   drags,
+  getNodePosition,
   ratio,
   gridSize,
   maxIterations
 }: NoOverlapLayoutInputs) {
+  const { nodes, edges } = buildNodeEdges(graph);
+
   const layout = noverlapLayout(graph, {
     maxIterations,
     inputReducer: (_key, attr) => ({
@@ -51,8 +55,19 @@ export function nooverlap({
       return true;
     },
     getNodePosition(id: string) {
-      // If we dragged, we need to use that position
-      return (drags?.[id]?.position as any) || layout?.[id];
+      if (getNodePosition) {
+        const pos = getNodePosition(id, { graph, drags, nodes, edges });
+        if (pos) {
+          return pos;
+        }
+      }
+
+      if (drags?.[id]?.position) {
+        // If we dragged, we need to use that position
+        return drags?.[id]?.position as any;
+      }
+
+      return layout?.[id];
     }
   };
 }

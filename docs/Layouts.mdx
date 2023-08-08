@@ -18,11 +18,51 @@ reagraph has the following layout types:
 - Hierarchical Left Right 2D
 - No Overlap 2D
 - ForceAtlas2 2D
+- Custom
 
 ## Layout Overrides
 You can override the default layout options for each respective layout using
 the `layoutOverrides` property on the `GraphCanvas` component. In each layout
 description, it will list the available overrides for that layout if applicable.
+
+### Position Overrides
+You can override the position in any layout by passing the `getNodePosition` property
+to the canvas.
+
+```ts
+export interface NodePositionArgs {
+  /**
+   * The graphology object. Useful for any graph manipulation.
+   */
+  graph: Graph;
+
+  /**
+   * Any nodes that were dragged. This is useful if you want to override
+   * the position of a node when dragged.
+   */
+  drags?: DragReferences;
+
+  /**
+   * The nodes for the graph.
+   */
+  nodes: InternalGraphNode[];
+
+  /**
+   * The edges for the graph.
+   */
+  edges: InternalGraphEdge[];
+}
+
+/**
+ * Get the node position for a given node id.
+ */
+getNodePosition: (
+  id: string,
+  args: NodePositionArgs
+) => InternalGraphPosition;
+```
+
+See custom layouts for more information.
 
 ## Layout Types
 Below are examples of each layout type and corresponding descriptions.
