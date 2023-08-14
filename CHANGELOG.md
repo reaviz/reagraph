@@ -1,3 +1,7 @@
+# 4.12.1 - 8/14/23
+- [fix] upgrade graphology for esm fix #115
+- [fix] decrease default cluster strength from 0.5 to 0.3
+
 # 4.12.0 - 8/8/23
 - [feature] add ability to override node positions
 - [feature] add custom layout option
