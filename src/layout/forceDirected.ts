@@ -67,7 +67,7 @@ export function forceDirected({
   linkDistance = 50,
   centerInertia = 1,
   clusterPadding = 10,
-  clusterStrength = 1,
+  clusterStrength = 0.5,
   getNodePosition,
   drags,
   clusterAttribute

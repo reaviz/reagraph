@@ -68,7 +68,7 @@ export interface CalculateCentersInput {
 export function caluculateCenters({
   nodes,
   clusterAttribute,
-  strength = 300
+  strength = 100
 }: CalculateCentersInput) {
   const centers = new Map<string, { x: number; y: number; z: number }>();
 
@@ -77,9 +77,9 @@ export function caluculateCenters({
     const count = groups.size;
 
     // Heuristics to adjust spacing between clusters
-    const nodeStrengthmultiplier = nodes?.length / 100;
+    const nodeStrengthMultiplier = nodes?.length / 100;
     const adjustedCenterStrength =
-      (Math.max(nodeStrengthmultiplier, 2) + Math.max(count / 2, 2)) *
+      (Math.max(nodeStrengthMultiplier, 2) + Math.max(count / 2, 2)) *
       Math.abs(strength);
 
     let idx = 0;

@@ -44,7 +44,7 @@ export function layoutProvider({
         nodeStrength: nodeStrength || -250,
         linkDistance,
         clusterPadding: clusterPadding || 10,
-        clusterStrength: clusterStrength || 0.5
+        clusterStrength: clusterStrength || 0.3
       } as ForceDirectedLayoutInputs);
     } else if (type === 'treeTd2d') {
       return forceDirected({
@@ -106,7 +106,8 @@ export function layoutProvider({
         dimensions: 3,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
-        linkDistance
+        linkDistance,
+        clusterStrength: clusterStrength || 0.3
       } as ForceDirectedLayoutInputs);
     }
   } else if (type === 'circular2d') {
