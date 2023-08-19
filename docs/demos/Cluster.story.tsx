@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraphCanvas, lightTheme } from '../../src';
-import { clusterNodes, clusterEdges, random } from '../assets/demo';
+import { clusterNodes, clusterEdges, random, singleNodeClusterNodes, imbalancedClusterNodes, manyClusterNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Cluster',
@@ -18,6 +18,18 @@ const clusterNodesWithSizes = clusterNodes.map(node => ({
 
 export const Sizes = () => (
   <GraphCanvas nodes={clusterNodesWithSizes} draggable edges={[]} clusterAttribute="type" />
+);
+
+export const SingleNodeClusters = () => (
+  <GraphCanvas nodes={singleNodeClusterNodes} draggable edges={[]} clusterAttribute="type" />
+);
+
+export const ImbalancedClusters = () => (
+  <GraphCanvas nodes={imbalancedClusterNodes} draggable edges={[]} clusterAttribute="type" />
+);
+
+export const LargeDataset = () => (
+  <GraphCanvas nodes={manyClusterNodes} draggable edges={[]} clusterAttribute="type" />
 );
 
 export const Edges = () => (

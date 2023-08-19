@@ -90,6 +90,54 @@ export const clusterNodes: GraphNode[] =
   }
 });
 
+export const singleNodeClusterNodes: GraphNode[] =
+  range(2).map(i => {
+
+    const idx = i
+    const type = i;
+
+    return {
+    id: `n-${i}`,
+    label: `${type} ${i}`,
+    fill: colors[idx],
+    data: {
+      type
+    }
+  }
+});
+
+export const imbalancedClusterNodes: GraphNode[] =
+  range(20).map(i => {
+    const idx = (i == 0) ? 2: (i % 2);
+    const type = types[idx];
+
+    return {
+    id: `n-${i}`,
+    label: `${type} ${i}`,
+    fill: colors[idx],
+    data: {
+      type
+    }
+  }
+});
+
+const manyTypes = ['IPV4', 'URL', 'Email', 'MD5', 'SHA256', 'Domain', 'IPV6', 'CRC32', 'SHA512'];
+
+export const manyClusterNodes: GraphNode[] =
+  range(500).map(i => {
+    const idx = random(0, manyTypes.length);
+    const type = manyTypes[idx];
+
+    return {
+    id: `n-${i}`,
+    label: `${type} ${i}`,
+    fill: colors[idx%colors.length],
+    data: {
+      type
+    }
+  }
+});
+
 export const clusterEdges: GraphEdge[] = range(random(5, 25)).map(i => ({
   id: `e-${i}`,
   source: `n-${i}`,
