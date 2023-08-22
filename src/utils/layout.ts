@@ -26,6 +26,8 @@ export function getLayoutCenter(
   let maxY = Number.NEGATIVE_INFINITY;
   let minZ = Number.POSITIVE_INFINITY;
   let maxZ = Number.NEGATIVE_INFINITY;
+  let sumX = 0;
+  let sumY = 0;
 
   for (let node of nodes) {
     minX = Math.min(minX, node.position.x);
@@ -34,6 +36,8 @@ export function getLayoutCenter(
     maxY = Math.max(maxY, node.position.y);
     minZ = Math.min(minZ, node.position.z);
     maxZ = Math.max(maxZ, node.position.z);
+    sumX += node.position.x;
+    sumY += node.position.y;
   }
 
   return {
@@ -45,8 +49,8 @@ export function getLayoutCenter(
     maxY,
     minZ,
     maxZ,
-    x: (maxX + minX) / 2,
-    y: (maxY + minY) / 2,
+    x: sumX / nodes.length,
+    y: sumY / nodes.length,
     z: (maxZ + minZ) / 2
   };
 }

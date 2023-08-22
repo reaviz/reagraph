@@ -1,3 +1,4 @@
+import { scaleLinear } from 'd3-scale';
 import { InternalGraphNode } from '../types';
 import { CenterPositionVector, getLayoutCenter } from './layout';
 
@@ -58,6 +59,7 @@ export interface CalculateCentersInput {
   nodes: InternalGraphNode[];
   clusterAttribute?: string;
   strength?: number;
+  clusterStrength?: number;
 }
 
 /**
@@ -76,10 +78,9 @@ export function caluculateCenters({
     const groups = buildClusterGroups(nodes, clusterAttribute);
     const numGroups = groups.size;
     const numNodes = nodes?.length;
+    const datasetSizeFactor = numNodes / 100;
 
     // Heuristics to adjust spacing between clusters
-    const [maxCap, numGroupsFactor] =
-      numGroups < 6 ? [8, 10 * numGroups] : [20, 20 * numGroups];
 
     let idx = 0;
     for (const [key, value] of groups) {
@@ -87,14 +88,10 @@ export function caluculateCenters({
       const groupSize = value.length;
 
       // Heuristics to adjust spacing between clusters
-      const factor = (groupSize * numGroupsFactor) / numNodes;
-      const cappedFactor =
-        groupSize < 10 && numGroups < 8
-          ? numGroups / 2
-          : Math.max(2, Math.min(maxCap, factor));
 
-      const x = Math.cos(radiant) * strength * cappedFactor;
-      const y = Math.sin(radiant) * strength * cappedFactor;
+      const testVal = numGroups + datasetSizeFactor;
+      const x = Math.cos(radiant) * strength * testVal;
+      const y = Math.sin(radiant) * strength * testVal;
 
       idx++;
 
