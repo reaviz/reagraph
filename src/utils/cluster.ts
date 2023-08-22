@@ -1,4 +1,3 @@
-import { scaleLinear } from 'd3-scale';
 import { InternalGraphNode } from '../types';
 import { CenterPositionVector, getLayoutCenter } from './layout';
 
@@ -89,9 +88,9 @@ export function caluculateCenters({
 
       // Heuristics to adjust spacing between clusters
 
-      const testVal = numGroups + datasetSizeFactor;
-      const x = Math.cos(radiant) * strength * testVal;
-      const y = Math.sin(radiant) * strength * testVal;
+      const multiplier = numGroups + datasetSizeFactor;
+      const x = Math.cos(radiant) * strength * multiplier;
+      const y = Math.sin(radiant) * strength * multiplier;
 
       idx++;
 

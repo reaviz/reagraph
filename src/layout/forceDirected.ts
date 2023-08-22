@@ -108,6 +108,7 @@ export function forceDirected({
     strength: Math.abs(nodeStrengthAdjustment)
   });
 
+  // Initialize the simulation
   const layout = sim
     .numDimensions(dimensions)
     .nodes(nodes)
