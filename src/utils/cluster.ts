@@ -58,7 +58,6 @@ export interface CalculateCentersInput {
   nodes: InternalGraphNode[];
   clusterAttribute?: string;
   strength?: number;
-  clusterStrength?: number;
 }
 
 /**
