@@ -106,6 +106,7 @@ export function forceInABox() {
       tmpCount.count = tmpCount.count + 1;
       tmpCount.sumforceNodeSize =
         tmpCount.sumforceNodeSize +
+        // @ts-ignore
         Math.PI * (forceNodeSize(d) * forceNodeSize(d)) * 1.3;
       clustersCounts.set(groupBy(d), tmpCount);
     });
@@ -190,6 +191,7 @@ export function forceInABox() {
       cc,
       clustersCounts;
 
+    // @ts-ignore
     clustersCounts = computeClustersNodeCounts(force.nodes());
 
     for (c of clustersCounts.keys()) {
@@ -201,6 +203,7 @@ export function forceInABox() {
 
   function getFocisFromTemplate() {
     //compute foci
+    // @ts-ignore
     foci.none = { x: 0, y: 0 };
     templateNodes.forEach(function (d) {
       if (template === 'treemap') {
