@@ -129,47 +129,55 @@ export function forceDirected({
     )
     .stop();
 
-  let groupingForce = forceInABox()
-    // Strength to foci
-    .strength(clusterStrength)
-    // Either treemap or force
-    .template(clusterType)
-    // Node attribute to group
-    .groupBy(d => d.data[clusterAttribute])
-    // The graph links. Must be called after setting the grouping attribute
-    .links(edges)
-    // Size of the chart
-    .size([100, 100])
-    // linkStrength between nodes of different clusters
-    .linkStrengthInterCluster(linkStrengthInterCluster)
-    // linkStrength between nodes of the same cluster
-    .linkStrengthIntraCluster(linkStrengthIntraCluster)
-    // linkDistance between meta-nodes on the template (Force template only)
-    .forceLinkDistance(forceLinkDistance)
-    // linkStrength between meta-nodes of the template (Force template only)
-    .forceLinkStrength(forceLinkStrength)
-    // Charge between the meta-nodes (Force template only)
-    .forceCharge(forceCharge)
-    // Used to compute the template force nodes size (Force template only)
-    .forceNodeSize(d => d.radius);
+  let groupingForce;
+
+  if (clusterAttribute) {
+    groupingForce = forceInABox()
+      // Strength to foci
+      .strength(clusterStrength)
+      // Either treemap or force
+      .template(clusterType)
+      // Node attribute to group
+      .groupBy(d => d.data[clusterAttribute])
+      // The graph links. Must be called after setting the grouping attribute
+      .links(edges)
+      // Size of the chart
+      .size([100, 100])
+      // linkStrength between nodes of different clusters
+      .linkStrengthInterCluster(linkStrengthInterCluster)
+      // linkStrength between nodes of the same cluster
+      .linkStrengthIntraCluster(linkStrengthIntraCluster)
+      // linkDistance between meta-nodes on the template (Force template only)
+      .forceLinkDistance(forceLinkDistance)
+      // linkStrength between meta-nodes of the template (Force template only)
+      .forceLinkStrength(forceLinkStrength)
+      // Charge between the meta-nodes (Force template only)
+      .forceCharge(forceCharge)
+      // Used to compute the template force nodes size (Force template only)
+      .forceNodeSize(d => d.radius);
+  }
 
   // Initialize the simulation
-  const layout = sim
-    .numDimensions(dimensions)
-    .nodes(nodes)
-    .force('group', groupingForce);
+  let layout = sim.numDimensions(dimensions).nodes(nodes);
+
+  if (groupingForce) {
+    layout = layout.force('group', groupingForce);
+  }
 
   // Run the force on the links
   if (linkDistance) {
-    const linkForce = layout.force('link');
+    let linkForce = layout.force('link');
     if (linkForce) {
       linkForce
         .id(d => d.id)
         .links(edges)
         // When no mode passed, its a tree layout
         // so let's use a larger distance
-        .distance(linkDistance)
-        .strength(groupingForce.getLinkStrength);
+        .distance(linkDistance);
+
+      if (groupingForce) {
+        linkForce = linkForce.strength(groupingForce?.getLinkStrength ?? 0.1);
+      }
     }
   }
 
