@@ -54,6 +54,9 @@ export interface Theme {
   cluster?: {
     stroke?: ColorRepresentation;
     fill?: ColorRepresentation;
+    opacity?: number;
+    selectedOpacity?: number;
+    inactiveOpacity?: number;
     label?: {
       stroke?: ColorRepresentation;
       color: ColorRepresentation;
@@ -138,6 +141,9 @@ export const lightTheme: Theme = {
   },
   cluster: {
     stroke: '#D8E6EA',
+    opacity: 1,
+    selectedOpacity: 1,
+    inactiveOpacity: 0.1,
     label: {
       stroke: '#fff',
       color: '#2A6475'

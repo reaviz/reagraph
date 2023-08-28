@@ -15,11 +15,6 @@ export interface ClusterProps extends ClusterGroup {
   animated?: boolean;
 
   /**
-   * The opacity of the circle.
-   */
-  opacity?: number;
-
-  /**
    * The radius of the circle. Default 1.
    */
   radius?: number;
@@ -57,7 +52,6 @@ export interface ClusterProps extends ClusterGroup {
 
 export const Cluster: FC<ClusterProps> = ({
   animated,
-  opacity,
   position,
   padding,
   labelFontUrl,
@@ -73,6 +67,22 @@ export const Cluster: FC<ClusterProps> = ({
   const rad = Math.max(position.width, position.height) / 2;
   const offset = rad - radius + padding;
   const [active, setActive] = useState<boolean>(false);
+
+  const isActive = useStore(
+    state => state.actives?.some(id => nodes.some(n => n.id === id))
+  );
+
+  const isSelected = useStore(
+    state => state.selections?.some(id => nodes.some(n => n.id === id))
+  );
+
+  const hasSelections = useStore(state => state.selections?.length > 0);
+
+  const opacity = hasSelections
+    ? isSelected || active || isActive
+      ? theme.cluster.selectedOpacity
+      : theme.cluster.inactiveOpacity
+    : theme.cluster.opacity;
 
   const { circleOpacity, circlePosition, labelPosition } = useSpring({
     from: {
@@ -168,7 +178,7 @@ export const Cluster: FC<ClusterProps> = ({
             <a.group position={labelPosition as any}>
               <Label
                 text={label}
-                opacity={1}
+                opacity={opacity}
                 labelFontUrl={labelFontUrl}
                 stroke={theme.cluster.label.stroke}
                 active={false}

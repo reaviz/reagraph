@@ -44,6 +44,9 @@ export interface Theme {
   cluster?: {
     stroke?: ColorRepresentation;
     fill?: ColorRepresentation;
+    opacity?: number;
+    selectedOpacity?: number;
+    inactiveOpacity?: number;
     label?: {
       stroke?: ColorRepresentation;
       color: ColorRepresentation;

@@ -42,6 +42,9 @@ export const darkTheme: Theme = {
   },
   cluster: {
     stroke: '#474B56',
+    opacity: 1,
+    selectedOpacity: 1,
+    inactiveOpacity: 0.1,
     label: {
       stroke: '#1E2026',
       color: '#ACBAC7'

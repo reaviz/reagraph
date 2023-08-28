@@ -36,6 +36,10 @@ export const Edges = () => (
   <GraphCanvas nodes={clusterNodes} draggable edges={clusterEdges} clusterAttribute="type" />
 );
 
+export const Selections = () => (
+  <GraphCanvas nodes={clusterNodes} selections={[clusterNodes[0].id]} edges={clusterEdges} clusterAttribute="type" />
+);
+
 export const Events = () => (
   <GraphCanvas
     nodes={clusterNodes}
