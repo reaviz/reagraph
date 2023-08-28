@@ -1,3 +1,12 @@
+# 4.13.0 - 8/28/23
+- [feature] added highlighting to clusters ( new theme properties )
+
+# 4.12.4 - 8/28/23
+- [fix] fix null exception with clustering
+
+# 4.12.3 - 8/28/23
+- [fix] improved clustering
+
 # 4.12.2 - 8/21/23
 - [fix] Updated heuristics for cluster boundary spacing #123
 
