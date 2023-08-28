@@ -108,19 +108,44 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   nodeStrength?: number;
 
   /**
-   * Padding between clusters.
-   */
-  clusterPadding?: number;
-
-  /**
    * Strength of the cluster repulsion.
    */
   clusterStrength?: number;
 
   /**
+   * The type of clustering.
+   */
+  clusterType?: 'force' | 'treemap';
+
+  /**
    * Ratio of the distance between nodes on the same level.
    */
   nodeLevelRatio?: number;
+
+  /**
+   * LinkStrength between nodes of different clusters
+   */
+  linkStrengthInterCluster?: number;
+
+  /**
+   * LinkStrength between nodes of the same cluster
+   */
+  linkStrengthIntraCluster?: number;
+
+  /**
+   * Charge between the meta-nodes (Force template only)
+   */
+  forceLinkDistance?: number;
+
+  /**
+   * Used to compute the template force nodes size (Force template only)
+   */
+  forceLinkStrength?: number;
+
+  /**
+   * Used to compute the template force nodes size (Force template only)
+   */
+  forceCharge?: number;
 }
 ```
 
