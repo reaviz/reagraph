@@ -67,16 +67,6 @@ export interface LayoutFactoryProps {
   drags?: DragReferences;
 
   /**
-   * Chart height.
-   */
-  height?: number;
-
-  /**
-   * Chart width.
-   */
-  width?: number;
-
-  /**
    * Get the node position for a given node id.
    */
   getNodePosition: (

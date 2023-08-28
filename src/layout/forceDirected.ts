@@ -139,7 +139,7 @@ export function forceDirected({
     // The graph links. Must be called after setting the grouping attribute
     .links(edges)
     // Size of the chart
-    .size([1155, 791])
+    .size([100, 100])
     // linkStrength between nodes of different clusters
     .linkStrengthInterCluster(linkStrengthInterCluster)
     // linkStrength between nodes of the same cluster
