@@ -28,13 +28,8 @@ export function layoutProvider({
   ...rest
 }: LayoutFactoryProps | LayoutOverrides): LayoutStrategy {
   if (FORCE_LAYOUTS.includes(type)) {
-    const {
-      nodeStrength,
-      linkDistance,
-      clusterPadding,
-      clusterStrength,
-      nodeLevelRatio
-    } = rest as ForceDirectedLayoutInputs;
+    const { nodeStrength, linkDistance, nodeLevelRatio } =
+      rest as ForceDirectedLayoutInputs;
 
     if (type === 'forceDirected2d') {
       return forceDirected({
@@ -42,9 +37,7 @@ export function layoutProvider({
         dimensions: 2,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
-        linkDistance,
-        clusterPadding: clusterPadding || 10,
-        clusterStrength: clusterStrength || 0.3
+        linkDistance
       } as ForceDirectedLayoutInputs);
     } else if (type === 'treeTd2d') {
       return forceDirected({
@@ -106,8 +99,7 @@ export function layoutProvider({
         dimensions: 3,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
-        linkDistance,
-        clusterStrength: clusterStrength || 0.3
+        linkDistance
       } as ForceDirectedLayoutInputs);
     }
   } else if (type === 'circular2d') {

@@ -7,12 +7,10 @@ import {
   forceY as d3ForceY,
   forceZ as d3ForceZ
 } from 'd3-force-3d';
-import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { forceRadial, DagMode } from './forceUtils';
-import { caluculateCenters } from '../utils/cluster';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
-import forceCluster from 'd3-force-cluster-3d';
 import { buildNodeEdges } from './layoutUtils';
+import { forceInABox } from './forceInABox';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**
@@ -41,19 +39,44 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   nodeStrength?: number;
 
   /**
-   * Padding between clusters.
-   */
-  clusterPadding?: number;
-
-  /**
    * Strength of the cluster repulsion.
    */
   clusterStrength?: number;
 
   /**
+   * The type of clustering.
+   */
+  clusterType?: 'force' | 'treemap';
+
+  /**
    * Ratio of the distance between nodes on the same level.
    */
   nodeLevelRatio?: number;
+
+  /**
+   * LinkStrength between nodes of different clusters
+   */
+  linkStrengthInterCluster?: number | ((d: any) => number);
+
+  /**
+   * LinkStrength between nodes of the same cluster
+   */
+  linkStrengthIntraCluster?: number | ((d: any) => number);
+
+  /**
+   * Charge between the meta-nodes (Force template only)
+   */
+  forceLinkDistance?: number;
+
+  /**
+   * Used to compute the template force nodes size (Force template only)
+   */
+  forceLinkStrength?: number;
+
+  /**
+   * Used to compute the template force nodes size (Force template only)
+   */
+  forceCharge?: number;
 }
 
 const TICK_COUNT = 100;
@@ -65,9 +88,13 @@ export function forceDirected({
   dimensions = 2,
   nodeStrength = -250,
   linkDistance = 50,
-  centerInertia = 1,
-  clusterPadding = 10,
   clusterStrength = 0.5,
+  linkStrengthInterCluster = 0.01,
+  linkStrengthIntraCluster = 0.5,
+  forceLinkDistance = 100,
+  forceLinkStrength = 0.1,
+  clusterType = 'force',
+  forceCharge = -700,
   getNodePosition,
   drags,
   clusterAttribute
@@ -83,13 +110,13 @@ export function forceDirected({
   const sim = d3ForceSimulation()
     .force('link', d3ForceLink())
     .force('charge', d3ForceManyBody().strength(nodeStrengthAdjustment))
-    .force('x', d3ForceX())
-    .force('y', d3ForceY())
+    .force('x', d3ForceX(1200 / 2).strength(0.05))
+    .force('y', d3ForceY(1200 / 2).strength(0.05))
     .force('z', d3ForceZ())
     // Handles nodes not overlapping each other ( most relevant in clustering )
     .force(
       'collide',
-      forceCollide(d => d.radius + clusterPadding)
+      forceCollide(d => d.radius)
     )
     .force(
       'dagRadial',
@@ -102,32 +129,38 @@ export function forceDirected({
     )
     .stop();
 
-  const centers = caluculateCenters({
-    nodes,
-    clusterAttribute,
-    strength: Math.abs(nodeStrengthAdjustment)
-  });
+  let groupingForce = forceInABox()
+    // Strength to foci
+    .strength(clusterStrength)
+    // Either treemap or force
+    .template(clusterType)
+    // Node attribute to group
+    .groupBy(d => d.data[clusterAttribute])
+    // The graph links. Must be called after setting the grouping attribute
+    .links(edges)
+    // Size of the chart
+    .size([1155, 791])
+    // linkStrength between nodes of different clusters
+    .linkStrengthInterCluster(linkStrengthInterCluster)
+    // linkStrength between nodes of the same cluster
+    .linkStrengthIntraCluster(linkStrengthIntraCluster)
+    // linkDistance between meta-nodes on the template (Force template only)
+    .forceLinkDistance(forceLinkDistance)
+    // linkStrength between meta-nodes of the template (Force template only)
+    .forceLinkStrength(forceLinkStrength)
+    // Charge between the meta-nodes (Force template only)
+    .forceCharge(forceCharge)
+    // Used to compute the template force nodes size (Force template only)
+    .forceNodeSize(d => d.radius);
 
   // Initialize the simulation
   const layout = sim
     .numDimensions(dimensions)
     .nodes(nodes)
-    .force(
-      'cluster',
-      forceCluster()
-        .centers(node => {
-          // Happens after nodes passed so they have the x/y/z
-          if (clusterAttribute) {
-            const nodeClusterAttr = node?.data?.[clusterAttribute];
-            return centers.get(nodeClusterAttr);
-          }
-        })
-        .centerInertia(centerInertia)
-        .strength(clusterStrength)
-    );
+    .force('group', groupingForce);
 
   // Run the force on the links
-  if (linkDistance && !clusterAttribute) {
+  if (linkDistance) {
     const linkForce = layout.force('link');
     if (linkForce) {
       linkForce
@@ -135,7 +168,8 @@ export function forceDirected({
         .links(edges)
         // When no mode passed, its a tree layout
         // so let's use a larger distance
-        .distance(linkDistance);
+        .distance(linkDistance)
+        .strength(groupingForce.getLinkStrength);
     }
   }
 
