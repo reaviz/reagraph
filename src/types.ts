@@ -18,6 +18,11 @@ export interface GraphElementBaseAttributes<T = any> {
   label?: string;
 
   /**
+   * SubLabel for the element.
+   */
+  subLabel?: string;
+
+  /**
    * Size of the element.
    */
   size?: number;
