@@ -20,6 +20,7 @@ export interface Theme {
   ring: {
     fill: ColorRepresentation;
     activeFill: ColorRepresentation;
+    defaultGeometry: [number, number, number];
   };
   edge: {
     fill: ColorRepresentation;

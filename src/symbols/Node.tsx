@@ -284,6 +284,7 @@ export const Node: FC<NodeProps> = ({
         opacity={isSelected ? 0.5 : 0}
         size={nodeSize}
         animated={animated}
+        defaultGeometry={theme.ring.defaultGeometry}
         color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
       />
       {menuVisible && contextMenu && (
