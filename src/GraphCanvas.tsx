@@ -133,9 +133,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       // It's pretty hard to get good animation performance with large n of edges/nodes
       const finalAnimated =
         edges.length + nodes.length > 400 ? false : animated;
-      const gl = useMemo(() => {
-        return { ...glOptions, ...GL_DEFAULTS };
-      }, [glOptions]);
+
+      const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
