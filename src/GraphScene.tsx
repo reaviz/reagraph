@@ -165,6 +165,11 @@ export interface GraphSceneProps {
   onNodeClick?: (node: InternalGraphNode, props?: CollapseProps) => void;
 
   /**
+   * When a node was double clicked.
+   */
+  onNodeDoubleClick?: (node: InternalGraphNode) => void;
+
+  /**
    * When a node context menu happened.
    */
   onNodeContextMenu?: (
@@ -240,6 +245,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     (
       {
         onNodeClick,
+        onNodeDoubleClick,
         onNodeContextMenu,
         onEdgeContextMenu,
         onEdgeClick,
@@ -303,6 +309,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                   contextMenu={contextMenu}
                   renderNode={renderNode}
                   onClick={onNodeClick}
+                  onDoubleClick={onNodeDoubleClick}
                   onContextMenu={onNodeContextMenu}
                   onPointerOver={onNodePointerOver}
                   onPointerOut={onNodePointerOut}

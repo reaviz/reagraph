@@ -144,3 +144,29 @@ export const ExtraGlOptions = () => (
     glOptions={{preserveDrawingBuffer: true}}
   />
 );
+
+export const NodeDoubleClick = () => (
+  <GraphCanvas
+    nodes={[{
+      id: '1',
+      label: 'Node 1'
+    },
+    {
+      id: '2',
+      label: 'Node 2'
+    }]}
+    edges={[{
+      source: '1',
+      target: '2',
+      id: '1-2',
+      label: '1-2'
+    },
+    {
+      source: '2',
+      target: '1',
+      id: '2-1',
+      label: '2-1'
+    }]}
+    onNodeDoubleClick={(node) => alert(node.label)}
+  />
+);

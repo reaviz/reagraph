@@ -84,6 +84,11 @@ export interface NodeProps {
   onClick?: (node: InternalGraphNode, props?: CollapseProps) => void;
 
   /**
+   * The function to call when the node is double clicked.
+   */
+  onDoubleClick?: (node: InternalGraphNode) => void;
+
+  /**
    * The function to call when the node is right clicked.
    */
   onContextMenu?: (
@@ -105,6 +110,7 @@ export const Node: FC<NodeProps> = ({
   labelFontUrl,
   contextMenu,
   onClick,
+  onDoubleClick,
   onPointerOver,
   onDragged,
   onPointerOut,
@@ -230,6 +236,11 @@ export const Node: FC<NodeProps> = ({
             canCollapse,
             isCollapsed
           });
+        }
+      }}
+      onDoubleClick={() => {
+        if (!disabled && !isDragging) {
+          onDoubleClick?.(node);
         }
       }}
       onContextMenu={() => {
