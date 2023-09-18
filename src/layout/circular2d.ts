@@ -1,4 +1,4 @@
-import circular from 'graphology-layout/circular';
+import circular from 'graphology-layout/circular.js';
 import { LayoutFactoryProps } from './types';
 import { buildNodeEdges } from './layoutUtils';
 
