@@ -5,7 +5,8 @@ import React, {
   Ref,
   Suspense,
   useImperativeHandle,
-  useRef
+  useRef,
+  useMemo
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
@@ -56,6 +57,11 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * Children to render in the canvas. Useful for things like lights.
    */
   children?: ReactNode;
+
+  /**
+   * Ability to extend Cavas gl options. For example { preserveDrawingBuffer: true }
+   */
+  glOptions?: Object;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
@@ -99,6 +105,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         lassoType,
         onLasso,
         onLassoEnd,
+        glOptions,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -126,6 +133,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       // It's pretty hard to get good animation performance with large n of edges/nodes
       const finalAnimated =
         edges.length + nodes.length > 400 ? false : animated;
+      const gl = useMemo(() => {
+        return { ...glOptions, ...GL_DEFAULTS };
+      }, [glOptions]);
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
@@ -135,7 +145,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             legacy
             linear
             flat
-            gl={GL_DEFAULTS}
+            gl={gl}
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
           >
@@ -198,5 +208,6 @@ GraphCanvas.defaultProps = {
   defaultNodeSize: 7,
   minNodeSize: 5,
   maxNodeSize: 15,
-  lassoType: 'none'
+  lassoType: 'none',
+  glOptions: {}
 };
