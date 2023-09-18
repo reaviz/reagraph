@@ -16,6 +16,11 @@ export interface Theme {
       stroke?: ColorRepresentation;
       activeColor: ColorRepresentation;
     };
+    subLabel?: {
+      color: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor: ColorRepresentation;
+    };
   };
   ring: {
     fill: ColorRepresentation;

@@ -25,7 +25,12 @@ export interface Theme {
       color: ThemeColor;
       stroke: ThemeColor;
       activeColor: ThemeColor;
-    }
+    };
+    subLabel?: {
+      color: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor: ColorRepresentation;
+    };
   };
   ring: {
     fill: ThemeColor;
@@ -112,6 +117,11 @@ export const lightTheme: Theme = {
     label: {
       color: '#2A6475',
       stroke: '#fff',
+      activeColor: '#1DE9AC'
+    }
+    subLabel: {
+      color: '#2A6475',
+      stroke: '#eee',
       activeColor: '#1DE9AC'
     }
   },

@@ -14,6 +14,11 @@ export const darkTheme: Theme = {
       stroke: '#1E2026',
       color: '#ACBAC7',
       activeColor: '#1DE9AC'
+    },
+    subLabel: {
+      stroke: '#1E2026',
+      color: '#ACBAC7',
+      activeColor: '#1DE9AC'
     }
   },
   lasso: {

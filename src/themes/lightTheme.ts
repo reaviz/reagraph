@@ -14,6 +14,11 @@ export const lightTheme: Theme = {
       color: '#2A6475',
       stroke: '#fff',
       activeColor: '#1DE9AC'
+    },
+    subLabel: {
+      color: '#ddd',
+      stroke: 'transparent',
+      activeColor: '#1DE9AC'
     }
   },
   lasso: {

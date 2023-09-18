@@ -42,3 +42,32 @@ export const EdgesOnly = () => (
 export const Automatic = () => (
   <GraphCanvas labelType="auto" nodes={simpleNodes} edges={simpleEdges} />
 );
+
+export const SubLabels = () => (
+  <GraphCanvas
+    nodes={[{
+      id: '1',
+      label: 'Node 1',
+      subLabel: 'SubLabel 1'
+    },
+    {
+      id: '2',
+      label: 'Node 2'
+    },
+    {
+      id: '3',
+      label: 'Node 3',
+      subLabel: 'SubLabel 3'
+    }]}
+    edges={[{
+      source: '1',
+      target: '2',
+      id: '1-2',
+    },
+    {
+      source: '3',
+      target: '1',
+      id: '3-1',
+    }]}
+  />
+);

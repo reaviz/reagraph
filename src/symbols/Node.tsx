@@ -172,14 +172,14 @@ export const Node: FC<NodeProps> = ({
       from: {
         nodePosition: [0, 0, 0],
         labelPosition: [0, -(nodeSize + 7), 2],
-        subLabelPosition: [0, -(nodeSize + 15), 2]
+        subLabelPosition: [0, -(nodeSize + 14), 2]
       },
       to: {
         nodePosition: position
           ? [position.x, position.y, position.z]
           : [0, 0, 0],
         labelPosition: [0, -(nodeSize + 7), 2],
-        subLabelPosition: [0, -(nodeSize + 15), 2]
+        subLabelPosition: [0, -(nodeSize + 14), 2]
       },
       config: {
         ...animationConfig,
@@ -337,13 +337,14 @@ export const Node: FC<NodeProps> = ({
               <Label
                 text={subLabel}
                 fontUrl={labelFontUrl}
+                fontSize={5}
                 opacity={selectionOpacity}
-                stroke={theme.node.label.stroke}
+                stroke={theme.node.subLabel?.stroke}
                 active={isSelected || active || isDragging || isActive}
                 color={
                   isSelected || active || isDragging || isActive
-                    ? theme.node.label.activeColor
-                    : theme.node.label.color
+                    ? theme.node.subLabel?.activeColor
+                    : theme.node.subLabel?.color
                 }
               />
             </a.group>
