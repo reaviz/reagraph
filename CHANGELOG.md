@@ -3,6 +3,7 @@
 - [feature] add double click to nodes #133
 - [feature] Add glOptions to GraphCanvas to extend gl configutation #132
 - [feature] Allow passing deltaTime to CameraControl movements #131
+- [fix] attempt to fix graphology error #115
 
 # 4.13.0 - 8/28/23
 - [feature] added highlighting to clusters ( new theme properties )
