@@ -1,3 +1,6 @@
+# 4.14.1 - 9/28/23
+- [fix] Fix imports with webpack 5 #135
+
 # 4.14.0 - 9/18/23
 - [feature] node sublabels #134
 - [feature] add double click to nodes #133
