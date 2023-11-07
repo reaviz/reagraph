@@ -179,7 +179,7 @@ export const Cluster: FC<ClusterProps> = ({
               <Label
                 text={label}
                 opacity={opacity}
-                labelFontUrl={labelFontUrl}
+                fontUrl={labelFontUrl}
                 stroke={theme.cluster.label.stroke}
                 active={false}
                 color={theme.cluster.label.color}
