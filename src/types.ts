@@ -46,8 +46,30 @@ export interface GraphNode extends GraphElementBaseAttributes {
 
   /**
    * Fill color for the node.
+   * @deprecated use theme.fill
    */
   fill?: string;
+  theme?: {
+    fill?: string;
+    activeFill?: ColorRepresentation;
+    opacity?: number;
+    selectedOpacity?: number;
+    inactiveOpacity?: number;
+    label?: {
+      color?: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor?: ColorRepresentation;
+    };
+    subLabel?: {
+      color?: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor?: ColorRepresentation;
+    };
+    ring?: {
+      fill?: ColorRepresentation;
+      activeFill?: ColorRepresentation;
+    };
+  };
 }
 
 export interface GraphEdge extends GraphElementBaseAttributes {
@@ -60,6 +82,23 @@ export interface GraphEdge extends GraphElementBaseAttributes {
    * Target ID of the node.
    */
   target: string;
+
+  theme?: {
+    fill?: ColorRepresentation;
+    activeFill?: ColorRepresentation;
+    opacity?: number;
+    selectedOpacity?: number;
+    inactiveOpacity?: number;
+    label?: {
+      color?: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor?: ColorRepresentation;
+    };
+    arrow?: {
+      fill?: ColorRepresentation;
+      activeFill?: ColorRepresentation;
+    };
+  };
 }
 
 export interface Graph {

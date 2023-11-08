@@ -12,7 +12,6 @@ import {
   getVector
 } from '../utils';
 import { Line } from './Line';
-import { Theme } from '../themes';
 import { useStore } from '../store';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
@@ -163,9 +162,9 @@ export const Edge: FC<EdgeProps> = ({
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
-      ? theme.edge.selectedOpacity
-      : theme.edge.inactiveOpacity
-    : theme.edge.opacity;
+      ? edge.theme?.selectedOpacity ?? theme.edge.selectedOpacity
+      : edge.theme?.inactiveOpacity ?? theme.edge.inactiveOpacity
+    : edge.theme?.opacity ?? theme.edge.opacity;
 
   const [{ labelPosition }] = useSpring(
     () => ({
@@ -224,8 +223,8 @@ export const Edge: FC<EdgeProps> = ({
         animated={animated}
         color={
           isSelected || active || isActive
-            ? theme.edge.activeFill
-            : theme.edge.fill
+            ? edge.theme?.activeFill ?? theme.edge.activeFill
+            : edge.theme?.fill ?? theme.edge.fill
         }
         curve={curve}
         curved={curved}
@@ -251,8 +250,8 @@ export const Edge: FC<EdgeProps> = ({
           animated={animated}
           color={
             isSelected || active || isActive
-              ? theme.arrow.activeFill
-              : theme.arrow.fill
+              ? edge.theme?.arrow?.activeFill ?? theme.arrow.activeFill
+              : edge.theme?.arrow?.fill ?? theme.arrow.fill
           }
           length={arrowLength}
           opacity={selectionOpacity}
@@ -274,11 +273,11 @@ export const Edge: FC<EdgeProps> = ({
             text={label}
             ellipsis={15}
             fontUrl={labelFontUrl}
-            stroke={theme.edge.label.stroke}
+            stroke={edge.theme?.label?.stroke || theme.edge.label.stroke}
             color={
               isSelected || active || isActive
-                ? theme.edge.label.activeColor
-                : theme.edge.label.color
+                ? edge.theme?.label?.activeColor || theme.edge.label.activeColor
+                : edge.theme?.label?.color || theme.edge.label.color
             }
             opacity={selectionOpacity}
             fontSize={LABEL_FONT_SIZE}

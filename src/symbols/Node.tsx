@@ -11,7 +11,6 @@ import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './nodes/Sphere';
 import { Label } from './Label';
-import { Theme } from '../themes';
 import { Ring } from './Ring';
 import {
   NodeContextMenuProps,
@@ -146,9 +145,9 @@ export const Node: FC<NodeProps> = ({
 
   const selectionOpacity = hasSelections
     ? isSelected || active || isActive
-      ? theme.node.selectedOpacity
-      : theme.node.inactiveOpacity
-    : theme.node.opacity;
+      ? node?.theme?.selectedOpacity ?? theme.node.selectedOpacity
+      : node?.theme?.inactiveOpacity ?? theme.node.inactiveOpacity
+    : node?.theme?.opacity ?? theme.node.opacity;
 
   const canCollapse = useMemo(() => {
     // If the node has outgoing edges, it can collapse via context menu
@@ -214,10 +213,15 @@ export const Node: FC<NodeProps> = ({
   );
   useCursor(isDragging, 'grabbing');
 
+  if (node?.fill) {
+    console.warn(
+      'DeprecationWarning: Using node.fill is deprecated. Please use node.theme.fill instead.'
+    );
+  }
   const combinedActiveState = isSelected || active || isDragging || isActive;
   const color = combinedActiveState
-    ? theme.node.activeFill
-    : node.fill || theme.node.fill;
+    ? node?.theme?.activeFill ?? theme.node.activeFill
+    : node?.fill ?? (node?.theme?.fill || theme.node.fill);
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDragging,
@@ -303,7 +307,11 @@ export const Node: FC<NodeProps> = ({
         opacity={isSelected ? 0.5 : 0}
         size={nodeSize}
         animated={animated}
-        color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
+        color={
+          isSelected || active
+            ? node?.theme?.ring?.activeFill ?? theme.ring.activeFill
+            : node?.theme?.ring?.fill ?? theme.ring.fill
+        }
       />
       {menuVisible && contextMenu && (
         <Html prepend={true} center={true}>
@@ -323,12 +331,13 @@ export const Node: FC<NodeProps> = ({
               text={label}
               fontUrl={labelFontUrl}
               opacity={selectionOpacity}
-              stroke={theme.node.label.stroke}
+              stroke={node?.theme?.label?.stroke ?? theme.node.label.stroke}
               active={isSelected || active || isDragging || isActive}
               color={
                 isSelected || active || isDragging || isActive
-                  ? theme.node.label.activeColor
-                  : theme.node.label.color
+                  ? node?.theme?.label?.activeColor ??
+                    theme.node.label.activeColor
+                  : node?.theme?.label?.color ?? theme.node.label.color
               }
             />
           </a.group>
@@ -339,12 +348,15 @@ export const Node: FC<NodeProps> = ({
                 fontUrl={labelFontUrl}
                 fontSize={5}
                 opacity={selectionOpacity}
-                stroke={theme.node.subLabel?.stroke}
+                stroke={
+                  node?.theme?.subLabel?.stroke ?? theme.node.subLabel?.stroke
+                }
                 active={isSelected || active || isDragging || isActive}
                 color={
                   isSelected || active || isDragging || isActive
-                    ? theme.node.subLabel?.activeColor
-                    : theme.node.subLabel?.color
+                    ? node?.theme?.subLabel?.activeColor ??
+                      theme.node.subLabel?.activeColor
+                    : node?.theme?.subLabel?.color ?? theme.node.subLabel?.color
                 }
               />
             </a.group>
