@@ -4,6 +4,15 @@ import { Meta, Story } from '@storybook/blocks';
 
 # FAQ
 
+## Resizing the GraphCanvas
+If you are having trouble resizing the canvas such that it does not take up the whole page, you can
+use wrap the `<GraphCanvas/>` component with a fixed position div and adjust the size. For example:
+```
+<div style={{ position: "fixed", width: '75%', height: '75%'}}>
+  <GraphCanvas nodes={n} edges={e} />
+</div>
+```
+
 ## Font Support
 By default, regraph uses `troika-three-text` which uses the Roboto font
 loaded by Google Fonts CDN. You can override this by passing `labelFontUrl`.
