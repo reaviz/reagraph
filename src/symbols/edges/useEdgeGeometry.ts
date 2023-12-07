@@ -134,7 +134,7 @@ export function useEdgeGeometry(
       });
       return geometries;
     },
-    [arrowPlacement, curved]
+    [arrowPlacement, curved, theme.edge.label.fontSize]
   );
 
   const getGeometry = useCallback(

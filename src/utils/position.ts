@@ -54,12 +54,15 @@ export function getCurve(
   fromOffset: number,
   to: Vector3,
   toOffset: number,
-  curved: boolean
+  curved: boolean,
+  curveOffset?: number
 ): Curve<Vector3> {
   const offsetFrom = getPointBetween(from, to, fromOffset);
   const offsetTo = getPointBetween(to, from, toOffset);
   return curved
-    ? new QuadraticBezierCurve3(...getCurvePoints(offsetFrom, offsetTo))
+    ? new QuadraticBezierCurve3(
+      ...getCurvePoints(offsetFrom, offsetTo, curveOffset)
+    )
     : new LineCurve3(offsetFrom, offsetTo);
 }
 

@@ -73,7 +73,7 @@ export const createStore = ({
     edgeMeshes: [],
     selections,
     drags: {},
-    graph: new Graph(),
+    graph: new Graph({ multi: true }),
     setTheme: theme => set(state => ({ ...state, theme })),
     setClusters: clusters => set(state => ({ ...state, clusters })),
     setEdgeContextMenus: edgeContextMenus =>
