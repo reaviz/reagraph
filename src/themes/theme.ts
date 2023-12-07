@@ -1,8 +1,8 @@
 import { ColorRepresentation } from 'three';
 
 export interface Theme {
-  canvas: {
-    background: ColorRepresentation;
+  canvas?: {
+    background?: ColorRepresentation;
     fog?: ColorRepresentation | null;
   };
   node: {
