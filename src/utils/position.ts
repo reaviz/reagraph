@@ -1,6 +1,8 @@
 import { Curve, LineCurve3, QuadraticBezierCurve3, Vector3 } from 'three';
 import { InternalGraphNode, InternalVector3 } from '../types';
 
+const MULTI_EDGE_OFFSET_FACTOR = 0.7;
+
 /**
  * Get the midpoint given two points.
  */
@@ -99,4 +101,34 @@ export function updateNodePosition(node: InternalGraphNode, offset: Vector3) {
       z: node.position.z + offset.z
     }
   };
+}
+
+/**
+ * Calculate the curve offset for an edge.
+ * This is used to offset edges that are parallel to each other (same source and same target).
+ * It will have no effect if the edge is not parallel to any other edges.
+ */
+export function calculateEdgeCurveOffset({ edge, edges, curved }) {
+  let updatedCurved = curved;
+  let curveOffset: number;
+
+  const parallelEdges = edges
+    .filter(e => e.target === edge.target && e.source === edge.source)
+    .map(e => e.id);
+
+  if (parallelEdges.length > 1) {
+    updatedCurved = true;
+    const edgeIndex = parallelEdges.indexOf(edge.id);
+
+    if (parallelEdges.length === 2) {
+      curveOffset =
+        edgeIndex === 0 ? MULTI_EDGE_OFFSET_FACTOR : -MULTI_EDGE_OFFSET_FACTOR;
+    } else {
+      curveOffset =
+        (edgeIndex - Math.floor(parallelEdges.length / 2)) *
+        MULTI_EDGE_OFFSET_FACTOR;
+    }
+  }
+
+  return { curved: updatedCurved, curveOffset };
 }

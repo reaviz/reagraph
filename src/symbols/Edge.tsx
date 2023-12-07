@@ -4,6 +4,7 @@ import { Arrow, EdgeArrowPosition } from './Arrow';
 import { Label } from './Label';
 import {
   animationConfig,
+  calculateEdgeCurveOffset,
   getArrowSize,
   getArrowVectors,
   getCurve,
@@ -99,7 +100,7 @@ export interface EdgeProps {
   onPointerOut?: (edge: InternalGraphEdge) => void;
 }
 
-const MULTI_EDGE_OFFSET_FACTOR = 0.7;
+const LABEL_PLACEMENT_OFFSET = 3;
 
 export const Edge: FC<EdgeProps> = ({
   animated,
@@ -116,38 +117,31 @@ export const Edge: FC<EdgeProps> = ({
   onPointerOut
 }) => {
   const theme = useStore(state => state.theme);
-  const edges = useStore(state => state.edges);
-  const edge = edges.find(e => e.id === id);
-  const edgesWithSameSourceAndTarget = edges
-    .filter(e => e.target === edge.target && e.source === edge.source)
-    .map(e => e.id);
-  const { target, source, label, labelVisible = false, size = 1 } = edge;
-  let curved = interpolation === 'curved';
-
-  const from = useStore(store => store.nodes.find(node => node.id === source));
-  const to = useStore(store => store.nodes.find(node => node.id === target));
   const draggingId = useStore(state => state.draggingId);
+
+  // UI states
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-  let labelOffset = (size + theme.edge.label.fontSize) / 2;
-  let curveOffset: number;
 
+  // Edge data
+  const edges = useStore(state => state.edges);
+  const edge = edges.find(e => e.id === id);
+  const { target, source, label, labelVisible = false, size = 1 } = edge;
+  const from = useStore(store => store.nodes.find(node => node.id === source));
+  const to = useStore(store => store.nodes.find(node => node.id === target));
+
+  // Edge properties
+  const labelOffset = (size + theme.edge.label.fontSize) / 2;
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
-
-  if (edgesWithSameSourceAndTarget.length > 1) {
-    curved = true;
-
-    const edgeIndex = edgesWithSameSourceAndTarget.indexOf(id);
-
-    if (edgesWithSameSourceAndTarget.length === 2) {
-      curveOffset =
-        edgeIndex === 0 ? MULTI_EDGE_OFFSET_FACTOR : -MULTI_EDGE_OFFSET_FACTOR;
-    } else {
-      curveOffset =
-        (edgeIndex - Math.floor(edgesWithSameSourceAndTarget.length / 2)) *
-        MULTI_EDGE_OFFSET_FACTOR;
-    }
-  }
+  const { curveOffset, curved } = useMemo(
+    () =>
+      calculateEdgeCurveOffset({
+        edge,
+        edges,
+        curved: interpolation === 'curved'
+      }),
+    [edge, edges, interpolation]
+  );
 
   const [curve, arrowPosition, arrowRotation] = useMemo(() => {
     const fromVector = getVector(from);
@@ -196,10 +190,10 @@ export const Edge: FC<EdgeProps> = ({
       const offset = new Vector3().subVectors(newMidPoint, curve.getPoint(0.5));
       switch (labelPlacement) {
       case 'above':
-        offset.y = offset.y - 3;
+        offset.y = offset.y - LABEL_PLACEMENT_OFFSET;
         break;
       case 'below':
-        offset.y = offset.y + 3;
+        offset.y = offset.y + LABEL_PLACEMENT_OFFSET;
         break;
       }
       newMidPoint = newMidPoint.sub(offset);
