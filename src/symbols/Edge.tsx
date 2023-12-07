@@ -17,7 +17,7 @@ import { useStore } from '../store';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
-import { Euler } from 'three';
+import { Euler, Vector3 } from 'three';
 
 export const LABEL_FONT_SIZE = 6;
 
@@ -147,15 +147,21 @@ export const Edge: FC<EdgeProps> = ({
     return [curve, arrowPosition, arrowRotation];
   }, [curved, from, to, arrowPlacement, arrowLength]);
 
-  const midPoint = useMemo(
-    () =>
-      getMidPoint(
-        from.position,
-        to.position,
-        getLabelOffsetByType(labelOffset, labelPlacement)
-      ),
-    [from.position, to.position, labelOffset, labelPlacement]
-  );
+  const midPoint = useMemo(() => {
+    let newMidPoint = getMidPoint(
+      from.position,
+      to.position,
+      getLabelOffsetByType(labelOffset, labelPlacement)
+    );
+
+    if (curved) {
+      // Offset the label to the mid point of the curve
+      const offset = new Vector3().subVectors(newMidPoint, curve.getPoint(0.5));
+      newMidPoint = newMidPoint.sub(offset);
+    }
+
+    return newMidPoint;
+  }, [from.position, to.position, labelOffset, labelPlacement, curved, curve]);
 
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length);
