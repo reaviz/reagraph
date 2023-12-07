@@ -106,7 +106,7 @@ export function updateNodePosition(node: InternalGraphNode, offset: Vector3) {
 /**
  * Calculate the curve offset for an edge.
  * This is used to offset edges that are parallel to each other (same source and same target).
- * It will have no effect if the edge is not parallel to any other edges.
+ * This will return a curveOffset of null if the edge is not parallel to any other edges.
  */
 export function calculateEdgeCurveOffset({ edge, edges, curved }) {
   let updatedCurved = curved;
