@@ -18,7 +18,7 @@ import {
   getCurve
 } from '../../utils';
 import { EdgeArrowPosition } from '../Arrow';
-import { EdgeInterpolation, LABEL_FONT_SIZE } from '../Edge';
+import { EdgeInterpolation } from '../Edge';
 
 export type UseEdgeGeometry = {
   getGeometries(edges: Array<InternalGraphEdge>): Array<BufferGeometry>;
@@ -38,6 +38,7 @@ export function useEdgeGeometry(
   // but we do want to use the most recent nodes whenever `getGeometries`
   // or `getGeometry` is run, so we store it in a ref:
   const stateRef = useRef<GraphState>();
+  const theme = useStore(state => state.theme);
   useStore(state => {
     stateRef.current = state;
   });
@@ -71,9 +72,9 @@ export function useEdgeGeometry(
         }
 
         const fromVector = getVector(from);
-        const fromOffset = from.size + LABEL_FONT_SIZE;
+        const fromOffset = from.size + theme.edge.label.fontSize;
         const toVector = getVector(to);
-        const toOffset = to.size + LABEL_FONT_SIZE;
+        const toOffset = to.size + theme.edge.label.fontSize;
         let curve = getCurve(
           fromVector,
           fromOffset,
