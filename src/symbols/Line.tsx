@@ -56,9 +56,14 @@ export interface LineProps {
    * A function that is called when the mouse pointer is moved out of the line.
    */
   onPointerOut?: (event: ThreeEvent<PointerEvent>) => void;
+  /**
+   * The offset of the curve.
+   */
+  curveOffset?: number;
 }
 
 export const Line: FC<LineProps> = ({
+  curveOffset,
   animated,
   color,
   curve,
@@ -106,7 +111,7 @@ export const Line: FC<LineProps> = ({
         const fromVector = new Vector3(...fromVertices);
         const toVector = new Vector3(...toVertices);
 
-        const curve = getCurve(fromVector, 0, toVector, 0, curved);
+        const curve = getCurve(fromVector, 0, toVector, 0, curved, curveOffset);
         tubeRef.current.copy(new TubeGeometry(curve, 20, size / 2, 5, false));
       },
       config: {

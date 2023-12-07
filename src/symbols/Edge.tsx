@@ -4,6 +4,7 @@ import { Arrow, EdgeArrowPosition } from './Arrow';
 import { Label } from './Label';
 import {
   animationConfig,
+  calculateEdgeCurveOffset,
   getArrowSize,
   getArrowVectors,
   getCurve,
@@ -99,6 +100,8 @@ export interface EdgeProps {
   onPointerOut?: (edge: InternalGraphEdge) => void;
 }
 
+const LABEL_PLACEMENT_OFFSET = 3;
+
 export const Edge: FC<EdgeProps> = ({
   animated,
   arrowPlacement,
@@ -114,36 +117,66 @@ export const Edge: FC<EdgeProps> = ({
   onPointerOut
 }) => {
   const theme = useStore(state => state.theme);
-  const edge = useStore(state => state.edges.find(e => e.id === id));
-  const { target, source, label, labelVisible = false, size = 1 } = edge;
-  const curved = interpolation === 'curved';
-
-  const from = useStore(store => store.nodes.find(node => node.id === source));
-  const to = useStore(store => store.nodes.find(node => node.id === target));
   const draggingId = useStore(state => state.draggingId);
+
+  // UI states
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-  const labelOffset = (size + theme.edge.label.fontSize) / 2;
 
+  // Edge data
+  const edges = useStore(state => state.edges);
+  const edge = edges.find(e => e.id === id);
+  const { target, source, label, labelVisible = false, size = 1 } = edge;
+  const from = useStore(store => store.nodes.find(node => node.id === source));
+  const to = useStore(store => store.nodes.find(node => node.id === target));
+
+  // Edge properties
+  const labelOffset = (size + theme.edge.label.fontSize) / 2;
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
+  const { curveOffset, curved } = useMemo(
+    () =>
+      calculateEdgeCurveOffset({
+        edge,
+        edges,
+        curved: interpolation === 'curved'
+      }),
+    [edge, edges, interpolation]
+  );
 
   const [curve, arrowPosition, arrowRotation] = useMemo(() => {
     const fromVector = getVector(from);
     const fromOffset = from.size;
     const toVector = getVector(to);
     const toOffset = to.size;
-    let curve = getCurve(fromVector, fromOffset, toVector, toOffset, curved);
+
+    let curve = getCurve(
+      fromVector,
+      fromOffset,
+      toVector,
+      toOffset,
+      curved,
+      curveOffset
+    );
 
     const [arrowPosition, arrowRotation] = getArrowVectors(
       arrowPlacement,
       curve,
       arrowLength
     );
+
     if (arrowPlacement === 'end') {
-      curve = getCurve(fromVector, fromOffset, arrowPosition, 0, curved);
+      curve = getCurve(
+        fromVector,
+        fromOffset,
+        arrowPosition,
+        0,
+        curved,
+        curveOffset
+      );
     }
+
     return [curve, arrowPosition, arrowRotation];
-  }, [curved, from, to, arrowPlacement, arrowLength]);
+  }, [from, to, curved, curveOffset, arrowPlacement, arrowLength]);
 
   const midPoint = useMemo(() => {
     let newMidPoint = getMidPoint(
@@ -155,6 +188,14 @@ export const Edge: FC<EdgeProps> = ({
     if (curved) {
       // Offset the label to the mid point of the curve
       const offset = new Vector3().subVectors(newMidPoint, curve.getPoint(0.5));
+      switch (labelPlacement) {
+      case 'above':
+        offset.y = offset.y - LABEL_PLACEMENT_OFFSET;
+        break;
+      case 'below':
+        offset.y = offset.y + LABEL_PLACEMENT_OFFSET;
+        break;
+      }
       newMidPoint = newMidPoint.sub(offset);
     }
 
@@ -225,6 +266,7 @@ export const Edge: FC<EdgeProps> = ({
   return (
     <group>
       <Line
+        curveOffset={curveOffset}
         animated={animated}
         color={
           isSelected || active || isActive
