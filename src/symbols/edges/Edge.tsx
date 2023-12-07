@@ -13,8 +13,6 @@ import {
 } from '../../utils';
 import { Label } from '../Label';
 
-export const LABEL_FONT_SIZE = 6;
-
 /**
  * Label positions relatively edge
  *
@@ -56,7 +54,7 @@ export const Edge: FC<EdgeProps> = ({
   const to = nodes.find(node => node.id === target);
   const draggingId = useStore(state => state.draggingId);
 
-  const labelOffset = (size + LABEL_FONT_SIZE) / 2;
+  const labelOffset = (size + theme.edge.label.fontSize) / 2;
 
   const midPoint = useMemo(
     () =>
@@ -127,7 +125,7 @@ export const Edge: FC<EdgeProps> = ({
             stroke={theme.edge.label.stroke}
             color={color}
             opacity={opacity}
-            fontSize={LABEL_FONT_SIZE}
+            fontSize={theme.edge.label.fontSize}
           />
         </a.group>
       )}

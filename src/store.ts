@@ -52,7 +52,16 @@ export const createStore = ({
   theme
 }: Partial<GraphState>) =>
   create<GraphState>(set => ({
-    theme,
+    theme: {
+      ...theme,
+      edge: {
+        ...theme.edge,
+        label: {
+          ...theme.edge.label,
+          fontSize: theme.edge.label.fontSize ?? 6
+        }
+      }
+    },
     edges: [],
     nodes: [],
     collapsedNodeIds,

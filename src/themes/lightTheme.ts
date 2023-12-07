@@ -38,7 +38,8 @@ export const lightTheme: Theme = {
     label: {
       stroke: '#fff',
       color: '#2A6475',
-      activeColor: '#1DE9AC'
+      activeColor: '#1DE9AC',
+      fontSize: 6
     }
   },
   arrow: {

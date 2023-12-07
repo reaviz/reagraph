@@ -19,8 +19,6 @@ import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { Euler } from 'three';
 
-export const LABEL_FONT_SIZE = 6;
-
 /**
  * Label positions relatively edge.
  *
@@ -125,7 +123,7 @@ export const Edge: FC<EdgeProps> = ({
   const draggingId = useStore(state => state.draggingId);
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-  const labelOffset = (size + LABEL_FONT_SIZE) / 2;
+  const labelOffset = (size + theme.edge.label.fontSize) / 2;
 
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
 
@@ -281,7 +279,7 @@ export const Edge: FC<EdgeProps> = ({
                 : theme.edge.label.color
             }
             opacity={selectionOpacity}
-            fontSize={LABEL_FONT_SIZE}
+            fontSize={theme.edge.label.fontSize}
           />
         </a.group>
       )}

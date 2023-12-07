@@ -36,6 +36,7 @@ export interface Theme {
       color: ColorRepresentation;
       stroke?: ColorRepresentation;
       activeColor: ColorRepresentation;
+      fontSize?: number;
     };
   };
   arrow: {
