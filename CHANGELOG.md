@@ -1,3 +1,13 @@
+# 4.15.0 - 12/11/23
+- [feature] Add parallel edge graph support #153
+- [feature] Add custom label font size #152
+- [feature] Add transparent backgrounds #151
+- [fix] Fix label position on curved edges #150
+- [chore] update FAQ with resize canvas #148
+
+# 4.14.2 - 11/27/23
+- [fix] change labelFontUrl to fontUrl for cluster #143
+
 # 4.14.1 - 9/28/23
 - [fix] Fix imports with webpack 5 #135
 
