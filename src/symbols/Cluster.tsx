@@ -80,9 +80,9 @@ export const Cluster: FC<ClusterProps> = ({
 
   const opacity = hasSelections
     ? isSelected || active || isActive
-      ? theme.cluster.selectedOpacity
-      : theme.cluster.inactiveOpacity
-    : theme.cluster.opacity;
+      ? theme.cluster?.selectedOpacity
+      : theme.cluster?.inactiveOpacity
+    : theme.cluster?.opacity;
 
   const { circleOpacity, circlePosition, labelPosition } = useSpring({
     from: {
@@ -182,7 +182,7 @@ export const Cluster: FC<ClusterProps> = ({
                 fontUrl={labelFontUrl}
                 stroke={theme.cluster.label.stroke}
                 active={false}
-                color={theme.cluster.label.color}
+                color={theme.cluster?.label.color}
                 fontSize={12}
               />
             </a.group>
