@@ -1,3 +1,8 @@
+# 4.15.1 - 12/11/23
+- [fix] fix cluster theme not nullable
+- [fix] fix cluster allowing to be set on non clusterable layouts
+- [chore] upgrade deps
+
 # 4.15.0 - 12/11/23
 - [feature] Add parallel edge graph support #153
 - [feature] Add custom label font size #152
