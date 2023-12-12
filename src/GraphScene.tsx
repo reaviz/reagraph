@@ -271,7 +271,17 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref
     ) => {
+      const { layoutType, clusterAttribute } = rest;
       const { mounted } = useGraph(rest);
+
+      if (
+        clusterAttribute &&
+        !(layoutType === 'forceDirected2d' || layoutType === 'forceDirected3d')
+      ) {
+        throw new Error(
+          'Clustering is only supported for the force directed layouts.'
+        );
+      }
 
       const graph = useStore(state => state.graph);
       const nodes = useStore(state => state.nodes);
