@@ -17,7 +17,16 @@ export interface CenterGraphInput {
 }
 
 export interface CenterGraphOutput {
+  /**
+   * A function that centers the graph on the nodes with the given nodes.
+   * If no nodes are provided, the graph is centered on all nodes.
+   */
   centerNodes: (nodes?: InternalGraphNode[]) => void;
+
+  /**
+   * A function that centers the graph on the nodes with the given ids.
+   * If no ids are provided, the graph is centered on all nodes.
+   */
   centerNodesById: (ids?: string[]) => void;
 }
 
