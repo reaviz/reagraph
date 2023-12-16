@@ -1,3 +1,7 @@
+# 4.15.2 - 12/16/23
+- [feature] Add overrides for node size to Hierarchical 2D #158
+- [chore] upgrade storybook
+
 # 4.15.1 - 12/11/23
 - [fix] fix cluster theme not nullable
 - [fix] fix cluster allowing to be set on non clusterable layouts
