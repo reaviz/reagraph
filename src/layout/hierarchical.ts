@@ -6,9 +6,17 @@ import { buildNodeEdges } from './layoutUtils';
 
 export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
   /**
-   * Direction of the layout.
+   * Direction of the layout. Default 'td'.
    */
   mode?: 'td' | 'lr';
+  /**
+   * Factor of distance between nodes. Default 1.
+   */
+  nodeSeparation?: number;
+  /**
+   * Size of each node. Default [50,50]
+   */
+  nodeSize?: [number, number];
 }
 
 const DIRECTION_MAP = {
@@ -28,6 +36,8 @@ export function hierarchical({
   graph,
   drags,
   mode = 'td',
+  nodeSeparation = 1,
+  nodeSize = [50, 50],
   getNodePosition
 }: HierarchicalLayoutInputs): LayoutStrategy {
   const { nodes, edges } = buildNodeEdges(graph);
@@ -40,8 +50,8 @@ export function hierarchical({
     .parentId(d => d.ins?.[0]?.data?.id)(rootNodes);
 
   const treeRoot = tree()
-    .separation(() => 1)
-    .nodeSize([50, 50])(hierarchy(root));
+    .separation(() => nodeSeparation)
+    .nodeSize(nodeSize)(hierarchy(root));
 
   const treeNodes = treeRoot.descendants();
   const path = DIRECTION_MAP[mode];
