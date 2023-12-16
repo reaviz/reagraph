@@ -11,7 +11,6 @@ import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './nodes/Sphere';
 import { Label } from './Label';
-import { Theme } from '../themes';
 import { Ring } from './Ring';
 import {
   NodeContextMenuProps,

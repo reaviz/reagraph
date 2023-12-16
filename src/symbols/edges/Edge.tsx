@@ -26,15 +26,45 @@ export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 export type EdgeArrowPosition = 'none' | 'mid' | 'end';
 
 export interface EdgeProps {
+  /**
+   * Whether the edge should be animated.
+   */
   animated?: boolean;
+
+  /**
+   * Whether the edge should be disabled.
+   */
   disabled?: boolean;
+
+  /**
+   * The color of the edge.
+   */
   color: ColorRepresentation;
+
+  /**
+   * A function that returns the context menu for the edge.
+   */
   contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
+
+  /**
+   * The edge object.
+   */
   edge: InternalGraphEdge;
+
+  /**
+   * The URL of the font for the edge label.
+   */
   labelFontUrl?: string;
+
+  /**
+   * The placement of the edge label.
+   */
   labelPlacement?: EdgeLabelPosition;
+
+  /**
+   * The opacity of the edge.
+   */
   opacity?: number;
-  theme: Theme;
 }
 
 export const Edge: FC<EdgeProps> = ({
@@ -44,9 +74,9 @@ export const Edge: FC<EdgeProps> = ({
   edge,
   labelFontUrl,
   labelPlacement,
-  opacity,
-  theme
+  opacity
 }) => {
+  const theme = useStore(state => state.theme);
   const { target, source, label, labelVisible = false, size = 1 } = edge;
 
   const nodes = useStore(store => store.nodes);

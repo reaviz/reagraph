@@ -4,7 +4,6 @@ import { useFrame } from '@react-three/fiber';
 import { DoubleSide, Mesh, Raycaster, TubeGeometry } from 'three';
 
 import { useStore } from '../../store';
-import { Theme } from '../../themes';
 import { ContextMenuEvent, InternalGraphEdge } from '../../types';
 import { EdgeArrowPosition } from '../Arrow';
 import { EdgeLabelPosition, EdgeInterpolation } from '../Edge';
@@ -17,15 +16,45 @@ import {
 import { Edge } from './Edge';
 
 export type EdgesProps = {
+  /**
+   * Whether the edge should be animated.
+   */
   animated?: boolean;
+
+  /**
+   * The placement of the edge arrow.
+   */
   arrowPlacement?: EdgeArrowPosition;
+
+  /**
+   * A function that returns the context menu for the edge.
+   */
   contextMenu?: (event: Partial<ContextMenuEvent>) => React.ReactNode;
+
+  /**
+   * Whether the edge should be disabled.
+   */
   disabled?: boolean;
+
+  /**
+   * The array of edge objects.
+   */
   edges: Array<InternalGraphEdge>;
+
+  /**
+   * The URL of the font for the edge label.
+   */
   labelFontUrl?: string;
+
+  /**
+   * The placement of the edge label.
+   */
   labelPlacement?: EdgeLabelPosition;
+
+  /**
+   * The type of interpolation used to draw the edge.
+   */
   interpolation?: EdgeInterpolation;
-  theme: Theme;
 } & EdgeEvents;
 
 /**
@@ -53,20 +82,20 @@ export type EdgesProps = {
  *  * manually update edge/arrow positions during aniamations (see `useEdgeAnimations`)
  */
 export const Edges: FC<EdgesProps> = ({
-  animated,
+  interpolation = 'linear',
   arrowPlacement = 'end',
+  labelPlacement = 'inline',
+  animated,
   contextMenu,
   disabled,
   edges,
-  interpolation = 'linear',
   labelFontUrl,
-  labelPlacement = 'inline',
-  theme,
   onClick,
   onContextMenu,
   onPointerOut,
   onPointerOver
 }) => {
+  const theme = useStore(state => state.theme);
   const { getGeometries, getGeometry } = useEdgeGeometry(
     arrowPlacement,
     interpolation
