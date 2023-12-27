@@ -107,3 +107,8 @@ export const ThreeDimensions = () => (
     <directionalLight position={[0, 5, -4]} intensity={1} />
   </GraphCanvas>
 );
+
+
+export const Partial = () => (
+  <GraphCanvas nodes={clusterNodes} draggable edges={[]} clusterAttribute="segment" />
+);

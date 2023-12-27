@@ -14,7 +14,9 @@ export function buildClusterGroups(
 
   return nodes.reduce((entryMap, e) => {
     const val = e.data[clusterAttribute];
-    entryMap.set(val, [...(entryMap.get(val) || []), e]);
+    if (val) {
+      entryMap.set(val, [...(entryMap.get(val) || []), e]);
+    }
     return entryMap;
   }, new Map());
 }
