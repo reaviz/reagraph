@@ -1,3 +1,6 @@
+# 4.15.3 - 12/28/23
+- [fix] Make partial clusters if clusterAttribute it not defined #161
+
 # 4.15.2 - 12/16/23
 - [feature] Add overrides for node size to Hierarchical 2D #158
 - [chore] upgrade storybook
