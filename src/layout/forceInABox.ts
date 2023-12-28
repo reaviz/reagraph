@@ -21,33 +21,29 @@ import { treemap, hierarchy } from 'd3-hierarchy';
  */
 export function forceInABox() {
   // d3 style
-  function constant(_) {
-    return () => _;
-  }
+  const constant = (_: any) => () => _;
+  const index = (d: any) => d.index;
 
-  function index(d) {
-    return d.index;
-  }
-
-  let id = index,
-    nodes = [],
-    links = [], //needed for the force version
-    tree,
-    size = [100, 100],
-    forceNodeSize = constant(1), // The expected node size used for computing the cluster node
-    forceCharge = constant(-1),
-    forceLinkDistance = constant(100),
-    forceLinkStrength = constant(0.1),
-    foci = {},
-    linkStrengthIntraCluster = 0.1,
-    linkStrengthInterCluster = 0.001,
-    templateNodes = [],
-    offset = [0, 0],
-    templateForce,
-    groupBy = d => d.cluster,
-    template = 'treemap',
-    enableGrouping = true,
-    strength = 0.1;
+  // Default values
+  let id = index;
+  let nodes = [];
+  let links = []; // needed for the force version
+  let tree;
+  let size = [100, 100];
+  let forceNodeSize = constant(1); // The expected node size used for computing the cluster node
+  let forceCharge = constant(-1);
+  let forceLinkDistance = constant(100);
+  let forceLinkStrength = constant(0.1);
+  let foci = {};
+  let linkStrengthIntraCluster = 0.1;
+  let linkStrengthInterCluster = 0.001;
+  let templateNodes = [];
+  let offset = [0, 0];
+  let templateForce;
+  let groupBy = d => d.cluster;
+  let template = 'treemap';
+  let enableGrouping = true;
+  let strength = 0.1;
 
   function force(alpha) {
     if (!enableGrouping) {
@@ -55,7 +51,7 @@ export function forceInABox() {
     }
 
     if (template === 'force') {
-      //Do the tick of the template force and get the new focis
+      // Do the tick of the template force and get the new focis
       templateForce.tick();
       getFocisFromTemplate();
     }
@@ -68,7 +64,9 @@ export function forceInABox() {
   }
 
   function initialize() {
-    if (!nodes) return;
+    if (!nodes) {
+      return;
+    }
 
     if (template === 'treemap') {
       initializeWithTreemap();
@@ -143,19 +141,20 @@ export function forceInABox() {
         });
       }
     });
+
     return clusterLinks;
   }
 
   //Returns the metagraph of the clusters
   function getGroupsGraph() {
-    let gnodes = [],
-      glinks = [],
-      dNodes = new Map(),
-      c,
-      i,
-      cc,
-      clustersCounts,
-      clustersLinks;
+    let gnodes = [];
+    let glinks = [];
+    let dNodes = new Map();
+    let c;
+    let i;
+    let cc;
+    let clustersCounts;
+    let clustersLinks;
 
     clustersCounts = computeClustersNodeCounts(nodes);
     clustersLinks = computeClustersLinkCounts(links);
@@ -186,10 +185,10 @@ export function forceInABox() {
   }
 
   function getGroupsTree() {
-    let children = [],
-      c,
-      cc,
-      clustersCounts;
+    let children = [];
+    let c;
+    let cc;
+    let clustersCounts;
 
     // @ts-ignore
     clustersCounts = computeClustersNodeCounts(force.nodes());
@@ -242,7 +241,10 @@ export function forceInABox() {
 
     links.forEach(function (link) {
       let source, target;
-      if (!nodes) return;
+      if (!nodes) {
+        return;
+      }
+
       source = link.source;
       target = link.target;
 
@@ -269,7 +271,7 @@ export function forceInABox() {
     let net;
 
     if (!nodes || !nodes.length) {
-      return;
+      throw new Error('Error initializing forceInABox: no nodes passed.');
     }
 
     checkLinksAsObjects();
@@ -293,33 +295,50 @@ export function forceInABox() {
   }
 
   force.template = function (x) {
-    if (!arguments.length) return template;
+    if (!arguments.length) {
+      return template;
+    }
+
     template = x;
     initialize();
     return force;
   };
 
   force.groupBy = function (x) {
-    if (!arguments.length) return groupBy;
+    if (!arguments.length) {
+      return groupBy;
+    }
+
     if (typeof x === 'string') {
       groupBy = function (d) {
         return d[x];
       };
+
       return force;
     }
+
     groupBy = x;
+
     return force;
   };
 
   force.enableGrouping = function (x) {
-    if (!arguments.length) return enableGrouping;
+    if (!arguments.length) {
+      return enableGrouping;
+    }
+
     enableGrouping = x;
+
     return force;
   };
 
   force.strength = function (x) {
-    if (!arguments.length) return strength;
+    if (!arguments.length) {
+      return strength;
+    }
+
     strength = x;
+
     return force as any;
   };
 
@@ -376,15 +395,26 @@ export function forceInABox() {
   };
 
   force.links = function (_) {
-    if (!arguments.length) return links;
-    if (_ === null) links = [];
-    else links = _;
+    if (!arguments.length) {
+      return links;
+    }
+
+    if (_ === null) {
+      links = [];
+    } else {
+      links = _;
+    }
+
     initialize();
+
     return force;
   };
 
   force.template = function (x) {
-    if (!arguments.length) return template;
+    if (!arguments.length) {
+      return template;
+    }
+
     template = x;
     initialize();
     return force;
