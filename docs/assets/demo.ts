@@ -85,7 +85,8 @@ export const clusterNodes: GraphNode[] =
     label: `${type} ${i}`,
     fill: colors[idx],
     data: {
-      type
+      type,
+      segment: i %2 === 0 ? 'A' : undefined
     }
   }
 });
