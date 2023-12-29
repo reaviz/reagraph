@@ -1,3 +1,6 @@
+# 4.15.4 - 12/29/23
+- [fix] fix error with clustering
+
 # 4.15.3 - 12/28/23
 - [fix] Make partial clusters if clusterAttribute it not defined #161
 
