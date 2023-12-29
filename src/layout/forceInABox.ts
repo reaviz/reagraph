@@ -271,7 +271,7 @@ export function forceInABox() {
     let net;
 
     if (!nodes || !nodes.length) {
-      throw new Error('Error initializing forceInABox: no nodes passed.');
+      return;
     }
 
     checkLinksAsObjects();
