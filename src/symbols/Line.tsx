@@ -99,8 +99,8 @@ export const Line: FC<LineProps> = ({
     const to = curve.getPoint(1);
     return {
       from: {
-        fromVertices: [to?.x, to?.y, to?.z || 0],
-        toVertices: [from?.x, from?.y, from?.z || 0]
+        fromVertices: [0, 0, 0],
+        toVertices: [0, 0, 0]
       },
       to: {
         fromVertices: [from?.x, from?.y, from?.z || 0],
