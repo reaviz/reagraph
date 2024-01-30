@@ -46,9 +46,10 @@ export const useCenterGraph = ({
   const centerNodes = useCallback(
     (centerNodes: InternalGraphNode[], padding = PADDING, fill = false) => {
       // Centers the graph based on the central most node
-      const { minX, maxX, minY, maxY, minZ, maxZ } =
+      const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
         getLayoutCenter(centerNodes);
 
+      controls.setTarget(x, y, z);
       controls?.fitToBox(
         new Box3(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ)),
         animated,
