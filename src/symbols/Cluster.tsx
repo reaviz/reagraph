@@ -86,9 +86,9 @@ export const Cluster: FC<ClusterProps> = ({
 
   const { circleOpacity, circlePosition, labelPosition } = useSpring({
     from: {
-      circlePosition: [0, 0, -1],
+      circlePosition: position ? [position.x, position.y, -1] : [0, 0, -1],
       circleOpacity: 0,
-      labelPosition: [0, 0, 2]
+      labelPosition: [0, -offset, 2]
     },
     to: {
       labelPosition: [0, -offset, 2],
