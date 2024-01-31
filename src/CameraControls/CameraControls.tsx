@@ -85,11 +85,6 @@ export interface CameraControlsProps {
    * Animate transitions to centering.
    */
   animated?: boolean;
-
-  /**
-   * Disable the controls.
-   */
-  disabled?: boolean;
 }
 
 export type CameraControlsRef = CameraControlsContextProps;
@@ -97,7 +92,7 @@ export type CameraControlsRef = CameraControlsContextProps;
 export const CameraControls: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
 > = forwardRef(
-  ({ mode, children, animated, disabled }, ref: Ref<CameraControlsRef>) => {
+  ({ mode, children, animated }, ref: Ref<CameraControlsRef>) => {
     const cameraRef = useRef<ThreeCameraControls | null>(null);
     const camera = useThree(state => state.camera);
     const gl = useThree(state => state.gl);
@@ -278,7 +273,6 @@ export const CameraControls: FC<
         <threeCameraControls
           ref={cameraRef}
           args={[camera, gl.domElement]}
-          enabled={!disabled}
           smoothTime={0.1}
           minDistance={1000}
           maxDistance={50000}

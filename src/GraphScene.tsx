@@ -4,8 +4,9 @@ import React, {
   Fragment,
   ReactNode,
   Ref,
+  useEffect,
   useImperativeHandle,
-  useMemo
+  useMemo,
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutOverrides, LayoutTypes } from './layout';
@@ -30,7 +31,7 @@ import {
   Edges,
   Node
 } from './symbols';
-import { useCenterGraph } from './CameraControls';
+import { useCameraControls, useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { Theme } from './themes';
 import { useStore } from './store';
@@ -273,6 +274,14 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     ) => {
       const { layoutType, clusterAttribute } = rest;
       const { mounted } = useGraph(rest);
+      const { controls } = useCameraControls();
+
+      // Disable controls after mounted graph
+      useEffect(() => {
+        if (disabled && mounted) {
+          controls.enabled = !disabled;
+        }
+      }, [disabled, mounted])
 
       if (
         clusterAttribute &&
