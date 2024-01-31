@@ -53,6 +53,5 @@ export const SphereWithSvg: FC<SphereWithSvgProps> = ({
 
 SphereWithSvg.defaultProps = {
   opacity: 1,
-  active: false,
-  selected: false
+  active: false
 };

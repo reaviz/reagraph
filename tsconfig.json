@@ -24,8 +24,6 @@
     "outDir": "./dist",
     "skipLibCheck": true,
     "sourceMap": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "suppressExcessPropertyErrors": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },

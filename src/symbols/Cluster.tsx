@@ -68,12 +68,12 @@ export const Cluster: FC<ClusterProps> = ({
   const offset = rad - radius + padding;
   const [active, setActive] = useState<boolean>(false);
 
-  const isActive = useStore(
-    state => state.actives?.some(id => nodes.some(n => n.id === id))
+  const isActive = useStore(state =>
+    state.actives?.some(id => nodes.some(n => n.id === id))
   );
 
-  const isSelected = useStore(
-    state => state.selections?.some(id => nodes.some(n => n.id === id))
+  const isSelected = useStore(state =>
+    state.selections?.some(id => nodes.some(n => n.id === id))
   );
 
   const hasSelections = useStore(state => state.selections?.length > 0);
@@ -194,7 +194,6 @@ export const Cluster: FC<ClusterProps> = ({
 };
 
 Cluster.defaultProps = {
-  opacity: 1,
   radius: 2,
   padding: 40
 };

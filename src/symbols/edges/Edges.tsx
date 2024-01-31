@@ -276,7 +276,6 @@ export const Edges: FC<EdgesProps> = ({
           key={edge.id}
           labelFontUrl={labelFontUrl}
           labelPlacement={labelPlacement}
-          theme={theme}
         />
       ))}
     </group>

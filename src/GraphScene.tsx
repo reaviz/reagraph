@@ -346,7 +346,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                 ))
               ) : (
                 <Edges
-                  theme={theme}
                   edges={edges}
                   disabled={disabled}
                   animated={animated}

@@ -45,6 +45,5 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
 
 SphereWithIcon.defaultProps = {
   opacity: 1,
-  active: false,
-  selected: false
+  active: false
 };
