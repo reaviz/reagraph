@@ -1,5 +1,9 @@
+# 4.15.6 - 1/31/24
+- [fix] fix clusters not entering animation correctly
+
 # 4.15.5 - 1/31/24
 - [fix] fix issue initial zoom off center #167
+- [chore] upgrade easy depedencies
 
 # 4.15.4 - 12/29/23
 - [fix] fix error with clustering
