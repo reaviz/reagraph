@@ -169,7 +169,10 @@ export const Node: FC<NodeProps> = ({
   const [{ nodePosition, labelPosition, subLabelPosition }] = useSpring(
     () => ({
       from: {
-        nodePosition: [0, 0, 0],
+        nodePosition: position
+          ? [position.x, position.y, position.z]
+          : [0, 0, 0],
+        nodeScale: 0,
         labelPosition: [0, -(nodeSize + 7), 2],
         subLabelPosition: [0, -(nodeSize + 14), 2]
       },
@@ -177,6 +180,7 @@ export const Node: FC<NodeProps> = ({
         nodePosition: position
           ? [position.x, position.y, position.z]
           : [0, 0, 0],
+        nodeScale: 1,
         labelPosition: [0, -(nodeSize + 7), 2],
         subLabelPosition: [0, -(nodeSize + 14), 2]
       },

@@ -77,7 +77,6 @@ export const Line: FC<LineProps> = ({
   onPointerOut
 }) => {
   const tubeRef = useRef<TubeGeometry | null>(null);
-  const draggingId = useStore(state => state.draggingId);
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
   // Do opacity seperate from vertices for perf
@@ -94,35 +93,8 @@ export const Line: FC<LineProps> = ({
     }
   });
 
-  useSpring(() => {
-    const from = curve.getPoint(0);
-    const to = curve.getPoint(1);
-    return {
-      from: {
-        fromVertices: [0, 0, 0],
-        toVertices: [0, 0, 0]
-      },
-      to: {
-        fromVertices: [from?.x, from?.y, from?.z || 0],
-        toVertices: [to?.x, to?.y, to?.z || 0]
-      },
-      onChange: event => {
-        const { fromVertices, toVertices } = event.value;
-        const fromVector = new Vector3(...fromVertices);
-        const toVector = new Vector3(...toVertices);
-
-        const curve = getCurve(fromVector, 0, toVector, 0, curved, curveOffset);
-        tubeRef.current.copy(new TubeGeometry(curve, 20, size / 2, 5, false));
-      },
-      config: {
-        ...animationConfig,
-        duration: animated && !draggingId ? undefined : 0
-      }
-    };
-  }, [animated, draggingId, curve, size]);
-
   return (
-    <mesh
+    <a.mesh
       userData={{ id, type: 'edge' }}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut}
@@ -135,7 +107,11 @@ export const Line: FC<LineProps> = ({
         }
       }}
     >
-      <tubeGeometry attach="geometry" ref={tubeRef} />
+      <a.tubeGeometry
+        attach="geometry"
+        ref={tubeRef}
+        args={[curve, 20, size / 2, 5, false]}
+      />
       <a.meshBasicMaterial
         attach="material"
         opacity={lineOpacity}
@@ -144,7 +120,7 @@ export const Line: FC<LineProps> = ({
         depthTest={false}
         color={normalizedColor}
       />
-    </mesh>
+    </a.mesh>
   );
 };
 

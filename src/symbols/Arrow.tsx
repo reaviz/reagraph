@@ -68,15 +68,17 @@ export const Arrow: FC<ArrowProps> = ({
   const meshRef = useRef<Mesh | null>(null);
   const draggingId = useStore(state => state.draggingId);
 
-  const [{ pos, arrowOpacity }] = useSpring(
+  const [{ pos, arrowOpacity, scale }] = useSpring(
     () => ({
       from: {
-        pos: [0, 0, 0],
-        arrowOpacity: 0
+        pos: [position.x, position.y, position.z],
+        arrowOpacity: 0,
+        scale: 0
       },
       to: {
         pos: [position.x, position.y, position.z],
-        arrowOpacity: opacity
+        arrowOpacity: opacity,
+        scale: 1
       },
       config: {
         ...animationConfig,
@@ -97,7 +99,7 @@ export const Arrow: FC<ArrowProps> = ({
     <a.mesh
       position={pos as any}
       ref={meshRef}
-      scale={[1, 1, 1]}
+      scale={scale}
       onPointerOver={() => onActive(true)}
       onPointerOut={() => onActive(false)}
       onPointerDown={event => {

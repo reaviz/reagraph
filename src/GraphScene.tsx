@@ -291,9 +291,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);
       const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
 
-      const { centerNodesById } = useCenterGraph({
-        animated
-      });
+      const { centerNodesById } = useCenterGraph({});
 
       useImperativeHandle(
         ref,
