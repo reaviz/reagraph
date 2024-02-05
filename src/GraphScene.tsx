@@ -6,7 +6,7 @@ import React, {
   Ref,
   useEffect,
   useImperativeHandle,
-  useMemo,
+  useMemo
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutOverrides, LayoutTypes } from './layout';
@@ -280,8 +280,9 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       useEffect(() => {
         if (disabled && mounted) {
           controls.enabled = !disabled;
+          controls.update(0);
         }
-      }, [disabled, mounted])
+      }, [disabled, mounted]);
 
       if (
         clusterAttribute &&
