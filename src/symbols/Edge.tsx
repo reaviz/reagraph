@@ -16,7 +16,7 @@ import { Line } from './Line';
 import { Theme } from '../themes';
 import { useStore } from '../store';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
-import { Html, useCursor } from '@react-three/drei';
+import { Html, useCursor } from 'glodrei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { Euler, Vector3 } from 'three';
 

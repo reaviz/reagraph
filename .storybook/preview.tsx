@@ -1,11 +1,11 @@
-import { Stats } from '@react-three/drei';
+import { Stats } from 'glodrei';
 import theme from './theme';
 import { Preview } from '@storybook/react';
 
 const withProvider = (Story, context) => (
   <>
     <Story {...context} />
-    <Stats className='stats' />
+    <Stats className="stats" />
   </>
 );
 
@@ -20,8 +20,19 @@ const preview: Preview = {
     },
     options: {
       storySort: {
-        order: ['Docs', ['Intro', 'Getting Started', ['Installing'], 'API', 'Advanced', 'Support'], '*']
-      },
+        order: [
+          'Docs',
+          [
+            'Intro',
+            'Getting Started',
+            ['Installing'],
+            'API',
+            'Advanced',
+            'Support'
+          ],
+          '*'
+        ]
+      }
     }
   }
 };
