@@ -1,3 +1,8 @@
+# 4.15.7 - 2/7/24
+- [fix] @react-three/drei type error fixed #175
+- [fix] fix issue with disabled graphs #169
+- [chore] upgrade drei package #173
+
 # 4.15.6 - 1/31/24
 - [fix] fix clusters not entering animation correctly
 
