@@ -200,7 +200,7 @@ export const Lasso: FC<LassoProps> = ({
   );
 
   useEffect(() => {
-    if (disabled || type === 'none') {
+    if (disabled || type === 'none' || typeof window !== 'undefined') {
       return;
     }
 

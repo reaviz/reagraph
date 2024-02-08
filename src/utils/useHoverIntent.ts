@@ -63,7 +63,9 @@ export const useHoverIntent = ({
 
   const cleanup = useCallback(() => {
     clearTimeout(timer.current);
-    document.removeEventListener('mousemove', onMouseMove, false);
+    if (typeof window !== 'undefined') {
+      document.removeEventListener('mousemove', onMouseMove, false);
+    }
   }, [onMouseMove]);
 
   const pointerOver = useCallback(
@@ -75,7 +77,11 @@ export const useHoverIntent = ({
         if (state.current !== 1) {
           coords.current.px = event.pointer.x;
           coords.current.py = event.pointer.y;
-          document.addEventListener('mousemove', onMouseMove, false);
+
+          if (typeof window !== 'undefined') {
+            document.addEventListener('mousemove', onMouseMove, false);
+          }
+
           timer.current = setTimeout(() => comparePosition(event), timeout);
         }
       }

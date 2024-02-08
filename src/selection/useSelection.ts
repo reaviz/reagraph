@@ -323,10 +323,14 @@ export const useSelection = ({
   }, []);
 
   useEffect(() => {
-    window.addEventListener('keydown', onKeyDown);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', onKeyDown);
+    }
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', onKeyDown);
+      }
     };
   }, [onKeyDown]);
 
