@@ -1,3 +1,6 @@
+# 4.15.9 - 2/8/24
+- [fix] fix inverted logic on lasso
+
 # 4.15.8 - 2/8/24
 - [fix] attempt to improve nextjs support
 
