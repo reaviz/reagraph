@@ -1,3 +1,6 @@
+# 4.15.8 - 2/8/24
+- [fix] attempt to improve nextjs support
+
 # 4.15.7 - 2/7/24
 - [fix] @react-three/drei type error fixed #175
 - [fix] fix issue with disabled graphs #169
