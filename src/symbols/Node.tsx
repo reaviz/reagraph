@@ -143,6 +143,8 @@ export const Node: FC<NodeProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
+  const shouldHighlight = hasSelections && (active || isSelected || isActive);
+
   const selectionOpacity = hasSelections
     ? isSelected || active || isActive
       ? theme.node.selectedOpacity
@@ -177,7 +179,11 @@ export const Node: FC<NodeProps> = ({
       },
       to: {
         nodePosition: position
-          ? [position.x, position.y, position.z]
+          ? [
+            position.x,
+            position.y,
+            shouldHighlight ? position.z + 1 : position.z
+          ]
           : [0, 0, 0],
         labelPosition: [0, -(nodeSize + 7), 2],
         subLabelPosition: [0, -(nodeSize + 14), 2]
@@ -187,7 +193,7 @@ export const Node: FC<NodeProps> = ({
         duration: animated && !draggingId ? undefined : 0
       }
     }),
-    [isDragging, position, animated, nodeSize]
+    [isDragging, position, animated, nodeSize, shouldHighlight]
   );
 
   const bind = useDrag({
