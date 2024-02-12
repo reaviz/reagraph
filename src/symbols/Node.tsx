@@ -143,10 +143,10 @@ export const Node: FC<NodeProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
-  const shouldHighlight = hasSelections && (active || isSelected || isActive);
+  const shouldHighlight = active || isSelected || isActive;
 
   const selectionOpacity = hasSelections
-    ? isSelected || active || isActive
+    ? shouldHighlight
       ? theme.node.selectedOpacity
       : theme.node.inactiveOpacity
     : theme.node.opacity;
@@ -221,7 +221,7 @@ export const Node: FC<NodeProps> = ({
   );
   useCursor(isDragging, 'grabbing');
 
-  const combinedActiveState = isSelected || active || isDragging || isActive;
+  const combinedActiveState = shouldHighlight || isDragging;
   const color = combinedActiveState
     ? theme.node.activeFill
     : node.fill || theme.node.fill;
