@@ -53,22 +53,35 @@ export const CyberSecurity = () => {
         icon: iconMap[node.ItemTypeA] || iconMap[node.ItemDescriptionA]
       };
 
+      if (!n.find(n => n.id === node1.id)) {
+        n.push(node1);
+      }
+
       const node2 = {
         id: node.ItemIdB,
         label: node.ItemDescriptionB,
         icon: iconMap[node.ItemTypeB] || iconMap[node.ItemDescriptionB]
       };
 
-      n.push(node1, node2);
+      if (!n.find(n => n.id === node2.id)) {
+        n.push(node2);
+      }
 
-      e.push({
+      const edge = {
         id: `${node1.id}-${node2.id}`,
         source: node1.id,
         target: node2.id
-      });
+      };
+
+      if (!e.find(e => e.id === edge.id)) {
+        e.push(edge);
+      }
     }
 
-    return [n, e];
+    return [
+      n,
+      e
+    ];
   }, []);
 
   const {
