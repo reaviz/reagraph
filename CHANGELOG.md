@@ -1,3 +1,6 @@
+# 4.15.10 - 2/12/24
+- [improvement] bring nodes up a z-index when highlighted
+
 # 4.15.9 - 2/8/24
 - [fix] fix inverted logic on lasso
 
