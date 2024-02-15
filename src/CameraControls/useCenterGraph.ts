@@ -1,7 +1,7 @@
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
-import { Vector3, Box3, Euler, PerspectiveCamera } from 'three';
+import { Vector3, Box3, PerspectiveCamera } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
 import { InternalGraphNode, InternalGraphPosition } from '../types';
@@ -9,41 +9,46 @@ import { useStore } from '../store';
 
 const PADDING = 50;
 
+// https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
+const visibleHeightAtZDepth = (depth: number, camera: PerspectiveCamera) => {
+  // compensate for cameras not positioned at z=0
+  const cameraOffset = camera.position.z;
+  if (depth < cameraOffset) depth -= cameraOffset;
+  else depth += cameraOffset;
+
+  // vertical fov in radians
+  const vFOV = (camera.fov * Math.PI) / 180;
+
+  // Math.abs to ensure the result is always positive
+  return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
+};
+
+const visibleWidthAtZDepth = (depth: number, camera: PerspectiveCamera) => {
+  const height = visibleHeightAtZDepth(depth, camera);
+  return height * camera.aspect;
+};
+
 const isNodeInView = (
   camera: PerspectiveCamera,
   nodePosition: InternalGraphPosition
 ): boolean => {
-  const direction = { x: 0, y: 0, z: -1 };
+  const visibleWidth = visibleWidthAtZDepth(1, camera);
+  const visibleHeight = visibleHeightAtZDepth(1, camera);
 
-  // Calculate the vector from the camera to the node
-  const toNode = {
-    x: nodePosition?.x - camera?.position?.x,
-    y: nodePosition?.y - camera?.position?.y,
-    z: nodePosition?.z - camera?.position?.z
+  // The boundary coordinates of the area visible to the camera relative to the scene
+  const visibleArea = {
+    x0: camera?.position?.x - visibleWidth / 2,
+    x1: camera?.position?.x + visibleWidth / 2,
+    y0: camera?.position?.y - visibleHeight / 2,
+    y1: camera?.position?.y + visibleHeight / 2
   };
 
-  // Calculate the dot product of the two vectors
-  const dotProduct =
-    direction.x * toNode.x + direction.y * toNode.y + direction.z * toNode.z;
-
-  // Calculate the lengths of the vectors
-  const directionLength = Math.sqrt(
-    direction.x * direction.x +
-      direction.y * direction.y +
-      direction.z * direction.z
+  return (
+    nodePosition?.x > visibleArea.x0 &&
+    nodePosition?.x < visibleArea.x1 &&
+    nodePosition?.y > visibleArea.y0 &&
+    nodePosition?.y < visibleArea.y1
   );
-
-  const toNodeLength = Math.sqrt(
-    toNode.x * toNode.x + toNode.y * toNode.y + toNode.z * toNode.z
-  );
-
-  // Calculate the angle between the vectors
-  const angle = Math.acos(dotProduct / (directionLength * toNodeLength));
-
-  // Convert the field of view to radians
-  const fovRadians = (camera?.fov * Math.PI) / 180;
-
-  return angle < fovRadians;
 };
 
 export interface CenterGraphInput {
