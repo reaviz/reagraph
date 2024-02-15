@@ -282,6 +282,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           controls.enabled = !disabled;
           controls.update(0);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, [disabled, mounted]);
 
       if (
