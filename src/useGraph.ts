@@ -64,6 +64,7 @@ export const useGraph = ({
   const drags = useStore(state => state.drags);
   const setDrags = useStore(state => state.setDrags);
   const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
+  const timeout = useRef<number | null>(null);
 
   const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);
@@ -155,7 +156,8 @@ export const useGraph = ({
     updateLayout();
 
     // queue this in a frame so it only happens after the graph is built
-    requestAnimationFrame(() => {
+    cancelAnimationFrame(timeout.current);
+    timeout.current = requestAnimationFrame(() => {
       // Track mounted in state and transitent state
       layoutMounted.current = true;
       setMounted(true);
