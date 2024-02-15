@@ -33,16 +33,10 @@ import {
 } from './symbols';
 import { useCameraControls, useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
-import { Theme } from './themes';
 import { useStore } from './store';
 import Graph from 'graphology';
 
 export interface GraphSceneProps {
-  /**
-   * Theme to use for the graph.
-   */
-  theme: Theme;
-
   /**
    * Type of layout.
    */
@@ -259,7 +253,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onClusterPointerOver,
         onClusterPointerOut,
         contextMenu,
-        theme,
         animated,
         disabled,
         draggable,

@@ -16,7 +16,6 @@ import { createElement, prepareRay } from './utils';
 export type LassoType = 'none' | 'all' | 'node' | 'edge';
 
 export type LassoProps = PropsWithChildren<{
-  theme: Theme;
   disabled?: boolean;
   type?: LassoType;
   onLasso?: (selections: string[]) => void;
@@ -25,12 +24,12 @@ export type LassoProps = PropsWithChildren<{
 
 export const Lasso: FC<LassoProps> = ({
   children,
-  theme,
   type = 'none',
   onLasso,
   onLassoEnd,
   disabled
 }) => {
+  const theme = useStore(state => state.theme);
   const camera = useThree(state => state.camera);
   const gl = useThree(state => state.gl);
   const setEvents = useThree(state => state.setEvents);
@@ -200,18 +199,26 @@ export const Lasso: FC<LassoProps> = ({
   );
 
   useEffect(() => {
-    if (disabled || type === 'none' || typeof window === 'undefined') {
+    if (disabled || type === 'none') {
       return;
     }
 
-    document.addEventListener('pointerdown', onPointerDown, { passive: true });
-    document.addEventListener('pointermove', onPointerMove, { passive: true });
-    document.addEventListener('pointerup', onPointerUp, { passive: true });
+    if (typeof window !== 'undefined') {
+      document.addEventListener('pointerdown', onPointerDown, {
+        passive: true
+      });
+      document.addEventListener('pointermove', onPointerMove, {
+        passive: true
+      });
+      document.addEventListener('pointerup', onPointerUp, { passive: true });
+    }
 
     return () => {
-      document.removeEventListener('pointerdown', onPointerDown);
-      document.removeEventListener('pointermove', onPointerMove);
-      document.removeEventListener('pointerup', onPointerUp);
+      if (typeof window !== 'undefined') {
+        document.removeEventListener('pointerdown', onPointerDown);
+        document.removeEventListener('pointermove', onPointerMove);
+        document.removeEventListener('pointerup', onPointerUp);
+      }
     };
   }, [type, disabled, onPointerDown, onPointerMove, onPointerUp]);
 
