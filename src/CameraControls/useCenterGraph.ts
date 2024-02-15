@@ -80,12 +80,6 @@ export const useCenterGraph = ({
   const { controls } = useCameraControls();
   const camera = useThree(state => state.camera) as PerspectiveCamera;
 
-  // Find the ideal spacing for focusing
-  const centerPadding = useMemo(() => {
-    const { maxX, maxY } = getLayoutCenter(nodes);
-    return Math.max(maxX, maxY);
-  }, [nodes]);
-
   const centerNodes = useCallback(
     (centerNodes: InternalGraphNode[], padding = PADDING, fill = false) => {
       if (
@@ -96,7 +90,7 @@ export const useCenterGraph = ({
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
           getLayoutCenter(centerNodes);
 
-        controls.setTarget(x, y, z);
+        controls.setTarget(x, y, z, animated);
         controls?.fitToBox(
           new Box3(
             new Vector3(minX, minY, minZ),
@@ -121,12 +115,8 @@ export const useCenterGraph = ({
   const centerNodesById = useCallback(
     (nodeIds?: string[]) => {
       let mappedNodes: InternalGraphNode[] | null = null;
-      let padding = PADDING;
 
       if (nodeIds?.length) {
-        // Get center padding + our default padding
-        padding = centerPadding + PADDING;
-
         // Map the node ids to the actual nodes
         mappedNodes = nodeIds.reduce((acc, id) => {
           const node = nodes.find(n => n.id === id);
@@ -142,9 +132,9 @@ export const useCenterGraph = ({
         }, []);
       }
 
-      centerNodes(mappedNodes || nodes, padding, !!mappedNodes);
+      centerNodes(mappedNodes || nodes);
     },
-    [centerNodes, nodes, centerPadding]
+    [centerNodes, nodes]
   );
 
   const mounted = useRef<boolean>(false);
