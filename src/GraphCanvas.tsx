@@ -172,7 +172,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 animated={animated}
               >
                 <Lasso
-                  theme={theme}
                   disabled={disabled}
                   type={lassoType}
                   onLasso={onLasso}
@@ -181,7 +180,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                   <Suspense>
                     <GraphScene
                       ref={rendererRef as any}
-                      theme={theme}
                       disabled={disabled}
                       animated={finalAnimated}
                       edges={edges}
