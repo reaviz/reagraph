@@ -238,39 +238,9 @@ export const Node: FC<NodeProps> = ({
     }
   });
 
-  return (
-    <a.group
-      userData={{ id, type: 'node' }}
-      ref={group}
-      position={nodePosition as any}
-      onPointerOver={pointerOver}
-      onPointerOut={pointerOut}
-      onClick={() => {
-        if (!disabled && !isDragging) {
-          onClick?.(node, {
-            canCollapse,
-            isCollapsed
-          });
-        }
-      }}
-      onDoubleClick={() => {
-        if (!disabled && !isDragging) {
-          onDoubleClick?.(node);
-        }
-      }}
-      onContextMenu={() => {
-        if (!disabled) {
-          setMenuVisible(true);
-          onContextMenu?.(node, {
-            canCollapse,
-            isCollapsed,
-            onCollapse
-          });
-        }
-      }}
-      {...(bind() as any)}
-    >
-      {renderNode ? (
+  const nodeComponent = useMemo(
+    () =>
+      renderNode ? (
         renderNode({
           id,
           color,
@@ -305,25 +275,23 @@ export const Node: FC<NodeProps> = ({
             />
           )}
         </>
-      )}
-      <Ring
-        opacity={isSelected ? 0.5 : 0}
-        size={nodeSize}
-        animated={animated}
-        color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
-      />
-      {menuVisible && contextMenu && (
-        <Html prepend={true} center={true}>
-          {contextMenu({
-            data: node,
-            canCollapse,
-            isCollapsed,
-            onCollapse,
-            onClose: () => setMenuVisible(false)
-          })}
-        </Html>
-      )}
-      {(labelVisible || isSelected || active) && label && (
+      ),
+    [
+      renderNode,
+      id,
+      color,
+      nodeSize,
+      combinedActiveState,
+      selectionOpacity,
+      animated,
+      node
+    ]
+  );
+
+  const labelComponent = useMemo(
+    () =>
+      (labelVisible || isSelected || active) &&
+      label && (
         <>
           <a.group position={labelPosition as any}>
             <Label
@@ -357,7 +325,86 @@ export const Node: FC<NodeProps> = ({
             </a.group>
           )}
         </>
-      )}
+      ),
+    [
+      active,
+      isActive,
+      isDragging,
+      isSelected,
+      label,
+      labelFontUrl,
+      labelPosition,
+      labelVisible,
+      selectionOpacity,
+      subLabel,
+      subLabelPosition,
+      theme.node.label.activeColor,
+      theme.node.label.color,
+      theme.node.label.stroke,
+      theme.node.subLabel?.activeColor,
+      theme.node.subLabel?.color,
+      theme.node.subLabel?.stroke
+    ]
+  );
+
+  const menuComponent = useMemo(
+    () =>
+      menuVisible &&
+      contextMenu && (
+        <Html prepend={true} center={true}>
+          {contextMenu({
+            data: node,
+            canCollapse,
+            isCollapsed,
+            onCollapse,
+            onClose: () => setMenuVisible(false)
+          })}
+        </Html>
+      ),
+    [menuVisible, contextMenu, node, canCollapse, isCollapsed, onCollapse]
+  );
+
+  return (
+    <a.group
+      userData={{ id, type: 'node' }}
+      ref={group}
+      position={nodePosition as any}
+      onPointerOver={pointerOver}
+      onPointerOut={pointerOut}
+      onClick={() => {
+        if (!disabled && !isDragging) {
+          onClick?.(node, {
+            canCollapse,
+            isCollapsed
+          });
+        }
+      }}
+      onDoubleClick={() => {
+        if (!disabled && !isDragging) {
+          onDoubleClick?.(node);
+        }
+      }}
+      onContextMenu={() => {
+        if (!disabled) {
+          setMenuVisible(true);
+          onContextMenu?.(node, {
+            canCollapse,
+            isCollapsed,
+            onCollapse
+          });
+        }
+      }}
+      {...(bind() as any)}
+    >
+      {nodeComponent}
+      <Ring
+        opacity={isSelected ? 0.5 : 0}
+        size={nodeSize}
+        animated={animated}
+        color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
+      />
+      {menuComponent}
+      {labelComponent}
     </a.group>
   );
 };
