@@ -72,7 +72,7 @@ export const Arrow: FC<ArrowProps> = ({
   const [{ pos, arrowOpacity }] = useSpring(
     () => ({
       from: {
-        pos: [center.x, center.y, center.z],
+        pos: center ? [center.x, center.y, center.z] : [0, 0, 0],
         arrowOpacity: 0
       },
       to: {
