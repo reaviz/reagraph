@@ -1,7 +1,10 @@
+# 4.15.13 - 2/19/24
+- [fix] fix disabled not working correctly
+
 # 4.15.12 - 2/19/24
 - [feature] Save As Image #17
 
-# 4.15.11 - 2/15/24
+# 4.15.11 - 2/19/24
 - [fix] fix initial animations and updates
 - [fix] improve performance on 500+ nodes
 - [fix] Improve graph selection re-orientation #179
