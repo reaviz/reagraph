@@ -279,6 +279,7 @@ export const CameraControls: FC<
         args={[camera, gl.domElement]}
         smoothTime={0.1}
         minDistance={1000}
+        dollyToCursor
         maxDistance={50000}
       />
       {children}
