@@ -46,11 +46,7 @@ export const useCenterGraph = ({
   const camera = useThree(state => state.camera) as PerspectiveCamera;
 
   const centerNodes = useCallback(
-    async (
-      centerNodes: InternalGraphNode[],
-      padding = PADDING,
-      fill = false
-    ) => {
+    async (centerNodes: InternalGraphNode[], fill = false) => {
       if (
         centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
         centerNodes?.length === nodes?.length
@@ -59,7 +55,6 @@ export const useCenterGraph = ({
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
           getLayoutCenter(centerNodes);
 
-        controls.setTarget(x, y, z, animated);
         await controls?.fitToBox(
           new Box3(
             new Vector3(minX, minY, minZ),
@@ -68,12 +63,13 @@ export const useCenterGraph = ({
           animated,
           {
             cover: fill,
-            paddingLeft: padding,
-            paddingRight: padding,
-            paddingBottom: padding,
-            paddingTop: padding
+            paddingLeft: PADDING,
+            paddingRight: PADDING,
+            paddingBottom: PADDING,
+            paddingTop: PADDING
           }
         );
+        await controls.setTarget(x, y, z, animated);
 
         invalidate();
       }
