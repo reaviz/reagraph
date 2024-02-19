@@ -46,7 +46,7 @@ export const useCenterGraph = ({
   const camera = useThree(state => state.camera) as PerspectiveCamera;
 
   const centerNodes = useCallback(
-    async (centerNodes: InternalGraphNode[], fill = false) => {
+    async (centerNodes: InternalGraphNode[]) => {
       if (
         centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
         centerNodes?.length === nodes?.length
@@ -62,7 +62,7 @@ export const useCenterGraph = ({
           ),
           animated,
           {
-            cover: fill,
+            cover: false,
             paddingLeft: PADDING,
             paddingRight: PADDING,
             paddingBottom: PADDING,
