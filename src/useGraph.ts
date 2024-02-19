@@ -87,7 +87,6 @@ export const useGraph = ({
 
   const updateLayout = useCallback(
     async (curLayout?: any) => {
-      console.log('here');
       // Cache the layout provider
       layout.current =
         curLayout ||
