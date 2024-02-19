@@ -218,25 +218,15 @@ export const CameraControls: FC<
     }, [disabled, onKeyDown, onKeyUp, panDown, panLeft, panRight, panUp]);
 
     useEffect(() => {
-      if (!disabled) {
-        return;
+      if (disabled) {
+        cameraRef.current.mouseButtons.left = 0;
+        cameraRef.current.mouseButtons.middle = 0;
+        cameraRef.current.mouseButtons.wheel = 0;
+      } else {
+        cameraRef.current.mouseButtons.left = 2;
+        cameraRef.current.mouseButtons.middle = 2;
+        cameraRef.current.mouseButtons.wheel = 16;
       }
-
-      const camera = cameraRef.current;
-      function onSleep() {
-        // Small timeout for the settle
-        clearTimeout(timeout.current);
-        timeout.current = setTimeout(() => {
-          camera.enabled = false;
-        });
-      }
-
-      camera.addEventListener('sleep', onSleep);
-
-      return () => {
-        clearTimeout(timeout.current);
-        camera.removeEventListener('sleep', onSleep);
-      };
     }, [disabled]);
 
     useEffect(() => {
