@@ -13,7 +13,6 @@ import {
   getVector
 } from '../utils';
 import { Line } from './Line';
-import { Theme } from '../themes';
 import { useStore } from '../store';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from 'glodrei';
@@ -265,6 +264,97 @@ export const Edge: FC<EdgeProps> = ({
     }
   });
 
+  const arrowComponent = useMemo(
+    () =>
+      arrowPlacement !== 'none' && (
+        <Arrow
+          animated={animated}
+          color={
+            isSelected || active || isActive
+              ? theme.arrow.activeFill
+              : theme.arrow.fill
+          }
+          length={arrowLength}
+          opacity={selectionOpacity}
+          position={arrowPosition}
+          rotation={arrowRotation}
+          size={arrowSize}
+          onActive={setActive}
+          onContextMenu={() => {
+            if (!disabled) {
+              setMenuVisible(true);
+              onContextMenu?.(edge);
+            }
+          }}
+        />
+      ),
+    [
+      active,
+      animated,
+      arrowLength,
+      arrowPlacement,
+      arrowPosition,
+      arrowRotation,
+      arrowSize,
+      disabled,
+      edge,
+      isActive,
+      isSelected,
+      onContextMenu,
+      selectionOpacity,
+      theme.arrow.activeFill,
+      theme.arrow.fill
+    ]
+  );
+
+  const labelComponent = useMemo(
+    () =>
+      labelVisible &&
+      label && (
+        <a.group position={labelPosition as any} rotation={labelRotation}>
+          <Label
+            text={label}
+            ellipsis={15}
+            fontUrl={labelFontUrl}
+            stroke={theme.edge.label.stroke}
+            color={
+              isSelected || active || isActive
+                ? theme.edge.label.activeColor
+                : theme.edge.label.color
+            }
+            opacity={selectionOpacity}
+            fontSize={theme.edge.label.fontSize}
+          />
+        </a.group>
+      ),
+    [
+      active,
+      isActive,
+      isSelected,
+      label,
+      labelFontUrl,
+      labelPosition,
+      labelRotation,
+      labelVisible,
+      selectionOpacity,
+      theme.edge.label.activeColor,
+      theme.edge.label.color,
+      theme.edge.label.fontSize,
+      theme.edge.label.stroke
+    ]
+  );
+
+  const menuComponent = useMemo(
+    () =>
+      menuVisible &&
+      contextMenu && (
+        <Html prepend={true} center={true}>
+          {contextMenu({ data: edge, onClose: () => setMenuVisible(false) })}
+        </Html>
+      ),
+    [menuVisible, contextMenu, edge]
+  );
+
   return (
     <group>
       <Line
@@ -294,50 +384,9 @@ export const Edge: FC<EdgeProps> = ({
           }
         }}
       />
-      {arrowPlacement !== 'none' && (
-        <Arrow
-          animated={animated}
-          color={
-            isSelected || active || isActive
-              ? theme.arrow.activeFill
-              : theme.arrow.fill
-          }
-          length={arrowLength}
-          opacity={selectionOpacity}
-          position={arrowPosition}
-          rotation={arrowRotation}
-          size={arrowSize}
-          onActive={setActive}
-          onContextMenu={() => {
-            if (!disabled) {
-              setMenuVisible(true);
-              onContextMenu?.(edge);
-            }
-          }}
-        />
-      )}
-      {labelVisible && label && (
-        <a.group position={labelPosition as any} rotation={labelRotation}>
-          <Label
-            text={label}
-            ellipsis={15}
-            fontUrl={labelFontUrl}
-            stroke={theme.edge.label.stroke}
-            color={
-              isSelected || active || isActive
-                ? theme.edge.label.activeColor
-                : theme.edge.label.color
-            }
-            opacity={selectionOpacity}
-            fontSize={theme.edge.label.fontSize}
-          />
-        </a.group>
-      )}
-      {menuVisible && contextMenu && (
-        <Html prepend={true} center={true}>
-          {contextMenu({ data: edge, onClose: () => setMenuVisible(false) })}
-        </Html>
-      )}
+      {arrowComponent}
+      {labelComponent}
+      {menuComponent}
     </group>
   );
 };

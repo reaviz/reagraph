@@ -10,7 +10,6 @@ import { SelectionBox } from 'three-stdlib';
 import { Mesh, Scene, TubeGeometry, Vector2 } from 'three';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
-import { Theme } from '../themes';
 import { createElement, prepareRay } from './utils';
 
 export type LassoType = 'none' | 'all' | 'node' | 'edge';

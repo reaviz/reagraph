@@ -292,8 +292,122 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const edges = useStore(state => state.edges);
       const clusters = useStore(state => [...state.clusters.values()]);
 
-      const nodeIds = useMemo(() => nodes.map(n => n.id), [nodes]);
       const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
+
+      const nodeComponents = useMemo(
+        () =>
+          nodes.map(n => (
+            <Node
+              key={n?.id}
+              id={n?.id}
+              labelFontUrl={labelFontUrl}
+              draggable={draggable}
+              disabled={disabled}
+              animated={animated}
+              contextMenu={contextMenu}
+              renderNode={renderNode}
+              onClick={onNodeClick}
+              onDoubleClick={onNodeDoubleClick}
+              onContextMenu={onNodeContextMenu}
+              onPointerOver={onNodePointerOver}
+              onPointerOut={onNodePointerOut}
+              onDragged={onNodeDragged}
+            />
+          )),
+        [
+          animated,
+          contextMenu,
+          disabled,
+          draggable,
+          labelFontUrl,
+          nodes,
+          onNodeClick,
+          onNodeContextMenu,
+          onNodeDoubleClick,
+          onNodeDragged,
+          onNodePointerOut,
+          onNodePointerOver,
+          renderNode
+        ]
+      );
+
+      const edgeComponents = useMemo(
+        () =>
+          animated ? (
+            edgeIds.map(e => (
+              <Edge
+                key={e}
+                id={e}
+                disabled={disabled}
+                animated={animated}
+                labelFontUrl={labelFontUrl}
+                labelPlacement={edgeLabelPosition}
+                arrowPlacement={edgeArrowPosition}
+                interpolation={edgeInterpolation}
+                contextMenu={contextMenu}
+                onClick={onEdgeClick}
+                onContextMenu={onEdgeContextMenu}
+                onPointerOver={onEdgePointerOver}
+                onPointerOut={onEdgePointerOut}
+              />
+            ))
+          ) : (
+            <Edges
+              edges={edges}
+              disabled={disabled}
+              animated={animated}
+              labelFontUrl={labelFontUrl}
+              labelPlacement={edgeLabelPosition}
+              arrowPlacement={edgeArrowPosition}
+              interpolation={edgeInterpolation}
+              contextMenu={contextMenu}
+              onClick={onEdgeClick}
+              onContextMenu={onEdgeContextMenu}
+              onPointerOver={onEdgePointerOver}
+              onPointerOut={onEdgePointerOut}
+            />
+          ),
+        [
+          animated,
+          contextMenu,
+          disabled,
+          edgeArrowPosition,
+          edgeIds,
+          edgeInterpolation,
+          edgeLabelPosition,
+          edges,
+          labelFontUrl,
+          onEdgeClick,
+          onEdgeContextMenu,
+          onEdgePointerOut,
+          onEdgePointerOver
+        ]
+      );
+
+      const clusterComponents = useMemo(
+        () =>
+          clusters.map(c => (
+            <Cluster
+              key={c.label}
+              animated={animated}
+              disabled={disabled}
+              labelFontUrl={labelFontUrl}
+              onClick={onClusterClick}
+              onPointerOver={onClusterPointerOver}
+              onPointerOut={onClusterPointerOut}
+              {...c}
+            />
+          )),
+        [
+          animated,
+          clusters,
+          disabled,
+          labelFontUrl,
+          onClusterClick,
+          onClusterPointerOut,
+          onClusterPointerOver
+        ]
+      );
 
       const { centerNodesById } = useCenterGraph({
         animated
@@ -310,74 +424,9 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
 
       return (
         <Fragment>
-          {mounted && (
-            <Fragment>
-              {nodeIds.map(n => (
-                <Node
-                  key={n}
-                  id={n}
-                  labelFontUrl={labelFontUrl}
-                  draggable={draggable}
-                  disabled={disabled}
-                  animated={animated}
-                  contextMenu={contextMenu}
-                  renderNode={renderNode}
-                  onClick={onNodeClick}
-                  onDoubleClick={onNodeDoubleClick}
-                  onContextMenu={onNodeContextMenu}
-                  onPointerOver={onNodePointerOver}
-                  onPointerOut={onNodePointerOut}
-                  onDragged={onNodeDragged}
-                />
-              ))}
-              {animated ? (
-                edgeIds.map(e => (
-                  <Edge
-                    key={e}
-                    id={e}
-                    disabled={disabled}
-                    animated={animated}
-                    labelFontUrl={labelFontUrl}
-                    labelPlacement={edgeLabelPosition}
-                    arrowPlacement={edgeArrowPosition}
-                    interpolation={edgeInterpolation}
-                    contextMenu={contextMenu}
-                    onClick={onEdgeClick}
-                    onContextMenu={onEdgeContextMenu}
-                    onPointerOver={onEdgePointerOver}
-                    onPointerOut={onEdgePointerOut}
-                  />
-                ))
-              ) : (
-                <Edges
-                  edges={edges}
-                  disabled={disabled}
-                  animated={animated}
-                  labelFontUrl={labelFontUrl}
-                  labelPlacement={edgeLabelPosition}
-                  arrowPlacement={edgeArrowPosition}
-                  interpolation={edgeInterpolation}
-                  contextMenu={contextMenu}
-                  onClick={onEdgeClick}
-                  onContextMenu={onEdgeContextMenu}
-                  onPointerOver={onEdgePointerOver}
-                  onPointerOut={onEdgePointerOut}
-                />
-              )}
-              {clusters.map(c => (
-                <Cluster
-                  key={c.label}
-                  animated={animated}
-                  disabled={disabled}
-                  labelFontUrl={labelFontUrl}
-                  onClick={onClusterClick}
-                  onPointerOver={onClusterPointerOver}
-                  onPointerOut={onClusterPointerOut}
-                  {...c}
-                />
-              ))}
-            </Fragment>
-          )}
+          {nodeComponents}
+          {edgeComponents}
+          {clusterComponents}
         </Fragment>
       );
     }

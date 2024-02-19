@@ -131,9 +131,9 @@ export const Cluster: FC<ClusterProps> = ({
     }
   });
 
-  return (
-    <>
-      {theme.cluster && (
+  const cluster = useMemo(
+    () =>
+      theme.cluster && (
         <a.group
           position={circlePosition as any}
           onPointerOver={pointerOver}
@@ -188,9 +188,29 @@ export const Cluster: FC<ClusterProps> = ({
             </a.group>
           )}
         </a.group>
-      )}
-    </>
+      ),
+    [
+      theme.cluster,
+      circlePosition,
+      pointerOver,
+      pointerOut,
+      offset,
+      normalizedFill,
+      circleOpacity,
+      rad,
+      padding,
+      normalizedStroke,
+      labelPosition,
+      label,
+      opacity,
+      labelFontUrl,
+      disabled,
+      onClick,
+      nodes
+    ]
   );
+
+  return cluster;
 };
 
 Cluster.defaultProps = {
