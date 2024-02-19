@@ -281,8 +281,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const edges = useStore(state => state.edges);
       const clusters = useStore(state => [...state.clusters.values()]);
 
-      const edgeIds = useMemo(() => edges.map(e => e.id), [edges]);
-
       const nodeComponents = useMemo(
         () =>
           nodes.map(n => (
@@ -323,10 +321,10 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const edgeComponents = useMemo(
         () =>
           animated ? (
-            edgeIds.map(e => (
+            edges.map(e => (
               <Edge
-                key={e}
-                id={e}
+                key={e.id}
+                id={e.id}
                 disabled={disabled}
                 animated={animated}
                 labelFontUrl={labelFontUrl}
@@ -361,7 +359,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           contextMenu,
           disabled,
           edgeArrowPosition,
-          edgeIds,
           edgeInterpolation,
           edgeLabelPosition,
           edges,
