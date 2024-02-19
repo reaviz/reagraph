@@ -1,11 +1,4 @@
-import {
-  useRef,
-  useState,
-  useCallback,
-  useEffect,
-  useMemo,
-  useLayoutEffect
-} from 'react';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { SizingType } from './sizing';
 import {
   LayoutTypes,
@@ -64,11 +57,9 @@ export const useGraph = ({
   const drags = useStore(state => state.drags);
   const setDrags = useStore(state => state.setDrags);
   const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
-  const timeout = useRef<number | null>(null);
-
-  const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
+
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
       getVisibleEntities({
@@ -86,7 +77,8 @@ export const useGraph = ({
   }, [drags]);
 
   const updateLayout = useCallback(
-    (curLayout?: any) => {
+    async (curLayout?: any) => {
+      // Cache the layout provider
       layout.current =
         curLayout ||
         layoutProvider({
@@ -97,33 +89,36 @@ export const useGraph = ({
           clusterAttribute
         });
 
-      tick(layout.current, () => {
-        const result = transformGraph({
-          graph,
-          layout: layout.current,
-          sizingType,
-          labelType,
-          sizingAttribute,
-          maxNodeSize,
-          minNodeSize,
-          defaultNodeSize
-        });
+      // Run the layout
+      await tick(layout.current);
 
-        const clusters = calculateClusters({
-          nodes: result.nodes,
-          clusterAttribute
-        });
-
-        setEdges(result.edges);
-        setNodes(result.nodes);
-        setClusters(clusters);
+      // Transform the graph
+      const result = transformGraph({
+        graph,
+        layout: layout.current,
+        sizingType,
+        labelType,
+        sizingAttribute,
+        maxNodeSize,
+        minNodeSize,
+        defaultNodeSize
       });
+
+      // Calculate clusters
+      const clusters = calculateClusters({
+        nodes: result.nodes,
+        clusterAttribute
+      });
+
+      // Set our store outputs
+      setEdges(result.edges);
+      setNodes(result.nodes);
+      setClusters(clusters);
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       layoutOverrides,
-      setClusters,
       layoutType,
-      graph,
       clusterAttribute,
       sizingType,
       labelType,
@@ -132,40 +127,43 @@ export const useGraph = ({
       minNodeSize,
       defaultNodeSize,
       setEdges,
-      setNodes
+      setNodes,
+      setClusters
     ]
   );
 
   useEffect(() => {
     // Let's set the store selections so its easier to access
-    setSelections(selections);
+    if (layoutMounted.current) {
+      setSelections(selections);
+    }
   }, [selections, setSelections]);
 
   useEffect(() => {
     // Let's set the store actives so its easier to access
-    setActives(actives);
+    if (layoutMounted.current) {
+      setActives(actives);
+    }
   }, [actives, setActives]);
 
   // Create the nggraph graph object
-  useLayoutEffect(() => {
-    layoutMounted.current = false;
-    buildGraph(graph, visibleNodes, visibleEdges);
-    updateLayout();
-
-    // queue this in a frame so it only happens after the graph is built
-    cancelAnimationFrame(timeout.current);
-    timeout.current = requestAnimationFrame(() => {
-      // Track mounted in state and transitent state
+  useEffect(() => {
+    async function update() {
+      layoutMounted.current = false;
+      buildGraph(graph, visibleNodes, visibleEdges);
+      await updateLayout();
       layoutMounted.current = true;
-      setMounted(true);
-    });
+    }
 
+    update();
     // eslint-disable-next-line
-  }, [visibleNodes, visibleEdges, graph]);
+  }, [visibleNodes, visibleEdges]);
 
   useEffect(() => {
     // Let's set the store collapsedNodeIds so its easier to access
-    setCollapsedNodeIds(collapsedNodeIds);
+    if (layoutMounted.current) {
+      setCollapsedNodeIds(collapsedNodeIds);
+    }
   }, [collapsedNodeIds, setCollapsedNodeIds]);
 
   // Update layout on type changes
@@ -179,16 +177,12 @@ export const useGraph = ({
       // Recalculate the layout
       updateLayout();
     }
-  }, [graph, layoutType, updateLayout, setDrags]);
+  }, [layoutType, updateLayout, setDrags]);
 
   // Update layout on size, label changes
   useEffect(() => {
     if (layoutMounted.current) {
       updateLayout(layout.current);
     }
-  }, [graph, sizingType, sizingAttribute, labelType, updateLayout]);
-
-  return {
-    mounted
-  };
+  }, [sizingType, sizingAttribute, labelType, updateLayout]);
 };

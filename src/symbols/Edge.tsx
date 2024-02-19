@@ -9,7 +9,6 @@ import {
   getArrowVectors,
   getCurve,
   getLabelOffsetByType,
-  getLayoutCenter,
   getMidPoint,
   getVector
 } from '../utils';
