@@ -5,19 +5,21 @@ import { InternalGraphEdge, InternalGraphNode } from '../types';
 /**
  * Promise based tick helper.
  */
-export function tick(layout: LayoutStrategy, cb: (stable: boolean) => void) {
-  let stable: boolean | undefined;
+export function tick(layout: LayoutStrategy) {
+  return new Promise((resolve, _reject) => {
+    let stable: boolean | undefined;
 
-  function run() {
-    if (!stable) {
-      stable = layout.step();
-      run();
-    } else {
-      cb(stable);
+    function run() {
+      if (!stable) {
+        stable = layout.step();
+        run();
+      } else {
+        resolve(stable);
+      }
     }
-  }
 
-  run();
+    run();
+  });
 }
 
 /**
