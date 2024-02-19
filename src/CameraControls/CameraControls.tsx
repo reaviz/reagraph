@@ -103,6 +103,7 @@ export const CameraControls: FC<
     const gl = useThree(state => state.gl);
     const isOrbiting = mode === 'orbit';
     const setPanning = useStore(state => state.setPanning);
+    const timeout = useRef<any | null>(null);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
@@ -224,7 +225,8 @@ export const CameraControls: FC<
       const camera = cameraRef.current;
       function onSleep() {
         // Small timeout for the settle
-        setTimeout(() => {
+        clearTimeout(timeout.current);
+        timeout.current = setTimeout(() => {
           camera.enabled = false;
         });
       }
@@ -232,6 +234,7 @@ export const CameraControls: FC<
       camera.addEventListener('sleep', onSleep);
 
       return () => {
+        clearTimeout(timeout.current);
         camera.removeEventListener('sleep', onSleep);
       };
     }, [disabled]);
