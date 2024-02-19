@@ -44,6 +44,7 @@ export const useCenterGraph = ({
   const invalidate = useThree(state => state.invalidate);
   const { controls } = useCameraControls();
   const camera = useThree(state => state.camera) as PerspectiveCamera;
+  const mounted = useRef<boolean>(false);
 
   const centerNodes = useCallback(
     async (centerNodes: InternalGraphNode[]) => {
@@ -103,7 +104,6 @@ export const useCenterGraph = ({
     [centerNodes, nodes]
   );
 
-  const mounted = useRef<boolean>(false);
   useLayoutEffect(() => {
     async function load() {
       // Center the graph once nodes are loaded on mount
