@@ -6,7 +6,13 @@ import {
   InternalGraphPosition
 } from './types';
 import { BufferGeometry, Mesh, Vector3 } from 'three';
-import { ClusterGroup, getVector, updateNodePosition } from './utils';
+import {
+  CenterPositionVector,
+  ClusterGroup,
+  getLayoutCenter,
+  getVector,
+  updateNodePosition
+} from './utils';
 import Graph from 'graphology';
 import { Theme } from './themes';
 
@@ -20,6 +26,7 @@ export interface GraphState {
   graph: Graph;
   clusters: Map<string, ClusterGroup>;
   collapsedNodeIds?: string[];
+  centerPosition?: CenterPositionVector;
   actives?: string[];
   selections?: string[];
   edgeContextMenus?: Set<string>;
@@ -87,7 +94,12 @@ export const createStore = ({
     setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
     setActives: actives => set(state => ({ ...state, actives })),
     setSelections: selections => set(state => ({ ...state, selections })),
-    setNodes: nodes => set(state => ({ ...state, nodes })),
+    setNodes: nodes =>
+      set(state => ({
+        ...state,
+        nodes,
+        centerPosition: getLayoutCenter(nodes)
+      })),
     setEdges: edges => set(state => ({ ...state, edges })),
     setNodePosition: (id, position) =>
       set(state => {

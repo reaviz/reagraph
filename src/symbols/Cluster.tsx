@@ -67,6 +67,7 @@ export const Cluster: FC<ClusterProps> = ({
   const rad = Math.max(position.width, position.height) / 2;
   const offset = rad - radius + padding;
   const [active, setActive] = useState<boolean>(false);
+  const center = useStore(state => state.centerPosition);
 
   const isActive = useStore(state =>
     state.actives?.some(id => nodes.some(n => n.id === id))
@@ -86,7 +87,7 @@ export const Cluster: FC<ClusterProps> = ({
 
   const { circleOpacity, circlePosition, labelPosition } = useSpring({
     from: {
-      circlePosition: position ? [position.x, position.y, -1] : [0, 0, -1],
+      circlePosition: [center.x, center.y, -1],
       circleOpacity: 0,
       labelPosition: [0, -offset, 2]
     },

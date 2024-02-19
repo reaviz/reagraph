@@ -9,6 +9,7 @@ import {
   getArrowVectors,
   getCurve,
   getLabelOffsetByType,
+  getLayoutCenter,
   getMidPoint,
   getVector
 } from '../utils';
@@ -204,6 +205,7 @@ export const Edge: FC<EdgeProps> = ({
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length);
   const isActive = useStore(state => state.actives?.includes(id));
+  const center = useStore(state => state.centerPosition);
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
@@ -214,9 +216,7 @@ export const Edge: FC<EdgeProps> = ({
   const [{ labelPosition }] = useSpring(
     () => ({
       from: {
-        labelPosition: midPoint
-          ? [midPoint.x, midPoint.y, midPoint.z]
-          : [0, 0, 0]
+        labelPosition: center ? [center.x, center.y, center.z] : [0, 0, 0]
       },
       to: {
         labelPosition: [midPoint.x, midPoint.y, midPoint.z]

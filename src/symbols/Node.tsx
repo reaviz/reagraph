@@ -129,6 +129,7 @@ export const Node: FC<NodeProps> = ({
   const isActive = useStore(state => state.actives?.includes(id));
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length > 0);
+  const center = useStore(state => state.centerPosition);
 
   const isDragging = draggingId === id;
   const {
@@ -171,9 +172,7 @@ export const Node: FC<NodeProps> = ({
   const [{ nodePosition, labelPosition, subLabelPosition }] = useSpring(
     () => ({
       from: {
-        nodePosition: position
-          ? [position.x, position.y, position.z]
-          : [0, 0, 0],
+        nodePosition: [center.x, center.y, 0],
         labelPosition: [0, -(nodeSize + 7), 2],
         subLabelPosition: [0, -(nodeSize + 14), 2]
       },

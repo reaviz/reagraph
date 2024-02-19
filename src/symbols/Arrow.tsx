@@ -67,11 +67,12 @@ export const Arrow: FC<ArrowProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const meshRef = useRef<Mesh | null>(null);
   const draggingId = useStore(state => state.draggingId);
+  const center = useStore(state => state.centerPosition);
 
   const [{ pos, arrowOpacity }] = useSpring(
     () => ({
       from: {
-        pos: [position.x, position.y, position.z],
+        pos: [center.x, center.y, center.z],
         arrowOpacity: 0
       },
       to: {
