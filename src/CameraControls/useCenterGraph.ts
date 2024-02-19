@@ -87,7 +87,11 @@ export const useCenterGraph = ({
   const camera = useThree(state => state.camera) as PerspectiveCamera;
 
   const centerNodes = useCallback(
-    (centerNodes: InternalGraphNode[], padding = PADDING, fill = false) => {
+    async (
+      centerNodes: InternalGraphNode[],
+      padding = PADDING,
+      fill = false
+    ) => {
       if (
         centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
         centerNodes?.length === nodes?.length
@@ -97,7 +101,7 @@ export const useCenterGraph = ({
           getLayoutCenter(centerNodes);
 
         controls.setTarget(x, y, z, animated);
-        controls?.fitToBox(
+        await controls?.fitToBox(
           new Box3(
             new Vector3(minX, minY, minZ),
             new Vector3(maxX, maxY, maxZ)
@@ -146,11 +150,15 @@ export const useCenterGraph = ({
 
   const mounted = useRef<boolean>(false);
   useLayoutEffect(() => {
-    // Center the graph once nodes are loaded on mount
-    if (controls && nodes?.length && !mounted.current) {
-      centerNodes(nodes);
-      mounted.current = true;
+    async function load() {
+      // Center the graph once nodes are loaded on mount
+      if (controls && nodes?.length && !mounted.current) {
+        await centerNodes(nodes);
+        mounted.current = true;
+      }
     }
+
+    load();
   }, [controls, centerNodes, nodes]);
 
   useHotkeys([
