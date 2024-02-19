@@ -47,7 +47,7 @@ export const useCenterGraph = ({
   const mounted = useRef<boolean>(false);
 
   const centerNodes = useCallback(
-    async (centerNodes: InternalGraphNode[]) => {
+    async (centerNodes: InternalGraphNode[], animated = true) => {
       if (
         centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
         centerNodes?.length === nodes?.length
@@ -108,7 +108,7 @@ export const useCenterGraph = ({
     async function load() {
       // Center the graph once nodes are loaded on mount
       if (controls && nodes?.length && !mounted.current) {
-        await centerNodes(nodes);
+        await centerNodes(nodes, false);
         mounted.current = true;
       }
     }
