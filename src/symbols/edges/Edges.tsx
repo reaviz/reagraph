@@ -243,7 +243,6 @@ export const Edges: FC<EdgesProps> = ({
           transparent={true}
         />
       </mesh>
-
       {/* Dynamic edges */}
       <mesh ref={dynamicEdgesRef}>
         <a.meshBasicMaterial
@@ -265,7 +264,6 @@ export const Edges: FC<EdgesProps> = ({
           transparent={true}
         />
       </mesh>
-
       {edges.map(edge => (
         <Edge
           animated={animated}
