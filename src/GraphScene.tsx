@@ -396,7 +396,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       );
 
       const { centerNodesById } = useCenterGraph({
-        animated
+        animated,
+        disabled
       });
 
       useImperativeHandle(

@@ -56,6 +56,11 @@ export interface CenterGraphInput {
    * Whether the animate the transition or not.
    */
   animated?: boolean;
+
+  /**
+   * Whether the center graph function is disabled or not.
+   */
+  disabled?: boolean;
 }
 
 export interface CenterGraphOutput {
@@ -73,7 +78,8 @@ export interface CenterGraphOutput {
 }
 
 export const useCenterGraph = ({
-  animated
+  animated,
+  disabled
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
   const invalidate = useThree(state => state.invalidate);
@@ -109,6 +115,7 @@ export const useCenterGraph = ({
         invalidate();
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [invalidate, controls, animated]
   );
 
@@ -149,6 +156,7 @@ export const useCenterGraph = ({
   useHotkeys([
     {
       name: 'Center',
+      disabled,
       category: 'Graph',
       keys: ['command+shift+c'],
       callback: () => centerNodes(nodes)
