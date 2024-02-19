@@ -1,5 +1,8 @@
 # 4.15.13 - 2/19/24
 - [fix] fix disabled not working correctly
+- [improvement] zoom to cursor rather than center
+- [fix] better null handling
+- [chore] remove some dead code
 
 # 4.15.12 - 2/19/24
 - [feature] Save As Image #17
