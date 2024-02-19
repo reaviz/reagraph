@@ -69,18 +69,15 @@ export const useGraph = ({
   const [mounted, setMounted] = useState<boolean>(false);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
-  const { visibleEdges, visibleNodes } = useMemo(() => {
-    const { visibleEdges, visibleNodes } = getVisibleEntities({
-      collapsedIds: stateCollapsedNodeIds,
-      nodes,
-      edges
-    });
-
-    return {
-      visibleEdges,
-      visibleNodes
-    };
-  }, [stateCollapsedNodeIds, nodes, edges]);
+  const { visibleEdges, visibleNodes } = useMemo(
+    () =>
+      getVisibleEntities({
+        collapsedIds: stateCollapsedNodeIds,
+        nodes,
+        edges
+      }),
+    [stateCollapsedNodeIds, nodes, edges]
+  );
 
   // Transient updates
   const dragRef = useRef<DragReferences>(drags);
