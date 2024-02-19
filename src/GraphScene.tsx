@@ -4,7 +4,6 @@ import React, {
   Fragment,
   ReactNode,
   Ref,
-  useEffect,
   useImperativeHandle,
   useMemo
 } from 'react';
@@ -31,7 +30,7 @@ import {
   Edges,
   Node
 } from './symbols';
-import { useCameraControls, useCenterGraph } from './CameraControls';
+import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { useStore } from './store';
 import Graph from 'graphology';
@@ -267,16 +266,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
     ) => {
       const { layoutType, clusterAttribute } = rest;
       const { mounted } = useGraph(rest);
-      const { controls } = useCameraControls();
-
-      // Disable controls after mounted graph
-      useEffect(() => {
-        if (disabled && mounted) {
-          controls.enabled = !disabled;
-          controls.update(0);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [disabled, mounted]);
 
       if (
         clusterAttribute &&

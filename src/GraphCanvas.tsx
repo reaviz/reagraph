@@ -180,6 +180,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
               <CameraControls
                 mode={cameraMode}
                 ref={controlsRef}
+                disabled={disabled}
                 animated={animated}
               >
                 <Lasso
