@@ -265,7 +265,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       ref
     ) => {
       const { layoutType, clusterAttribute } = rest;
-      const { mounted } = useGraph(rest);
+      useGraph(rest);
 
       if (
         clusterAttribute &&
