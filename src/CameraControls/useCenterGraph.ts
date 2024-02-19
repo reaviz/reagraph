@@ -1,55 +1,14 @@
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
-import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef } from 'react';
 import { Vector3, Box3, PerspectiveCamera } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
-import { InternalGraphNode, InternalGraphPosition } from '../types';
+import { InternalGraphNode } from '../types';
 import { useStore } from '../store';
+import { isNodeInView } from './utils';
 
 const PADDING = 50;
-
-// https://discourse.threejs.org/t/functions-to-calculate-the-visible-width-height-at-a-given-z-depth-from-a-perspective-camera/269
-const visibleHeightAtZDepth = (depth: number, camera: PerspectiveCamera) => {
-  // compensate for cameras not positioned at z=0
-  const cameraOffset = camera.position.z;
-  if (depth < cameraOffset) depth -= cameraOffset;
-  else depth += cameraOffset;
-
-  // vertical fov in radians
-  const vFOV = (camera.fov * Math.PI) / 180;
-
-  // Math.abs to ensure the result is always positive
-  return 2 * Math.tan(vFOV / 2) * Math.abs(depth);
-};
-
-const visibleWidthAtZDepth = (depth: number, camera: PerspectiveCamera) => {
-  const height = visibleHeightAtZDepth(depth, camera);
-  return height * camera.aspect;
-};
-
-const isNodeInView = (
-  camera: PerspectiveCamera,
-  nodePosition: InternalGraphPosition
-): boolean => {
-  const visibleWidth = visibleWidthAtZDepth(1, camera);
-  const visibleHeight = visibleHeightAtZDepth(1, camera);
-
-  // The boundary coordinates of the area visible to the camera relative to the scene
-  const visibleArea = {
-    x0: camera?.position?.x - visibleWidth / 2,
-    x1: camera?.position?.x + visibleWidth / 2,
-    y0: camera?.position?.y - visibleHeight / 2,
-    y1: camera?.position?.y + visibleHeight / 2
-  };
-
-  return (
-    nodePosition?.x > visibleArea.x0 &&
-    nodePosition?.x < visibleArea.x1 &&
-    nodePosition?.y > visibleArea.y0 &&
-    nodePosition?.y < visibleArea.y1
-  );
-};
 
 export interface CenterGraphInput {
   /**
