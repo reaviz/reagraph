@@ -1,3 +1,6 @@
+# 4.15.11 - 2/15/24
+- [fix] fix edge label animation bug
+
 # 4.15.10 - 2/12/24
 - [improvement] bring nodes up a z-index when highlighted
 
