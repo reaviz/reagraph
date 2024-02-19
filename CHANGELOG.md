@@ -1,3 +1,7 @@
+# 4.15.14 - 2/19/24
+- [fix] fix centering logic
+- [fix] improve performance on load
+
 # 4.15.13 - 2/19/24
 - [fix] fix disabled not working correctly
 - [improvement] zoom to cursor rather than center
