@@ -223,7 +223,10 @@ export const CameraControls: FC<
 
       const camera = cameraRef.current;
       function onSleep() {
-        camera.enabled = false;
+        // Small timeout for the settle
+        setTimeout(() => {
+          camera.enabled = false;
+        });
       }
 
       camera.addEventListener('sleep', onSleep);
