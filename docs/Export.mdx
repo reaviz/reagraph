@@ -1,0 +1,32 @@
+import { Meta, Story, ArgsTable } from '@storybook/blocks';
+
+<Meta title="Docs/Advanced/Export Image" />
+
+# Export as Image
+reagraph allows for exporting the graph as an image. This can be done by calling the `exportCanvas`
+method on the graph instance. The method returns a string that resolves to the image data URL.
+
+Below is an example of how to use the `exportCanvas` method to export the graph as an image.
+
+```tsx
+export const MApp = () => {
+  const ref = useRef<GraphCanvasRef | null>(null);
+  return (
+    <>
+      <button
+        onClick={() => {
+          const data = ref.current.exportCanvas();
+
+          const link = document.createElement('a');
+          link.setAttribute('href', data);
+          link.setAttribute('target', '_blank');
+          link.setAttribute('download', 'graph.png');
+          link.click();
+        }}
+      >
+        Export Graph
+      </button>
+      <GraphCanvas ref={ref} nodes={simpleNodes} edges={simpleEdges} />
+    </>
+  );
+};

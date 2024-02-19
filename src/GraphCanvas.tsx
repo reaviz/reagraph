@@ -75,11 +75,19 @@ export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
      * Get the camera controls.
      */
     getControls: () => ThreeCameraControls;
+
+    /**
+     * Export the canvas as a data URL.
+     */
+    exportCanvas: () => string;
   };
 
 const GL_DEFAULTS = {
   alpha: true,
-  antialias: true
+  antialias: true,
+  // This is needed for exporting the canvas as a data URL
+  // Ref: https://stackoverflow.com/questions/15558418/how-do-you-save-an-image-from-a-three-js-canvas
+  preserveDrawingBuffer: true
 };
 
 // TODO: Fix type
@@ -112,6 +120,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
     ) => {
       const rendererRef = useRef<GraphSceneRef | null>(null);
       const controlsRef = useRef<CameraControlsRef | null>(null);
+      const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
       useImperativeHandle(ref, () => ({
         centerGraph: (n?: string[]) => rendererRef.current?.centerGraph(n),
@@ -124,7 +133,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         resetControls: (animated?: boolean) =>
           controlsRef.current?.resetControls(animated),
         getControls: () => controlsRef.current?.controls,
-        getGraph: () => rendererRef.current?.graph
+        getGraph: () => rendererRef.current?.graph,
+        exportCanvas: () => canvasRef.current.toDataURL()
       }));
 
       // Defaults to pass to the store
@@ -143,6 +153,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           <Canvas
             legacy
             linear
+            ref={canvasRef}
             flat
             gl={gl}
             camera={CAMERA_DEFAULTS}

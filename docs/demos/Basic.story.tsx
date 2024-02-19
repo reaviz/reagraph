@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { GraphCanvas, lightTheme } from '../../src';
+import React, { useRef, useState } from 'react';
+import { GraphCanvas, GraphCanvasRef, lightTheme } from '../../src';
 import { parentEdges, parentNodes, simpleEdges, simpleNodes, random } from '../assets/demo';
 import { range } from 'd3-array';
 
@@ -89,7 +89,6 @@ export const CustomLighting = () => (
   </GraphCanvas>
 );
 
-
 export const Many = () => (
   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
     {range(10).map(i => (
@@ -128,6 +127,31 @@ export const LiveUpdates = () => {
         </button>
       </div>
       <GraphCanvas nodes={nodes} edges={edges} />
+    </div>
+  );
+};
+
+export const SaveAsImage = () => {
+  const ref = useRef<GraphCanvasRef | null>(null);
+  return (
+    <div>
+      <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 1, color: 'white' }}>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => {
+            const data = ref.current.exportCanvas();
+
+            const link = document.createElement('a');
+            link.setAttribute('href', data);
+            link.setAttribute('target', '_blank');
+            link.setAttribute('download', 'graph.png');
+            link.click();
+          }}
+        >
+          Export Graph
+        </button>
+      </div>
+      <GraphCanvas ref={ref} nodes={simpleNodes} edges={simpleEdges} />
     </div>
   );
 };
