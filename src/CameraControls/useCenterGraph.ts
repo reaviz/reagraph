@@ -76,7 +76,7 @@ export const useCenterGraph = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [invalidate, controls, animated]
+    [invalidate, controls, animated, nodes]
   );
 
   const centerNodesById = useCallback(
