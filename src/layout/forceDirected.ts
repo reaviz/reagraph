@@ -131,6 +131,13 @@ export function forceDirected({
 
   let groupingForce;
 
+  // Dynamically adjust cluster force charge based on the number of nodes
+  let forceChargeAdjustment = forceCharge;
+  if (nodes?.length) {
+    const adjustmentFactor = Math.ceil(nodes.length / 200);
+    forceChargeAdjustment = forceCharge * adjustmentFactor;
+  }
+
   if (clusterAttribute) {
     groupingForce = forceInABox()
       // Strength to foci
@@ -152,7 +159,7 @@ export function forceDirected({
       // linkStrength between meta-nodes of the template (Force template only)
       .forceLinkStrength(forceLinkStrength)
       // Charge between the meta-nodes (Force template only)
-      .forceCharge(forceCharge)
+      .forceCharge(forceChargeAdjustment)
       // Used to compute the template force nodes size (Force template only)
       .forceNodeSize(d => d.radius);
   }
