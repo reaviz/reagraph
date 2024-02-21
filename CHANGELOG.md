@@ -1,3 +1,7 @@
+# 4.15.15 - 2/21/24
+- [fix] fix graph centering on small graphs #182
+- [fix] improve cluster overlap #183
+
 # 4.15.14 - 2/19/24
 - [fix] fix centering logic
 - [fix] improve performance on load
