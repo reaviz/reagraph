@@ -11,6 +11,7 @@ import { forceRadial, DagMode } from './forceUtils';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { buildNodeEdges } from './layoutUtils';
 import { forceInABox } from './forceInABox';
+import { FORCE_LAYOUTS } from './layoutProvider';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**
@@ -77,6 +78,11 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
    * Used to compute the template force nodes size (Force template only)
    */
   forceCharge?: number;
+
+  /**
+   * Used to determine the simulation forceX and forceY values
+   */
+  forceLayout: (typeof FORCE_LAYOUTS)[number];
 }
 
 const TICK_COUNT = 100;
@@ -97,7 +103,8 @@ export function forceDirected({
   forceCharge = -700,
   getNodePosition,
   drags,
-  clusterAttribute
+  clusterAttribute,
+  forceLayout
 }: ForceDirectedLayoutInputs): LayoutStrategy {
   const { nodes, edges } = buildNodeEdges(graph);
 
@@ -106,12 +113,20 @@ export function forceDirected({
   const nodeStrengthAdjustment =
     is2d && edges.length > 25 ? nodeStrength * 2 : nodeStrength;
 
+  let forceX = d3ForceX(1200 / 2).strength(0.05);
+  let forceY = d3ForceY(1200 / 2).strength(0.05);
+
+  if (forceLayout === 'forceDirected2d') {
+    forceX = d3ForceX();
+    forceY = d3ForceY();
+  }
+
   // Create the simulation
   const sim = d3ForceSimulation()
     .force('link', d3ForceLink())
     .force('charge', d3ForceManyBody().strength(nodeStrengthAdjustment))
-    .force('x', d3ForceX(1200 / 2).strength(0.05))
-    .force('y', d3ForceY(1200 / 2).strength(0.05))
+    .force('x', forceX)
+    .force('y', forceY)
     .force('z', d3ForceZ())
     // Handles nodes not overlapping each other ( most relevant in clustering )
     .force(
