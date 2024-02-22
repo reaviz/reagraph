@@ -1,3 +1,6 @@
+# Latest
+- [fix] improve performance by only calling render on screenshot
+
 # 4.15.15 - 2/21/24
 - [fix] fix graph centering on small graphs #182
 - [fix] improve cluster overlap #183
