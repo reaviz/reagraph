@@ -103,7 +103,6 @@ export const CameraControls: FC<
     const gl = useThree(state => state.gl);
     const isOrbiting = mode === 'orbit';
     const setPanning = useStore(state => state.setPanning);
-    const timeout = useRef<any | null>(null);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {

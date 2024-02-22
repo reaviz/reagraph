@@ -64,7 +64,7 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   glOptions?: Object;
 }
 
-export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
+export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
   Omit<CameraControlsRef, 'controls'> & {
     /**
      * Get the graph object.
@@ -84,10 +84,7 @@ export type GraphCanvasRef = Omit<GraphSceneRef, 'graph'> &
 
 const GL_DEFAULTS = {
   alpha: true,
-  antialias: true,
-  // This is needed for exporting the canvas as a data URL
-  // Ref: https://stackoverflow.com/questions/15558418/how-do-you-save-an-image-from-a-three-js-canvas
-  preserveDrawingBuffer: true
+  antialias: true
 };
 
 // TODO: Fix type
@@ -134,7 +131,10 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           controlsRef.current?.resetControls(animated),
         getControls: () => controlsRef.current?.controls,
         getGraph: () => rendererRef.current?.graph,
-        exportCanvas: () => canvasRef.current.toDataURL()
+        exportCanvas: () => {
+          rendererRef.current.renderScene();
+          return canvasRef.current.toDataURL();
+        }
       }));
 
       // Defaults to pass to the store

@@ -34,6 +34,8 @@ import { useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { useStore } from './store';
 import Graph from 'graphology';
+import { useThree } from '@react-three/fiber';
+import { WebGLRenderer } from 'three';
 
 export interface GraphSceneProps {
   /**
@@ -232,6 +234,12 @@ export interface GraphSceneRef {
    * Center the graph on a node or list of nodes.
    */
   centerGraph: (ids?: string[]) => void;
+
+  /**
+   * Calls render scene on the graph. this is useful when you want to manually render the graph
+   * for things like screenshots.
+   */
+  renderScene: () => void;
 }
 
 export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
@@ -265,6 +273,13 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       ref
     ) => {
       const { layoutType, clusterAttribute } = rest;
+
+      // Get the gl/scene/camera for render shortcuts
+      const gl = useThree(state => state.gl);
+      const scene = useThree(state => state.scene);
+      const camera = useThree(state => state.camera);
+
+      // Mount and build the graph
       useGraph(rest);
 
       if (
@@ -276,10 +291,28 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         );
       }
 
+      // Get the graph and nodes via the store for memo
       const graph = useStore(state => state.graph);
       const nodes = useStore(state => state.nodes);
       const edges = useStore(state => state.edges);
       const clusters = useStore(state => [...state.clusters.values()]);
+
+      // Center the graph on the nodes
+      const { centerNodesById } = useCenterGraph({
+        animated,
+        disabled
+      });
+
+      // Let's expose some helper methods
+      useImperativeHandle(
+        ref,
+        () => ({
+          centerGraph: centerNodesById,
+          graph,
+          renderScene: () => gl.render(scene, camera)
+        }),
+        [centerNodesById, graph, gl, scene, camera]
+      );
 
       const nodeComponents = useMemo(
         () =>
@@ -393,20 +426,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           onClusterPointerOut,
           onClusterPointerOver
         ]
-      );
-
-      const { centerNodesById } = useCenterGraph({
-        animated,
-        disabled
-      });
-
-      useImperativeHandle(
-        ref,
-        () => ({
-          centerGraph: centerNodesById,
-          graph
-        }),
-        [centerNodesById, graph]
       );
 
       return (
