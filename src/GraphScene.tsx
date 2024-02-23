@@ -298,7 +298,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const clusters = useStore(state => [...state.clusters.values()]);
 
       // Center the graph on the nodes
-      const { centerNodesById } = useCenterGraph({
+      const { centerNodesById, isCentered } = useCenterGraph({
         animated,
         disabled
       });
@@ -429,11 +429,13 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       );
 
       return (
-        <Fragment>
-          {nodeComponents}
-          {edgeComponents}
-          {clusterComponents}
-        </Fragment>
+        isCentered && (
+          <Fragment>
+            {nodeComponents}
+            {edgeComponents}
+            {clusterComponents}
+          </Fragment>
+        )
       );
     }
   );
