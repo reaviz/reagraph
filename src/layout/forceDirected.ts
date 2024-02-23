@@ -113,12 +113,14 @@ export function forceDirected({
   const nodeStrengthAdjustment =
     is2d && edges.length > 25 ? nodeStrength * 2 : nodeStrength;
 
-  let forceX = d3ForceX(1200 / 2).strength(0.05);
-  let forceY = d3ForceY(1200 / 2).strength(0.05);
-
+  let forceX;
+  let forceY;
   if (forceLayout === 'forceDirected2d') {
     forceX = d3ForceX();
     forceY = d3ForceY();
+  } else {
+    forceX = d3ForceX(1200 / 2).strength(0.05);
+    forceY = d3ForceY(1200 / 2).strength(0.05);
   }
 
   // Create the simulation
