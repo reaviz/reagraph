@@ -1,4 +1,6 @@
 import { useRef, useCallback, useEffect, useMemo } from 'react';
+import { useThree } from '@react-three/fiber';
+import { PerspectiveCamera } from 'three';
 import { SizingType } from './sizing';
 import {
   LayoutTypes,
@@ -6,7 +8,7 @@ import {
   LayoutStrategy,
   LayoutOverrides
 } from './layout';
-import { LabelVisibilityType } from './utils/visibility';
+import { LabelVisibilityType, calcLabelVisibility } from './utils/visibility';
 import { tick } from './layout/layoutUtils';
 import { GraphEdge, GraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/graph';
@@ -51,6 +53,7 @@ export const useGraph = ({
   const setClusters = useStore(state => state.setClusters);
   const stateCollapsedNodeIds = useStore(state => state.collapsedNodeIds);
   const setEdges = useStore(state => state.setEdges);
+  const stateNodes = useStore(state => state.nodes);
   const setNodes = useStore(state => state.setNodes);
   const setSelections = useStore(state => state.setSelections);
   const setActives = useStore(state => state.setActives);
@@ -59,6 +62,7 @@ export const useGraph = ({
   const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
+  const camera = useThree(state => state.camera) as PerspectiveCamera;
 
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
@@ -131,6 +135,26 @@ export const useGraph = ({
       setClusters
     ]
   );
+
+  useEffect(() => {
+    const nodes = stateNodes.map(node => ({
+      ...node,
+      labelVisible: calcLabelVisibility({
+        nodeCount: stateNodes?.length,
+        labelType,
+        camera,
+        nodePosition: node?.position
+      })('node', node?.size)
+    }));
+
+    const isVisibilityUpdated = nodes.some(
+      (node, i) => node.labelVisible !== stateNodes[i].labelVisible
+    );
+
+    if (isVisibilityUpdated) {
+      setNodes(nodes);
+    }
+  }, [camera, camera.zoom, camera.position.z, setNodes, stateNodes, labelType]);
 
   useEffect(() => {
     // Let's set the store selections so its easier to access

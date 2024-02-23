@@ -41,6 +41,8 @@ export const useCenterGraph = ({
   disabled
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
+  const isCentered = useStore(state => state.isCentered);
+  const setIsCentered = useStore(state => state.setIsCentered);
   const invalidate = useThree(state => state.invalidate);
   const { controls } = useCameraControls();
   const camera = useThree(state => state.camera) as PerspectiveCamera;
@@ -71,6 +73,10 @@ export const useCenterGraph = ({
           }
         );
         await controls.setTarget(x, y, z, animated);
+
+        if (!isCentered) {
+          setIsCentered(true);
+        }
 
         invalidate();
       }
