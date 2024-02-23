@@ -17,7 +17,7 @@ export function calcLabelVisibility({
   nodePosition,
   labelType,
   camera
-}: calcLabelVisibilityArgs) {
+}: CalcLabelVisibilityArgs) {
   return (shape: 'node' | 'edge', size: number) => {
     if (
       camera &&
