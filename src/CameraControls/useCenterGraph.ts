@@ -1,6 +1,6 @@
 import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Vector3, Box3, PerspectiveCamera } from 'three';
 import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
@@ -34,6 +34,11 @@ export interface CenterGraphOutput {
    * If no ids are provided, the graph is centered on all nodes.
    */
   centerNodesById: (ids?: string[]) => void;
+
+  /**
+   * Whether the graph is centered or not.
+   */
+  isCentered?: boolean;
 }
 
 export const useCenterGraph = ({
@@ -41,8 +46,7 @@ export const useCenterGraph = ({
   disabled
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
-  const isCentered = useStore(state => state.isCentered);
-  const setIsCentered = useStore(state => state.setIsCentered);
+  const [isCentered, setIsCentered] = useState<boolean>(false);
   const invalidate = useThree(state => state.invalidate);
   const { controls } = useCameraControls();
   const camera = useThree(state => state.camera) as PerspectiveCamera;
@@ -132,5 +136,5 @@ export const useCenterGraph = ({
     }
   ]);
 
-  return { centerNodes, centerNodesById };
+  return { centerNodes, centerNodesById, isCentered };
 };

@@ -37,7 +37,6 @@ export interface GraphState {
   drags?: DragReferences;
   panning?: boolean;
   theme: Theme;
-  isCentered: boolean;
   setTheme: (theme: Theme) => void;
   setClusters: (clusters: Map<string, ClusterGroup>) => void;
   setPanning: (panning: boolean) => void;
@@ -49,7 +48,6 @@ export interface GraphState {
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
   setCollapsedNodeIds: (nodeIds: string[]) => void;
-  setIsCentered: (isCentered: boolean) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -83,7 +81,6 @@ export const createStore = ({
     selections,
     drags: {},
     graph: new Graph({ multi: true }),
-    isCentered: false,
     setTheme: theme => set(state => ({ ...state, theme })),
     setClusters: clusters => set(state => ({ ...state, clusters })),
     setEdgeContextMenus: edgeContextMenus =>
@@ -136,7 +133,5 @@ export const createStore = ({
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
-      set(state => ({ ...state, collapsedNodeIds: nodeIds })),
-    setIsCentered: (isCentered: boolean) =>
-      set(state => ({ ...state, isCentered }))
+      set(state => ({ ...state, collapsedNodeIds: nodeIds }))
   }));
