@@ -1,5 +1,9 @@
-# Latest
+# 4.15.16
+- [improvement] hide labels based on zoom #187
+- [improvement] hide labels based on rank #185
+- [fix] improve graph reorientation #186
 - [fix] improve performance by only calling render on screenshot
+- [chore] upgrade some deps
 
 # 4.15.15 - 2/21/24
 - [fix] fix graph centering on small graphs #182
