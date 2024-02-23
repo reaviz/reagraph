@@ -12,7 +12,7 @@ export type LayoutOverrides = Partial<
   | HierarchicalLayoutInputs
 >;
 
-const FORCE_LAYOUTS = [
+export const FORCE_LAYOUTS = [
   'forceDirected2d',
   'treeTd2d',
   'treeLr2d',
@@ -37,7 +37,8 @@ export function layoutProvider({
         dimensions: 2,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
-        linkDistance
+        linkDistance,
+        forceLayout: type
       } as ForceDirectedLayoutInputs);
     } else if (type === 'treeTd2d') {
       return forceDirected({
@@ -46,7 +47,8 @@ export function layoutProvider({
         dimensions: 2,
         nodeLevelRatio: nodeLevelRatio || 5,
         nodeStrength: nodeStrength || -250,
-        linkDistance: linkDistance || 50
+        linkDistance: linkDistance || 50,
+        forceLayout: type
       } as ForceDirectedLayoutInputs);
     } else if (type === 'treeLr2d') {
       return forceDirected({
@@ -55,7 +57,8 @@ export function layoutProvider({
         dimensions: 2,
         nodeLevelRatio: nodeLevelRatio || 5,
         nodeStrength: nodeStrength || -250,
-        linkDistance: linkDistance || 50
+        linkDistance: linkDistance || 50,
+        forceLayout: type
       } as ForceDirectedLayoutInputs);
     } else if (type === 'radialOut2d') {
       return forceDirected({
@@ -64,7 +67,8 @@ export function layoutProvider({
         dimensions: 2,
         nodeLevelRatio: nodeLevelRatio || 5,
         nodeStrength: nodeStrength || -500,
-        linkDistance: linkDistance || 100
+        linkDistance: linkDistance || 100,
+        forceLayout: type
       } as ForceDirectedLayoutInputs);
     } else if (type === 'treeTd3d') {
       return forceDirected({
@@ -82,7 +86,8 @@ export function layoutProvider({
         dimensions: 3,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -500,
-        linkDistance: linkDistance || 50
+        linkDistance: linkDistance || 50,
+        forceLayout: type
       } as ForceDirectedLayoutInputs);
     } else if (type === 'radialOut3d') {
       return forceDirected({
@@ -91,7 +96,8 @@ export function layoutProvider({
         dimensions: 3,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -500,
-        linkDistance: linkDistance || 100
+        linkDistance: linkDistance || 100,
+        forceLayout: type
       } as ForceDirectedLayoutInputs);
     } else if (type === 'forceDirected3d') {
       return forceDirected({
@@ -99,7 +105,8 @@ export function layoutProvider({
         dimensions: 3,
         nodeLevelRatio: nodeLevelRatio || 2,
         nodeStrength: nodeStrength || -250,
-        linkDistance
+        linkDistance,
+        forceLayout: type
       } as ForceDirectedLayoutInputs);
     }
   } else if (type === 'circular2d') {
