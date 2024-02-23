@@ -5,7 +5,7 @@ const NODE_THRESHOLD = 20;
 
 export type LabelVisibilityType = 'all' | 'auto' | 'none' | 'nodes' | 'edges';
 
-interface calcLabelVisibilityArgs {
+interface CalcLabelVisibilityArgs {
   nodeCount: number;
   nodePosition?: { x: number; y: number; z: number };
   labelType: LabelVisibilityType;
