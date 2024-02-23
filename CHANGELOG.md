@@ -1,4 +1,7 @@
-# 4.15.16
+# 4.15.17 - 2/23/24
+- [improvement] Adjust force directed 2d graph spacing #184
+
+# 4.15.16 - 2/23/24
 - [improvement] hide labels based on zoom #187
 - [improvement] hide labels based on rank #185
 - [fix] improve graph reorientation #186
