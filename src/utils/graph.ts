@@ -77,7 +77,7 @@ export function transformGraph({
     defaultSize: defaultNodeSize
   });
 
-  const nodeCount = graph.nodes.length;
+  const nodeCount = graph.nodes().length;
   const checkVisibility = calcLabelVisibility(nodeCount, labelType);
 
   graph.forEachNode((id, node) => {
