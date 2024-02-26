@@ -69,6 +69,7 @@ export const useCenterGraph = ({
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
           getLayoutCenter(centerNodes);
 
+        // Check whether the layout is 3d or not to adjust centering logic
         if (!layoutType.includes('3d')) {
           void controls?.rotateTo(0, Math.PI / 2, true);
         }
