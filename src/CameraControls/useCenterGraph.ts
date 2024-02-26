@@ -7,6 +7,7 @@ import { getLayoutCenter } from '../utils/layout';
 import { InternalGraphNode } from '../types';
 import { useStore } from '../store';
 import { isNodeInView } from './utils';
+import { LayoutTypes } from 'layout/types';
 
 const PADDING = 50;
 
@@ -20,6 +21,11 @@ export interface CenterGraphInput {
    * Whether the center graph function is disabled or not.
    */
   disabled?: boolean;
+
+  /**
+   * The layout type of the graph used to determine rotation logic.
+   */
+  layoutType: LayoutTypes;
 }
 
 export interface CenterGraphOutput {
@@ -43,7 +49,8 @@ export interface CenterGraphOutput {
 
 export const useCenterGraph = ({
   animated,
-  disabled
+  disabled,
+  layoutType
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
   const [isCentered, setIsCentered] = useState<boolean>(false);
@@ -61,6 +68,11 @@ export const useCenterGraph = ({
         // Centers the graph based on the central most node
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
           getLayoutCenter(centerNodes);
+
+        // Check whether the layout is 3d or not to adjust centering logic
+        if (!layoutType.includes('3d')) {
+          void controls?.rotateTo(0, Math.PI / 2, true);
+        }
 
         await controls?.fitToBox(
           new Box3(
