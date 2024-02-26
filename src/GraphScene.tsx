@@ -300,7 +300,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       // Center the graph on the nodes
       const { centerNodesById, isCentered } = useCenterGraph({
         animated,
-        disabled
+        disabled,
+        layoutType
       });
 
       // Let's expose some helper methods
