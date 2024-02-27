@@ -1,3 +1,6 @@
+# 4.15.18 - 2/27/24
+- [fix] #188 fix center rotation on 3d graph
+
 # 4.15.17 - 2/23/24
 - [improvement] Adjust force directed 2d graph spacing #184
 
