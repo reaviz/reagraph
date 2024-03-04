@@ -117,8 +117,8 @@ export function forceDirected({
     forceX = d3ForceX();
     forceY = d3ForceY();
   } else {
-    forceX = d3ForceX(1200 / 2).strength(0.05);
-    forceY = d3ForceY(1200 / 2).strength(0.05);
+    forceX = d3ForceX(600).strength(0.05);
+    forceY = d3ForceY(600).strength(0.05);
   }
 
   // Create the simulation
@@ -131,7 +131,7 @@ export function forceDirected({
     // Handles nodes not overlapping each other ( most relevant in clustering )
     .force(
       'collide',
-      forceCollide(d => d.radius)
+      forceCollide(d => d.radius + 10)
     )
     .force(
       'dagRadial',
@@ -145,15 +145,14 @@ export function forceDirected({
     .stop();
 
   let groupingForce;
-
-  // Dynamically adjust cluster force charge based on the number of nodes
-  let forceChargeAdjustment = forceCharge;
-  if (nodes?.length) {
-    const adjustmentFactor = Math.ceil(nodes.length / 200);
-    forceChargeAdjustment = forceCharge * adjustmentFactor;
-  }
-
   if (clusterAttribute) {
+    // Dynamically adjust cluster force charge based on the number of nodes
+    let forceChargeAdjustment = forceCharge;
+    if (nodes?.length) {
+      const adjustmentFactor = Math.ceil(nodes.length / 200);
+      forceChargeAdjustment = forceCharge * adjustmentFactor;
+    }
+
     groupingForce = forceInABox()
       // Strength to foci
       .strength(clusterStrength)
