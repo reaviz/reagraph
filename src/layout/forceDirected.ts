@@ -85,8 +85,6 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   forceLayout: (typeof FORCE_LAYOUTS)[number];
 }
 
-const TICK_COUNT = 100;
-
 export function forceDirected({
   graph,
   nodeLevelRatio = 2,
@@ -209,9 +207,10 @@ export function forceDirected({
 
   return {
     step() {
-      // Run the ticker 100 times so
-      // we don't overdo the animation
-      sim.tick(TICK_COUNT);
+      // Run the simulation til we get a stable result
+      while (sim.alpha() > 0.01) {
+        sim.tick();
+      }
       return true;
     },
     getNodePosition(id: string) {
