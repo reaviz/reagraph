@@ -1,3 +1,8 @@
+# 4.15.19 - 3/4/24
+- [fix] update reakeys for nextjs support
+- [fix] improve tick counting by using alpha number
+- [chore] update various deps
+
 # 4.15.18 - 2/27/24
 - [fix] #188 fix center rotation on 3d graph
 
