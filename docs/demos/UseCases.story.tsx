@@ -11,6 +11,7 @@ import {
 import cyberJson from '../assets/cyber.json';
 import mitreTools from '../assets/mitre-tools.json';
 import mitreTechniques from '../assets/mitre-techniques.json';
+import mitreTechniquesAll from '../assets/mitre-techniques-all.json';
 
 import fireSvg from '../assets/fire.svg';
 import flagSvg from '../assets/flag.svg';
@@ -198,6 +199,68 @@ export const MitreTechniques = () => {
     }
 
     for (const edge of mitreTechniques.links) {
+      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+        e.push({
+          id: `${edge.source}-${edge.target}`,
+          source: edge.source,
+          target: edge.target,
+        });
+      }
+    }
+
+    return [n, e];
+  }, []);
+
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const {
+    selections,
+    actives,
+    onNodeClick,
+    onCanvasClick,
+    onNodePointerOver,
+    onNodePointerOut
+  } = useSelection({
+    ref: graphRef,
+    nodes,
+    edges,
+    pathSelectionType: 'out'
+  });
+
+  return (
+    <GraphCanvas
+      selections={selections}
+      actives={actives}
+      ref={graphRef}
+      nodes={nodes}
+      edges={edges}
+      theme={darkTheme}
+      labelType="nodes"
+      draggable
+      edgeInterpolation="curved"
+      onCanvasClick={onCanvasClick}
+      onNodeClick={onNodeClick}
+      onNodePointerOver={onNodePointerOver}
+      onNodePointerOut={onNodePointerOut}
+    />
+  );
+};
+
+export const MitreAllTechniques = () => {
+  const [nodes, edges] = useMemo(() => {
+    const n = [];
+    const e = [];
+
+    for (const node of mitreTechniquesAll.nodes) {
+      if (!n.find(nn => nn.id === node.id)) {
+        n.push({
+          id: node.id,
+          label: node.attributes.name,
+          data: node.attributes
+        });
+      }
+    }
+
+    for (const edge of mitreTechniquesAll.links) {
       if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
         e.push({
           id: `${edge.source}-${edge.target}`,
