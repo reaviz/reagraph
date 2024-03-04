@@ -126,19 +126,23 @@ export const MitreTools = () => {
     const e = [];
 
     for (const node of mitreTools.nodes) {
-      n.push({
-        id: node.id,
-        label: node.attributes.name,
-        data: node.attributes
-      });
+      if (!n.find(nn => nn.id === node.id)) {
+        n.push({
+          id: node.id,
+          label: node.attributes.name,
+          data: node.attributes
+        });
+      }
     }
 
     for (const edge of mitreTools.links) {
-      e.push({
-        id: `${edge.source}-${edge.target}`,
-        source: edge.source,
-        target: edge.target,
-      });
+      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+        e.push({
+          id: `${edge.source}-${edge.target}`,
+          source: edge.source,
+          target: edge.target,
+        });
+      }
     }
 
     return [n, e];
@@ -184,19 +188,23 @@ export const MitreTechniques = () => {
     const e = [];
 
     for (const node of mitreTechniques.nodes) {
-      n.push({
-        id: node.id,
-        label: node.attributes.name,
-        data: node.attributes
-      });
+      if (!n.find(nn => nn.id === node.id)) {
+        n.push({
+          id: node.id,
+          label: node.attributes.name,
+          data: node.attributes
+        });
+      }
     }
 
     for (const edge of mitreTechniques.links) {
-      e.push({
-        id: `${edge.source}-${edge.target}`,
-        source: edge.source,
-        target: edge.target,
-      });
+      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+        e.push({
+          id: `${edge.source}-${edge.target}`,
+          source: edge.source,
+          target: edge.target,
+        });
+      }
     }
 
     return [n, e];
