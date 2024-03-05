@@ -6,7 +6,7 @@ import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
 import { InternalGraphNode } from '../types';
 import { useStore } from '../store';
-import { isNodeInView } from './utils';
+import { isNodeInView, getDegreesToClosest2dAxis } from './utils';
 import { LayoutTypes } from 'layout/types';
 
 const PADDING = 50;
@@ -71,7 +71,13 @@ export const useCenterGraph = ({
 
         // Check whether the layout is 3d or not to adjust centering logic
         if (!layoutType.includes('3d')) {
-          void controls?.rotateTo(0, Math.PI / 2, true);
+          const { horizontalRotation, verticalRotation } =
+            getDegreesToClosest2dAxis(
+              controls?.azimuthAngle,
+              controls?.polarAngle
+            );
+
+          void controls?.rotate(horizontalRotation, verticalRotation, true);
         }
 
         await controls?.fitToBox(
