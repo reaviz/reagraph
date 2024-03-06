@@ -51,3 +51,33 @@ export function isNodeInView(
     nodePosition?.y < visibleArea.y1
   );
 }
+
+/**
+ * Get the closest axis to a given angle.
+ */
+export function getClosestAxis(angle: number, axes: number[]) {
+  return axes.reduce((prev, curr) =>
+    Math.abs(curr - (angle % Math.PI)) < Math.abs(prev - (angle % Math.PI))
+      ? curr
+      : prev
+  );
+}
+
+/**
+ * Get how far an angle is from the closest 2D axis in radians.
+ */
+export function getDegreesToClosest2dAxis(
+  horizontalAngle: number,
+  verticalAngle: number
+) {
+  const closestHorizontalAxis = getClosestAxis(horizontalAngle, [0, Math.PI]);
+  const closestVerticalAxis = getClosestAxis(verticalAngle, [
+    Math.PI / 2,
+    (3 * Math.PI) / 2
+  ]);
+
+  return {
+    horizontalRotation: closestHorizontalAxis - (horizontalAngle % Math.PI),
+    verticalRotation: closestVerticalAxis - (verticalAngle % Math.PI)
+  };
+}
