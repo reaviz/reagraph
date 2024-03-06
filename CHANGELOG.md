@@ -1,3 +1,6 @@
+# 4.15.20 - 3/6/24
+- [fix] Fix 2d graph over-rotating on node select #198
+
 # 4.15.19 - 3/4/24
 - [fix] update reakeys for nextjs support
 - [fix] improve tick counting by using alpha number
