@@ -69,8 +69,9 @@ export const useCenterGraph = ({
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
           getLayoutCenter(centerNodes);
 
-        // Check whether the layout is 3d or not to adjust centering logic
         if (!layoutType.includes('3d')) {
+          // fitToBox will auto rotate to the closest axis including the z axis, which is not desired for 2D graphs
+          // So get the rotation to the closest flat axis for 2D graphs
           const { horizontalRotation, verticalRotation } =
             getDegreesToClosest2dAxis(
               controls?.azimuthAngle,
