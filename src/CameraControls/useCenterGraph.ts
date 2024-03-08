@@ -63,7 +63,7 @@ export const useCenterGraph = ({
     async (centerNodes: InternalGraphNode[], animated = true) => {
       if (
         centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
-        centerNodes?.length === nodes?.length
+        !mounted.current
       ) {
         // Centers the graph based on the central most node
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
