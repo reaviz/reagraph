@@ -1,3 +1,6 @@
+# 4.15.21 - 3/12/24
+- [fix] Fix camera reorient on deselect #201
+
 # 4.15.20 - 3/6/24
 - [fix] Fix 2d graph over-rotating on node select #198
 
