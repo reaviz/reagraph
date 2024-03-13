@@ -203,12 +203,10 @@ export const Node: FC<NodeProps> = ({
     onDragStart: () => {
       setDraggingId(id);
       setActive(true);
-      cameraControls.controls.enabled = false;
     },
     onDragEnd: () => {
       setDraggingId(null);
       setActive(false);
-      cameraControls.controls.enabled = true;
       onDragged?.(node);
     }
   });
@@ -228,10 +226,12 @@ export const Node: FC<NodeProps> = ({
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDragging,
     onPointerOver: () => {
+      cameraControls.controls.enabled = false;
       setActive(true);
       onPointerOver?.(node);
     },
     onPointerOut: () => {
+      cameraControls.controls.enabled = true;
       setActive(false);
       onPointerOut?.(node);
     }
