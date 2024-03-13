@@ -1,3 +1,6 @@
+# 4.15.22 - 3/13/24
+- [fix] Fix camera moving slightly on drag #202
+
 # 4.15.21 - 3/12/24
 - [fix] Fix camera reorient on deselect #201
 
