@@ -139,11 +139,14 @@ export const useCenterGraph = ({
       if (controls && nodes?.length && !mounted.current) {
         await centerNodes(nodes, false);
         mounted.current = true;
+        // If node positions have changed and some aren't in view, center the graph
+      } else if (controls && nodes?.length) {
+        await centerNodes(nodes, animated);
       }
     }
 
     load();
-  }, [controls, centerNodes, nodes]);
+  }, [controls, centerNodes, nodes, animated]);
 
   useHotkeys([
     {
