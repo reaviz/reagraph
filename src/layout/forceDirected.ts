@@ -12,6 +12,7 @@ import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { buildNodeEdges } from './layoutUtils';
 import { forceInABox } from './forceInABox';
 import { FORCE_LAYOUTS } from './layoutProvider';
+import { optimizeGraphLayout } from './forceSettings';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**
@@ -83,6 +84,16 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
    * Used to determine the simulation forceX and forceY values
    */
   forceLayout: (typeof FORCE_LAYOUTS)[number];
+
+  /**
+   * The height of the graph.
+   */
+  height: number;
+
+  /**
+   * The width of the graph.
+   */
+  width: number;
 }
 
 export function forceDirected({
@@ -101,32 +112,26 @@ export function forceDirected({
   forceCharge = -700,
   getNodePosition,
   drags,
+  height,
+  width,
   clusterAttribute,
   forceLayout
 }: ForceDirectedLayoutInputs): LayoutStrategy {
   const { nodes, edges } = buildNodeEdges(graph);
 
-  // Dynamically adjust node strength based on the number of edges
-  const is2d = dimensions === 2;
-  const nodeStrengthAdjustment =
-    is2d && edges.length > 25 ? nodeStrength * 2 : nodeStrength;
-
-  let forceX;
-  let forceY;
-  if (forceLayout === 'forceDirected2d') {
-    forceX = d3ForceX();
-    forceY = d3ForceY();
-  } else {
-    forceX = d3ForceX(600).strength(0.05);
-    forceY = d3ForceY(600).strength(0.05);
-  }
+  const settings = optimizeGraphLayout({
+    nodes,
+    edges,
+    height,
+    width
+  });
 
   // Create the simulation
   const sim = d3ForceSimulation()
     .force('link', d3ForceLink())
-    .force('charge', d3ForceManyBody().strength(nodeStrengthAdjustment))
-    .force('x', forceX)
-    .force('y', forceY)
+    .force('charge', d3ForceManyBody().strength(settings.chargeStrength))
+    .force('x', d3ForceX())
+    .force('y', d3ForceY())
     .force('z', d3ForceZ())
     // Handles nodes not overlapping each other ( most relevant in clustering )
     .force(
@@ -194,7 +199,7 @@ export function forceDirected({
         .links(edges)
         // When no mode passed, its a tree layout
         // so let's use a larger distance
-        .distance(linkDistance);
+        .distance(settings.linkDistance);
 
       if (groupingForce) {
         linkForce = linkForce.strength(groupingForce?.getLinkStrength ?? 0.1);

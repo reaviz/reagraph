@@ -63,6 +63,7 @@ export const useGraph = ({
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
   const camera = useThree(state => state.camera) as PerspectiveCamera;
+  const size = useThree(s => s.size);
 
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
@@ -90,7 +91,9 @@ export const useGraph = ({
           type: layoutType,
           graph,
           drags: dragRef.current,
-          clusterAttribute
+          clusterAttribute,
+          height: size.height,
+          width: size.width
         });
 
       // Run the layout
