@@ -226,12 +226,12 @@ export const Node: FC<NodeProps> = ({
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDragging,
     onPointerOver: () => {
-      cameraControls.controls.enabled = false;
+      cameraControls.controls.truckSpeed = 0;
       setActive(true);
       onPointerOver?.(node);
     },
     onPointerOut: () => {
-      cameraControls.controls.enabled = true;
+      cameraControls.controls.truckSpeed = 2.0;
       setActive(false);
       onPointerOut?.(node);
     }
