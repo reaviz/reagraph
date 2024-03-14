@@ -224,7 +224,7 @@ export const CameraControls: FC<
       } else {
         cameraRef.current.mouseButtons.left = 2;
         cameraRef.current.mouseButtons.middle = 2;
-        cameraRef.current.mouseButtons.wheel = 16;
+        cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.DOLLY;
       }
     }, [disabled]);
 
