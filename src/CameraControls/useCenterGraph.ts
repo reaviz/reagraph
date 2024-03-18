@@ -135,15 +135,21 @@ export const useCenterGraph = ({
 
   useLayoutEffect(() => {
     async function load() {
-      // Center the graph once nodes are loaded on mount
-      if (controls && nodes?.length && !mounted.current) {
-        await centerNodes(nodes, false);
-        mounted.current = true;
+      // Once we've loaded controls and we have nodes, let's recenter
+      if (controls && nodes?.length) {
+        if (!mounted.current) {
+          // Center the graph once nodes are loaded on mount
+          await centerNodes(nodes, false);
+          mounted.current = true;
+        } else {
+          // If node positions have changed and some aren't in view, center the graph
+          await centerNodes(nodes, animated);
+        }
       }
     }
 
     load();
-  }, [controls, centerNodes, nodes]);
+  }, [controls, centerNodes, nodes, animated]);
 
   useHotkeys([
     {
