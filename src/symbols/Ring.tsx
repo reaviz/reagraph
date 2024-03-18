@@ -55,10 +55,15 @@ export const Ring: FC<RingProps> = ({
     }
   });
 
+  const strokeWidthFraction = strokeWidth / 10;
+
   return (
     <Billboard position={[0, 0, 1]}>
       <a.mesh scale={ringSize as any}>
-        <ringGeometry attach="geometry" args={[4, 4 + strokeWidth, 25]} />
+        <ringGeometry
+          attach="geometry"
+          args={[4, 4 + strokeWidthFraction, 25]}
+        />
         <a.meshBasicMaterial
           attach="material"
           color={normalizedColor}
@@ -77,5 +82,5 @@ Ring.defaultProps = {
   color: '#D8E6EA',
   size: 1,
   opacity: 0.5,
-  strokeWidth: 0.5
+  strokeWidth: 5
 };
