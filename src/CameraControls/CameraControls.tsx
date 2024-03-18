@@ -218,13 +218,14 @@ export const CameraControls: FC<
 
     useEffect(() => {
       if (disabled) {
-        cameraRef.current.mouseButtons.left = 0;
-        cameraRef.current.mouseButtons.middle = 0;
-        cameraRef.current.mouseButtons.wheel = 0;
+        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.mouseButtons.middle = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.NONE;
       } else {
-        cameraRef.current.mouseButtons.left = 2;
-        cameraRef.current.mouseButtons.middle = 2;
-        cameraRef.current.mouseButtons.wheel = 16;
+        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
+        cameraRef.current.mouseButtons.middle =
+          ThreeCameraControls.ACTION.TRUCK;
+        cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.DOLLY;
       }
     }, [disabled]);
 
