@@ -60,7 +60,7 @@ export const useCenterGraph = ({
   const mounted = useRef<boolean>(false);
 
   const centerNodes = useCallback(
-    async (centerNodes: InternalGraphNode[], animated = true) => {
+    async (centerNodes: InternalGraphNode[], shouldAnimate = true) => {
       if (
         centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
         !mounted.current
@@ -86,7 +86,7 @@ export const useCenterGraph = ({
             new Vector3(minX, minY, minZ),
             new Vector3(maxX, maxY, maxZ)
           ),
-          animated,
+          shouldAnimate,
           {
             cover: false,
             paddingLeft: PADDING,
@@ -95,7 +95,7 @@ export const useCenterGraph = ({
             paddingTop: PADDING
           }
         );
-        await controls.setTarget(x, y, z, animated);
+        await controls.setTarget(x, y, z, shouldAnimate);
 
         if (!isCentered) {
           setIsCentered(true);
@@ -105,7 +105,7 @@ export const useCenterGraph = ({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [invalidate, controls, animated, nodes]
+    [invalidate, controls, nodes]
   );
 
   const centerNodesById = useCallback(
