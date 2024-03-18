@@ -24,9 +24,20 @@ export interface RingProps {
    * The opacity of the ring.
    */
   opacity?: number;
+
+  /**
+   * The stroke width of the ring.
+   */
+  strokeWidth?: number;
 }
 
-export const Ring: FC<RingProps> = ({ color, size, opacity, animated }) => {
+export const Ring: FC<RingProps> = ({
+  color,
+  size,
+  opacity,
+  animated,
+  strokeWidth
+}) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
   const { ringSize, ringOpacity } = useSpring({
@@ -47,7 +58,7 @@ export const Ring: FC<RingProps> = ({ color, size, opacity, animated }) => {
   return (
     <Billboard position={[0, 0, 1]}>
       <a.mesh scale={ringSize as any}>
-        <ringGeometry attach="geometry" args={[4, 4.5, 25]} />
+        <ringGeometry attach="geometry" args={[4, 4 + strokeWidth, 25]} />
         <a.meshBasicMaterial
           attach="material"
           color={normalizedColor}
@@ -65,5 +76,6 @@ export const Ring: FC<RingProps> = ({ color, size, opacity, animated }) => {
 Ring.defaultProps = {
   color: '#D8E6EA',
   size: 1,
-  opacity: 0.5
+  opacity: 0.5,
+  strokeWidth: 0.5
 };
