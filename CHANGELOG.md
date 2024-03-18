@@ -1,3 +1,11 @@
+# 4.15.24 - 3/18/24
+- [feature] add `strokeWidth` to ring
+
+# 4.15.23 - 3/18/24
+- [fix] Fix zoom to cursor
+- [fix] Fix can't zoom while hovering a node
+- [fix] Re-center camera when nodes update
+
 # 4.15.22 - 3/13/24
 - [fix] Fix camera moving slightly on drag #202
 
