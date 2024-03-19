@@ -233,7 +233,7 @@ export interface GraphSceneRef {
   /**
    * Center the graph on a node or list of nodes.
    */
-  centerGraph: (ids?: string[]) => void;
+  centerGraph: (ids?: string[], centerIfNodesNotInView?: boolean) => void;
 
   /**
    * Calls render scene on the graph. this is useful when you want to manually render the graph

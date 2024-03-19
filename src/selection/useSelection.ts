@@ -266,7 +266,8 @@ export const useSelection = ({
           [data.id],
           pathSelectionType
         );
-        ref.current?.centerGraph([data.id, ...adjacents]);
+
+        ref.current?.centerGraph([data.id, ...adjacents], true);
       }
     },
     [
@@ -349,7 +350,7 @@ export const useSelection = ({
             throw new Error('No ref found for the graph canvas.');
           }
 
-          ref.current?.centerGraph();
+          ref.current?.centerGraph([], true);
         }
       }
     },

@@ -39,7 +39,7 @@ export interface CenterGraphOutput {
    * A function that centers the graph on the nodes with the given ids.
    * If no ids are provided, the graph is centered on all nodes.
    */
-  centerNodesById: (ids?: string[]) => void;
+  centerNodesById: (ids?: string[], centerIfNodesNotInView?: boolean) => void;
 
   /**
    * Whether the graph is centered or not.
@@ -60,10 +60,16 @@ export const useCenterGraph = ({
   const mounted = useRef<boolean>(false);
 
   const centerNodes = useCallback(
-    async (centerNodes: InternalGraphNode[], shouldAnimate = true) => {
+    async (
+      centerNodes: InternalGraphNode[],
+      shouldAnimate = true,
+      centerIfNodesNotInView = false
+    ) => {
       if (
-        centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
-        !mounted.current
+        !mounted.current ||
+        !centerIfNodesNotInView ||
+        (centerIfNodesNotInView &&
+          centerNodes?.some(node => !isNodeInView(camera, node.position)))
       ) {
         // Centers the graph based on the central most node
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
@@ -109,7 +115,7 @@ export const useCenterGraph = ({
   );
 
   const centerNodesById = useCallback(
-    (nodeIds?: string[]) => {
+    (nodeIds?: string[], centerIfNodesNotInView?: boolean) => {
       let mappedNodes: InternalGraphNode[] | null = null;
 
       if (nodeIds?.length) {
@@ -128,9 +134,9 @@ export const useCenterGraph = ({
         }, []);
       }
 
-      centerNodes(mappedNodes || nodes);
+      centerNodes(mappedNodes || nodes, animated, centerIfNodesNotInView);
     },
-    [centerNodes, nodes]
+    [animated, centerNodes, nodes]
   );
 
   useLayoutEffect(() => {
@@ -143,13 +149,13 @@ export const useCenterGraph = ({
           mounted.current = true;
         } else {
           // If node positions have changed and some aren't in view, center the graph
-          await centerNodes(nodes, animated);
+          await centerNodes(nodes, animated, true);
         }
       }
     }
 
     load();
-  }, [controls, centerNodes, nodes, animated]);
+  }, [controls, centerNodes, nodes, animated, camera]);
 
   useHotkeys([
     {
