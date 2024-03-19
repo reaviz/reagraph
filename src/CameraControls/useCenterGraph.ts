@@ -30,10 +30,25 @@ export interface CenterGraphInput {
 
 export interface CenterGraphOutput {
   /**
-   * A function that centers the graph on the nodes with the given nodes.
-   * If no nodes are provided, the graph is centered on all nodes.
+   * Centers the graph on a specific node or list of nodes.
+   *
+   * @param nodes - An array of `InternalGraphNode` objects to center the graph on. If this parameter is omitted,
+   * the graph will be centered on all nodes.
+   *
+   * @param animate - A boolean flag that determines whether the centering action should be animated.
+   *
+   * @param centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
+   * only be centered if the nodes specified by `nodes` are not currently in view. If this
+   * parameter is `true`, the graph will only be re-centered if one or more of the nodes
+   * specified by `nodes` are not currently visible in the viewport. If this parameter is
+   * `false` or omitted, the graph will be re-centered regardless of whether the nodes
+   * are currently in view.
    */
-  centerNodes: (nodes?: InternalGraphNode[]) => void;
+  centerNodes: (
+    nodes?: InternalGraphNode[],
+    animate?: boolean,
+    centerOnlyIfNodesNotInView?: boolean
+  ) => void;
 
   /**
    * Centers the graph on a specific node or list of nodes.
