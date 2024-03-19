@@ -30,12 +30,39 @@ export interface MenuItem {
 }
 
 interface RadialSliceProps extends MenuItem {
+  /**
+   * The starting angle of the radial slice, in degrees.
+   */
   startAngle: number;
+
+  /**
+   * The ending angle of the radial slice, in degrees.
+   */
   endAngle: number;
+
+  /**
+   * The skew of the radial slice.
+   */
   skew: number;
+
+  /**
+   * Whether the radial slice is polar (true) or not (false).
+   */
   polar: boolean;
+
+  /**
+   * The central angle of the radial slice, in degrees.
+   */
   centralAngle: number;
+
+  /**
+   * The radius of the radial slice.
+   */
   radius: number;
+
+  /**
+   * The inner radius of the radial slice.
+   */
   innerRadius: number;
 }
 
