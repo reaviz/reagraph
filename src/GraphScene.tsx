@@ -231,9 +231,19 @@ export interface GraphSceneRef {
   graph: Graph;
 
   /**
-   * Center the graph on a node or list of nodes.
+   * Centers the graph on a specific node or list of nodes.
+   *
+   * @param ids - An array of node IDs to center the graph on. If this parameter is omitted,
+   * the graph will be centered on all nodes.
+   *
+   * @param centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
+   * only be centered if the nodes specified by `ids` are not currently in view. If this
+   * parameter is `true`, the graph will only be re-centered if one or more of the nodes
+   * specified by `ids` are not currently in view. If this parameter is
+   * `false` or omitted, the graph will be re-centered regardless of whether the nodes
+   * are currently in view.
    */
-  centerGraph: (ids?: string[], centerIfNodesNotInView?: boolean) => void;
+  centerGraph: (ids?: string[], centerOnlyIfNodesNotInView?: boolean) => void;
 
   /**
    * Calls render scene on the graph. this is useful when you want to manually render the graph

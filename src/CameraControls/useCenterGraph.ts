@@ -36,10 +36,22 @@ export interface CenterGraphOutput {
   centerNodes: (nodes?: InternalGraphNode[]) => void;
 
   /**
-   * A function that centers the graph on the nodes with the given ids.
-   * If no ids are provided, the graph is centered on all nodes.
+   * Centers the graph on a specific node or list of nodes.
+   *
+   * @param ids - An array of node IDs to center the graph on. If this parameter is omitted,
+   * the graph will be centered on all nodes.
+   *
+   * @param centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
+   * only be centered if the nodes specified by `ids` are not currently in view. If this
+   * parameter is `true`, the graph will only be re-centered if one or more of the nodes
+   * specified by `ids` are not currently in view. If this parameter is
+   * `false` or omitted, the graph will be re-centered regardless of whether the nodes
+   * are currently in view.
    */
-  centerNodesById: (ids?: string[], centerIfNodesNotInView?: boolean) => void;
+  centerNodesById: (
+    ids?: string[],
+    centerOnlyIfNodesNotInView?: boolean
+  ) => void;
 
   /**
    * Whether the graph is centered or not.
@@ -63,12 +75,12 @@ export const useCenterGraph = ({
     async (
       centerNodes: InternalGraphNode[],
       shouldAnimate = true,
-      centerIfNodesNotInView = false
+      centerOnlyIfNodesNotInView = false
     ) => {
       if (
         !mounted.current ||
-        !centerIfNodesNotInView ||
-        (centerIfNodesNotInView &&
+        !centerOnlyIfNodesNotInView ||
+        (centerOnlyIfNodesNotInView &&
           centerNodes?.some(node => !isNodeInView(camera, node.position)))
       ) {
         // Centers the graph based on the central most node
@@ -115,7 +127,7 @@ export const useCenterGraph = ({
   );
 
   const centerNodesById = useCallback(
-    (nodeIds?: string[], centerIfNodesNotInView?: boolean) => {
+    (nodeIds?: string[], centerOnlyIfNodesNotInView?: boolean) => {
       let mappedNodes: InternalGraphNode[] | null = null;
 
       if (nodeIds?.length) {
@@ -134,7 +146,7 @@ export const useCenterGraph = ({
         }, []);
       }
 
-      centerNodes(mappedNodes || nodes, animated, centerIfNodesNotInView);
+      centerNodes(mappedNodes || nodes, animated, centerOnlyIfNodesNotInView);
     },
     [animated, centerNodes, nodes]
   );
