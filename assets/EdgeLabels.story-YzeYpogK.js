@@ -1,0 +1,81 @@
+import{j as r}from"./jsx-runtime-DRTy3Uxn.js";import{G as e}from"./RadialMenu-BZb6EL-Y.js";import"./index-BBkUAzwr.js";import"./index-27578f8f.esm-CAmGDcI7.js";import"./extends-CCbyfPlC.js";import"./client-CzthVdz-.js";import"./index-PqR-_bA4.js";const h={title:"Demos/Edges/Labels",component:e},a=()=>r.jsx(e,{edgeLabelPosition:"above",labelType:"edges",nodes:[{id:"1",label:"1"},{id:"2",label:"2"},{id:"3",label:"3"}],edges:[{source:"1",target:"2",id:"1-2",label:"1-2"},{source:"2",target:"3",id:"2-3",label:"2-3",size:5}]}),l=()=>r.jsx(e,{edgeLabelPosition:"below",labelType:"edges",nodes:[{id:"1",label:"1"},{id:"2",label:"2"},{id:"3",label:"3"}],edges:[{source:"1",target:"2",id:"1-2",label:"1-2"},{source:"2",target:"3",id:"2-3",label:"2-3",size:5}]}),n=()=>r.jsx(e,{edgeLabelPosition:"inline",labelType:"edges",nodes:[{id:"1",label:"1"},{id:"2",label:"2"},{id:"3",label:"3"}],edges:[{source:"1",target:"2",id:"1-2",label:"1-2"},{source:"2",target:"3",id:"2-3",label:"2-3",size:5}]}),s=()=>r.jsx(e,{edgeLabelPosition:"natural",labelType:"edges",nodes:[{id:"1",label:"1"},{id:"2",label:"2"},{id:"3",label:"3"}],edges:[{source:"1",target:"2",id:"1-2",label:"1-2"},{source:"2",target:"3",id:"2-3",label:"2-3",size:5}]});var o,d,i;a.parameters={...a.parameters,docs:{...(o=a.parameters)==null?void 0:o.docs,source:{originalSource:`() => <GraphCanvas edgeLabelPosition="above" labelType="edges" nodes={[{
+  id: '1',
+  label: '1'
+}, {
+  id: '2',
+  label: '2'
+}, {
+  id: '3',
+  label: '3'
+}]} edges={[{
+  source: '1',
+  target: '2',
+  id: '1-2',
+  label: '1-2'
+}, {
+  source: '2',
+  target: '3',
+  id: '2-3',
+  label: '2-3',
+  size: 5
+}]} />`,...(i=(d=a.parameters)==null?void 0:d.docs)==null?void 0:i.source}}};var t,b,c;l.parameters={...l.parameters,docs:{...(t=l.parameters)==null?void 0:t.docs,source:{originalSource:`() => <GraphCanvas edgeLabelPosition="below" labelType="edges" nodes={[{
+  id: '1',
+  label: '1'
+}, {
+  id: '2',
+  label: '2'
+}, {
+  id: '3',
+  label: '3'
+}]} edges={[{
+  source: '1',
+  target: '2',
+  id: '1-2',
+  label: '1-2'
+}, {
+  source: '2',
+  target: '3',
+  id: '2-3',
+  label: '2-3',
+  size: 5
+}]} />`,...(c=(b=l.parameters)==null?void 0:b.docs)==null?void 0:c.source}}};var g,p,u;n.parameters={...n.parameters,docs:{...(g=n.parameters)==null?void 0:g.docs,source:{originalSource:`() => <GraphCanvas edgeLabelPosition="inline" labelType="edges" nodes={[{
+  id: '1',
+  label: '1'
+}, {
+  id: '2',
+  label: '2'
+}, {
+  id: '3',
+  label: '3'
+}]} edges={[{
+  source: '1',
+  target: '2',
+  id: '1-2',
+  label: '1-2'
+}, {
+  source: '2',
+  target: '3',
+  id: '2-3',
+  label: '2-3',
+  size: 5
+}]} />`,...(u=(p=n.parameters)==null?void 0:p.docs)==null?void 0:u.source}}};var m,L,y;s.parameters={...s.parameters,docs:{...(m=s.parameters)==null?void 0:m.docs,source:{originalSource:`() => <GraphCanvas edgeLabelPosition="natural" labelType="edges" nodes={[{
+  id: '1',
+  label: '1'
+}, {
+  id: '2',
+  label: '2'
+}, {
+  id: '3',
+  label: '3'
+}]} edges={[{
+  source: '1',
+  target: '2',
+  id: '1-2',
+  label: '1-2'
+}, {
+  source: '2',
+  target: '3',
+  id: '2-3',
+  label: '2-3',
+  size: 5
+}]} />`,...(y=(L=s.parameters)==null?void 0:L.docs)==null?void 0:y.source}}};export{a as Above,l as Below,n as Inline,s as Natural,h as default};
