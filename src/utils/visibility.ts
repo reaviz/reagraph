@@ -1,8 +1,6 @@
 import { PerspectiveCamera } from 'three';
 import { EdgeLabelPosition } from '../symbols';
 
-const NODE_THRESHOLD = 20;
-
 export type LabelVisibilityType = 'all' | 'auto' | 'none' | 'nodes' | 'edges';
 
 interface CalcLabelVisibilityArgs {
@@ -34,10 +32,14 @@ export function calcLabelVisibility({
     } else if (labelType === 'edges' && shape === 'edge') {
       return true;
     } else if (labelType === 'auto' && shape === 'node') {
-      if (nodeCount <= NODE_THRESHOLD) {
+      if (size > 7) {
         return true;
-      } else {
-        return size > 7;
+      } else if (
+        camera &&
+        nodePosition &&
+        camera.position.z / camera.zoom - nodePosition.z < 3000
+      ) {
+        return true;
       }
     }
 
