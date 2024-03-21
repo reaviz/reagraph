@@ -153,13 +153,7 @@ export const useCenterGraph = ({
   );
 
   const centerNodesById = useCallback(
-    ({
-      nodeIds,
-      centerOnlyIfNodesNotInView
-    }: {
-      nodeIds?: string[];
-      centerOnlyIfNodesNotInView?: boolean;
-    }) => {
+    ({ nodeIds, centerOnlyIfNodesNotInView }: CenterNodesByIdParams) => {
       let mappedNodes: InternalGraphNode[] | null = null;
 
       if (nodeIds?.length) {

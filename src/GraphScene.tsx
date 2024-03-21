@@ -246,7 +246,7 @@ export interface GraphSceneRef {
   centerGraph: ({
     nodeIds,
     centerOnlyIfNodesNotInView
-  }: CenterNodesByIdParams) => void;
+  }?: CenterNodesByIdParams) => void;
 
   /**
    * Calls render scene on the graph. this is useful when you want to manually render the graph

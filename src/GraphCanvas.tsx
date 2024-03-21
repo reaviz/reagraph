@@ -122,9 +122,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
 
       useImperativeHandle(ref, () => ({
         centerGraph: ({
-          nodeIds,
-          centerOnlyIfNodesNotInView
-        }: CenterNodesByIdParams) =>
+          nodeIds = [],
+          centerOnlyIfNodesNotInView = false
+        }: CenterNodesByIdParams = {}) =>
           rendererRef.current?.centerGraph({
             nodeIds,
             centerOnlyIfNodesNotInView
