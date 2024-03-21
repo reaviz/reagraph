@@ -13,7 +13,8 @@ import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
 import {
   CameraMode,
   CameraControls,
-  CameraControlsRef
+  CameraControlsRef,
+  CenterNodesByIdParams
 } from './CameraControls';
 import { Theme, lightTheme } from './themes';
 import { createStore, Provider } from './store';
@@ -120,8 +121,14 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
       useImperativeHandle(ref, () => ({
-        centerGraph: (n?: string[], centerOnlyIfNodesNotInView?: boolean) =>
-          rendererRef.current?.centerGraph(n, centerOnlyIfNodesNotInView),
+        centerGraph: ({
+          nodeIds,
+          centerOnlyIfNodesNotInView
+        }: CenterNodesByIdParams) =>
+          rendererRef.current?.centerGraph({
+            nodeIds,
+            centerOnlyIfNodesNotInView
+          }),
         zoomIn: () => controlsRef.current?.zoomIn(),
         zoomOut: () => controlsRef.current?.zoomOut(),
         panLeft: () => controlsRef.current?.panLeft(),

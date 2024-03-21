@@ -30,7 +30,7 @@ import {
   Edges,
   Node
 } from './symbols';
-import { useCenterGraph } from './CameraControls';
+import { CenterNodesByIdParams, useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { useStore } from './store';
 import Graph from 'graphology';
@@ -233,7 +233,7 @@ export interface GraphSceneRef {
   /**
    * Centers the graph on a specific node or list of nodes.
    *
-   * @param ids - An array of node IDs to center the graph on. If this parameter is omitted,
+   * @param nodeIds - An array of node IDs to center the graph on. If this parameter is omitted,
    * the graph will be centered on all nodes.
    *
    * @param centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
@@ -243,7 +243,10 @@ export interface GraphSceneRef {
    * `false` or omitted, the graph will be re-centered regardless of whether the nodes
    * are currently in view.
    */
-  centerGraph: (ids?: string[], centerOnlyIfNodesNotInView?: boolean) => void;
+  centerGraph: ({
+    nodeIds,
+    centerOnlyIfNodesNotInView
+  }: CenterNodesByIdParams) => void;
 
   /**
    * Calls render scene on the graph. this is useful when you want to manually render the graph
