@@ -11,6 +11,11 @@ import { LayoutTypes } from 'layout/types';
 
 const PADDING = 50;
 
+export interface CenterNodesParams {
+  animated?: boolean;
+  centerOnlyIfNodesNotInView?: boolean;
+}
+
 export interface CenterGraphInput {
   /**
    * Whether the animate the transition or not.
@@ -30,16 +35,36 @@ export interface CenterGraphInput {
 
 export interface CenterGraphOutput {
   /**
-   * A function that centers the graph on the nodes with the given nodes.
-   * If no nodes are provided, the graph is centered on all nodes.
+   * Centers the graph on a specific node or list of nodes.
+   *
+   * @param nodes - An array of `InternalGraphNode` objects to center the graph on. If this parameter is omitted,
+   * the graph will be centered on all nodes.
+   *
+   * @param animated - A boolean flag that determines whether the centering action should be animated.
+   *
+   * @param centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
+   * only be centered if the nodes specified by `nodes` are not currently in view. If this
+   * parameter is `true`, the graph will only be re-centered if one or more of the nodes
+   * specified by `nodes` are not currently visible in the viewport. If this parameter is
+   * `false` or omitted, the graph will be re-centered regardless of whether the nodes
+   * are currently in view.
    */
-  centerNodes: (nodes?: InternalGraphNode[]) => void;
+  centerNodes: (nodes: InternalGraphNode[], opts: CenterNodesParams) => void;
 
   /**
-   * A function that centers the graph on the nodes with the given ids.
-   * If no ids are provided, the graph is centered on all nodes.
+   * Centers the graph on a specific node or list of nodes.
+   *
+   * @param ids - An array of node IDs to center the graph on. If this parameter is omitted,
+   * the graph will be centered on all nodes.
+   *
+   * @param centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
+   * only be centered if the nodes specified by `ids` are not currently in view. If this
+   * parameter is `true`, the graph will only be re-centered if one or more of the nodes
+   * specified by `ids` are not currently in view. If this parameter is
+   * `false` or omitted, the graph will be re-centered regardless of whether the nodes
+   * are currently in view.
    */
-  centerNodesById: (ids?: string[]) => void;
+  centerNodesById: (nodeIds: string[], opts?: CenterNodesParams) => void;
 
   /**
    * Whether the graph is centered or not.
@@ -60,17 +85,26 @@ export const useCenterGraph = ({
   const mounted = useRef<boolean>(false);
 
   const centerNodes = useCallback(
-    async (centerNodes: InternalGraphNode[], shouldAnimate = true) => {
+    async (nodes, opts?: CenterNodesParams) => {
+      const animated = opts?.animated !== undefined ? opts?.animated : true;
+      const centerOnlyIfNodesNotInView =
+        opts?.centerOnlyIfNodesNotInView !== undefined
+          ? opts?.centerOnlyIfNodesNotInView
+          : false;
+
       if (
-        centerNodes?.some(node => !isNodeInView(camera, node.position)) ||
-        !mounted.current
+        !mounted.current ||
+        !centerOnlyIfNodesNotInView ||
+        (centerOnlyIfNodesNotInView &&
+          nodes?.some(node => !isNodeInView(camera, node.position)))
       ) {
         // Centers the graph based on the central most node
         const { minX, maxX, minY, maxY, minZ, maxZ, x, y, z } =
-          getLayoutCenter(centerNodes);
+          getLayoutCenter(nodes);
 
         if (!layoutType.includes('3d')) {
-          // fitToBox will auto rotate to the closest axis including the z axis, which is not desired for 2D graphs
+          // fitToBox will auto rotate to the closest axis including the z axis,
+          // which is not desired for 2D graphs
           // So get the rotation to the closest flat axis for 2D graphs
           const { horizontalRotation, verticalRotation } =
             getDegreesToClosest2dAxis(
@@ -86,7 +120,7 @@ export const useCenterGraph = ({
             new Vector3(minX, minY, minZ),
             new Vector3(maxX, maxY, maxZ)
           ),
-          shouldAnimate,
+          animated,
           {
             cover: false,
             paddingLeft: PADDING,
@@ -95,7 +129,7 @@ export const useCenterGraph = ({
             paddingTop: PADDING
           }
         );
-        await controls.setTarget(x, y, z, shouldAnimate);
+        await controls.setTarget(x, y, z, animated);
 
         if (!isCentered) {
           setIsCentered(true);
@@ -109,7 +143,7 @@ export const useCenterGraph = ({
   );
 
   const centerNodesById = useCallback(
-    (nodeIds?: string[]) => {
+    (nodeIds: string[], opts: CenterNodesParams) => {
       let mappedNodes: InternalGraphNode[] | null = null;
 
       if (nodeIds?.length) {
@@ -128,9 +162,12 @@ export const useCenterGraph = ({
         }, []);
       }
 
-      centerNodes(mappedNodes || nodes);
+      centerNodes(mappedNodes || nodes, {
+        animated,
+        centerOnlyIfNodesNotInView: opts?.centerOnlyIfNodesNotInView
+      });
     },
-    [centerNodes, nodes]
+    [animated, centerNodes, nodes]
   );
 
   useLayoutEffect(() => {
@@ -139,17 +176,20 @@ export const useCenterGraph = ({
       if (controls && nodes?.length) {
         if (!mounted.current) {
           // Center the graph once nodes are loaded on mount
-          await centerNodes(nodes, false);
+          await centerNodes(nodes, { animated: false });
           mounted.current = true;
         } else {
           // If node positions have changed and some aren't in view, center the graph
-          await centerNodes(nodes, animated);
+          await centerNodes(nodes, {
+            animated,
+            centerOnlyIfNodesNotInView: true
+          });
         }
       }
     }
 
     load();
-  }, [controls, centerNodes, nodes, animated]);
+  }, [controls, centerNodes, nodes, animated, camera]);
 
   useHotkeys([
     {

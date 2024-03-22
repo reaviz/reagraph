@@ -120,7 +120,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
       useImperativeHandle(ref, () => ({
-        centerGraph: (n?: string[]) => rendererRef.current?.centerGraph(n),
+        centerGraph: (nodeIds, opts) =>
+          rendererRef.current?.centerGraph(nodeIds, opts),
         zoomIn: () => controlsRef.current?.zoomIn(),
         zoomOut: () => controlsRef.current?.zoomOut(),
         panLeft: () => controlsRef.current?.panLeft(),
