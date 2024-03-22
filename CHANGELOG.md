@@ -1,3 +1,7 @@
+# 4.15.25 - 3/22/24
+- [fix] Fix graph only centering when nodes out of view #208
+- [fix] Improve label visibility for small nodes #212
+
 # 4.15.24 - 3/18/24
 - [feature] add `strokeWidth` to ring
 
