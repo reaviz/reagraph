@@ -90,6 +90,16 @@ export interface CameraControlsProps {
    * Whether the controls are enabled.
    */
   disabled?: boolean;
+
+  /**
+   * The maximum distance for the camera.
+   */
+  maxDistance?: number;
+
+  /**
+   * The minimum distance for the camera.
+   */
+  minDistance?: number;
 }
 
 export type CameraControlsRef = CameraControlsContextProps;
@@ -97,7 +107,10 @@ export type CameraControlsRef = CameraControlsContextProps;
 export const CameraControls: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
 > = forwardRef(
-  ({ mode, children, animated, disabled }, ref: Ref<CameraControlsRef>) => {
+  (
+    { mode, children, animated, disabled, minDistance, maxDistance },
+    ref: Ref<CameraControlsRef>
+  ) => {
     const cameraRef = useRef<ThreeCameraControls | null>(null);
     const camera = useThree(state => state.camera);
     const gl = useThree(state => state.gl);
@@ -302,9 +315,9 @@ export const CameraControls: FC<
           ref={cameraRef}
           args={[camera, gl.domElement]}
           smoothTime={0.1}
-          minDistance={1000}
+          minDistance={minDistance}
           dollyToCursor
-          maxDistance={50000}
+          maxDistance={maxDistance}
         />
         {children}
       </CameraControlsContext.Provider>
@@ -313,5 +326,7 @@ export const CameraControls: FC<
 );
 
 CameraControls.defaultProps = {
-  mode: 'rotate'
+  mode: 'rotate',
+  minDistance: 1000,
+  maxDistance: 50000
 };

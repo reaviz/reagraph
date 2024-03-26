@@ -34,14 +34,29 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   cameraMode?: CameraMode;
 
   /**
-   * When the canvas was clicked but didn't hit a node/edge.
+   * The maximum distance for the camera. Default is 50000.
    */
-  onCanvasClick?: (event: MouseEvent) => void;
+  maxDistance?: number;
+
+  /**
+   * The minimum distance for the camera. Default is 1000.
+   */
+  minDistance?: number;
 
   /**
    * The type of lasso selection.
    */
   lassoType?: LassoType;
+
+  /**
+   * Children to render in the canvas. Useful for things like lights.
+   */
+  children?: ReactNode;
+
+  /**
+   * Ability to extend Cavas gl options. For example { preserveDrawingBuffer: true }
+   */
+  glOptions?: Object;
 
   /**
    * When the canvas had a lasso selection.
@@ -54,14 +69,9 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   onLassoEnd?: (selections: string[]) => void;
 
   /**
-   * Children to render in the canvas. Useful for things like lights.
+   * When the canvas was clicked but didn't hit a node/edge.
    */
-  children?: ReactNode;
-
-  /**
-   * Ability to extend Cavas gl options. For example { preserveDrawingBuffer: true }
-   */
-  glOptions?: Object;
+  onCanvasClick?: (event: MouseEvent) => void;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
@@ -104,6 +114,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         children,
         nodes,
         theme,
+        minDistance,
+        maxDistance,
         onCanvasClick,
         animated,
         disabled,
@@ -182,6 +194,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 mode={cameraMode}
                 ref={controlsRef}
                 disabled={disabled}
+                minDistance={minDistance}
+                maxDistance={maxDistance}
                 animated={animated}
               >
                 <Lasso
