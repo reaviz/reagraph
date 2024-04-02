@@ -41,6 +41,14 @@ If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
 - Checkout a basic demo on [CodeSandbox](https://codesandbox.io/s/reagraph-example-mwh96q)
 - Learn about updates from the [changelog](CHANGELOG.md)
 
+## 💎 Other Projects
+
+- Unify Viz - Premium offering 300+ Figma and React professionally designed data visualization
+components. [unifyviz.com →](https://unifyviz.com)
+- Reaflow - Open-source library for workflow and diagram graphs. [reaflow.dev →](https://reaflow.dev)
+- Reaviz - Open-source library for data visulizations for React. [reaviz.io →](https://reaviz.io)
+- Reablocks - Open-source component library for React based on Tailwind. [reablocks.dev →](https://reablocks.dev)
+
 ## ✨ Features
 - WebGL based for high performance
 - Node Sizing based on attribute, page rank, centrality, custom
