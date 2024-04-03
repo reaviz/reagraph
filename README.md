@@ -31,15 +31,19 @@
 
 Reagraph is a high-performance network graph visualization built in WebGL for React.
 
-Checkout Unify Viz, our premium offering 300+ Figma and React professionally designed data visualization components. [Learn more →](https://unifyviz.com?utm=reagraph)
-
-If you are looking for flow charts, checkout [reaflow](https://reaflow.dev).
-
 ## 🚀 Quick Links
 
 - Checkout the [**docs and demos**](https://reagraph.dev)
 - Checkout a basic demo on [CodeSandbox](https://codesandbox.io/s/reagraph-example-mwh96q)
 - Learn about updates from the [changelog](CHANGELOG.md)
+
+## 💎 Other Projects
+
+- [Unify Viz](https://unifyviz.com?utm=reagraph) - Premium offering 300+ Figma and React professionally designed data visualization
+components.
+- [Reaflow](https://reaflow.dev?utm=reagraph) - Open-source library for workflow and diagram graphs.
+- [Reablocks](https://reablocks.dev?utm=reagraph) - Open-source component library for React based on Tailwind.
+- [Reaviz](https://reaviz.io?utm=reagraph) - Open-source library for data visualizations for React. 
 
 ## ✨ Features
 - WebGL based for high performance
