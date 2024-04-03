@@ -1,0 +1,69 @@
+import { Meta, Story, ArgsTable } from '@storybook/blocks';
+import { GraphCanvas } from '../src';
+
+<Meta title="Docs/Advanced/Centering" />
+
+# Centering
+Reagraph supports the ability to dynamically center nodes using the `centerGraph` method from the `GraphCanvasRef`. This method allows you to programmatically center the camera view around specific nodes or the entire graph.
+
+### Usage
+First, you need to get a reference to the `GraphRef`:
+
+```jsx
+
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+return (
+    <GraphCanvas ref={graphRef} {...} />
+)
+```
+
+Then, you can use the `centerGraph` method to center all nodes within view of the camera:
+
+```js
+graphRef.current?.centerGraph();
+```
+
+If you want to center the view around specific nodes, you can pass an array of node ids to the `centerGraph` method:
+
+```jsx
+graphRef.current?.centerGraph(['node1', 'node2']);
+```
+
+### Examples
+In this example, clicking the "Center Graph" button will center the camera around all the nodes in the graph:
+```jsx
+import React, { useRef } from 'react';
+import { GraphCanvas } from 'reagraph';
+
+const MyComponent = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+
+  const centerGraph = () => {
+    graphRef.current?.centerGraph();
+  };
+
+  return (
+    <div>
+      <GraphCanvas ref={graphRef} {...} />
+      <button onClick={centerGraph}>Center Graph</button>
+    </div>
+  );
+};
+```
+
+
+Here's a more advanced example that centers the camera on the whole graph whenever new nodes are added:
+```jsx
+import React, { useRef, useEffect } from 'react';
+import { GraphCanvas } from 'reagraph';
+
+const MyComponent = ({ nodes }) => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+
+  useEffect(() => {
+    graphRef.current?.centerGraph();
+  }, [nodes]);
+
+  return <GraphCanvas ref={graphRef} {...} />;
+};
+```

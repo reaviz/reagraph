@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { GraphCanvas, GraphCanvasRef, lightTheme } from '../../src';
 import { parentEdges, parentNodes, simpleEdges, simpleNodes, random } from '../assets/demo';
 import { range } from 'd3-array';
@@ -100,8 +100,14 @@ export const Many = () => (
 );
 
 export const LiveUpdates = () => {
+  const ref = useRef<GraphCanvasRef | null>(null);
   const [nodes, setNodes] = useState(simpleNodes);
   const [edges, setEdges] = useState(simpleEdges);
+
+  useEffect(() => {
+    ref.current?.centerGraph();
+  }, [nodes]);
+
   return (
     <div>
       <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 1, color: 'white' }}>
@@ -126,7 +132,7 @@ export const LiveUpdates = () => {
           Remove Node {nodes[0]?.id}
         </button>
       </div>
-      <GraphCanvas nodes={nodes} edges={edges} />
+      <GraphCanvas ref={ref} nodes={nodes} edges={edges} />
     </div>
   );
 };
