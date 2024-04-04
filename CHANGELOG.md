@@ -1,3 +1,6 @@
+# 4.15.27 - 4/4/24
+- [fix] Fix camera view resetting on label visibility change #215
+
 # 4.15.26 - 3/26/24
 - [feature] expose `minDistance` and `maxDistance`.
 
