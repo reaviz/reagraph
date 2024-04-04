@@ -178,12 +178,6 @@ export const useCenterGraph = ({
           // Center the graph once nodes are loaded on mount
           await centerNodes(nodes, { animated: false });
           mounted.current = true;
-        } else {
-          // If node positions have changed and some aren't in view, center the graph
-          await centerNodes(nodes, {
-            animated,
-            centerOnlyIfNodesNotInView: true
-          });
         }
       }
     }
