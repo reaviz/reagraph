@@ -34,8 +34,7 @@ import { CenterNodesParams, useCenterGraph } from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { useStore } from './store';
 import Graph from 'graphology';
-import { useThree } from '@react-three/fiber';
-import { WebGLRenderer } from 'three';
+import { ThreeEvent, useThree } from '@react-three/fiber';
 
 export interface GraphSceneProps {
   /**
@@ -158,12 +157,19 @@ export interface GraphSceneProps {
   /**
    * When a node was clicked.
    */
-  onNodeClick?: (node: InternalGraphNode, props?: CollapseProps) => void;
+  onNodeClick?: (
+    node: InternalGraphNode,
+    props?: CollapseProps,
+    event?: ThreeEvent<MouseEvent>
+  ) => void;
 
   /**
    * When a node was double clicked.
    */
-  onNodeDoubleClick?: (node: InternalGraphNode) => void;
+  onNodeDoubleClick?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<MouseEvent>
+  ) => void;
 
   /**
    * When a node context menu happened.
@@ -176,12 +182,18 @@ export interface GraphSceneProps {
   /**
    * When node got a pointer over.
    */
-  onNodePointerOver?: (node: InternalGraphNode) => void;
+  onNodePointerOver?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
    * When node lost pointer over.
    */
-  onNodePointerOut?: (node: InternalGraphNode) => void;
+  onNodePointerOut?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
    * Triggered after a node was dragged.
@@ -196,32 +208,50 @@ export interface GraphSceneProps {
   /**
    * When an edge was clicked.
    */
-  onEdgeClick?: (edge: InternalGraphEdge) => void;
+  onEdgeClick?: (
+    edge: InternalGraphEdge,
+    event?: ThreeEvent<MouseEvent>
+  ) => void;
 
   /**
    * When edge got a pointer over.
    */
-  onEdgePointerOver?: (edge: InternalGraphEdge) => void;
+  onEdgePointerOver?: (
+    edge: InternalGraphEdge,
+    event?: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
    * When edge lost pointer over.
    */
-  onEdgePointerOut?: (edge: InternalGraphEdge) => void;
+  onEdgePointerOut?: (
+    edge: InternalGraphEdge,
+    event?: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
    * When a cluster was clicked.
    */
-  onClusterClick?: (cluster: ClusterEventArgs) => void;
+  onClusterClick?: (
+    cluster: ClusterEventArgs,
+    event: ThreeEvent<MouseEvent>
+  ) => void;
 
   /**
-   * When a cluster recieves a pointer over event.
+   * When a cluster receives a pointer over event.
    */
-  onClusterPointerOver?: (cluster: ClusterEventArgs) => void;
+  onClusterPointerOver?: (
+    cluster: ClusterEventArgs,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
-   * When cluster recieves a pointer leave event.
+   * When cluster receives a pointer leave event.
    */
-  onClusterPointerOut?: (cluster: ClusterEventArgs) => void;
+  onClusterPointerOut?: (
+    cluster: ClusterEventArgs,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 }
 
 export interface GraphSceneRef {
