@@ -442,8 +442,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       return (
         isCentered && (
           <Fragment>
-            {nodeComponents}
             {edgeComponents}
+            {nodeComponents}
             {clusterComponents}
           </Fragment>
         )
