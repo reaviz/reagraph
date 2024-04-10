@@ -5,6 +5,7 @@ import { Color, DoubleSide } from 'three';
 import { useStore } from '../store';
 import { Label } from './Label';
 import { useCursor } from 'glodrei';
+import { ThreeEvent } from '@react-three/fiber';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 
@@ -37,17 +38,23 @@ export interface ClusterProps extends ClusterGroup {
   /**
    * When the cluster was clicked.
    */
-  onClick?: (cluster: ClusterEventArgs) => void;
+  onClick?: (cluster: ClusterEventArgs, event: ThreeEvent<MouseEvent>) => void;
 
   /**
-   * When a cluster recieves a pointer over event.
+   * When a cluster receives a pointer over event.
    */
-  onPointerOver?: (cluster: ClusterEventArgs) => void;
+  onPointerOver?: (
+    cluster: ClusterEventArgs,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
-   * When cluster recieves a pointer leave event.
+   * When cluster receives a pointer leave event.
    */
-  onPointerOut?: (cluster: ClusterEventArgs) => void;
+  onPointerOut?: (
+    cluster: ClusterEventArgs,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 }
 
 export const Cluster: FC<ClusterProps> = ({
@@ -116,19 +123,25 @@ export const Cluster: FC<ClusterProps> = ({
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled,
-    onPointerOver: () => {
+    onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       setActive(true);
-      onPointerOver?.({
-        nodes,
-        label
-      });
+      onPointerOver?.(
+        {
+          nodes,
+          label
+        },
+        event
+      );
     },
-    onPointerOut: () => {
+    onPointerOut: (event: ThreeEvent<PointerEvent>) => {
       setActive(false);
-      onPointerOut?.({
-        nodes,
-        label
-      });
+      onPointerOut?.(
+        {
+          nodes,
+          label
+        },
+        event
+      );
     }
   });
 
@@ -139,12 +152,15 @@ export const Cluster: FC<ClusterProps> = ({
           position={circlePosition as any}
           onPointerOver={pointerOver}
           onPointerOut={pointerOut}
-          onClick={() => {
+          onClick={(event: ThreeEvent<MouseEvent>) => {
             if (!disabled) {
-              onClick?.({
-                nodes,
-                label
-              });
+              onClick?.(
+                {
+                  nodes,
+                  label
+                },
+                event
+              );
             }
           }}
         >

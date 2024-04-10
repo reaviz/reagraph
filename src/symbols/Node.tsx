@@ -25,6 +25,7 @@ import { useStore } from '../store';
 import { useDrag } from '../utils/useDrag';
 import { Icon } from './nodes';
 import { useHoverIntent } from '../utils/useHoverIntent';
+import { ThreeEvent } from '@react-three/fiber';
 
 export interface NodeProps {
   /**
@@ -70,22 +71,35 @@ export interface NodeProps {
   /**
    * The function to call when the pointer is over the node.
    */
-  onPointerOver?: (node: InternalGraphNode) => void;
+  onPointerOver?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
    * The function to call when the pointer is out of the node.
    */
-  onPointerOut?: (node: InternalGraphNode) => void;
+  onPointerOut?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
    * The function to call when the node is clicked.
    */
-  onClick?: (node: InternalGraphNode, props?: CollapseProps) => void;
+  onClick?: (
+    node: InternalGraphNode,
+    props?: CollapseProps,
+    event?: ThreeEvent<MouseEvent>
+  ) => void;
 
   /**
    * The function to call when the node is double clicked.
    */
-  onDoubleClick?: (node: InternalGraphNode) => void;
+  onDoubleClick?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<MouseEvent>
+  ) => void;
 
   /**
    * The function to call when the node is right clicked.
@@ -225,15 +239,15 @@ export const Node: FC<NodeProps> = ({
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDragging,
-    onPointerOver: () => {
+    onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.controls.truckSpeed = 0;
       setActive(true);
-      onPointerOver?.(node);
+      onPointerOver?.(node, event);
     },
-    onPointerOut: () => {
+    onPointerOut: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.controls.truckSpeed = 2.0;
       setActive(false);
-      onPointerOut?.(node);
+      onPointerOut?.(node, event);
     }
   });
 
@@ -371,17 +385,21 @@ export const Node: FC<NodeProps> = ({
       position={nodePosition as any}
       onPointerOver={pointerOver}
       onPointerOut={pointerOut}
-      onClick={() => {
+      onClick={(event: ThreeEvent<MouseEvent>) => {
         if (!disabled && !isDragging) {
-          onClick?.(node, {
-            canCollapse,
-            isCollapsed
-          });
+          onClick?.(
+            node,
+            {
+              canCollapse,
+              isCollapsed
+            },
+            event
+          );
         }
       }}
-      onDoubleClick={() => {
+      onDoubleClick={(event: ThreeEvent<MouseEvent>) => {
         if (!disabled && !isDragging) {
-          onDoubleClick?.(node);
+          onDoubleClick?.(node, event);
         }
       }}
       onContextMenu={() => {

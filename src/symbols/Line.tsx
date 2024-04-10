@@ -50,7 +50,7 @@ export interface LineProps {
   /**
    * A function that is called when the line is clicked.
    */
-  onClick?: () => void;
+  onClick?: (event: ThreeEvent<MouseEvent>) => void;
 
   /**
    * A function that is called when the line is right-clicked.
