@@ -1,3 +1,7 @@
+# 4.16.0 - 4/10/24
+- [feature] Expose events for Click and Pointer API  #224
+- [fix] Node render order #225
+
 # 4.15.27 - 4/4/24
 - [fix] Fix camera view resetting on label visibility change #215
 
