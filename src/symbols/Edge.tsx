@@ -354,11 +354,11 @@ export const Edge: FC<EdgeProps> = ({
     () =>
       menuVisible &&
       contextMenu && (
-        <Html prepend={true} center={true}>
+        <Html prepend={true} center={true} position={midPoint}>
           {contextMenu({ data: edge, onClose: () => setMenuVisible(false) })}
         </Html>
       ),
-    [menuVisible, contextMenu, edge]
+    [menuVisible, contextMenu, midPoint, edge]
   );
 
   return (
