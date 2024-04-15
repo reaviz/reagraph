@@ -1,3 +1,6 @@
+# 4.16.1 - 4/15/24
+- [fix] Fix Edge context menu position #229
+
 # 4.16.0 - 4/10/24
 - [feature] Expose events for Click and Pointer API  #224
 - [fix] Node render order #225
