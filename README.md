@@ -16,9 +16,6 @@
   <a href="https://github.com/reaviz/reagraph/blob/master/LICENSE" target="_blank">
     <img src="https://badgen.now.sh/badge/license/apache2" />
   </a>
-  <a href="https://bundlephobia.com/result?p=reagraph" target="_blank">
-    <img src="https://badgen.net/bundlephobia/minzip/reagraph">
-  </a>
   <a href="https://discord.gg/tt8wGExq35" target="_blank">
     <img src="https://img.shields.io/discord/773948315037073409?label=discord">
   </a>
