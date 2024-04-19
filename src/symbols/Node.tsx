@@ -49,6 +49,11 @@ export interface NodeProps {
   animated?: boolean;
 
   /**
+   * Whether the selected node is highlighted.
+   */
+  hideSelection?: boolean;
+
+  /**
    * Whether the node is draggable.
    */
   draggable?: boolean;
@@ -118,6 +123,7 @@ export interface NodeProps {
 export const Node: FC<NodeProps> = ({
   animated,
   disabled,
+  hideSelection,
   id,
   draggable,
   labelFontUrl,
@@ -261,7 +267,8 @@ export const Node: FC<NodeProps> = ({
           active: combinedActiveState,
           opacity: selectionOpacity,
           animated,
-          node
+          node,
+          selected: isSelected
         })
       ) : (
         <>
@@ -297,7 +304,8 @@ export const Node: FC<NodeProps> = ({
       combinedActiveState,
       selectionOpacity,
       animated,
-      node
+      node,
+      isSelected
     ]
   );
 
@@ -415,12 +423,14 @@ export const Node: FC<NodeProps> = ({
       {...(bind() as any)}
     >
       {nodeComponent}
-      <Ring
-        opacity={isSelected ? 0.5 : 0}
-        size={nodeSize}
-        animated={animated}
-        color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
-      />
+      {!hideSelection && (
+        <Ring
+          opacity={isSelected ? 0.5 : 0}
+          size={nodeSize}
+          animated={animated}
+          color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
+        />
+      )}
       {menuComponent}
       {labelComponent}
     </a.group>

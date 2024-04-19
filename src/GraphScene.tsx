@@ -150,6 +150,11 @@ export interface GraphSceneProps {
   renderNode?: NodeRenderer;
 
   /**
+   * Hide node selection or not
+   */
+  hideNodeSelection?: boolean;
+
+  /**
    * Advanced overrides for the layout.
    */
   layoutOverrides?: LayoutOverrides;
@@ -308,6 +313,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         edgeInterpolation,
         labelFontUrl,
         renderNode,
+        hideNodeSelection,
         ...rest
       },
       ref
@@ -367,6 +373,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               animated={animated}
               contextMenu={contextMenu}
               renderNode={renderNode}
+              hideSelection={hideNodeSelection}
               onClick={onNodeClick}
               onDoubleClick={onNodeDoubleClick}
               onContextMenu={onNodeContextMenu}
