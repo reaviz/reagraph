@@ -1,3 +1,7 @@
+# 4.17.0 - 4/23/24
+- [feature] decouple Ring from Node and move to sphere.
+- [feature] add `selected` to `NodeRendererCallback` props.
+
 # 4.16.1 - 4/15/24
 - [fix] Fix Edge context menu position #229
 
