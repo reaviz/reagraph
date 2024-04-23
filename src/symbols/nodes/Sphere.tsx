@@ -3,11 +3,15 @@ import { useSpring, a } from '@react-spring/three';
 import { animationConfig } from '../../utils/animation';
 import { Color, DoubleSide } from 'three';
 import { NodeRendererProps } from '../../types';
+import { Ring } from '../Ring';
+import { useStore } from '../../store';
 
 export const Sphere: FC<NodeRendererProps> = ({
   color,
   id,
   size,
+  active,
+  selected,
   opacity,
   animated
 }) => {
@@ -27,19 +31,28 @@ export const Sphere: FC<NodeRendererProps> = ({
     }
   });
   const normalizedColor = useMemo(() => new Color(color), [color]);
+  const theme = useStore(state => state.theme);
 
   return (
-    <a.mesh userData={{ id, type: 'node' }} scale={scale as any}>
-      <sphereGeometry attach="geometry" args={[1, 25, 25]} />
-      <a.meshPhongMaterial
-        attach="material"
-        side={DoubleSide}
-        transparent={true}
-        fog={true}
-        opacity={nodeOpacity}
-        color={normalizedColor}
+    <>
+      <a.mesh userData={{ id, type: 'node' }} scale={scale as any}>
+        <sphereGeometry attach="geometry" args={[1, 25, 25]} />
+        <a.meshPhongMaterial
+          attach="material"
+          side={DoubleSide}
+          transparent={true}
+          fog={true}
+          opacity={nodeOpacity}
+          color={normalizedColor}
+        />
+      </a.mesh>
+      <Ring
+        opacity={selected ? 0.5 : 0}
+        size={size}
+        animated={animated}
+        color={selected ? theme.ring.activeFill : theme.ring.fill}
       />
-    </a.mesh>
+    </>
   );
 };
 

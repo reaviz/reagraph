@@ -11,7 +11,6 @@ import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './nodes/Sphere';
 import { Label } from './Label';
-import { Ring } from './Ring';
 import {
   NodeContextMenuProps,
   ContextMenuEvent,
@@ -261,6 +260,7 @@ export const Node: FC<NodeProps> = ({
           active: combinedActiveState,
           opacity: selectionOpacity,
           animated,
+          selected: isSelected || isActive,
           node
         })
       ) : (
@@ -275,6 +275,7 @@ export const Node: FC<NodeProps> = ({
               color={color}
               node={node}
               active={combinedActiveState}
+              selected={isSelected || isActive}
             />
           ) : (
             <Sphere
@@ -285,6 +286,7 @@ export const Node: FC<NodeProps> = ({
               color={color}
               node={node}
               active={combinedActiveState}
+              selected={isSelected || isActive}
             />
           )}
         </>
@@ -297,6 +299,8 @@ export const Node: FC<NodeProps> = ({
       combinedActiveState,
       selectionOpacity,
       animated,
+      isSelected,
+      isActive,
       node
     ]
   );
@@ -415,12 +419,6 @@ export const Node: FC<NodeProps> = ({
       {...(bind() as any)}
     >
       {nodeComponent}
-      <Ring
-        opacity={isSelected ? 0.5 : 0}
-        size={nodeSize}
-        animated={animated}
-        color={isSelected || active ? theme.ring.activeFill : theme.ring.fill}
-      />
       {menuComponent}
       {labelComponent}
     </a.group>
