@@ -25,11 +25,13 @@ export const SphereWithSvg: FC<SphereWithSvgProps> = ({
   active,
   animated,
   image,
+  selected,
   ...rest
 }) => (
   <>
     <Sphere
       id={id}
+      selected={selected}
       size={size}
       opacity={opacity}
       animated={animated}
@@ -40,6 +42,7 @@ export const SphereWithSvg: FC<SphereWithSvgProps> = ({
     <Svg
       {...rest}
       id={id}
+      selected={selected}
       image={image}
       size={size}
       opacity={opacity}

@@ -18,11 +18,13 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
   node,
   active,
   animated,
-  image
+  image,
+  selected
 }) => (
   <>
     <Sphere
       id={id}
+      selected={selected}
       size={size}
       opacity={opacity}
       animated={animated}
@@ -33,6 +35,7 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
     <Icon
       id={id}
       image={image}
+      selected={selected}
       size={size + 8}
       opacity={opacity}
       animated={animated}
