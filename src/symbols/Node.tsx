@@ -260,7 +260,7 @@ export const Node: FC<NodeProps> = ({
           active: combinedActiveState,
           opacity: selectionOpacity,
           animated,
-          selected: isSelected || isActive,
+          selected: isSelected,
           node
         })
       ) : (
@@ -275,7 +275,7 @@ export const Node: FC<NodeProps> = ({
               color={color}
               node={node}
               active={combinedActiveState}
-              selected={isSelected || isActive}
+              selected={isSelected}
             />
           ) : (
             <Sphere
@@ -286,7 +286,7 @@ export const Node: FC<NodeProps> = ({
               color={color}
               node={node}
               active={combinedActiveState}
-              selected={isSelected || isActive}
+              selected={isSelected}
             />
           )}
         </>
@@ -300,7 +300,6 @@ export const Node: FC<NodeProps> = ({
       selectionOpacity,
       animated,
       isSelected,
-      isActive,
       node
     ]
   );
