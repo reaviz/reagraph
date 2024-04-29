@@ -7,7 +7,7 @@
     "test": "vitest --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "prettier": "prettier --loglevel warn --write 'src/**/*.{ts,tsx,js,jsx}'",
-    "lint": "eslint --ext js,ts,tsx",
+    "lint": "eslint --ext js,ts,tsx src",
     "lint:fix": "eslint --ext js,ts,tsx --fix src",
     "start": "storybook dev -p 9009",
     "build-storybook": "storybook build",
