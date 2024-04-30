@@ -5,7 +5,8 @@ import {
   forceManyBody as d3ForceManyBody,
   forceX as d3ForceX,
   forceY as d3ForceY,
-  forceZ as d3ForceZ
+  forceZ as d3ForceZ,
+  forceCenter as d3ForceCenter
 } from 'd3-force-3d';
 import { forceRadial, DagMode } from './forceUtils';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
@@ -123,6 +124,7 @@ export function forceDirected({
 
   // Create the simulation
   const sim = d3ForceSimulation()
+    .force('center', d3ForceCenter(0, 0))
     .force('link', d3ForceLink())
     .force('charge', d3ForceManyBody().strength(nodeStrengthAdjustment))
     .force('x', forceX)
