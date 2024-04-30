@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Billboard, Text } from 'glodrei';
-import { Color, ColorRepresentation } from 'three';
+import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 
 export interface LabelProps {
@@ -44,6 +44,11 @@ export interface LabelProps {
    * Whether the label is active ( dragging, hover, focus ).
    */
   active?: boolean;
+
+  /**
+   * Rotation of the label.
+   */
+  rotation?: Euler | [number, number, number];
 }
 
 export const Label: FC<LabelProps> = ({
@@ -54,7 +59,8 @@ export const Label: FC<LabelProps> = ({
   opacity,
   stroke,
   active,
-  ellipsis
+  ellipsis,
+  rotation
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
@@ -76,6 +82,7 @@ export const Label: FC<LabelProps> = ({
         depthOffset={0}
         maxWidth={100}
         overflowWrap="break-word"
+        rotation={rotation}
       >
         {shortText}
       </Text>

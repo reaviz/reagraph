@@ -317,7 +317,7 @@ export const Edge: FC<EdgeProps> = ({
     () =>
       labelVisible &&
       label && (
-        <a.group position={labelPosition as any} rotation={labelRotation}>
+        <a.group position={labelPosition as any}>
           <Label
             text={label}
             ellipsis={15}
@@ -330,6 +330,7 @@ export const Edge: FC<EdgeProps> = ({
             }
             opacity={selectionOpacity}
             fontSize={theme.edge.label.fontSize}
+            rotation={labelRotation}
           />
         </a.group>
       ),
