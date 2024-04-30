@@ -1,3 +1,11 @@
+# 4.17.2 - 4/30/24
+- [fix] Fix eslint setup #236
+- [fix] Fix label rotation #237
+- [fix] Fix jerky layout switching #238
+
+# 4.17.1 - 4/25/24
+- [fix] Remove active state from selection property #233
+
 # 4.17.0 - 4/23/24
 - [feature] decouple Ring from Node and move to sphere.
 - [feature] add `selected` to `NodeRendererCallback` props.
