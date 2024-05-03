@@ -29,6 +29,18 @@ export interface RingProps {
    * The stroke width of the ring.
    */
   strokeWidth?: number;
+
+  /**
+   * The inner radius of the ring.
+   * Default value: 4
+   */
+  innerRadius?: number;
+
+  /**
+   * The number of segments in the ring geometry.
+   * Default value: 25
+   */
+  segments?: number;
 }
 
 export const Ring: FC<RingProps> = ({
@@ -36,7 +48,9 @@ export const Ring: FC<RingProps> = ({
   size,
   opacity,
   animated,
-  strokeWidth
+  strokeWidth,
+  innerRadius = 4,
+  segments = 25
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
@@ -56,13 +70,14 @@ export const Ring: FC<RingProps> = ({
   });
 
   const strokeWidthFraction = strokeWidth / 10;
+  const outerRadius = innerRadius + strokeWidthFraction;
 
   return (
     <Billboard position={[0, 0, 1]}>
       <a.mesh scale={ringSize as any}>
         <ringGeometry
           attach="geometry"
-          args={[4, 4 + strokeWidthFraction, 25]}
+          args={[innerRadius, outerRadius, segments]}
         />
         <a.meshBasicMaterial
           attach="material"
