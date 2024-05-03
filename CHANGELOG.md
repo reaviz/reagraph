@@ -1,3 +1,6 @@
+# 4.17.3 - 5/02/24
+- [feature] add new parameters to Ring #239
+ 
 # 4.17.2 - 4/30/24
 - [fix] Fix eslint setup #236
 - [fix] Fix label rotation #237
