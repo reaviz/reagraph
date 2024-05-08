@@ -1,3 +1,6 @@
+# 4.17.1 - 5/8/24
+- [chore] upgrade reakeys
+
 # 4.17.0 - 4/23/24
 - [feature] decouple Ring from Node and move to sphere.
 - [feature] add `selected` to `NodeRendererCallback` props.
