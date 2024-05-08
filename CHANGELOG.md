@@ -1,3 +1,6 @@
+# 4.17.4 - 5/8/24
+- [chore] upgrade reakeys
+
 # 4.17.3 - 5/02/24
 - [feature] add new parameters to Ring #239
  
