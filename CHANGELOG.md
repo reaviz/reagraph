@@ -1,5 +1,13 @@
-# 4.17.1 - 5/8/24
-- [chore] upgrade reakeys
+# 4.17.3 - 5/02/24
+- [feature] add new parameters to Ring #239
+ 
+# 4.17.2 - 4/30/24
+- [fix] Fix eslint setup #236
+- [fix] Fix label rotation #237
+- [fix] Fix jerky layout switching #238
+
+# 4.17.1 - 4/25/24
+- [fix] Remove active state from selection property #233
 
 # 4.17.0 - 4/23/24
 - [feature] decouple Ring from Node and move to sphere.

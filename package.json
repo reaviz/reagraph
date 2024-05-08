@@ -1,13 +1,13 @@
 {
   "name": "reagraph",
-  "version": "4.17.0",
+  "version": "4.17.3",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
     "build": "vite build --mode library",
     "test": "vitest --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "prettier": "prettier --loglevel warn --write 'src/**/*.{ts,tsx,js,jsx}'",
-    "lint": "eslint --ext js,ts,tsx",
+    "lint": "eslint --ext js,ts,tsx src",
     "lint:fix": "eslint --ext js,ts,tsx --fix src",
     "start": "storybook dev -p 9009",
     "build-storybook": "storybook build",
