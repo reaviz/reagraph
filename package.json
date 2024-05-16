@@ -12,7 +12,8 @@
     "start": "storybook dev -p 9009",
     "build-storybook": "storybook build",
     "prepare": "husky install",
-    "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes"
+    "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes",
+    "storybook": "storybook dev -p 6006"
   },
   "type": "module",
   "types": "dist/index.d.ts",
