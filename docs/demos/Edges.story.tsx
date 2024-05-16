@@ -1,6 +1,6 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
-import { simpleEdges, simpleNodes } from '../assets/demo';
+import { simpleEdges, simpleEdgesColors, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Edges',
@@ -70,4 +70,8 @@ export const Events = () => (
     edges={simpleEdges}
     onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
   />
+);
+
+export const Colors = () => (
+  <GraphCanvas nodes={simpleNodes} edges={simpleEdgesColors} />
 );
