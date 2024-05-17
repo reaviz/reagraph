@@ -21,6 +21,7 @@ import Graph from 'graphology';
 import { Lasso, LassoType } from './selection';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
+import { useHotkeys } from 'reakeys';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
@@ -72,6 +73,11 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * When the canvas was clicked but didn't hit a node/edge.
    */
   onCanvasClick?: (event: MouseEvent) => void;
+
+  /**
+   * When the cmd/ctrl-shift-a hotkey pressed
+   */
+  onHotkeyA?: () => void;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
@@ -123,6 +129,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         onLasso,
         onLassoEnd,
         glOptions,
+        onHotkeyA,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -158,6 +165,19 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         edges.length + nodes.length > 400 ? false : animated;
 
       const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
+
+      // hotkeys
+      useHotkeys([
+        {
+          name: 'HotkeyA',
+          disabled,
+          category: 'Graph',
+          keys: ['command+shift+a'],
+          callback: () => {
+            if (onHotkeyA) onHotkeyA();
+          }
+        }
+      ]);
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
