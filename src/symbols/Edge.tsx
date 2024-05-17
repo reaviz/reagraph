@@ -132,7 +132,7 @@ export const Edge: FC<EdgeProps> = ({
   // Edge data
   const edges = useStore(state => state.edges);
   const edge = edges.find(e => e.id === id);
-  const { target, source, label, labelVisible = false, size = 1 } = edge;
+  const { target, source, label, labelVisible = false, size = 1, fill } = edge;
   const from = useStore(store => store.nodes.find(node => node.id === source));
   const to = useStore(store => store.nodes.find(node => node.id === target));
 
@@ -278,7 +278,9 @@ export const Edge: FC<EdgeProps> = ({
           color={
             isSelected || active || isActive
               ? theme.arrow.activeFill
-              : theme.arrow.fill
+              : fill
+                ? fill
+                : theme.arrow.fill
           }
           length={arrowLength}
           opacity={selectionOpacity}
@@ -309,7 +311,8 @@ export const Edge: FC<EdgeProps> = ({
       onContextMenu,
       selectionOpacity,
       theme.arrow.activeFill,
-      theme.arrow.fill
+      theme.arrow.fill,
+      fill
     ]
   );
 
@@ -370,7 +373,9 @@ export const Edge: FC<EdgeProps> = ({
         color={
           isSelected || active || isActive
             ? theme.edge.activeFill
-            : theme.edge.fill
+            : fill
+              ? fill
+              : theme.edge.fill
         }
         curve={curve}
         curved={curved}

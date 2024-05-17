@@ -81,15 +81,15 @@ export const clusterNodes: GraphNode[] =
     const type = types[idx];
 
     return {
-    id: `n-${i}`,
-    label: `${type} ${i}`,
-    fill: colors[idx],
-    data: {
-      type,
-      segment: i %2 === 0 ? 'A' : undefined
+      id: `n-${i}`,
+      label: `${type} ${i}`,
+      fill: colors[idx],
+      data: {
+        type,
+        segment: i % 2 === 0 ? 'A' : undefined
+      }
     }
-  }
-});
+  });
 
 export const singleNodeClusterNodes: GraphNode[] =
   range(2).map(i => {
@@ -98,29 +98,29 @@ export const singleNodeClusterNodes: GraphNode[] =
     const type = i;
 
     return {
-    id: `n-${i}`,
-    label: `${type} ${i}`,
-    fill: colors[idx],
-    data: {
-      type
+      id: `n-${i}`,
+      label: `${type} ${i}`,
+      fill: colors[idx],
+      data: {
+        type
+      }
     }
-  }
-});
+  });
 
 export const imbalancedClusterNodes: GraphNode[] =
   range(20).map(i => {
-    const idx = (i == 0) ? 2: (i % 2);
+    const idx = (i == 0) ? 2 : (i % 2);
     const type = types[idx];
 
     return {
-    id: `n-${i}`,
-    label: `${type} ${i}`,
-    fill: colors[idx],
-    data: {
-      type
+      id: `n-${i}`,
+      label: `${type} ${i}`,
+      fill: colors[idx],
+      data: {
+        type
+      }
     }
-  }
-});
+  });
 
 const manyTypes = ['IPV4', 'URL', 'Email', 'MD5', 'SHA256', 'Domain', 'IPV6', 'CRC32', 'SHA512'];
 
@@ -130,14 +130,14 @@ export const manyClusterNodes: GraphNode[] =
     const type = manyTypes[idx];
 
     return {
-    id: `n-${i}`,
-    label: `${type} ${i}`,
-    fill: colors[idx%colors.length],
-    data: {
-      type
+      id: `n-${i}`,
+      label: `${type} ${i}`,
+      fill: colors[idx % colors.length],
+      data: {
+        type
+      }
     }
-  }
-});
+  });
 
 export const clusterEdges: GraphEdge[] = range(random(5, 25)).map(i => ({
   id: `e-${i}`,
@@ -197,6 +197,38 @@ export const simpleEdges: GraphEdge[] = [
     source: 'n-0',
     target: 'n-4',
     label: 'Edge 0-4'
+  }
+];
+
+export const simpleEdgesColors: GraphEdge[] = [
+  {
+    id: '0->1',
+    source: 'n-0',
+    target: 'n-1',
+    label: 'Edge 0-1',
+    fill: `hsl(${random(0, 360)}, 100%, 50%)`
+
+  },
+  {
+    id: '0->2',
+    source: 'n-0',
+    target: 'n-2',
+    label: 'Edge 0-2',
+    fill: `hsl(${random(0, 360)}, 100%, 50%)`
+  },
+  {
+    id: '0->3',
+    source: 'n-0',
+    target: 'n-3',
+    label: 'Edge 0-3',
+    fill: `hsl(${random(0, 360)}, 100%, 50%)`
+  },
+  {
+    id: '0->4',
+    source: 'n-0',
+    target: 'n-4',
+    label: 'Edge 0-4',
+    fill: `hsl(${random(0, 360)}, 100%, 50%)`
   }
 ];
 
