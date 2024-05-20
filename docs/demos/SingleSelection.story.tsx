@@ -71,3 +71,24 @@ export const Dragging = () => {
     />
   );
 };
+
+export const EdgesOnly = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { selections, onEdgeClick, onCanvasClick } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    type: 'single'
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      nodes={complexNodes}
+      edges={complexEdges}
+      selections={selections}
+      onEdgeClick={onEdgeClick}
+      onCanvasClick={onCanvasClick}
+    />
+  );
+};
