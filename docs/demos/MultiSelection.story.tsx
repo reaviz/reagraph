@@ -146,3 +146,27 @@ export const EdgesOnly = () => {
     />
   );
 };
+
+export const NodesAndEdges = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { selections, onNodeClick, onCanvasClick, onEdgeClick } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    type: 'multi',
+    pathSelectionType: 'all',
+    selections: []
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      nodes={complexNodes}
+      edges={complexEdges}
+      selections={selections}
+      onNodeClick={onNodeClick}
+      onEdgeClick={onEdgeClick}
+      onCanvasClick={onCanvasClick}
+    />
+  );
+};
