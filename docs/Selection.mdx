@@ -126,6 +126,11 @@ export interface SelectionResult {
   onNodeClick?: (data: GraphNode) => void;
 
   /**
+   * On click event pass through.
+   */
+  onEdgeClick?: (data: GraphNode) => void;
+
+  /**
    * On canvas click event pass through.
    */
   onCanvasClick?: (event: MouseEvent) => void;
@@ -179,3 +184,6 @@ export const App = () => (
   />
 );
 ```
+
+## Edge Selection
+Depending on the `PathSelectionTypes` and `SelectionTypes`, edges are also selected onNodeClick. If you don't wish to select edges onNodeClick for multi selections, set `PathSelectionTypes` to 'direct'.
