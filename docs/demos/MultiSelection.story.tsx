@@ -9,7 +9,7 @@ export default {
 
 export const Defaults = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, onNodeClick, onCanvasClick } = useSelection({
+  const { selections, onNodeClick, onCanvasClick, onEdgeClick } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -24,6 +24,7 @@ export const Defaults = () => {
       edges={complexEdges}
       selections={selections}
       onNodeClick={onNodeClick}
+      onEdgeClick={onEdgeClick}
       onCanvasClick={onCanvasClick}
     />
   );
@@ -122,5 +123,50 @@ export const PathFinding = () => {
         onNodeClick={onNodeClick}
       />
     </Fragment>
+  );
+};
+
+export const EdgesOnly = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { selections, onCanvasClick, onEdgeClick } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    type: 'multi'
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      nodes={complexNodes}
+      edges={complexEdges}
+      selections={selections}
+      onEdgeClick={onEdgeClick}
+      onCanvasClick={onCanvasClick}
+    />
+  );
+};
+
+export const NodesAndEdges = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { selections, onNodeClick, onCanvasClick, onEdgeClick } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    type: 'multi',
+    pathSelectionType: 'all',
+    selections: []
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      nodes={complexNodes}
+      edges={complexEdges}
+      selections={selections}
+      onNodeClick={onNodeClick}
+      onEdgeClick={onEdgeClick}
+      onCanvasClick={onCanvasClick}
+    />
   );
 };

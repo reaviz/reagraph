@@ -126,6 +126,11 @@ export interface SelectionResult {
   onNodeClick?: (data: GraphNode) => void;
 
   /**
+   * On click event pass through.
+   */
+  onEdgeClick?: (data: GraphEdge) => void;
+
+  /**
    * On canvas click event pass through.
    */
   onCanvasClick?: (event: MouseEvent) => void;
@@ -238,15 +243,20 @@ export const useSelection = ({
 
   const onNodeClick = useCallback(
     (data: GraphNode) => {
+      // variable used for adjacentEdges state
+      let isAdd = false;
+
       if (isMulti) {
         if (type === 'multiModifier') {
           if (metaKeyDown) {
             addSelection(data.id);
+            isAdd = true;
           } else {
             clearSelections(data.id);
           }
         } else {
           addSelection(data.id);
+          isAdd = true;
         }
       } else {
         clearSelections(data.id);
@@ -261,11 +271,15 @@ export const useSelection = ({
         }
 
         const graph = ref.current.getGraph();
-        const { nodes: adjacents } = getAdjacents(
+        const { nodes: adjacents, edges: adjacentsEdges } = getAdjacents(
           graph,
           [data.id],
           pathSelectionType
         );
+
+        // add edges depending on the pathSelectionType
+        if (isAdd && isMulti && pathSelectionType !== 'direct')
+          addSelection([...adjacentsEdges, data.id]);
 
         ref.current?.centerGraph([data.id, ...adjacents], {
           centerOnlyIfNodesNotInView: true
@@ -282,6 +296,25 @@ export const useSelection = ({
       ref,
       type
     ]
+  );
+
+  const onEdgeClick = useCallback(
+    (data: GraphEdge) => {
+      if (isMulti) {
+        if (type === 'multiModifier') {
+          if (metaKeyDown) {
+            addSelection(data.id);
+          } else {
+            clearSelections(data.id);
+          }
+        } else {
+          addSelection(data.id);
+        }
+      } else {
+        clearSelections(data.id);
+      }
+    },
+    [addSelection, clearSelections, isMulti, metaKeyDown, type]
   );
 
   const selectNodePaths = useCallback(
@@ -405,7 +438,7 @@ export const useSelection = ({
       if (graph) {
         const { nodes, edges } = getAdjacents(
           graph,
-          internalSelections,
+          internalSelections.filter(id => graph.nodes().includes(id)),
           pathSelectionType
         );
         setInternalActives([...nodes, ...edges]);
@@ -454,6 +487,7 @@ export const useSelection = ({
   return {
     actives: joinedActives,
     onNodeClick,
+    onEdgeClick,
     onNodePointerOver,
     onNodePointerOut,
     onLasso,
