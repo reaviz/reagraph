@@ -126,6 +126,11 @@ export interface SelectionResult {
   onNodeClick?: (data: GraphNode) => void;
 
   /**
+   * On click event pass through.
+   */
+  onEdgeClick?: (data: GraphEdge) => void;
+
+  /**
    * On canvas click event pass through.
    */
   onCanvasClick?: (event: MouseEvent) => void;
@@ -282,6 +287,25 @@ export const useSelection = ({
       ref,
       type
     ]
+  );
+
+  const onEdgeClick = useCallback(
+    (data: GraphEdge) => {
+      if (isMulti) {
+        if (type === 'multiModifier') {
+          if (metaKeyDown) {
+            addSelection(data.id);
+          } else {
+            clearSelections(data.id);
+          }
+        } else {
+          addSelection(data.id);
+        }
+      } else {
+        clearSelections(data.id);
+      }
+    },
+    [addSelection, clearSelections, isMulti, metaKeyDown, type]
   );
 
   const selectNodePaths = useCallback(
@@ -454,6 +478,7 @@ export const useSelection = ({
   return {
     actives: joinedActives,
     onNodeClick,
+    onEdgeClick,
     onNodePointerOver,
     onNodePointerOut,
     onLasso,
