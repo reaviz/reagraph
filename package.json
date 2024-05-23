@@ -1,5 +1,5 @@
 {
-  "name": "reagraph",
+  "name": "@capventis/reagraph",
   "version": "4.17.4",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
