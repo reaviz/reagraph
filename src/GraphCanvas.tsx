@@ -134,6 +134,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       useImperativeHandle(ref, () => ({
         centerGraph: (nodeIds, opts) =>
           rendererRef.current?.centerGraph(nodeIds, opts),
+        fitNodesInView: (nodeIds, opts) =>
+          rendererRef.current?.fitNodesInView(nodeIds, opts),
         zoomIn: () => controlsRef.current?.zoomIn(),
         zoomOut: () => controlsRef.current?.zoomOut(),
         panLeft: () => controlsRef.current?.panLeft(),

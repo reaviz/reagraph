@@ -106,6 +106,7 @@ export const LiveUpdates = () => {
 
   useEffect(() => {
     ref.current?.centerGraph();
+    ref.current?.fitNodesInView()
   }, [nodes]);
 
   return (

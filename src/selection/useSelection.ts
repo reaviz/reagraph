@@ -270,6 +270,9 @@ export const useSelection = ({
         ref.current?.centerGraph([data.id, ...adjacents], {
           centerOnlyIfNodesNotInView: true
         });
+        ref.current.fitNodesInView([data.id, ...adjacents], {
+          fitOnlyIfNodesNotInView: true
+        });
       }
     },
     [
@@ -355,6 +358,7 @@ export const useSelection = ({
           ref.current?.centerGraph([], {
             centerOnlyIfNodesNotInView: true
           });
+          ref.current.fitNodesInView([], { fitOnlyIfNodesNotInView: true });
         }
       }
     },
