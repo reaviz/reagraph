@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { getVisibleEntities, GraphCanvas, RadialMenu, useCollapse } from '../../src';
-import { parentEdges, parentNodes } from '../assets/demo';
+import { parentEdges, parentNodes, simpleEdges, simpleEdgesPairs, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Collapsible',
@@ -66,6 +66,40 @@ export const RadialContextMenu = () => (
   <GraphCanvas
     nodes={parentNodes}
     edges={parentEdges}
+    contextMenu={({ data, canCollapse, isCollapsed, onCollapse, onClose }) => (
+      <RadialMenu
+        onClose={onClose}
+        items={[
+          {
+            label: 'Add Node',
+            onClick: () => {
+              alert('Add a node');
+              onClose();
+            }
+          },
+          {
+            label: 'Remove',
+            onClick: () => {
+              alert('Remove the node');
+              onClose();
+            }
+          },
+          ...(canCollapse
+            ? [{
+              label: isCollapsed ? 'Expand' : 'Collapse',
+              onClick: onCollapse
+            }]
+            : [])
+        ]}
+      />
+    )}
+  />
+);
+
+export const RadialContextMenuPairEdges = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdgesPairs}
     contextMenu={({ data, canCollapse, isCollapsed, onCollapse, onClose }) => (
       <RadialMenu
         onClose={onClose}

@@ -6,6 +6,7 @@ interface GetHiddenChildrenInput {
   edges: GraphEdge[];
   currentHiddenNodes: GraphNode[];
   currentHiddenEdges: GraphEdge[];
+  rootNodeId?: string;
 }
 
 interface GetVisibleIdsInput {
@@ -28,8 +29,16 @@ function getHiddenChildren({
   nodes,
   edges,
   currentHiddenNodes,
-  currentHiddenEdges
+  currentHiddenEdges,
+  rootNodeId
 }: GetHiddenChildrenInput) {
+  // trivial case to end recursive
+  if (nodeId === rootNodeId)
+    return {
+      hiddenEdges: [],
+      hiddenNodes: []
+    };
+
   const hiddenNodes: GraphNode[] = [];
   const hiddenEdges: GraphEdge[] = [];
   const curHiddenNodeIds = currentHiddenNodes.map(n => n.id);
@@ -60,7 +69,10 @@ function getHiddenChildren({
     }
     if (hideNode) {
       // Need to hide this node and any children of this node
-      const node = nodes.find(n => n.id === outboundEdgeNodeId);
+      // and dont hide this node if it is the root node
+      const node = nodes.find(
+        n => n.id === outboundEdgeNodeId && outboundEdgeNodeId !== rootNodeId
+      );
       if (node) {
         hiddenNodes.push(node);
       }
@@ -69,7 +81,8 @@ function getHiddenChildren({
         nodes,
         edges,
         currentHiddenEdges: hiddenEdges,
-        currentHiddenNodes: hiddenNodes
+        currentHiddenNodes: hiddenNodes,
+        rootNodeId: rootNodeId ?? nodeId
       });
       hiddenEdges.push(...nested.hiddenEdges);
       hiddenNodes.push(...nested.hiddenNodes);
