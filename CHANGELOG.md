@@ -1,3 +1,6 @@
+# 4.18.0 - 5/23/24
+- [feature] Add fitNodesInView function
+
 # 4.17.4 - 5/8/24
 - [chore] upgrade reakeys
 
