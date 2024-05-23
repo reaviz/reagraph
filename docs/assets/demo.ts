@@ -200,6 +200,34 @@ export const simpleEdges: GraphEdge[] = [
   }
 ];
 
+export const simpleEdgesPairs: GraphEdge[] = [
+  ...simpleEdges,
+  {
+    id: '1->0',
+    source: 'n-1',
+    target: 'n-0',
+    label: 'Edge 1-0'
+  },
+  {
+    id: '2->0',
+    source: 'n-2',
+    target: 'n-0',
+    label: 'Edge 2-0'
+  },
+  {
+    id: '3->0',
+    source: 'n-3',
+    target: 'n-0',
+    label: 'Edge 3-0'
+  },
+  {
+    id: '4->0',
+    source: 'n-4',
+    target: 'n-0',
+    label: 'Edge 4-0'
+  }
+]
+
 export const simpleEdgesColors: GraphEdge[] = [
   {
     id: '0->1',
