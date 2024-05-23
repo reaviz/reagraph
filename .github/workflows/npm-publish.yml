@@ -1,7 +1,8 @@
 name: publish npm package
 
 on:
-  workflow_dispatch
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -11,10 +12,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
+          scope: "@capventis"
+          registry-url: https://npm.pkg.github.com/
       - run: npm ci
       - run: npm run build
-      - uses: JS-DevTools/npm-publish@v2
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-      - if: ${{ steps.publish.outputs.type }}
-        run: echo "Version changed!"
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
