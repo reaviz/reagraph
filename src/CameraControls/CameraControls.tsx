@@ -137,6 +137,20 @@ export const CameraControls: FC<
       cameraRef.current?.zoom(-camera.zoom / 2, animated);
     }, [animated, camera.zoom]);
 
+    const dollyIn = useCallback(
+      distance => {
+        cameraRef.current?.dolly(distance, animated);
+      },
+      [animated]
+    );
+
+    const dollyOut = useCallback(
+      distance => {
+        cameraRef.current?.dolly(distance, animated);
+      },
+      [animated]
+    );
+
     const panRight = useCallback(
       event => {
         if (!isOrbiting) {
@@ -296,6 +310,8 @@ export const CameraControls: FC<
         controls: cameraRef.current,
         zoomIn: () => zoomIn(),
         zoomOut: () => zoomOut(),
+        dollyIn: (distance = 1000) => dollyIn(distance),
+        dollyOut: (distance = -1000) => dollyOut(distance),
         panLeft: (deltaTime = 100) => panLeft({ deltaTime }),
         panRight: (deltaTime = 100) => panRight({ deltaTime }),
         panDown: (deltaTime = 100) => panDown({ deltaTime }),

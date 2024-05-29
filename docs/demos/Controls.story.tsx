@@ -19,6 +19,8 @@ export const All = () => {
         <br />
         <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.zoomIn()}>Zoom In</button>
         <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.zoomOut()}>Zoom Out</button>
+        <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.dollyIn()}>Dolly In</button>
+        <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.dollyOut()}>Dolly Out</button>
         <br />
         <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.panDown()}>Pan Down</button>
         <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.panUp()}>Pan Up</button>
