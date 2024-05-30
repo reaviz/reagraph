@@ -1,3 +1,6 @@
+# 4.19.0 - 5/30/24
+- [feature] Add dolly camera controls #246
+
 # 4.18.1 - 5/23/24
 - [fix] Fix fit view bug after panning and zooming #246
 
