@@ -2,6 +2,7 @@ import React, {
   FC,
   ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState
@@ -303,6 +304,12 @@ export const Node: FC<NodeProps> = ({
       node
     ]
   );
+
+  useEffect(() => {
+    // on mount, set position
+    setNodePosition(id, position);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const labelComponent = useMemo(
     () =>
