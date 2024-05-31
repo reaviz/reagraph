@@ -1,0 +1,144 @@
+import { Meta, Story, ArgsTable } from '@storybook/blocks';
+import { GraphCanvas } from '../src';
+
+<Meta title="Docs/Advanced/Camera Controls" />
+
+# Camera Controls
+Reagraph provides a set of camera controls that allow you to interact with the graph view. These controls include the ability to center the camera view around specific nodes, zoom in and out, and pan the camera view.
+
+
+## Usage
+First, you need to get a reference to the `GraphRef`:
+
+```jsx
+
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+return (
+    <GraphCanvas ref={graphRef} {...} />
+)
+```
+This ref will allow you to access the camera controls methods.
+
+## Centering
+Reagraph supports the ability to dynamically center nodes using the `centerGraph` and `fitNodesInView` methods from the `GraphCanvasRef`. These methods allows you to programmatically center the camera view around specific nodes or the entire graph.
+
+Use the `fitNodesInView` method to center all nodes within view of the camera:
+
+```js
+graphRef.current?.fitNodesInView();
+```
+
+If you want to fit the view around specific nodes, you can pass an array of node ids to the `fitNodesInView` method:
+
+```jsx
+graphRef.current?.fitNodesInView(['node1', 'node2']);
+```
+
+If you want to center the camera on a given set of nodes without adjusting the zoom, you can use the `centerGraph` method:
+
+```jsx
+// Center the camera position based on all nodes in the graph
+graphRef.current?.centerGraph();
+
+// Center the camera position based on specific nodes
+graphRef.current?.centerGraph(['node1', 'node2']);
+```
+
+### Examples
+In this example, clicking the "Fit View" button will fit the view around all the nodes in the graph:
+```jsx
+import React, { useRef } from 'react';
+import { GraphCanvas } from 'reagraph';
+
+const MyComponent = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+
+  const fitView = () => {
+    graphRef.current?.fitNodesInView();
+  };
+
+  return (
+    <div>
+      <GraphCanvas ref={graphRef} {...} />
+      <button onClick={fitView}>Fit View</button>
+    </div>
+  );
+};
+```
+
+
+Here's a more advanced example that fits the view on the whole graph whenever new nodes are added:
+```jsx
+import React, { useRef, useEffect } from 'react';
+import { GraphCanvas } from 'reagraph';
+
+const MyComponent = ({ nodes }) => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+
+  useEffect(() => {
+    graphRef.current?.fitNodesInView();
+  }, [nodes]);
+
+  return <GraphCanvas ref={graphRef} {...} />;
+};
+```
+
+## Zooming/Dollying
+
+Use the `zoomIn` and `zoomOut` methods to zoom in and out of the graph. This will adjust the camera's zoom level, not the camera's position:
+
+```js
+graphRef.current?.zoomIn();
+graphRef.current?.zoomOut();
+```
+
+You can use the `dollyIn` and `dollyOut` methods to move the camera closer or further away from the graph:
+
+```js
+graphRef.current?.dollyIn();
+graphRef.current?.dollyOut();
+```
+
+### Examples
+In this example, clicking the "Zoom In" and "Zoom Out" buttons will zoom in and out of the graph:
+```jsx
+import React, { useRef } from 'react';
+import { GraphCanvas } from 'reagraph';
+
+const MyComponent = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+
+  const zoomIn = () => {
+    graphRef.current?.zoomIn();
+  };
+
+  const zoomOut = () => {
+    graphRef.current?.zoomOut();
+  };
+
+  return (
+    <div>
+      <GraphCanvas ref={graphRef} {...} />
+      <button onClick={zoomIn}>Zoom In</button>
+      <button onClick={zoomOut}>Zoom Out</button>
+    </div>
+  );
+};
+```
+
+## Panning
+Use the `panUp`, `panDown`, `panLeft`, and `panRight` methods to pan the camera view:
+
+```js
+graphRef.current?.panUp();
+graphRef.current?.panDown();
+graphRef.current?.panLeft();
+graphRef.current?.panRight();
+```
+
+## Reset Controls
+Use the `resetCamera` method to reset the camera controls to their default values:
+
+```js
+graphRef.current?.resetCamera();
+```

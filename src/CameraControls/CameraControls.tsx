@@ -116,6 +116,7 @@ export const CameraControls: FC<
     const gl = useThree(state => state.gl);
     const isOrbiting = mode === 'orbit';
     const setPanning = useStore(state => state.setPanning);
+    const draggingId = useStore(state => state.draggingId);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
@@ -136,6 +137,20 @@ export const CameraControls: FC<
     const zoomOut = useCallback(() => {
       cameraRef.current?.zoom(-camera.zoom / 2, animated);
     }, [animated, camera.zoom]);
+
+    const dollyIn = useCallback(
+      distance => {
+        cameraRef.current?.dolly(distance, animated);
+      },
+      [animated]
+    );
+
+    const dollyOut = useCallback(
+      distance => {
+        cameraRef.current?.dolly(distance, animated);
+      },
+      [animated]
+    );
 
     const panRight = useCallback(
       event => {
@@ -261,12 +276,19 @@ export const CameraControls: FC<
     }, [cameraRef, setPanning]);
 
     useEffect(() => {
-      if (mode === 'rotate') {
-        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.ROTATE;
+      // If a node is being dragged, disable the camera controls
+      if (draggingId) {
+        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
       } else {
-        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
+        if (mode === 'rotate') {
+          cameraRef.current.mouseButtons.left =
+            ThreeCameraControls.ACTION.ROTATE;
+        } else {
+          cameraRef.current.mouseButtons.left =
+            ThreeCameraControls.ACTION.TRUCK;
+        }
       }
-    }, [mode]);
+    }, [draggingId, mode]);
 
     useHotkeys([
       {
@@ -296,6 +318,8 @@ export const CameraControls: FC<
         controls: cameraRef.current,
         zoomIn: () => zoomIn(),
         zoomOut: () => zoomOut(),
+        dollyIn: (distance = 1000) => dollyIn(distance),
+        dollyOut: (distance = -1000) => dollyOut(distance),
         panLeft: (deltaTime = 100) => panLeft({ deltaTime }),
         panRight: (deltaTime = 100) => panRight({ deltaTime }),
         panDown: (deltaTime = 100) => panDown({ deltaTime }),

@@ -105,7 +105,7 @@ export const LiveUpdates = () => {
   const [edges, setEdges] = useState(simpleEdges);
 
   useEffect(() => {
-    ref.current?.centerGraph();
+    ref.current?.fitNodesInView();
   }, [nodes]);
 
   return (
