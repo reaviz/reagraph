@@ -30,7 +30,11 @@ import {
   Edges,
   Node
 } from './symbols';
-import { CenterNodesParams, useCenterGraph } from './CameraControls';
+import {
+  CenterNodesParams,
+  FitNodesParams,
+  useCenterGraph
+} from './CameraControls';
 import { LabelVisibilityType } from './utils';
 import { useStore } from './store';
 import Graph from 'graphology';
@@ -266,7 +270,7 @@ export interface GraphSceneRef {
    * @param nodeIds - An array of node IDs to center the graph on. If this parameter is omitted,
    * the graph will be centered on all nodes.
    *
-   * @param centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
+   * @param opts.centerOnlyIfNodesNotInView - A boolean flag that determines whether the graph should
    * only be centered if the nodes specified by `ids` are not currently in view. If this
    * parameter is `true`, the graph will only be re-centered if one or more of the nodes
    * specified by `ids` are not currently in view. If this parameter is
@@ -274,6 +278,21 @@ export interface GraphSceneRef {
    * are currently in view.
    */
   centerGraph: (nodeIds?: string[], opts?: CenterNodesParams) => void;
+
+  /**
+   * Fit all the given nodes into view of the camera.
+   *
+   * @param nodeIds - An array of node IDs to fit the view on. If this parameter is omitted,
+   * the view will fit to all nodes.
+   *
+   * @param opts.fitOnlyIfNodesNotInView - A boolean flag that determines whether the view should
+   * only be fit if the nodes specified by `ids` are not currently in view. If this
+   * parameter is `true`, the view will only be fit if one or more of the nodes
+   * specified by `ids` are not currently visible in the viewport. If this parameter is
+   * `false` or omitted, the view will be fit regardless of whether the nodes
+   * are currently in view.
+   */
+  fitNodesInView: (nodeIds?: string[], opts?: FitNodesParams) => void;
 
   /**
    * Calls render scene on the graph. this is useful when you want to manually render the graph
@@ -338,21 +357,23 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const clusters = useStore(state => [...state.clusters.values()]);
 
       // Center the graph on the nodes
-      const { centerNodesById, isCentered } = useCenterGraph({
-        animated,
-        disabled,
-        layoutType
-      });
+      const { centerNodesById, fitNodesInViewById, isCentered } =
+        useCenterGraph({
+          animated,
+          disabled,
+          layoutType
+        });
 
       // Let's expose some helper methods
       useImperativeHandle(
         ref,
         () => ({
           centerGraph: centerNodesById,
+          fitNodesInView: fitNodesInViewById,
           graph,
           renderScene: () => gl.render(scene, camera)
         }),
-        [centerNodesById, graph, gl, scene, camera]
+        [centerNodesById, fitNodesInViewById, graph, gl, scene, camera]
       );
 
       const nodeComponents = useMemo(

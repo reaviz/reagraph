@@ -1,3 +1,12 @@
+# 4.19.0 - 5/30/24
+- [feature] Add dolly camera controls #246
+
+# 4.18.1 - 5/23/24
+- [fix] Fix fit view bug after panning and zooming #246
+
+# 4.18.0 - 5/23/24
+- [feature] Add fitNodesInView function #244
+
 # 4.17.4 - 5/8/24
 - [chore] upgrade reakeys
 
