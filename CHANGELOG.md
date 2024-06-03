@@ -1,5 +1,8 @@
+# 4.19.1 - 6/3/24
+- [fix] Fix camera pan while dragging node #248
+
 # 4.19.0 - 5/30/24
-- [feature] Add dolly camera controls #246
+- [feature] Add dolly camera controls #247
 
 # 4.18.1 - 5/23/24
 - [fix] Fix fit view bug after panning and zooming #246
