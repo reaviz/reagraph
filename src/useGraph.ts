@@ -63,6 +63,7 @@ export const useGraph = ({
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
   const camera = useThree(state => state.camera) as PerspectiveCamera;
+  const setNodePosition = useStore(state => state.setNodePosition);
 
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
@@ -118,6 +119,11 @@ export const useGraph = ({
       setEdges(result.edges);
       setNodes(result.nodes);
       setClusters(clusters);
+
+      // set node position here
+      result.nodes.forEach(obj => {
+        setNodePosition(obj.id, obj.position);
+      });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
