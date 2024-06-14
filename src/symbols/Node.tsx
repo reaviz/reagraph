@@ -305,12 +305,6 @@ export const Node: FC<NodeProps> = ({
     ]
   );
 
-  useEffect(() => {
-    // on mount, set position
-    setNodePosition(id, position);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const labelComponent = useMemo(
     () =>
       (labelVisible || isSelected || active) &&
