@@ -1,3 +1,6 @@
+# 4.19.2 - 6/24/24
+- [chore] Update reakeys #251
+
 # 4.19.1 - 6/3/24
 - [fix] Fix camera pan while dragging node #248
 
