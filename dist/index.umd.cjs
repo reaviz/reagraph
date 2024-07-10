@@ -1758,7 +1758,7 @@
       () => stroke ? new three.Color(stroke) : void 0,
       [stroke]
     );
-    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsx(
+    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsx(glodrei.Html, { prepend: true, center: true, children: /* @__PURE__ */ jsxRuntime.jsx("div", { style: { backgroundColor: `${backgroundColor}`, borderRadius }, children: /* @__PURE__ */ jsxRuntime.jsx(
       glodrei.Text,
       {
         font: fontUrl,
@@ -1774,7 +1774,7 @@
         rotation,
         children: shortText
       }
-    ) });
+    ) }) }) });
   };
   Label.defaultProps = {
     opacity: 1,

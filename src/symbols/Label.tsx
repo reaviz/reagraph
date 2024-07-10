@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, Text } from 'glodrei';
+import { Billboard, Html, Text } from 'glodrei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 
@@ -89,23 +89,25 @@ export const Label: FC<LabelProps> = ({
 
   return (
     <Billboard position={[0, 0, 1]}>
-      <Text
-        font={fontUrl}
-        fontSize={fontSize}
-        color={normalizedColor}
-        fillOpacity={opacity}
-        textAlign="center"
-        outlineWidth={stroke ? 1 : 0}
-        outlineColor={normalizedStroke}
-        depthOffset={0}
-        maxWidth={maxWidth}
-        overflowWrap="break-word"
-        rotation={rotation}
-        // backgroundColor={backgroundColor} -> Errors
-        // borderRadius={borderRadius} -> Errors
-      >
-        {shortText}
-      </Text>
+      <Html prepend={true} center={true}>
+        <div style={{ backgroundColor: `${backgroundColor}`, borderRadius }}>
+          <Text
+            font={fontUrl}
+            fontSize={fontSize}
+            color={normalizedColor}
+            fillOpacity={opacity}
+            textAlign="center"
+            outlineWidth={stroke ? 1 : 0}
+            outlineColor={normalizedStroke}
+            depthOffset={0}
+            maxWidth={maxWidth}
+            overflowWrap="break-word"
+            rotation={rotation}
+          >
+            {shortText}
+          </Text>
+        </div>
+      </Html>
     </Billboard>
   );
 };
