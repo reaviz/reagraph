@@ -11,7 +11,7 @@
     "lint:fix": "eslint --ext js,ts,tsx --fix src",
     "start": "storybook dev -p 9009",
     "build-storybook": "storybook build",
-    "prepare": "npm run build",
+    "prepare": "husky install",
     "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes"
   },
   "type": "module",

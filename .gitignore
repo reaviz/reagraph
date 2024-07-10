@@ -6,7 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pkg/
 .rpt2_cache/
-dist/
+# dist/
 storybook-static/
 
 # Runtime data
