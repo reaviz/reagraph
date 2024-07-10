@@ -15,7 +15,10 @@ export const lightTheme: Theme = {
       stroke: '#fff',
       activeColor: '#1DE9AC',
       fontSize: 6,
-      maxWidth: 100
+      maxWidth: 100,
+      ellipsis: 100,
+      backgroundColor: '#1E2026',
+      borderRadius: 5
     },
     subLabel: {
       color: '#ddd',
@@ -42,7 +45,10 @@ export const lightTheme: Theme = {
       color: '#2A6475',
       activeColor: '#1DE9AC',
       fontSize: 6,
-      maxWidth: 100
+      maxWidth: 100,
+      ellipsis: 100,
+      backgroundColor: '#1E2026',
+      borderRadius: 5
     }
   },
   arrow: {
@@ -55,8 +61,14 @@ export const lightTheme: Theme = {
     selectedOpacity: 1,
     inactiveOpacity: 0.1,
     label: {
-      stroke: '#fff',
-      color: '#2A6475'
+      stroke: '#1E2026',
+      color: '#ACBAC7',
+      activeColor: '#1DE9AC',
+      fontSize: 6,
+      maxWidth: 100,
+      ellipsis: 100,
+      backgroundColor: '#1E2026',
+      borderRadius: 5
     }
   }
 };

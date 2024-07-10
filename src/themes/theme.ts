@@ -17,6 +17,9 @@ export interface Theme {
       activeColor: ColorRepresentation;
       fontSize?: number;
       maxWidth?: number;
+      ellipsis?: number;
+      backgroundColor?: ColorRepresentation;
+      borderRadius?: number;
     };
     subLabel?: {
       color: ColorRepresentation;
@@ -40,6 +43,9 @@ export interface Theme {
       activeColor: ColorRepresentation;
       fontSize?: number;
       maxWidth?: number;
+      ellipsis?: number;
+      backgroundColor?: ColorRepresentation;
+      borderRadius?: number;
     };
   };
   arrow: {
@@ -57,8 +63,14 @@ export interface Theme {
     selectedOpacity?: number;
     inactiveOpacity?: number;
     label?: {
-      stroke?: ColorRepresentation;
       color: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor: ColorRepresentation;
+      fontSize?: number;
+      maxWidth?: number;
+      ellipsis?: number;
+      backgroundColor?: ColorRepresentation;
+      borderRadius?: number;
     };
   };
 }

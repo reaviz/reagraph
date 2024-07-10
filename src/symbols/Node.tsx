@@ -316,6 +316,7 @@ export const Node: FC<NodeProps> = ({
               opacity={selectionOpacity}
               stroke={theme.node.label.stroke}
               maxWidth={theme.node.label.maxWidth}
+              ellipsis={theme.node.label.ellipsis}
               active={isSelected || active || isDragging || isActive}
               color={
                 isSelected || active || isDragging || isActive
@@ -331,6 +332,9 @@ export const Node: FC<NodeProps> = ({
                 fontUrl={labelFontUrl}
                 fontSize={theme.node.label.fontSize}
                 maxWidth={theme.node.label.maxWidth}
+                ellipsis={theme.node.label.ellipsis}
+                backgroundColor={theme.node.label.backgroundColor}
+                borderRadius={theme.node.label.borderRadius}
                 opacity={selectionOpacity}
                 stroke={theme.node.subLabel?.stroke}
                 active={isSelected || active || isDragging || isActive}
@@ -361,7 +365,12 @@ export const Node: FC<NodeProps> = ({
       theme.node.label.stroke,
       theme.node.subLabel?.activeColor,
       theme.node.subLabel?.color,
-      theme.node.subLabel?.stroke
+      theme.node.subLabel?.stroke,
+      theme.node.label.fontSize,
+      theme.node.label.maxWidth,
+      theme.node.label.ellipsis,
+      theme.node.label.backgroundColor,
+      theme.node.label.borderRadius
     ]
   );
 

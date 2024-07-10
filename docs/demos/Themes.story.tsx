@@ -49,7 +49,10 @@ CustomTheme.args = {
         color: '#ACBAC7',
         activeColor: '#1DE9AC',
         fontSize: 6,
-        maxWidth: 100
+        maxWidth: 100,
+        ellipsis: 100,
+        backgroundColor: '#1E2026',
+        borderRadius: 5
       }
     },
     menu: {
@@ -75,7 +78,10 @@ CustomTheme.args = {
         color: '#ACBAC7',
         activeColor: '#1DE9AC',
         fontSize: 6,
-        maxWidth: 100
+        maxWidth: 100,
+        ellipsis: 100,
+        backgroundColor: '#1E2026',
+        borderRadius: 5
       }
     },
     arrow: {

@@ -320,7 +320,7 @@ export const Edge: FC<EdgeProps> = ({
         <a.group position={labelPosition as any}>
           <Label
             text={label}
-            ellipsis={15}
+            ellipsis={theme.edge.label.ellipsis}
             fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
@@ -332,6 +332,8 @@ export const Edge: FC<EdgeProps> = ({
             fontSize={theme.edge.label.fontSize}
             maxWidth={theme.edge.label.maxWidth}
             rotation={labelRotation}
+            backgroundColor={theme.edge.label.backgroundColor}
+            borderRadius={theme.edge.label.borderRadius}
           />
         </a.group>
       ),
@@ -349,7 +351,10 @@ export const Edge: FC<EdgeProps> = ({
       theme.edge.label.color,
       theme.edge.label.fontSize,
       theme.edge.label.maxWidth,
-      theme.edge.label.stroke
+      theme.edge.label.ellipsis,
+      theme.edge.label.stroke,
+      theme.edge.label.backgroundColor,
+      theme.edge.label.borderRadius
     ]
   );
 

@@ -15,7 +15,10 @@ export const darkTheme: Theme = {
       color: '#ACBAC7',
       activeColor: '#1DE9AC',
       fontSize: 6,
-      maxWidth: 100
+      maxWidth: 100,
+      ellipsis: 100,
+      backgroundColor: '#1E2026',
+      borderRadius: 5
     },
     subLabel: {
       stroke: '#1E2026',
@@ -42,7 +45,10 @@ export const darkTheme: Theme = {
       color: '#ACBAC7',
       activeColor: '#1DE9AC',
       fontSize: 6,
-      maxWidth: 100
+      maxWidth: 100,
+      ellipsis: 100,
+      backgroundColor: '#1E2026',
+      borderRadius: 5
     }
   },
   arrow: {
@@ -56,7 +62,13 @@ export const darkTheme: Theme = {
     inactiveOpacity: 0.1,
     label: {
       stroke: '#1E2026',
-      color: '#ACBAC7'
+      color: '#ACBAC7',
+      activeColor: '#1DE9AC',
+      fontSize: 6,
+      maxWidth: 100,
+      ellipsis: 100,
+      backgroundColor: '#1E2026',
+      borderRadius: 5
     }
   }
 };
