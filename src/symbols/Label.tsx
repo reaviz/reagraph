@@ -54,6 +54,16 @@ export interface LabelProps {
    * Maximum width of the label.
    */
   maxWidth?: number;
+
+  /**
+   * Background color of the label.
+   */
+  backgroundColor?: ColorRepresentation;
+
+  /**
+   * Border radius of the label.
+   */
+  borderRadius?: number;
 }
 
 export const Label: FC<LabelProps> = ({
@@ -64,9 +74,11 @@ export const Label: FC<LabelProps> = ({
   opacity,
   stroke,
   active,
-  ellipsis,
   rotation,
-  maxWidth = 100
+  maxWidth = 100,
+  ellipsis = 100,
+  backgroundColor,
+  borderRadius
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
@@ -89,6 +101,8 @@ export const Label: FC<LabelProps> = ({
         maxWidth={maxWidth}
         overflowWrap="break-word"
         rotation={rotation}
+        // backgroundColor={backgroundColor} -> Errors
+        // borderRadius={borderRadius} -> Errors
       >
         {shortText}
       </Text>
@@ -100,5 +114,5 @@ Label.defaultProps = {
   opacity: 1,
   fontSize: 7,
   color: '#2A6475',
-  ellipsis: 75
+  ellipsis: 100
 };

@@ -150,14 +150,16 @@ export const Edge: FC<EdgeProps> = ({
         <a.group position={labelPosition as any}>
           <Label
             text={label}
-            ellipsis={15}
             fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={color}
             opacity={opacity}
             fontSize={theme.edge.label.fontSize}
             maxWidth={theme.edge.label.maxWidth}
+            ellipsis={theme.edge.label.ellipsis}
             rotation={labelRotation}
+            backgroundColor={theme.edge.label.backgroundColor}
+            borderRadius={theme.edge.label.borderRadius}
           />
         </a.group>
       )}
