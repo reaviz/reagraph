@@ -330,6 +330,7 @@ export const Edge: FC<EdgeProps> = ({
             }
             opacity={selectionOpacity}
             fontSize={theme.edge.label.fontSize}
+            maxWidth={theme.edge.label.maxWidth}
             rotation={labelRotation}
           />
         </a.group>
@@ -347,6 +348,7 @@ export const Edge: FC<EdgeProps> = ({
       theme.edge.label.activeColor,
       theme.edge.label.color,
       theme.edge.label.fontSize,
+      theme.edge.label.maxWidth,
       theme.edge.label.stroke
     ]
   );

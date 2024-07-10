@@ -49,6 +49,11 @@ export interface LabelProps {
    * Rotation of the label.
    */
   rotation?: Euler | [number, number, number];
+
+  /**
+   * Maximum width of the label.
+   */
+  maxWidth?: number;
 }
 
 export const Label: FC<LabelProps> = ({
@@ -60,7 +65,8 @@ export const Label: FC<LabelProps> = ({
   stroke,
   active,
   ellipsis,
-  rotation
+  rotation,
+  maxWidth = 100
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
@@ -80,7 +86,7 @@ export const Label: FC<LabelProps> = ({
         outlineWidth={stroke ? 1 : 0}
         outlineColor={normalizedStroke}
         depthOffset={0}
-        maxWidth={100}
+        maxWidth={maxWidth}
         overflowWrap="break-word"
         rotation={rotation}
       >

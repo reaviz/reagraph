@@ -16,6 +16,7 @@ export interface Theme {
       stroke?: ColorRepresentation;
       activeColor: ColorRepresentation;
       fontSize?: number;
+      maxWidth?: number;
     };
     subLabel?: {
       color: ColorRepresentation;
@@ -38,6 +39,7 @@ export interface Theme {
       stroke?: ColorRepresentation;
       activeColor: ColorRepresentation;
       fontSize?: number;
+      maxWidth?: number;
     };
   };
   arrow: {

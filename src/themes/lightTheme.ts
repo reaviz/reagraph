@@ -14,7 +14,8 @@ export const lightTheme: Theme = {
       color: '#2A6475',
       stroke: '#fff',
       activeColor: '#1DE9AC',
-      fontSize: 6
+      fontSize: 6,
+      maxWidth: 100
     },
     subLabel: {
       color: '#ddd',
@@ -40,7 +41,8 @@ export const lightTheme: Theme = {
       stroke: '#fff',
       color: '#2A6475',
       activeColor: '#1DE9AC',
-      fontSize: 6
+      fontSize: 6,
+      maxWidth: 100
     }
   },
   arrow: {

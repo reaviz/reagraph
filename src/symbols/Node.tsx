@@ -315,6 +315,7 @@ export const Node: FC<NodeProps> = ({
               fontUrl={labelFontUrl}
               opacity={selectionOpacity}
               stroke={theme.node.label.stroke}
+              maxWidth={theme.node.label.maxWidth}
               active={isSelected || active || isDragging || isActive}
               color={
                 isSelected || active || isDragging || isActive
@@ -329,6 +330,7 @@ export const Node: FC<NodeProps> = ({
                 text={subLabel}
                 fontUrl={labelFontUrl}
                 fontSize={theme.node.label.fontSize}
+                maxWidth={theme.node.label.maxWidth}
                 opacity={selectionOpacity}
                 stroke={theme.node.subLabel?.stroke}
                 active={isSelected || active || isDragging || isActive}

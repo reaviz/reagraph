@@ -48,7 +48,8 @@ CustomTheme.args = {
         stroke: '#1E2026',
         color: '#ACBAC7',
         activeColor: '#1DE9AC',
-        fontSize: 6
+        fontSize: 6,
+        maxWidth: 100
       }
     },
     menu: {
@@ -73,7 +74,8 @@ CustomTheme.args = {
         stroke: '#1E2026',
         color: '#ACBAC7',
         activeColor: '#1DE9AC',
-        fontSize: 6
+        fontSize: 6,
+        maxWidth: 100
       }
     },
     arrow: {
