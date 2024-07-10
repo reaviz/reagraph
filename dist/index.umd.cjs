@@ -1753,39 +1753,39 @@
     borderRadius
   }) => {
     const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
-    const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
-    const textComponent = react.useMemo(
-      () => shortText && /* @__PURE__ */ jsxRuntime.jsx(glodrei.Html, { prepend: true, center: true, children: /* @__PURE__ */ jsxRuntime.jsx("div", { style: { backgroundColor: `${backgroundColor}`, borderRadius }, children: /* @__PURE__ */ jsxRuntime.jsx(
-        "span",
-        {
-          style: {
-            fontFamily: fontUrl,
-            fontSize,
-            color: `${normalizedColor}`,
-            opacity,
-            textAlign: "center",
-            textDecoration: active ? "underline" : "none",
-            maxWidth,
-            overflowWrap: "break-word",
-            transform: `rotate(${rotation}deg)`
-          },
-          children: shortText
-        }
-      ) }) }),
-      [
-        active,
-        backgroundColor,
-        borderRadius,
-        fontSize,
-        fontUrl,
-        maxWidth,
-        normalizedColor,
-        opacity,
-        rotation,
-        shortText
-      ]
+    const normalizedBackgroundColor = react.useMemo(
+      () => new three.Color(backgroundColor),
+      [backgroundColor]
     );
-    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: textComponent });
+    const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
+    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsx(glodrei.Html, { center: true, children: /* @__PURE__ */ jsxRuntime.jsx(
+      "div",
+      {
+        style: {
+          backgroundColor: `${normalizedBackgroundColor.getStyle()}`,
+          borderRadius,
+          padding: "5px",
+          display: "inline-block",
+          maxWidth,
+          overflowWrap: "break-word",
+          transform: `rotate(${rotation}deg)`
+        },
+        children: /* @__PURE__ */ jsxRuntime.jsx(
+          "span",
+          {
+            style: {
+              fontFamily: fontUrl,
+              fontSize,
+              color: `${normalizedColor.getStyle()}`,
+              opacity,
+              textAlign: "center",
+              textDecoration: active ? "underline" : "none"
+            },
+            children: shortText
+          }
+        )
+      }
+    ) }) });
   };
   Label.defaultProps = {
     opacity: 1,
