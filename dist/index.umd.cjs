@@ -1754,24 +1754,24 @@
   }) => {
     const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
     const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
-    const normalizedStroke = react.useMemo(
+    react.useMemo(
       () => stroke ? new three.Color(stroke) : void 0,
       [stroke]
     );
     return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsx(glodrei.Html, { prepend: true, center: true, children: /* @__PURE__ */ jsxRuntime.jsx("div", { style: { backgroundColor: `${backgroundColor}`, borderRadius }, children: /* @__PURE__ */ jsxRuntime.jsx(
-      glodrei.Text,
+      "span",
       {
-        font: fontUrl,
-        fontSize,
-        color: normalizedColor,
-        fillOpacity: opacity,
-        textAlign: "center",
-        outlineWidth: stroke ? 1 : 0,
-        outlineColor: normalizedStroke,
-        depthOffset: 0,
-        maxWidth,
-        overflowWrap: "break-word",
-        rotation,
+        style: {
+          fontFamily: fontUrl,
+          fontSize,
+          color: `${normalizedColor}`,
+          opacity,
+          textAlign: "center",
+          textDecoration: active ? "underline" : "none",
+          maxWidth,
+          overflowWrap: "break-word",
+          transform: `rotate(${rotation}deg)`
+        },
         children: shortText
       }
     ) }) }) });

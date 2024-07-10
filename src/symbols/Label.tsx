@@ -91,21 +91,21 @@ export const Label: FC<LabelProps> = ({
     <Billboard position={[0, 0, 1]}>
       <Html prepend={true} center={true}>
         <div style={{ backgroundColor: `${backgroundColor}`, borderRadius }}>
-          <Text
-            font={fontUrl}
-            fontSize={fontSize}
-            color={normalizedColor}
-            fillOpacity={opacity}
-            textAlign="center"
-            outlineWidth={stroke ? 1 : 0}
-            outlineColor={normalizedStroke}
-            depthOffset={0}
-            maxWidth={maxWidth}
-            overflowWrap="break-word"
-            rotation={rotation}
+          <span
+            style={{
+              fontFamily: fontUrl,
+              fontSize,
+              color: `${normalizedColor}`,
+              opacity,
+              textAlign: 'center',
+              textDecoration: active ? 'underline' : 'none',
+              maxWidth,
+              overflowWrap: 'break-word',
+              transform: `rotate(${rotation}deg)`
+            }}
           >
             {shortText}
-          </Text>
+          </span>
         </div>
       </Html>
     </Billboard>
