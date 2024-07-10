@@ -81,46 +81,42 @@ export const Label: FC<LabelProps> = ({
   borderRadius
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
+  const normalizedBackgroundColor = useMemo(
+    () => new Color(backgroundColor),
+    [backgroundColor]
+  );
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
-  const textComponent = useMemo(
-    () =>
-      shortText && (
-        <Html prepend={true} center={true}>
-          <div style={{ backgroundColor: `${backgroundColor}`, borderRadius }}>
-            <span
-              style={{
-                fontFamily: fontUrl,
-                fontSize,
-                color: `${normalizedColor}`,
-                opacity,
-                textAlign: 'center',
-                textDecoration: active ? 'underline' : 'none',
-                maxWidth,
-                overflowWrap: 'break-word',
-                transform: `rotate(${rotation}deg)`
-              }}
-            >
-              {shortText}
-            </span>
-          </div>
-        </Html>
-      ),
-    [
-      active,
-      backgroundColor,
-      borderRadius,
-      fontSize,
-      fontUrl,
-      maxWidth,
-      normalizedColor,
-      opacity,
-      rotation,
-      shortText
-    ]
+  return (
+    <Billboard position={[0, 0, 1]}>
+      <Html center>
+        <div
+          style={{
+            backgroundColor: `${normalizedBackgroundColor.getStyle()}`,
+            borderRadius,
+            padding: '5px',
+            display: 'inline-block',
+            maxWidth,
+            overflowWrap: 'break-word',
+            transform: `rotate(${rotation}deg)`
+          }}
+        >
+          <span
+            style={{
+              fontFamily: fontUrl,
+              fontSize,
+              color: `${normalizedColor.getStyle()}`,
+              opacity,
+              textAlign: 'center',
+              textDecoration: active ? 'underline' : 'none'
+            }}
+          >
+            {shortText}
+          </span>
+        </div>
+      </Html>
+    </Billboard>
   );
-
-  return <Billboard position={[0, 0, 1]}>{textComponent}</Billboard>;
 };
 
 Label.defaultProps = {
