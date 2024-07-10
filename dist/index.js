@@ -29,7 +29,7 @@ import { Vector3, QuadraticBezierCurve3, LineCurve3, Vector2, Plane, Color, Doub
 import { useGesture } from "react-use-gesture";
 import { bidirectional } from "graphology-shortest-path";
 import Graph from "graphology";
-import { Billboard, Html, Svg as Svg$1, useCursor } from "glodrei";
+import { Html, Billboard, Svg as Svg$1, useCursor } from "glodrei";
 import ellipsize from "ellipsize";
 import { useSpring, a } from "@react-spring/three";
 import ThreeCameraControls from "camera-controls";
@@ -1759,27 +1759,38 @@ const Label = ({
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
-  useMemo(
-    () => stroke ? new Color(stroke) : void 0,
-    [stroke]
+  const textComponent = useMemo(
+    () => shortText && /* @__PURE__ */ jsx(Html, { prepend: true, center: true, children: /* @__PURE__ */ jsx("div", { style: { backgroundColor: `${backgroundColor}`, borderRadius }, children: /* @__PURE__ */ jsx(
+      "span",
+      {
+        style: {
+          fontFamily: fontUrl,
+          fontSize,
+          color: `${normalizedColor}`,
+          opacity,
+          textAlign: "center",
+          textDecoration: active ? "underline" : "none",
+          maxWidth,
+          overflowWrap: "break-word",
+          transform: `rotate(${rotation}deg)`
+        },
+        children: shortText
+      }
+    ) }) }),
+    [
+      active,
+      backgroundColor,
+      borderRadius,
+      fontSize,
+      fontUrl,
+      maxWidth,
+      normalizedColor,
+      opacity,
+      rotation,
+      shortText
+    ]
   );
-  return /* @__PURE__ */ jsx(Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsx(Html, { prepend: true, center: true, children: /* @__PURE__ */ jsx("div", { style: { backgroundColor: `${backgroundColor}`, borderRadius }, children: /* @__PURE__ */ jsx(
-    "span",
-    {
-      style: {
-        fontFamily: fontUrl,
-        fontSize,
-        color: `${normalizedColor}`,
-        opacity,
-        textAlign: "center",
-        textDecoration: active ? "underline" : "none",
-        maxWidth,
-        overflowWrap: "break-word",
-        transform: `rotate(${rotation}deg)`
-      },
-      children: shortText
-    }
-  ) }) }) });
+  return /* @__PURE__ */ jsx(Billboard, { position: [0, 0, 1], children: textComponent });
 };
 Label.defaultProps = {
   opacity: 1,
