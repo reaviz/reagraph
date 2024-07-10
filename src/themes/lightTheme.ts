@@ -13,7 +13,8 @@ export const lightTheme: Theme = {
     label: {
       color: '#2A6475',
       stroke: '#fff',
-      activeColor: '#1DE9AC'
+      activeColor: '#1DE9AC',
+      fontSize: 6
     },
     subLabel: {
       color: '#ddd',

@@ -328,7 +328,7 @@ export const Node: FC<NodeProps> = ({
               <Label
                 text={subLabel}
                 fontUrl={labelFontUrl}
-                fontSize={5}
+                fontSize={theme.node.label.fontSize}
                 opacity={selectionOpacity}
                 stroke={theme.node.subLabel?.stroke}
                 active={isSelected || active || isDragging || isActive}
