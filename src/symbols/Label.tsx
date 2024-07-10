@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, Html, Text } from 'glodrei';
+import { Billboard, Html } from 'glodrei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 
@@ -82,34 +82,45 @@ export const Label: FC<LabelProps> = ({
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
-  const normalizedStroke = useMemo(
-    () => (stroke ? new Color(stroke) : undefined),
-    [stroke]
+
+  const textComponent = useMemo(
+    () =>
+      shortText && (
+        <Html prepend={true} center={true}>
+          <div style={{ backgroundColor: `${backgroundColor}`, borderRadius }}>
+            <span
+              style={{
+                fontFamily: fontUrl,
+                fontSize,
+                color: `${normalizedColor}`,
+                opacity,
+                textAlign: 'center',
+                textDecoration: active ? 'underline' : 'none',
+                maxWidth,
+                overflowWrap: 'break-word',
+                transform: `rotate(${rotation}deg)`
+              }}
+            >
+              {shortText}
+            </span>
+          </div>
+        </Html>
+      ),
+    [
+      active,
+      backgroundColor,
+      borderRadius,
+      fontSize,
+      fontUrl,
+      maxWidth,
+      normalizedColor,
+      opacity,
+      rotation,
+      shortText
+    ]
   );
 
-  return (
-    <Billboard position={[0, 0, 1]}>
-      <Html prepend={true} center={true}>
-        <div style={{ backgroundColor: `${backgroundColor}`, borderRadius }}>
-          <span
-            style={{
-              fontFamily: fontUrl,
-              fontSize,
-              color: `${normalizedColor}`,
-              opacity,
-              textAlign: 'center',
-              textDecoration: active ? 'underline' : 'none',
-              maxWidth,
-              overflowWrap: 'break-word',
-              transform: `rotate(${rotation}deg)`
-            }}
-          >
-            {shortText}
-          </span>
-        </div>
-      </Html>
-    </Billboard>
-  );
+  return <Billboard position={[0, 0, 1]}>{textComponent}</Billboard>;
 };
 
 Label.defaultProps = {
