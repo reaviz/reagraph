@@ -63,10 +63,17 @@ export const useDrag = ({
       },
       onDrag: ({ event }) => {
         // Compute normalized mouse coordinates (screen space)
+        const scrollX = window.scrollX || window.pageXOffset;
+        const scrollY = window.scrollY || window.pageYOffset;
+
         const nx =
-          ((event.clientX - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
+          ((event.clientX - (clientRect?.left ?? 0) + scrollX) / size.width) *
+            2 -
+          1;
         const ny =
-          -((event.clientY - (clientRect?.top ?? 0)) / size.height) * 2 + 1;
+          -((event.clientY - (clientRect?.top ?? 0) + scrollY) / size.height) *
+            2 +
+          1;
 
         // Unlike the mouse from useThree, this works offscreen
         mouse2D.set(nx, ny);
