@@ -1347,8 +1347,10 @@
           onDragStart();
         },
         onDrag: ({ event }) => {
-          const nx = (event.clientX - ((clientRect == null ? void 0 : clientRect.left) ?? 0)) / size.width * 2 - 1;
-          const ny = -((event.clientY - ((clientRect == null ? void 0 : clientRect.top) ?? 0)) / size.height) * 2 + 1;
+          const scrollX = window.scrollX || window.pageXOffset;
+          const scrollY = window.scrollY || window.pageYOffset;
+          const nx = (event.clientX - ((clientRect == null ? void 0 : clientRect.left) ?? 0) + scrollX) / size.width * 2 - 1;
+          const ny = -((event.clientY - ((clientRect == null ? void 0 : clientRect.top) ?? 0) + scrollY) / size.height) * 2 + 1;
           mouse2D.set(nx, ny);
           raycaster.setFromCamera(mouse2D, camera);
           camera.getWorldDirection(normal).negate();
