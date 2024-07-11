@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, Plane, Text } from 'glodrei';
+import { Billboard, RoundedBox, Text } from 'glodrei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 
@@ -93,8 +93,11 @@ export const Label: FC<LabelProps> = ({
 
   return (
     <Billboard position={[0, 0, 1]}>
-      <Plane args={[maxWidth, fontSize]}>
-        <meshStandardMaterial color={normalizedBackgroundColor} />
+      <RoundedBox
+        args={[maxWidth, fontSize, 1]} // Width, height, depth.
+        radius={0.05}
+      >
+        <meshBasicMaterial color={normalizedBackgroundColor} />
         <Text
           font={fontUrl}
           fontSize={fontSize}
@@ -110,7 +113,7 @@ export const Label: FC<LabelProps> = ({
         >
           {shortText}
         </Text>
-      </Plane>
+      </RoundedBox>
     </Billboard>
   );
 };
