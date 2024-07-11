@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, RoundedBox, Text } from 'glodrei';
+import { Billboard, Text } from 'glodrei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 
@@ -93,27 +93,21 @@ export const Label: FC<LabelProps> = ({
 
   return (
     <Billboard position={[0, 0, 1]}>
-      <RoundedBox
-        args={[maxWidth, fontSize, 1]} // Width, height, depth.
-        radius={0.05}
+      <Text
+        font={fontUrl}
+        fontSize={fontSize}
+        color={normalizedColor}
+        fillOpacity={opacity}
+        textAlign="center"
+        outlineWidth={stroke ? 1 : 0}
+        outlineColor={normalizedStroke}
+        depthOffset={0}
+        maxWidth={maxWidth}
+        overflowWrap="break-word"
+        rotation={rotation}
       >
-        <meshBasicMaterial color={normalizedBackgroundColor} />
-        <Text
-          font={fontUrl}
-          fontSize={fontSize}
-          color={normalizedColor}
-          fillOpacity={opacity}
-          textAlign="center"
-          outlineWidth={stroke ? 1 : 0}
-          outlineColor={normalizedStroke}
-          depthOffset={0}
-          maxWidth={maxWidth}
-          overflowWrap="break-word"
-          rotation={rotation}
-        >
-          {shortText}
-        </Text>
-      </RoundedBox>
+        {shortText}
+      </Text>
     </Billboard>
   );
 };
