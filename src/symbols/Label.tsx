@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, Html } from 'glodrei';
+import { Billboard, Plane, Text } from 'glodrei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 
@@ -81,40 +81,36 @@ export const Label: FC<LabelProps> = ({
   borderRadius
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
+  const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
     () => new Color(backgroundColor),
     [backgroundColor]
   );
-  const normalizedColor = useMemo(() => new Color(color), [color]);
+  const normalizedStroke = useMemo(
+    () => (stroke ? new Color(stroke) : undefined),
+    [stroke]
+  );
 
   return (
     <Billboard position={[0, 0, 1]}>
-      <Html center>
-        <div
-          style={{
-            backgroundColor: `${normalizedBackgroundColor.getStyle()}`,
-            borderRadius,
-            padding: '5px',
-            display: 'inline-block',
-            maxWidth,
-            overflowWrap: 'break-word',
-            transform: `rotate(${rotation}deg)`
-          }}
+      <Plane args={[maxWidth, fontSize]}>
+        <meshStandardMaterial color={normalizedBackgroundColor} />
+        <Text
+          font={fontUrl}
+          fontSize={fontSize}
+          color={normalizedColor}
+          fillOpacity={opacity}
+          textAlign="center"
+          outlineWidth={stroke ? 1 : 0}
+          outlineColor={normalizedStroke}
+          depthOffset={0}
+          maxWidth={maxWidth}
+          overflowWrap="break-word"
+          rotation={rotation}
         >
-          <span
-            style={{
-              fontFamily: fontUrl,
-              fontSize,
-              color: `${normalizedColor.getStyle()}`,
-              opacity,
-              textAlign: 'center',
-              textDecoration: active ? 'underline' : 'none'
-            }}
-          >
-            {shortText}
-          </span>
-        </div>
-      </Html>
+          {shortText}
+        </Text>
+      </Plane>
     </Billboard>
   );
 };
