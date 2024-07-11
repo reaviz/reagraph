@@ -29,7 +29,7 @@ import { Vector3, QuadraticBezierCurve3, LineCurve3, Vector2, Plane, Color, Doub
 import { useGesture } from "react-use-gesture";
 import { bidirectional } from "graphology-shortest-path";
 import Graph from "graphology";
-import { Billboard, RoundedBox, Text, Svg as Svg$1, useCursor, Html } from "glodrei";
+import { Billboard, Text, Svg as Svg$1, useCursor, Html } from "glodrei";
 import ellipsize from "ellipsize";
 import { useSpring, a } from "@react-spring/three";
 import ThreeCameraControls from "camera-controls";
@@ -1759,7 +1759,7 @@ const Label = ({
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
-  const normalizedBackgroundColor = useMemo(
+  useMemo(
     () => new Color(backgroundColor),
     [backgroundColor]
   );
@@ -1767,31 +1767,21 @@ const Label = ({
     () => stroke ? new Color(stroke) : void 0,
     [stroke]
   );
-  return /* @__PURE__ */ jsx(Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxs(
-    RoundedBox,
+  return /* @__PURE__ */ jsx(Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsx(
+    Text,
     {
-      args: [maxWidth, fontSize, 1],
-      radius: 0.05,
-      children: [
-        /* @__PURE__ */ jsx("meshBasicMaterial", { color: normalizedBackgroundColor }),
-        /* @__PURE__ */ jsx(
-          Text,
-          {
-            font: fontUrl,
-            fontSize,
-            color: normalizedColor,
-            fillOpacity: opacity,
-            textAlign: "center",
-            outlineWidth: stroke ? 1 : 0,
-            outlineColor: normalizedStroke,
-            depthOffset: 0,
-            maxWidth,
-            overflowWrap: "break-word",
-            rotation,
-            children: shortText
-          }
-        )
-      ]
+      font: fontUrl,
+      fontSize,
+      color: normalizedColor,
+      fillOpacity: opacity,
+      textAlign: "center",
+      outlineWidth: stroke ? 1 : 0,
+      outlineColor: normalizedStroke,
+      depthOffset: 0,
+      maxWidth,
+      overflowWrap: "break-word",
+      rotation,
+      children: shortText
     }
   ) });
 };

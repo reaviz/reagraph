@@ -1754,7 +1754,7 @@
   }) => {
     const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
     const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
-    const normalizedBackgroundColor = react.useMemo(
+    react.useMemo(
       () => new three.Color(backgroundColor),
       [backgroundColor]
     );
@@ -1762,31 +1762,21 @@
       () => stroke ? new three.Color(stroke) : void 0,
       [stroke]
     );
-    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsxs(
-      glodrei.RoundedBox,
+    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsx(
+      glodrei.Text,
       {
-        args: [maxWidth, fontSize, 1],
-        radius: 0.05,
-        children: [
-          /* @__PURE__ */ jsxRuntime.jsx("meshBasicMaterial", { color: normalizedBackgroundColor }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            glodrei.Text,
-            {
-              font: fontUrl,
-              fontSize,
-              color: normalizedColor,
-              fillOpacity: opacity,
-              textAlign: "center",
-              outlineWidth: stroke ? 1 : 0,
-              outlineColor: normalizedStroke,
-              depthOffset: 0,
-              maxWidth,
-              overflowWrap: "break-word",
-              rotation,
-              children: shortText
-            }
-          )
-        ]
+        font: fontUrl,
+        fontSize,
+        color: normalizedColor,
+        fillOpacity: opacity,
+        textAlign: "center",
+        outlineWidth: stroke ? 1 : 0,
+        outlineColor: normalizedStroke,
+        depthOffset: 0,
+        maxWidth,
+        overflowWrap: "break-word",
+        rotation,
+        children: shortText
       }
     ) });
   };
