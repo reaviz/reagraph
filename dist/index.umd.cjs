@@ -1738,6 +1738,34 @@
       }
     }, [sizingType, sizingAttribute, labelType, updateLayout]);
   };
+  const calculateTextSize = (text, fontSize, maxWidth, ellipsis, active) => {
+    const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
+    const lines = [];
+    let currentLine = "";
+    const words = shortText.split(" ");
+    words.forEach((word) => {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      const testWidth = testLine.length * fontSize * 0.5;
+      if (testWidth > maxWidth) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    });
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+    const width = Math.min(
+      maxWidth,
+      lines.reduce(
+        (max, line) => Math.max(max, line.length * fontSize * 0.5),
+        0
+      )
+    ) + 5;
+    const height = lines.length * fontSize + 5;
+    return { width, height, text: lines.join("\n") };
+  };
   const Label = ({
     text,
     fontSize,
@@ -1752,9 +1780,8 @@
     backgroundColor,
     borderRadius
   }) => {
-    const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
     const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
-    react.useMemo(
+    const normalizedBackgroundColor = react.useMemo(
       () => new three.Color(backgroundColor),
       [backgroundColor]
     );
@@ -1762,7 +1789,49 @@
       () => stroke ? new three.Color(stroke) : void 0,
       [stroke]
     );
-    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsx(
+    const {
+      width,
+      height,
+      text: processedText
+    } = react.useMemo(
+      () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
+      [text, fontSize, maxWidth, ellipsis, active]
+    );
+    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 2], children: backgroundColor ? /* @__PURE__ */ jsxRuntime.jsx("mesh", { children: /* @__PURE__ */ jsxRuntime.jsxs(
+      glodrei.RoundedBox,
+      {
+        args: [width, height, 0],
+        radius: borderRadius,
+        rotation,
+        children: [
+          /* @__PURE__ */ jsxRuntime.jsx(
+            glodrei.Text,
+            {
+              font: fontUrl,
+              fontSize,
+              color: normalizedColor,
+              fillOpacity: opacity,
+              textAlign: "center",
+              outlineWidth: stroke ? 1 : 0,
+              outlineColor: stroke ? normalizedStroke : null,
+              depthOffset: 0,
+              maxWidth,
+              overflowWrap: "break-word",
+              children: processedText
+            }
+          ),
+          /* @__PURE__ */ jsxRuntime.jsx(
+            three$1.a.meshBasicMaterial,
+            {
+              attach: "material",
+              opacity,
+              depthTest: true,
+              color: normalizedBackgroundColor
+            }
+          )
+        ]
+      }
+    ) }) : /* @__PURE__ */ jsxRuntime.jsx(
       glodrei.Text,
       {
         font: fontUrl,
@@ -1776,13 +1845,13 @@
         maxWidth,
         overflowWrap: "break-word",
         rotation,
-        children: shortText
+        children: processedText
       }
     ) });
   };
   Label.defaultProps = {
     opacity: 1,
-    fontSize: 7,
+    fontSize: 4,
     color: "#2A6475",
     ellipsis: 100
   };
@@ -2686,6 +2755,8 @@
               stroke: theme.node.label.stroke,
               maxWidth: theme.node.label.maxWidth,
               ellipsis: theme.node.label.ellipsis,
+              backgroundColor: theme.node.label.backgroundColor,
+              borderRadius: theme.node.label.borderRadius,
               active: isSelected || active || isDragging || isActive,
               color: isSelected || active || isDragging || isActive ? theme.node.label.activeColor : theme.node.label.color
             }
@@ -2952,9 +3023,7 @@
             {
               attach: "material",
               opacity: lineOpacity,
-              fog: true,
               transparent: true,
-              depthTest: false,
               color: normalizedColor
             }
           )
@@ -3187,13 +3256,13 @@
       () => menuVisible && contextMenu && /* @__PURE__ */ jsxRuntime.jsx(glodrei.Html, { prepend: true, center: true, position: midPoint, children: contextMenu({ data: edge, onClose: () => setMenuVisible(false) }) }),
       [menuVisible, contextMenu, midPoint, edge]
     );
-    return /* @__PURE__ */ jsxRuntime.jsxs("group", { children: [
-      /* @__PURE__ */ jsxRuntime.jsx(
+    const lineComponent = react.useMemo(
+      () => /* @__PURE__ */ jsxRuntime.jsx(
         Line,
         {
           curveOffset,
           animated,
-          color: isSelected || active || isActive ? theme.edge.activeFill : theme.edge.fill,
+          color: isSelected || active || isActive ? theme.arrow.activeFill : theme.arrow.fill,
           curve,
           curved,
           id,
@@ -3214,9 +3283,32 @@
           }
         }
       ),
+      [
+        active,
+        animated,
+        curve,
+        curveOffset,
+        curved,
+        disabled2,
+        edge,
+        id,
+        isActive,
+        isSelected,
+        onClick,
+        onContextMenu,
+        pointerOut,
+        pointerOver,
+        selectionOpacity,
+        size,
+        theme.arrow.activeFill,
+        theme.arrow.fill
+      ]
+    );
+    return /* @__PURE__ */ jsxRuntime.jsxs("group", { children: [
       arrowComponent,
-      labelComponent,
-      menuComponent
+      lineComponent,
+      menuComponent,
+      labelComponent
     ] });
   };
   Edge$1.defaultProps = {
@@ -3881,7 +3973,9 @@
                   active: false,
                   color: (_c2 = theme.cluster) == null ? void 0 : _c2.label.color,
                   fontSize: 12,
-                  ellipsis: theme.cluster.label.ellipsis
+                  ellipsis: theme.cluster.label.ellipsis,
+                  backgroundColor: theme.cluster.label.backgroundColor,
+                  borderRadius: theme.cluster.label.borderRadius
                 }
               ) })
             ]
@@ -4098,16 +4192,15 @@
       activeFill: "#1DE9AC",
       opacity: 1,
       selectedOpacity: 1,
-      inactiveOpacity: 0.2,
+      inactiveOpacity: 0.1,
       label: {
-        stroke: "#1E2026",
-        color: "#ACBAC7",
-        activeColor: "#1DE9AC",
+        color: "#202020",
+        activeColor: "#000000",
         fontSize: 6,
         maxWidth: 100,
         ellipsis: 100,
-        backgroundColor: "#1E2026",
-        borderRadius: 5
+        backgroundColor: "#fafafa",
+        borderRadius: 2
       },
       subLabel: {
         stroke: "#1E2026",
@@ -4124,20 +4217,19 @@
       activeFill: "#1DE9AC"
     },
     edge: {
-      fill: "#474B56",
+      fill: "#ffffff",
       activeFill: "#1DE9AC",
       opacity: 1,
       selectedOpacity: 1,
       inactiveOpacity: 0.1,
       label: {
-        stroke: "#1E2026",
-        color: "#ACBAC7",
-        activeColor: "#1DE9AC",
-        fontSize: 6,
+        color: "#202020",
+        activeColor: "#000000",
+        fontSize: 4,
         maxWidth: 100,
         ellipsis: 100,
-        backgroundColor: "#1E2026",
-        borderRadius: 5
+        backgroundColor: "#fafafa",
+        borderRadius: 2
       }
     },
     arrow: {
@@ -4150,14 +4242,13 @@
       selectedOpacity: 1,
       inactiveOpacity: 0.1,
       label: {
-        stroke: "#1E2026",
-        color: "#ACBAC7",
-        activeColor: "#1DE9AC",
-        fontSize: 6,
+        color: "#202020",
+        activeColor: "#000000",
+        fontSize: 4,
         maxWidth: 100,
         ellipsis: 100,
-        backgroundColor: "#1E2026",
-        borderRadius: 5
+        backgroundColor: "#fafafa",
+        borderRadius: 2
       }
     }
   };
@@ -4173,13 +4264,13 @@
       inactiveOpacity: 0.2,
       label: {
         color: "#2A6475",
-        stroke: "#fff",
+        // stroke: '#fff',
         activeColor: "#1DE9AC",
         fontSize: 6,
         maxWidth: 100,
         ellipsis: 100,
         backgroundColor: "#1E2026",
-        borderRadius: 5
+        borderRadius: 2
       },
       subLabel: {
         color: "#ddd",
@@ -4196,20 +4287,20 @@
       activeFill: "#1DE9AC"
     },
     edge: {
-      fill: "#D8E6EA",
+      fill: "#474B56",
       activeFill: "#1DE9AC",
       opacity: 1,
       selectedOpacity: 1,
       inactiveOpacity: 0.1,
       label: {
-        stroke: "#fff",
+        // stroke: '#fff',
         color: "#2A6475",
         activeColor: "#1DE9AC",
         fontSize: 6,
         maxWidth: 100,
         ellipsis: 100,
         backgroundColor: "#1E2026",
-        borderRadius: 5
+        borderRadius: 2
       }
     },
     arrow: {
@@ -4229,7 +4320,7 @@
         maxWidth: 100,
         ellipsis: 100,
         backgroundColor: "#1E2026",
-        borderRadius: 5
+        borderRadius: 2
       }
     }
   };
