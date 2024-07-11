@@ -29,7 +29,7 @@ import { Vector3, QuadraticBezierCurve3, LineCurve3, Vector2, Plane, Color, Doub
 import { useGesture } from "react-use-gesture";
 import { bidirectional } from "graphology-shortest-path";
 import Graph from "graphology";
-import { Billboard, Html, Svg as Svg$1, useCursor } from "glodrei";
+import { Billboard, Plane as Plane$1, Text, Svg as Svg$1, useCursor, Html } from "glodrei";
 import ellipsize from "ellipsize";
 import { useSpring, a } from "@react-spring/three";
 import ThreeCameraControls from "camera-controls";
@@ -1758,39 +1758,35 @@ const Label = ({
   borderRadius
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
+  const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
     () => new Color(backgroundColor),
     [backgroundColor]
   );
-  const normalizedColor = useMemo(() => new Color(color), [color]);
-  return /* @__PURE__ */ jsx(Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsx(Html, { center: true, children: /* @__PURE__ */ jsx(
-    "div",
-    {
-      style: {
-        backgroundColor: `${normalizedBackgroundColor.getStyle()}`,
-        borderRadius,
-        padding: "5px",
-        display: "inline-block",
+  const normalizedStroke = useMemo(
+    () => stroke ? new Color(stroke) : void 0,
+    [stroke]
+  );
+  return /* @__PURE__ */ jsx(Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxs(Plane$1, { args: [maxWidth, fontSize], children: [
+    /* @__PURE__ */ jsx("meshStandardMaterial", { color: normalizedBackgroundColor }),
+    /* @__PURE__ */ jsx(
+      Text,
+      {
+        font: fontUrl,
+        fontSize,
+        color: normalizedColor,
+        fillOpacity: opacity,
+        textAlign: "center",
+        outlineWidth: stroke ? 1 : 0,
+        outlineColor: normalizedStroke,
+        depthOffset: 0,
         maxWidth,
         overflowWrap: "break-word",
-        transform: `rotate(${rotation}deg)`
-      },
-      children: /* @__PURE__ */ jsx(
-        "span",
-        {
-          style: {
-            fontFamily: fontUrl,
-            fontSize,
-            color: `${normalizedColor.getStyle()}`,
-            opacity,
-            textAlign: "center",
-            textDecoration: active ? "underline" : "none"
-          },
-          children: shortText
-        }
-      )
-    }
-  ) }) });
+        rotation,
+        children: shortText
+      }
+    )
+  ] }) });
 };
 Label.defaultProps = {
   opacity: 1,

@@ -1753,39 +1753,35 @@
     borderRadius
   }) => {
     const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
+    const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
     const normalizedBackgroundColor = react.useMemo(
       () => new three.Color(backgroundColor),
       [backgroundColor]
     );
-    const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
-    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsx(glodrei.Html, { center: true, children: /* @__PURE__ */ jsxRuntime.jsx(
-      "div",
-      {
-        style: {
-          backgroundColor: `${normalizedBackgroundColor.getStyle()}`,
-          borderRadius,
-          padding: "5px",
-          display: "inline-block",
+    const normalizedStroke = react.useMemo(
+      () => stroke ? new three.Color(stroke) : void 0,
+      [stroke]
+    );
+    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: [0, 0, 1], children: /* @__PURE__ */ jsxRuntime.jsxs(glodrei.Plane, { args: [maxWidth, fontSize], children: [
+      /* @__PURE__ */ jsxRuntime.jsx("meshStandardMaterial", { color: normalizedBackgroundColor }),
+      /* @__PURE__ */ jsxRuntime.jsx(
+        glodrei.Text,
+        {
+          font: fontUrl,
+          fontSize,
+          color: normalizedColor,
+          fillOpacity: opacity,
+          textAlign: "center",
+          outlineWidth: stroke ? 1 : 0,
+          outlineColor: normalizedStroke,
+          depthOffset: 0,
           maxWidth,
           overflowWrap: "break-word",
-          transform: `rotate(${rotation}deg)`
-        },
-        children: /* @__PURE__ */ jsxRuntime.jsx(
-          "span",
-          {
-            style: {
-              fontFamily: fontUrl,
-              fontSize,
-              color: `${normalizedColor.getStyle()}`,
-              opacity,
-              textAlign: "center",
-              textDecoration: active ? "underline" : "none"
-            },
-            children: shortText
-          }
-        )
-      }
-    ) }) });
+          rotation,
+          children: shortText
+        }
+      )
+    ] }) });
   };
   Label.defaultProps = {
     opacity: 1,
