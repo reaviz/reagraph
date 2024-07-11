@@ -202,6 +202,8 @@ export const Cluster: FC<ClusterProps> = ({
                 color={theme.cluster?.label.color}
                 fontSize={12}
                 ellipsis={theme.cluster.label.ellipsis}
+                backgroundColor={theme.cluster.label.backgroundColor}
+                borderRadius={theme.cluster.label.borderRadius}
               />
             </a.group>
           )}

@@ -1,7 +1,49 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, Text } from 'glodrei';
+import { Billboard, RoundedBox, Text } from 'glodrei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
+import { a } from '@react-spring/three';
+
+const calculateTextSize = (
+  text: string,
+  fontSize: number,
+  maxWidth: number,
+  ellipsis: number,
+  active: boolean
+) => {
+  const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
+  const lines = [];
+  let currentLine = '';
+  const words = shortText.split(' ');
+
+  words.forEach(word => {
+    const testLine = currentLine ? `${currentLine} ${word}` : word;
+    const testWidth = testLine.length * fontSize * 0.5;
+
+    if (testWidth > maxWidth) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  });
+
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+
+  const width =
+    Math.min(
+      maxWidth,
+      lines.reduce(
+        (max, line) => Math.max(max, line.length * fontSize * 0.5),
+        0
+      )
+    ) + 5;
+  const height = lines.length * fontSize + 5;
+
+  return { width, height, text: lines.join('\n') };
+};
 
 export interface LabelProps {
   /**
@@ -80,7 +122,6 @@ export const Label: FC<LabelProps> = ({
   backgroundColor,
   borderRadius
 }) => {
-  const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
     () => new Color(backgroundColor),
@@ -91,30 +132,71 @@ export const Label: FC<LabelProps> = ({
     [stroke]
   );
 
+  const {
+    width,
+    height,
+    text: processedText
+  } = useMemo(
+    () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
+    [text, fontSize, maxWidth, ellipsis, active]
+  );
+
   return (
-    <Billboard position={[0, 0, 1]}>
-      <Text
-        font={fontUrl}
-        fontSize={fontSize}
-        color={normalizedColor}
-        fillOpacity={opacity}
-        textAlign="center"
-        outlineWidth={stroke ? 1 : 0}
-        outlineColor={normalizedStroke}
-        depthOffset={0}
-        maxWidth={maxWidth}
-        overflowWrap="break-word"
-        rotation={rotation}
-      >
-        {shortText}
-      </Text>
+    <Billboard position={[0, 0, 2]}>
+      {backgroundColor ? (
+        <mesh>
+          <RoundedBox
+            args={[width, height, 0]} // Width, height, depth.
+            radius={borderRadius}
+            rotation={rotation}
+          >
+            <Text
+              font={fontUrl}
+              fontSize={fontSize}
+              color={normalizedColor}
+              fillOpacity={opacity}
+              textAlign="center"
+              outlineWidth={stroke ? 1 : 0}
+              outlineColor={stroke ? normalizedStroke : null}
+              depthOffset={0}
+              maxWidth={maxWidth}
+              overflowWrap="break-word"
+              // rotation={rotation}
+            >
+              {processedText}
+            </Text>
+            <a.meshBasicMaterial
+              attach="material"
+              opacity={opacity}
+              depthTest={true}
+              color={normalizedBackgroundColor}
+            />
+          </RoundedBox>
+        </mesh>
+      ) : (
+        <Text
+          font={fontUrl}
+          fontSize={fontSize}
+          color={normalizedColor}
+          fillOpacity={opacity}
+          textAlign="center"
+          outlineWidth={stroke ? 1 : 0}
+          outlineColor={normalizedStroke}
+          depthOffset={0}
+          maxWidth={maxWidth}
+          overflowWrap="break-word"
+          rotation={rotation}
+        >
+          {processedText}
+        </Text>
+      )}
     </Billboard>
   );
 };
 
 Label.defaultProps = {
   opacity: 1,
-  fontSize: 7,
+  fontSize: 4,
   color: '#2A6475',
   ellipsis: 100
 };

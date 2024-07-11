@@ -369,15 +369,15 @@ export const Edge: FC<EdgeProps> = ({
     [menuVisible, contextMenu, midPoint, edge]
   );
 
-  return (
-    <group>
+  const lineComponent = useMemo(
+    () => (
       <Line
         curveOffset={curveOffset}
         animated={animated}
         color={
           isSelected || active || isActive
-            ? theme.edge.activeFill
-            : theme.edge.fill
+            ? theme.arrow.activeFill
+            : theme.arrow.fill
         }
         curve={curve}
         curved={curved}
@@ -398,9 +398,35 @@ export const Edge: FC<EdgeProps> = ({
           }
         }}
       />
+    ),
+    [
+      active,
+      animated,
+      curve,
+      curveOffset,
+      curved,
+      disabled,
+      edge,
+      id,
+      isActive,
+      isSelected,
+      onClick,
+      onContextMenu,
+      pointerOut,
+      pointerOver,
+      selectionOpacity,
+      size,
+      theme.arrow.activeFill,
+      theme.arrow.fill
+    ]
+  );
+
+  return (
+    <group>
       {arrowComponent}
-      {labelComponent}
+      {lineComponent}
       {menuComponent}
+      {labelComponent}
     </group>
   );
 };

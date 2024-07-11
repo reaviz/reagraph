@@ -317,6 +317,8 @@ export const Node: FC<NodeProps> = ({
               stroke={theme.node.label.stroke}
               maxWidth={theme.node.label.maxWidth}
               ellipsis={theme.node.label.ellipsis}
+              backgroundColor={theme.node.label.backgroundColor}
+              borderRadius={theme.node.label.borderRadius}
               active={isSelected || active || isDragging || isActive}
               color={
                 isSelected || active || isDragging || isActive

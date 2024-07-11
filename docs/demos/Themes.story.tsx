@@ -52,7 +52,7 @@ CustomTheme.args = {
         maxWidth: 100,
         ellipsis: 100,
         backgroundColor: '#1E2026',
-        borderRadius: 5
+        borderRadius: 2
       }
     },
     menu: {
@@ -81,7 +81,7 @@ CustomTheme.args = {
         maxWidth: 100,
         ellipsis: 100,
         backgroundColor: '#1E2026',
-        borderRadius: 5
+        borderRadius: 2
       }
     },
     arrow: {

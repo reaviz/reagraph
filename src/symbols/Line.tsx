@@ -160,9 +160,7 @@ export const Line: FC<LineProps> = ({
       <a.meshBasicMaterial
         attach="material"
         opacity={lineOpacity}
-        fog={true}
         transparent={true}
-        depthTest={false}
         color={normalizedColor}
       />
     </mesh>

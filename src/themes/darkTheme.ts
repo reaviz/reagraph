@@ -9,16 +9,15 @@ export const darkTheme: Theme = {
     activeFill: '#1DE9AC',
     opacity: 1,
     selectedOpacity: 1,
-    inactiveOpacity: 0.2,
+    inactiveOpacity: 0.1,
     label: {
-      stroke: '#1E2026',
-      color: '#ACBAC7',
-      activeColor: '#1DE9AC',
+      color: '#202020',
+      activeColor: '#000000',
       fontSize: 6,
       maxWidth: 100,
       ellipsis: 100,
-      backgroundColor: '#1E2026',
-      borderRadius: 5
+      backgroundColor: '#fafafa',
+      borderRadius: 2
     },
     subLabel: {
       stroke: '#1E2026',
@@ -35,20 +34,19 @@ export const darkTheme: Theme = {
     activeFill: '#1DE9AC'
   },
   edge: {
-    fill: '#474B56',
+    fill: '#ffffff',
     activeFill: '#1DE9AC',
     opacity: 1,
     selectedOpacity: 1,
     inactiveOpacity: 0.1,
     label: {
-      stroke: '#1E2026',
-      color: '#ACBAC7',
-      activeColor: '#1DE9AC',
-      fontSize: 6,
+      color: '#202020',
+      activeColor: '#000000',
+      fontSize: 4,
       maxWidth: 100,
       ellipsis: 100,
-      backgroundColor: '#1E2026',
-      borderRadius: 5
+      backgroundColor: '#fafafa',
+      borderRadius: 2
     }
   },
   arrow: {
@@ -61,14 +59,13 @@ export const darkTheme: Theme = {
     selectedOpacity: 1,
     inactiveOpacity: 0.1,
     label: {
-      stroke: '#1E2026',
-      color: '#ACBAC7',
-      activeColor: '#1DE9AC',
-      fontSize: 6,
+      color: '#202020',
+      activeColor: '#000000',
+      fontSize: 4,
       maxWidth: 100,
       ellipsis: 100,
-      backgroundColor: '#1E2026',
-      borderRadius: 5
+      backgroundColor: '#fafafa',
+      borderRadius: 2
     }
   }
 };
