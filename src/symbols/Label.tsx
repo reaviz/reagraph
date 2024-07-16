@@ -9,7 +9,8 @@ const calculateTextSize = (
   fontSize: number,
   maxWidth: number,
   ellipsis: number,
-  active: boolean
+  active: boolean,
+  padding: string
 ) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const lines = [];
@@ -106,6 +107,8 @@ export interface LabelProps {
    * Border radius of the label.
    */
   borderRadius?: number;
+
+  padding?: string
 }
 
 export const Label: FC<LabelProps> = ({
@@ -120,7 +123,8 @@ export const Label: FC<LabelProps> = ({
   maxWidth = 100,
   ellipsis = 100,
   backgroundColor,
-  borderRadius
+  borderRadius,
+  padding
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
@@ -137,8 +141,8 @@ export const Label: FC<LabelProps> = ({
     height,
     text: processedText
   } = useMemo(
-    () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
-    [text, fontSize, maxWidth, ellipsis, active]
+    () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active,padding),
+    [text, fontSize, maxWidth, ellipsis, active,padding]
   );
 
   return (
@@ -162,6 +166,7 @@ export const Label: FC<LabelProps> = ({
               maxWidth={maxWidth}
               overflowWrap="break-word"
               // rotation={rotation}
+              padding={padding}
             >
               {processedText}
             </Text>
