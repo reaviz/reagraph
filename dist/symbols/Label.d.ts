@@ -50,5 +50,6 @@ export interface LabelProps {
      * Border radius of the label.
      */
     borderRadius?: number;
+    type?: 'node' | 'edge';
 }
 export declare const Label: FC<LabelProps>;

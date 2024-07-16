@@ -31,6 +31,11 @@ export interface GraphElementBaseAttributes<T = any> {
    * Force label visible or not.
    */
   labelVisible?: boolean;
+
+  /**
+   * Force background color
+   */
+  backgroundColor?: string;
 }
 
 export interface GraphNode extends GraphElementBaseAttributes {

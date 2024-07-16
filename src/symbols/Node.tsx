@@ -325,6 +325,7 @@ export const Node: FC<NodeProps> = ({
                   ? theme.node.label.activeColor
                   : theme.node.label.color
               }
+              type="node"
             />
           </a.group>
           {subLabel && (

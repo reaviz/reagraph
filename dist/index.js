@@ -3,7 +3,7 @@
   try {
     if (typeof document != "undefined") {
       var elementStyle = document.createElement("style");
-      elementStyle.appendChild(document.createTextNode("._canvas_670zp_1 {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n}\n._container_155l7_1 {\n  transform-origin: bottom right;\n  overflow: hidden;\n  position: absolute;\n  border: solid 1px var(--radial-menu-border);\n}\n\n  ._container_155l7_1._disabled_155l7_7 {\n    opacity: 0.6;\n  }\n\n  ._container_155l7_1._disabled_155l7_7 ._contentContainer_155l7_10 {\n      cursor: not-allowed;\n    }\n\n  ._container_155l7_1:not(._disabled_155l7_7) ._contentContainer_155l7_10 {\n      cursor: pointer;\n    }\n\n  ._container_155l7_1:not(._disabled_155l7_7) ._contentContainer_155l7_10:hover {\n        color: var(--radial-menu-active-color);\n        background: var(--radial-menu-active-background);\n      }\n\n  ._container_155l7_1 ._contentContainer_155l7_10 {\n    width: 200%;\n    height: 200%;\n    transform-origin: 50% 50%;\n    border-radius: 50%;\n    outline: none;\n    transition: background 150ms ease-in-out;\n    color: var(--radial-menu-color);\n  }\n\n  ._container_155l7_1 ._contentContainer_155l7_10 ._contentInner_155l7_35 {\n      position: absolute;\n      width: 100%;\n      text-align: center;\n    }\n\n  ._container_155l7_1 ._contentContainer_155l7_10 ._contentInner_155l7_35 ._content_155l7_10 {\n        display: inline-block;\n      }\n\n  ._container_155l7_1 svg {\n    margin: 0 auto;\n    fill: var(--radial-menu-active-color);\n    height: 25px;\n    width: 25px;\n    display: block;\n  }\n._container_x9hyx_1 {\n  border-radius: 50%;\n  z-index: 9;\n  position: relative;\n  height: 175px;\n  width: 175px;\n  border: solid 5px var(--radial-menu-border);\n  overflow: hidden;\n  background: var(--radial-menu-background);\n}\n\n  ._container_x9hyx_1:before {\n    content: ' ';\n    background: var(--radial-menu-border);\n    border-radius: 50%;\n    height: 25px;\n    width: 25px;\n    position: absolute;\n    z-index: 9;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n  }"));
+      elementStyle.appendChild(document.createTextNode("._canvas_116y6_1 {\r\n  position: absolute;\r\n  top: 0;\r\n  left: 0;\r\n  right: 0;\r\n  bottom: 0;\r\n}\r\n._container_1fe76_1 {\r\n  transform-origin: bottom right;\r\n  overflow: hidden;\r\n  position: absolute;\r\n  border: solid 1px var(--radial-menu-border);\r\n}\r\n\r\n  ._container_1fe76_1._disabled_1fe76_13 {\r\n    opacity: 0.6;\r\n  }\r\n\r\n  ._container_1fe76_1._disabled_1fe76_13 ._contentContainer_1fe76_19 {\r\n      cursor: not-allowed;\r\n    }\r\n\r\n  ._container_1fe76_1:not(._disabled_1fe76_13) ._contentContainer_1fe76_19 {\r\n      cursor: pointer;\r\n    }\r\n\r\n  ._container_1fe76_1:not(._disabled_1fe76_13) ._contentContainer_1fe76_19:hover {\r\n        color: var(--radial-menu-active-color);\r\n        background: var(--radial-menu-active-background);\r\n      }\r\n\r\n  ._container_1fe76_1 ._contentContainer_1fe76_19 {\r\n    width: 200%;\r\n    height: 200%;\r\n    transform-origin: 50% 50%;\r\n    border-radius: 50%;\r\n    outline: none;\r\n    transition: background 150ms ease-in-out;\r\n    color: var(--radial-menu-color);\r\n  }\r\n\r\n  ._container_1fe76_1 ._contentContainer_1fe76_19 ._contentInner_1fe76_69 {\r\n      position: absolute;\r\n      width: 100%;\r\n      text-align: center;\r\n    }\r\n\r\n  ._container_1fe76_1 ._contentContainer_1fe76_19 ._contentInner_1fe76_69 ._content_1fe76_19 {\r\n        display: inline-block;\r\n      }\r\n\r\n  ._container_1fe76_1 svg {\r\n    margin: 0 auto;\r\n    fill: var(--radial-menu-active-color);\r\n    height: 25px;\r\n    width: 25px;\r\n    display: block;\r\n  }\r\n._container_5mglj_1 {\r\n  border-radius: 50%;\r\n  z-index: 9;\r\n  position: relative;\r\n  height: 175px;\r\n  width: 175px;\r\n  border: solid 5px var(--radial-menu-border);\r\n  overflow: hidden;\r\n  background: var(--radial-menu-background);\r\n}\r\n\r\n  ._container_5mglj_1:before {\r\n    content: ' ';\r\n    background: var(--radial-menu-border);\r\n    border-radius: 50%;\r\n    height: 25px;\r\n    width: 25px;\r\n    position: absolute;\r\n    z-index: 9;\r\n    top: 50%;\r\n    left: 50%;\r\n    transform: translate(-50%, -50%);\r\n  }"));
       document.head.appendChild(elementStyle);
     }
   } catch (e) {
@@ -1785,7 +1785,8 @@ const Label = ({
   maxWidth = 100,
   ellipsis = 100,
   backgroundColor,
-  borderRadius
+  borderRadius,
+  type
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
@@ -1804,7 +1805,7 @@ const Label = ({
     () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
     [text, fontSize, maxWidth, ellipsis, active]
   );
-  return /* @__PURE__ */ jsx(Billboard, { position: [0, 0, 2], children: backgroundColor ? /* @__PURE__ */ jsx("mesh", { children: /* @__PURE__ */ jsxs(
+  return /* @__PURE__ */ jsx(Billboard, { position: type === "node" ? [0, 3, 2] : [0, 0, 2], children: backgroundColor ? /* @__PURE__ */ jsx("mesh", { children: /* @__PURE__ */ jsxs(
     RoundedBox,
     {
       args: [width, height, 0],
@@ -2765,7 +2766,8 @@ const Node = ({
             backgroundColor: theme.node.label.backgroundColor,
             borderRadius: theme.node.label.borderRadius,
             active: isSelected || active || isDragging || isActive,
-            color: isSelected || active || isDragging || isActive ? theme.node.label.activeColor : theme.node.label.color
+            color: isSelected || active || isDragging || isActive ? theme.node.label.activeColor : theme.node.label.color,
+            type: "node"
           }
         ) }),
         subLabel && /* @__PURE__ */ jsx(a.group, { position: subLabelPosition, children: /* @__PURE__ */ jsx(
@@ -3064,7 +3066,7 @@ const Edge$1 = ({
   const [menuVisible, setMenuVisible] = useState(false);
   const edges = useStore((state) => state.edges);
   const edge = edges.find((e) => e.id === id);
-  const { target, source, label, labelVisible = false, size = 1 } = edge;
+  const { target, source, label, labelVisible = false, size = 1, backgroundColor } = edge;
   const from = useStore((store) => store.nodes.find((node) => node.id === source));
   const to = useStore((store) => store.nodes.find((node) => node.id === target));
   const labelOffset = (size + theme.edge.label.fontSize) / 2;
@@ -3235,7 +3237,7 @@ const Edge$1 = ({
         fontSize: theme.edge.label.fontSize,
         maxWidth: theme.edge.label.maxWidth,
         rotation: labelRotation,
-        backgroundColor: theme.edge.label.backgroundColor,
+        backgroundColor: backgroundColor ? backgroundColor : theme.edge.label.backgroundColor,
         borderRadius: theme.edge.label.borderRadius
       }
     ) }),
@@ -4824,7 +4826,7 @@ const useSelection = ({
     setSelections: setInternalSelections
   };
 };
-const canvas = "_canvas_670zp_1";
+const canvas = "_canvas_116y6_1";
 const css$2 = {
   canvas
 };
@@ -4996,11 +4998,11 @@ GraphCanvas.defaultProps = {
   lassoType: "none",
   glOptions: {}
 };
-const container$1 = "_container_155l7_1";
-const disabled = "_disabled_155l7_7";
-const contentContainer = "_contentContainer_155l7_10";
-const contentInner = "_contentInner_155l7_35";
-const content = "_content_155l7_10";
+const container$1 = "_container_1fe76_1";
+const disabled = "_disabled_1fe76_13";
+const contentContainer = "_contentContainer_1fe76_19";
+const contentInner = "_contentInner_1fe76_69";
+const content = "_content_1fe76_19";
 const css$1 = {
   container: container$1,
   disabled,
@@ -5081,7 +5083,7 @@ function calculateRadius(items, startOffsetAngle) {
   const startAngle = polar ? 45 : startOffsetAngle + deltaAngle + centralAngle / 2;
   return { centralAngle, polar, startAngle, deltaAngle };
 }
-const container = "_container_x9hyx_1";
+const container = "_container_5mglj_1";
 const css = {
   container
 };

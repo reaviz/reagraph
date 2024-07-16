@@ -9,8 +9,7 @@ const calculateTextSize = (
   fontSize: number,
   maxWidth: number,
   ellipsis: number,
-  active: boolean,
-  padding: string
+  active: boolean
 ) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const lines = [];
@@ -108,7 +107,7 @@ export interface LabelProps {
    */
   borderRadius?: number;
 
-  padding?: string
+  type?: 'node' | 'edge';
 }
 
 export const Label: FC<LabelProps> = ({
@@ -124,7 +123,7 @@ export const Label: FC<LabelProps> = ({
   ellipsis = 100,
   backgroundColor,
   borderRadius,
-  padding
+  type
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
@@ -141,12 +140,12 @@ export const Label: FC<LabelProps> = ({
     height,
     text: processedText
   } = useMemo(
-    () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active,padding),
-    [text, fontSize, maxWidth, ellipsis, active,padding]
+    () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
+    [text, fontSize, maxWidth, ellipsis, active]
   );
 
   return (
-    <Billboard position={[0, 0, 2]}>
+    <Billboard position={type === 'node' ? [0, 3, 2] : [0, 0, 2]}>
       {backgroundColor ? (
         <mesh>
           <RoundedBox
@@ -166,7 +165,6 @@ export const Label: FC<LabelProps> = ({
               maxWidth={maxWidth}
               overflowWrap="break-word"
               // rotation={rotation}
-              padding={padding}
             >
               {processedText}
             </Text>

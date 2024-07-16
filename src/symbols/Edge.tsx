@@ -132,7 +132,14 @@ export const Edge: FC<EdgeProps> = ({
   // Edge data
   const edges = useStore(state => state.edges);
   const edge = edges.find(e => e.id === id);
-  const { target, source, label, labelVisible = false, size = 1 } = edge;
+  const {
+    target,
+    source,
+    label,
+    labelVisible = false,
+    size = 1,
+    backgroundColor
+  } = edge;
   const from = useStore(store => store.nodes.find(node => node.id === source));
   const to = useStore(store => store.nodes.find(node => node.id === target));
 
@@ -332,7 +339,11 @@ export const Edge: FC<EdgeProps> = ({
             fontSize={theme.edge.label.fontSize}
             maxWidth={theme.edge.label.maxWidth}
             rotation={labelRotation}
-            backgroundColor={theme.edge.label.backgroundColor}
+            backgroundColor={
+              backgroundColor
+                ? backgroundColor
+                : theme.edge.label.backgroundColor
+            }
             borderRadius={theme.edge.label.borderRadius}
           />
         </a.group>

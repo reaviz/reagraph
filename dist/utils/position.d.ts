@@ -47,6 +47,7 @@ export declare function updateNodePosition(node: InternalGraphNode, offset: Vect
     subLabel?: string;
     size?: number;
     labelVisible?: boolean;
+    backgroundColor?: string;
 };
 /**
  * Calculate the curve offset for an edge.
