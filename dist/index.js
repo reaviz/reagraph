@@ -1769,7 +1769,7 @@ const calculateTextSize = (text, fontSize, maxWidth, ellipsis, active) => {
       (max, line) => Math.max(max, line.length * fontSize * 0.5),
       0
     )
-  ) + 5;
+  ) + 14;
   const height = lines.length * fontSize + 5;
   return { width, height, text: lines.join("\n") };
 };
@@ -1805,57 +1805,64 @@ const Label = ({
     () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
     [text, fontSize, maxWidth, ellipsis, active]
   );
-  return /* @__PURE__ */ jsx(Billboard, { position: type === "node" ? [0, 3, 2] : [0, 0, 2], children: backgroundColor ? /* @__PURE__ */ jsx("mesh", { children: /* @__PURE__ */ jsxs(
-    RoundedBox,
+  return /* @__PURE__ */ jsx(
+    Billboard,
     {
-      args: [width, height, 0],
-      radius: borderRadius,
-      rotation,
-      children: [
-        /* @__PURE__ */ jsx(
-          Text,
-          {
-            font: fontUrl,
-            fontSize,
-            color: normalizedColor,
-            fillOpacity: opacity,
-            textAlign: "center",
-            outlineWidth: stroke ? 1 : 0,
-            outlineColor: stroke ? normalizedStroke : null,
-            depthOffset: 0,
-            maxWidth,
-            overflowWrap: "break-word",
-            children: processedText
-          }
-        ),
-        /* @__PURE__ */ jsx(
-          a.meshBasicMaterial,
-          {
-            attach: "material",
-            opacity,
-            depthTest: true,
-            color: normalizedBackgroundColor
-          }
-        )
-      ]
+      position: type === "node" ? [0, active ? 2 : 2.6, 2] : [0, 0, 2],
+      children: backgroundColor ? /* @__PURE__ */ jsx("mesh", { children: /* @__PURE__ */ jsxs(
+        RoundedBox,
+        {
+          args: [width, height, 0],
+          radius: borderRadius,
+          rotation,
+          scale: active ? [1.05, 1.05, 1.05] : [1, 1, 1],
+          children: [
+            /* @__PURE__ */ jsx(
+              Text,
+              {
+                font: fontUrl,
+                fontSize,
+                color: normalizedColor,
+                fillOpacity: opacity,
+                textAlign: "center",
+                outlineWidth: stroke ? 1 : 0,
+                outlineColor: stroke ? normalizedStroke : null,
+                depthOffset: 0,
+                maxWidth,
+                overflowWrap: "break-word",
+                children: processedText
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              a.meshBasicMaterial,
+              {
+                attach: "material",
+                opacity,
+                depthTest: true,
+                color: normalizedBackgroundColor
+              }
+            )
+          ]
+        }
+      ) }) : /* @__PURE__ */ jsx(
+        Text,
+        {
+          font: fontUrl,
+          fontSize,
+          color: normalizedColor,
+          fillOpacity: opacity,
+          textAlign: "center",
+          outlineWidth: stroke ? 1 : 0,
+          outlineColor: normalizedStroke,
+          depthOffset: 0,
+          maxWidth,
+          overflowWrap: "break-word",
+          rotation,
+          children: processedText
+        }
+      )
     }
-  ) }) : /* @__PURE__ */ jsx(
-    Text,
-    {
-      font: fontUrl,
-      fontSize,
-      color: normalizedColor,
-      fillOpacity: opacity,
-      textAlign: "center",
-      outlineWidth: stroke ? 1 : 0,
-      outlineColor: normalizedStroke,
-      depthOffset: 0,
-      maxWidth,
-      overflowWrap: "break-word",
-      rotation,
-      children: processedText
-    }
-  ) });
+  );
 };
 Label.defaultProps = {
   opacity: 1,
@@ -1933,7 +1940,7 @@ const Sphere = ({
       nodeOpacity: 0
     },
     to: {
-      scale: [size, size, size],
+      scale: active ? [size * 1.05, size * 1.05, size * 1.05] : [size, size, size],
       nodeOpacity: opacity
     },
     config: {
@@ -1943,6 +1950,7 @@ const Sphere = ({
   });
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const theme = useStore((state) => state.theme);
+  console.log("selected", active);
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsxs(a.mesh, { userData: { id, type: "node" }, scale, children: [
       /* @__PURE__ */ jsx("sphereGeometry", { attach: "geometry", args: [1, 25, 25] }),
@@ -3066,7 +3074,14 @@ const Edge$1 = ({
   const [menuVisible, setMenuVisible] = useState(false);
   const edges = useStore((state) => state.edges);
   const edge = edges.find((e) => e.id === id);
-  const { target, source, label, labelVisible = false, size = 1, backgroundColor } = edge;
+  const {
+    target,
+    source,
+    label,
+    labelVisible = false,
+    size = 1,
+    backgroundColor
+  } = edge;
   const from = useStore((store) => store.nodes.find((node) => node.id === source));
   const to = useStore((store) => store.nodes.find((node) => node.id === target));
   const labelOffset = (size + theme.edge.label.fontSize) / 2;

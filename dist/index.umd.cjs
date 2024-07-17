@@ -1764,7 +1764,7 @@
         (max, line) => Math.max(max, line.length * fontSize * 0.5),
         0
       )
-    ) + 5;
+    ) + 14;
     const height = lines.length * fontSize + 5;
     return { width, height, text: lines.join("\n") };
   };
@@ -1800,57 +1800,64 @@
       () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
       [text, fontSize, maxWidth, ellipsis, active]
     );
-    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { position: type === "node" ? [0, 3, 2] : [0, 0, 2], children: backgroundColor ? /* @__PURE__ */ jsxRuntime.jsx("mesh", { children: /* @__PURE__ */ jsxRuntime.jsxs(
-      glodrei.RoundedBox,
+    return /* @__PURE__ */ jsxRuntime.jsx(
+      glodrei.Billboard,
       {
-        args: [width, height, 0],
-        radius: borderRadius,
-        rotation,
-        children: [
-          /* @__PURE__ */ jsxRuntime.jsx(
-            glodrei.Text,
-            {
-              font: fontUrl,
-              fontSize,
-              color: normalizedColor,
-              fillOpacity: opacity,
-              textAlign: "center",
-              outlineWidth: stroke ? 1 : 0,
-              outlineColor: stroke ? normalizedStroke : null,
-              depthOffset: 0,
-              maxWidth,
-              overflowWrap: "break-word",
-              children: processedText
-            }
-          ),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            three$1.a.meshBasicMaterial,
-            {
-              attach: "material",
-              opacity,
-              depthTest: true,
-              color: normalizedBackgroundColor
-            }
-          )
-        ]
+        position: type === "node" ? [0, active ? 2 : 2.6, 2] : [0, 0, 2],
+        children: backgroundColor ? /* @__PURE__ */ jsxRuntime.jsx("mesh", { children: /* @__PURE__ */ jsxRuntime.jsxs(
+          glodrei.RoundedBox,
+          {
+            args: [width, height, 0],
+            radius: borderRadius,
+            rotation,
+            scale: active ? [1.05, 1.05, 1.05] : [1, 1, 1],
+            children: [
+              /* @__PURE__ */ jsxRuntime.jsx(
+                glodrei.Text,
+                {
+                  font: fontUrl,
+                  fontSize,
+                  color: normalizedColor,
+                  fillOpacity: opacity,
+                  textAlign: "center",
+                  outlineWidth: stroke ? 1 : 0,
+                  outlineColor: stroke ? normalizedStroke : null,
+                  depthOffset: 0,
+                  maxWidth,
+                  overflowWrap: "break-word",
+                  children: processedText
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                three$1.a.meshBasicMaterial,
+                {
+                  attach: "material",
+                  opacity,
+                  depthTest: true,
+                  color: normalizedBackgroundColor
+                }
+              )
+            ]
+          }
+        ) }) : /* @__PURE__ */ jsxRuntime.jsx(
+          glodrei.Text,
+          {
+            font: fontUrl,
+            fontSize,
+            color: normalizedColor,
+            fillOpacity: opacity,
+            textAlign: "center",
+            outlineWidth: stroke ? 1 : 0,
+            outlineColor: normalizedStroke,
+            depthOffset: 0,
+            maxWidth,
+            overflowWrap: "break-word",
+            rotation,
+            children: processedText
+          }
+        )
       }
-    ) }) : /* @__PURE__ */ jsxRuntime.jsx(
-      glodrei.Text,
-      {
-        font: fontUrl,
-        fontSize,
-        color: normalizedColor,
-        fillOpacity: opacity,
-        textAlign: "center",
-        outlineWidth: stroke ? 1 : 0,
-        outlineColor: normalizedStroke,
-        depthOffset: 0,
-        maxWidth,
-        overflowWrap: "break-word",
-        rotation,
-        children: processedText
-      }
-    ) });
+    );
   };
   Label.defaultProps = {
     opacity: 1,
@@ -1928,7 +1935,7 @@
         nodeOpacity: 0
       },
       to: {
-        scale: [size, size, size],
+        scale: active ? [size * 1.05, size * 1.05, size * 1.05] : [size, size, size],
         nodeOpacity: opacity
       },
       config: {
@@ -1938,6 +1945,7 @@
     });
     const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
     const theme = useStore((state) => state.theme);
+    console.log("selected", active);
     return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
       /* @__PURE__ */ jsxRuntime.jsxs(three$1.a.mesh, { userData: { id, type: "node" }, scale, children: [
         /* @__PURE__ */ jsxRuntime.jsx("sphereGeometry", { attach: "geometry", args: [1, 25, 25] }),
@@ -3061,7 +3069,14 @@
     const [menuVisible, setMenuVisible] = react.useState(false);
     const edges = useStore((state) => state.edges);
     const edge = edges.find((e) => e.id === id);
-    const { target, source, label, labelVisible = false, size = 1, backgroundColor } = edge;
+    const {
+      target,
+      source,
+      label,
+      labelVisible = false,
+      size = 1,
+      backgroundColor
+    } = edge;
     const from = useStore((store) => store.nodes.find((node) => node.id === source));
     const to = useStore((store) => store.nodes.find((node) => node.id === target));
     const labelOffset = (size + theme.edge.label.fontSize) / 2;
