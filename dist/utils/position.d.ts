@@ -41,6 +41,7 @@ export declare function updateNodePosition(node: InternalGraphNode, offset: Vect
     parents?: string[];
     icon?: string;
     fill?: string;
+    activeFill?: string;
     id: string;
     data?: any;
     label?: string;

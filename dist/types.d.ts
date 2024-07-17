@@ -43,6 +43,10 @@ export interface GraphNode extends GraphElementBaseAttributes {
      * Fill color for the node.
      */
     fill?: string;
+    /**
+     * Active Fill color for the node.
+     */
+    activeFill?: string;
 }
 export interface GraphEdge extends GraphElementBaseAttributes {
     /**

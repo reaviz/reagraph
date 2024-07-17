@@ -233,7 +233,7 @@ export const Node: FC<NodeProps> = ({
 
   const combinedActiveState = shouldHighlight || isDragging;
   const color = combinedActiveState
-    ? theme.node.activeFill
+    ? node.activeFill || theme.node.activeFill
     : node.fill || theme.node.fill;
 
   const { pointerOver, pointerOut } = useHoverIntent({

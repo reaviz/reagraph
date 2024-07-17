@@ -81,14 +81,16 @@ export const CustomBackgroundLabels = () => (
         "label": "Node 0",
         "data": {
           "priority": 6
-        }
+        },
+        activeFill:"yellow"
       },
       {
         "id": "n-1",
         "label": "FRANCIS FAMILY OFFICE LIMITED",
         "data": {
           "priority": 0
-        }
+        },
+        activeFill:"red"
       },
       {
         "id": "n-2",

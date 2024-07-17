@@ -2696,7 +2696,7 @@ const Node = ({
   );
   useCursor(isDragging, "grabbing");
   const combinedActiveState = shouldHighlight || isDragging;
-  const color = combinedActiveState ? theme.node.activeFill : node.fill || theme.node.fill;
+  const color = combinedActiveState ? node.activeFill || theme.node.activeFill : node.fill || theme.node.fill;
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled2 || isDragging,
     onPointerOver: (event) => {
