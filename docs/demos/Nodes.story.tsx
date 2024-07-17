@@ -84,7 +84,7 @@ export const SphereWithIconNode = () => (
     nodes={iconNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({  node, ...rest }) => (
+    renderNode={({ node, ...rest }) => (
       <SphereWithIcon
         {...rest}
         node={node}
@@ -99,7 +99,7 @@ export const SphereSvgIconNode = () => (
     nodes={iconNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({  node, ...rest }) => (
+    renderNode={({ node, ...rest }) => (
       <SphereWithSvg
         {...rest}
         node={node}
@@ -114,7 +114,7 @@ export const SvgIconNode = () => (
     nodes={iconNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({  node, ...rest }) => (
+    renderNode={({ node, ...rest }) => (
       <Svg
         {...rest}
         node={node}
@@ -176,3 +176,77 @@ export const Draggable = () => {
     </div>
   );
 };
+
+
+export const CustomActiveFillNode = () => (
+  <GraphCanvas
+    layoutType='hierarchicalTd'
+    draggable
+    nodes={[
+      {
+        "id": "n-0",
+        "label": "Node 0",
+        "activeFill": "yellow",
+        "data": {
+          "priority": 6
+        },
+      },
+      {
+        "id": "n-1",
+        "label": "FRANCIS FAMILY OFFICE LIMITED",
+        "activeFill": "red",
+        "data": {
+          "priority": 0
+        },
+      },
+      {
+        "id": "n-2",
+        "label": "Node 2",
+        "activeFill": "orange",
+        "data": {
+          "priority": 3
+        }
+      },
+      {
+        "id": "n-3",
+        "label": "Node 3",
+        "activeFill": "green",
+        "data": {
+          "priority": 1
+        }
+      },
+      {
+        "id": "n-4",
+        "label": "Node 4",
+        "activeFill": "pink",
+        "data": {
+          "priority": 2
+        }
+      }
+    ]}
+    edges={[{
+      id: '0->1',
+      source: 'n-0',
+      target: 'n-1',
+      label: 'Edge 0-1',
+    },
+    {
+      id: '0->2',
+      source: 'n-0',
+      target: 'n-2',
+      label: 'Edge 0-2',
+    },
+    {
+      id: '0->3',
+      source: 'n-0',
+      target: 'n-3',
+      label: 'Edge 0-3'
+    },
+    {
+      id: '0->4',
+      source: 'n-0',
+      target: 'n-4',
+      label: 'Edge 0-4'
+    }]}
+  />
+);
