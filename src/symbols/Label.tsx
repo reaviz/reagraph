@@ -39,7 +39,7 @@ const calculateTextSize = (
         (max, line) => Math.max(max, line.length * fontSize * 0.5),
         0
       )
-    ) + 5;
+    ) + 14;
   const height = lines.length * fontSize + 5;
 
   return { width, height, text: lines.join('\n') };
@@ -145,13 +145,16 @@ export const Label: FC<LabelProps> = ({
   );
 
   return (
-    <Billboard position={type === 'node' ? [0, 3, 2] : [0, 0, 2]}>
+    <Billboard
+      position={type === 'node' ? [0, active ? 2 : 2.6, 2] : [0, 0, 2]}
+    >
       {backgroundColor ? (
         <mesh>
           <RoundedBox
             args={[width, height, 0]} // Width, height, depth.
             radius={borderRadius}
             rotation={rotation}
+            scale={active ? [1.05, 1.05, 1.05] : [1, 1, 1]}
           >
             <Text
               font={fontUrl}

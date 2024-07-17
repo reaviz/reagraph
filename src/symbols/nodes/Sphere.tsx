@@ -22,7 +22,9 @@ export const Sphere: FC<NodeRendererProps> = ({
       nodeOpacity: 0
     },
     to: {
-      scale: [size, size, size],
+      scale: active
+        ? [size * 1.05, size * 1.05, size * 1.05]
+        : [size, size, size],
       nodeOpacity: opacity
     },
     config: {
@@ -30,9 +32,11 @@ export const Sphere: FC<NodeRendererProps> = ({
       duration: animated ? undefined : 0
     }
   });
+
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const theme = useStore(state => state.theme);
 
+  console.log('selected', active);
   return (
     <>
       <a.mesh userData={{ id, type: 'node' }} scale={scale as any}>
