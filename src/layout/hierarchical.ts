@@ -36,8 +36,8 @@ export function hierarchical({
   graph,
   drags,
   mode = 'td',
-  nodeSeparation = 1,
-  nodeSize = [50, 50],
+  nodeSeparation = 2,
+  nodeSize = [60, 60],
   getNodePosition
 }: HierarchicalLayoutInputs): LayoutStrategy {
   const { nodes, edges } = buildNodeEdges(graph);

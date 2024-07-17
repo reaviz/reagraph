@@ -605,8 +605,8 @@ function hierarchical({
   graph,
   drags,
   mode = "td",
-  nodeSeparation = 1,
-  nodeSize = [50, 50],
+  nodeSeparation = 2,
+  nodeSize = [60, 60],
   getNodePosition
 }) {
   const { nodes, edges } = buildNodeEdges(graph);
@@ -1815,7 +1815,7 @@ const Label = ({
           args: [width, height, 0],
           radius: borderRadius,
           rotation,
-          scale: active ? [1.05, 1.05, 1.05] : [1, 1, 1],
+          scale: active ? [1.8, 1.8, 1.8] : [1, 1, 1],
           children: [
             /* @__PURE__ */ jsx(
               Text,
