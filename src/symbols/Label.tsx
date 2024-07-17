@@ -154,7 +154,7 @@ export const Label: FC<LabelProps> = ({
             args={[width, height, 0]} // Width, height, depth.
             radius={borderRadius}
             rotation={rotation}
-            scale={active ? [1.05, 1.05, 1.05] : [1, 1, 1]}
+            scale={active ? [1.8, 1.8, 1.8] : [1, 1, 1]}
           >
             <Text
               font={fontUrl}
