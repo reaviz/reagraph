@@ -1765,7 +1765,7 @@
         0
       )
     ) + 14;
-    const height = lines.length * fontSize + 5;
+    const height = lines.length * fontSize + 6;
     return { width, height, text: lines.join("\n") };
   };
   const Label = ({
@@ -1803,7 +1803,7 @@
     return /* @__PURE__ */ jsxRuntime.jsx(
       glodrei.Billboard,
       {
-        position: type === "node" ? [0, active ? 2 : 2.6, 2] : [0, 0, 2],
+        position: type === "node" ? [0, active ? 1.6 : 2.4, 2] : [0, 0, 2],
         children: backgroundColor ? /* @__PURE__ */ jsxRuntime.jsx("mesh", { children: /* @__PURE__ */ jsxRuntime.jsxs(
           glodrei.RoundedBox,
           {
