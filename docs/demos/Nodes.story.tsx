@@ -185,7 +185,7 @@ export const CustomActiveFillNode = () => (
     nodes={[
       {
         "id": "n-0",
-        "label": "Node 0",
+        "label": "FRANCIS FAMILY OFFICE LIMITED FRANCIS FAMILY OFFICE LIMITED FRANCIS FAMILY OFFICE LIMITED FRANCIS FAMILY OFFICE LIMITED FRANCIS FAMILY OFFICE LIMITED FRANCIS FAMILY OFFICE LIMITED FRANCIS FAMILY OFFICE LIMITED FRANCIS FAMILY OFFICE LIMITED",
         "activeFill": "yellow",
         "data": {
           "priority": 6
@@ -222,6 +222,14 @@ export const CustomActiveFillNode = () => (
         "data": {
           "priority": 2
         }
+      },
+      {
+        "id": "n-5",
+        "label": "Node 5",
+        "activeFill": "magenta",
+        "data": {
+          "priority": 2
+        }
       }
     ]}
     edges={[{
@@ -247,6 +255,25 @@ export const CustomActiveFillNode = () => (
       source: 'n-0',
       target: 'n-4',
       label: 'Edge 0-4'
-    }]}
+    },
+    {
+      id: '1->5',
+      source: 'n-4',
+      target: 'n-5',
+      label: 'Edge 0-5'
+    },
+    {
+      id: '3->5',
+      source: 'n-3',
+      target: 'n-5',
+      label: 'Edge 3-5'
+    },
+    {
+      id: '2->3',
+      source: 'n-2',
+      target: 'n-3',
+      label: 'Edge 2-3'
+    }
+    ]}
   />
 );

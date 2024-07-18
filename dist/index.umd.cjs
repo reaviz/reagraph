@@ -1780,8 +1780,7 @@
     maxWidth = 100,
     ellipsis = 100,
     backgroundColor,
-    borderRadius,
-    type
+    borderRadius
   }) => {
     const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
     const normalizedBackgroundColor = react.useMemo(
@@ -1800,64 +1799,58 @@
       () => calculateTextSize(text, fontSize, maxWidth, ellipsis, active),
       [text, fontSize, maxWidth, ellipsis, active]
     );
-    return /* @__PURE__ */ jsxRuntime.jsx(
-      glodrei.Billboard,
+    return /* @__PURE__ */ jsxRuntime.jsx(glodrei.Billboard, { children: backgroundColor ? /* @__PURE__ */ jsxRuntime.jsx("mesh", { children: /* @__PURE__ */ jsxRuntime.jsxs(
+      glodrei.RoundedBox,
       {
-        position: type === "node" ? [0, active ? 1.6 : 2.4, 2] : [0, 0, 2],
-        children: backgroundColor ? /* @__PURE__ */ jsxRuntime.jsx("mesh", { children: /* @__PURE__ */ jsxRuntime.jsxs(
-          glodrei.RoundedBox,
-          {
-            args: [width, height, 0],
-            radius: borderRadius,
-            rotation,
-            scale: active ? [1.8, 1.8, 1.8] : [1, 1, 1],
-            children: [
-              /* @__PURE__ */ jsxRuntime.jsx(
-                glodrei.Text,
-                {
-                  font: fontUrl,
-                  fontSize,
-                  color: normalizedColor,
-                  fillOpacity: opacity,
-                  textAlign: "center",
-                  outlineWidth: stroke ? 1 : 0,
-                  outlineColor: stroke ? normalizedStroke : null,
-                  depthOffset: 0,
-                  maxWidth,
-                  overflowWrap: "break-word",
-                  children: processedText
-                }
-              ),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                three$1.a.meshBasicMaterial,
-                {
-                  attach: "material",
-                  opacity,
-                  depthTest: true,
-                  color: normalizedBackgroundColor
-                }
-              )
-            ]
-          }
-        ) }) : /* @__PURE__ */ jsxRuntime.jsx(
-          glodrei.Text,
-          {
-            font: fontUrl,
-            fontSize,
-            color: normalizedColor,
-            fillOpacity: opacity,
-            textAlign: "center",
-            outlineWidth: stroke ? 1 : 0,
-            outlineColor: normalizedStroke,
-            depthOffset: 0,
-            maxWidth,
-            overflowWrap: "break-word",
-            rotation,
-            children: processedText
-          }
-        )
+        position: [0, height > 18 ? -3 : 0, 10],
+        args: [width, height, 0],
+        radius: borderRadius,
+        rotation,
+        children: [
+          /* @__PURE__ */ jsxRuntime.jsx(
+            glodrei.Text,
+            {
+              font: fontUrl,
+              fontSize,
+              color: normalizedColor,
+              fillOpacity: opacity,
+              textAlign: "center",
+              outlineWidth: stroke ? 1 : 0,
+              outlineColor: stroke ? normalizedStroke : null,
+              depthOffset: 0,
+              maxWidth,
+              overflowWrap: "break-word",
+              children: processedText
+            }
+          ),
+          /* @__PURE__ */ jsxRuntime.jsx(
+            three$1.a.meshBasicMaterial,
+            {
+              attach: "material",
+              opacity,
+              depthTest: true,
+              color: normalizedBackgroundColor
+            }
+          )
+        ]
       }
-    );
+    ) }) : /* @__PURE__ */ jsxRuntime.jsx(
+      glodrei.Text,
+      {
+        font: fontUrl,
+        fontSize,
+        color: normalizedColor,
+        fillOpacity: opacity,
+        textAlign: "center",
+        outlineWidth: stroke ? 1 : 0,
+        outlineColor: normalizedStroke,
+        depthOffset: 0,
+        maxWidth,
+        overflowWrap: "break-word",
+        rotation,
+        children: processedText
+      }
+    ) });
   };
   Label.defaultProps = {
     opacity: 1,
@@ -1945,7 +1938,6 @@
     });
     const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
     const theme = useStore((state) => state.theme);
-    console.log("selected", active);
     return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
       /* @__PURE__ */ jsxRuntime.jsxs(three$1.a.mesh, { userData: { id, type: "node" }, scale, children: [
         /* @__PURE__ */ jsxRuntime.jsx("sphereGeometry", { attach: "geometry", args: [1, 25, 25] }),
@@ -2650,7 +2642,7 @@
       () => ({
         from: {
           nodePosition: center ? [center.x, center.y, 0] : [0, 0, 0],
-          labelPosition: [0, -(nodeSize + 7), 2],
+          labelPosition: [0, -(nodeSize + 4), 2],
           subLabelPosition: [0, -(nodeSize + 14), 2]
         },
         to: {
@@ -2659,7 +2651,7 @@
             position.y,
             shouldHighlight ? position.z + 1 : position.z
           ] : [0, 0, 0],
-          labelPosition: [0, -(nodeSize + 7), 2],
+          labelPosition: [0, -(nodeSize + 4), 2],
           subLabelPosition: [0, -(nodeSize + 14), 2]
         },
         config: {
