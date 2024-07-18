@@ -36,7 +36,6 @@ export const Sphere: FC<NodeRendererProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const theme = useStore(state => state.theme);
 
-  console.log('selected', active);
   return (
     <>
       <a.mesh userData={{ id, type: 'node' }} scale={scale as any}>

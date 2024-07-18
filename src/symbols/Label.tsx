@@ -107,6 +107,9 @@ export interface LabelProps {
    */
   borderRadius?: number;
 
+  /**
+   * Type of the label.
+   */
   type?: 'node' | 'edge';
 }
 
@@ -122,8 +125,7 @@ export const Label: FC<LabelProps> = ({
   maxWidth = 100,
   ellipsis = 100,
   backgroundColor,
-  borderRadius,
-  type
+  borderRadius
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
@@ -145,16 +147,15 @@ export const Label: FC<LabelProps> = ({
   );
 
   return (
-    <Billboard
-      position={type === 'node' ? [0, active ? 1.6 : 2.4, 2] : [0, 0, 2]}
-    >
+    <Billboard>
       {backgroundColor ? (
         <mesh>
           <RoundedBox
+            position={[0, height > 18 ? -3 : 0, 10]}
             args={[width, height, 0]} // Width, height, depth.
             radius={borderRadius}
             rotation={rotation}
-            scale={active ? [1.8, 1.8, 1.8] : [1, 1, 1]}
+            // scale={active ? [1.05, 1.05, 1.05] : [1, 1, 1]}
           >
             <Text
               font={fontUrl}
@@ -167,7 +168,6 @@ export const Label: FC<LabelProps> = ({
               depthOffset={0}
               maxWidth={maxWidth}
               overflowWrap="break-word"
-              // rotation={rotation}
             >
               {processedText}
             </Text>
