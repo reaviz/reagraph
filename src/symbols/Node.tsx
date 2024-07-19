@@ -112,6 +112,11 @@ export interface NodeProps {
    * Triggered after a node was dragged.
    */
   onDragged?: (node: InternalGraphNode) => void;
+
+  /**
+   * show ring
+   */
+  showRing?: boolean;
 }
 
 export const Node: FC<NodeProps> = ({
@@ -127,7 +132,8 @@ export const Node: FC<NodeProps> = ({
   onDragged,
   onPointerOut,
   onContextMenu,
-  renderNode
+  renderNode,
+  showRing
 }) => {
   const cameraControls = useCameraControls();
   const theme = useStore(state => state.theme);
@@ -236,6 +242,8 @@ export const Node: FC<NodeProps> = ({
     ? node.activeFill || theme.node.activeFill
     : node.fill || theme.node.fill;
 
+  const actualShowRing = showRing ?? theme.node.showRing;
+
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDragging,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
@@ -287,6 +295,7 @@ export const Node: FC<NodeProps> = ({
               node={node}
               active={combinedActiveState}
               selected={isSelected}
+              showRing={actualShowRing}
             />
           )}
         </>
@@ -300,7 +309,8 @@ export const Node: FC<NodeProps> = ({
       selectionOpacity,
       animated,
       isSelected,
-      node
+      node,
+      actualShowRing
     ]
   );
 

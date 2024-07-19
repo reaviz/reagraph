@@ -473,7 +473,7 @@
     mode = null,
     dimensions = 2,
     nodeStrength = -250,
-    linkDistance = 50,
+    linkDistance = 100,
     clusterStrength = 0.5,
     linkStrengthInterCluster = 0.01,
     linkStrengthIntraCluster = 0.5,
@@ -1919,7 +1919,8 @@
     active,
     selected,
     opacity,
-    animated
+    animated,
+    showRing = true
   }) => {
     const { scale, nodeOpacity } = three$1.useSpring({
       from: {
@@ -1953,15 +1954,16 @@
           }
         )
       ] }),
-      /* @__PURE__ */ jsxRuntime.jsx(
+      showRing && /* @__PURE__ */ jsxRuntime.jsx(three$1.a.mesh, { position: [0, 0, 12], children: /* @__PURE__ */ jsxRuntime.jsx(
         Ring,
         {
           opacity: selected ? 0.5 : 0,
-          size,
+          size: size / 1.5,
           animated,
-          color: selected ? theme.ring.activeFill : theme.ring.fill
+          color: selected ? theme.ring.activeFill : theme.ring.fill,
+          strokeWidth: 3
         }
-      )
+      ) })
     ] });
   };
   Sphere.defaultProps = {
@@ -2586,7 +2588,8 @@
     onDragged,
     onPointerOut,
     onContextMenu,
-    renderNode
+    renderNode,
+    showRing
   }) => {
     var _a2, _b2, _c;
     const cameraControls = useCameraControls();
@@ -2684,6 +2687,7 @@
     glodrei.useCursor(isDragging, "grabbing");
     const combinedActiveState = shouldHighlight || isDragging;
     const color = combinedActiveState ? node.activeFill || theme.node.activeFill : node.fill || theme.node.fill;
+    const actualShowRing = showRing ?? theme.node.showRing;
     const { pointerOver, pointerOut } = useHoverIntent({
       disabled: disabled2 || isDragging,
       onPointerOver: (event) => {
@@ -2730,7 +2734,8 @@
           color,
           node,
           active: combinedActiveState,
-          selected: isSelected
+          selected: isSelected,
+          showRing: actualShowRing
         }
       ) }),
       [
@@ -2742,7 +2747,8 @@
         selectionOpacity,
         animated,
         isSelected,
-        node
+        node,
+        actualShowRing
       ]
     );
     const labelComponent = react.useMemo(
