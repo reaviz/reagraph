@@ -261,6 +261,11 @@ export interface NodeRendererProps {
    * ID of the node.
    */
   id: string;
+
+  /**
+   * show ring. Mainly used for selection.
+   */
+  showRing?: boolean;
 }
 
 export type NodeRenderer = (args: NodeRendererProps) => ReactNode;

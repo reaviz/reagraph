@@ -92,7 +92,7 @@ export function forceDirected({
   mode = null,
   dimensions = 2,
   nodeStrength = -250,
-  linkDistance = 50,
+  linkDistance = 100,
   clusterStrength = 0.5,
   linkStrengthInterCluster = 0.01,
   linkStrengthIntraCluster = 0.5,

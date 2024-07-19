@@ -10,6 +10,7 @@ export interface Theme {
         opacity: number;
         selectedOpacity: number;
         inactiveOpacity: number;
+        showRing?: boolean;
         label: {
             color: ColorRepresentation;
             stroke?: ColorRepresentation;

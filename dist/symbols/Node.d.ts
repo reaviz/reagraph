@@ -58,5 +58,9 @@ export interface NodeProps {
      * Triggered after a node was dragged.
      */
     onDragged?: (node: InternalGraphNode) => void;
+    /**
+     * show ring
+     */
+    showRing?: boolean;
 }
 export declare const Node: FC<NodeProps>;
