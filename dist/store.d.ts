@@ -36,6 +36,7 @@ export interface GraphState {
     setEdges: (edges: InternalGraphEdge[]) => void;
     setNodePosition: (id: string, position: InternalGraphPosition) => void;
     setCollapsedNodeIds: (nodeIds: string[]) => void;
+    canvasRef: HTMLCanvasElement | null;
 }
 export declare const Provider: ({ createStore, children, }: {
     createStore: () => StoreApi<GraphState>;
@@ -44,4 +45,4 @@ export declare const Provider: ({ createStore, children, }: {
     (): GraphState;
     <U>(selector: (state: GraphState) => U, equalityFn?: (a: U, b: U) => boolean): U;
 };
-export declare const createStore: ({ actives, selections, collapsedNodeIds, theme }: Partial<GraphState>) => import("zustand").UseBoundStore<StoreApi<GraphState>>;
+export declare const createStore: ({ actives, selections, collapsedNodeIds, theme, canvasRef }: Partial<GraphState>) => import("zustand").UseBoundStore<StoreApi<GraphState>>;
