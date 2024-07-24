@@ -182,7 +182,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                   selections,
                   actives,
                   theme,
-                  collapsedNodeIds
+                  collapsedNodeIds,
+                  canvasRef: canvasRef.current
                 })
               }
             >

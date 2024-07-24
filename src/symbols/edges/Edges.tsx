@@ -227,7 +227,7 @@ export const Edges: FC<EdgesProps> = ({
         <a.meshBasicMaterial
           attach="material-0"
           color={theme.edge.fill}
-          depthTest={false}
+          depthTest={true}
           fog={true}
           opacity={inactiveOpacity}
           side={DoubleSide}
@@ -236,7 +236,7 @@ export const Edges: FC<EdgesProps> = ({
         <a.meshBasicMaterial
           attach="material-1"
           color={theme.edge.activeFill}
-          depthTest={false}
+          depthTest={true}
           fog={true}
           opacity={activeOpacity}
           side={DoubleSide}
@@ -248,7 +248,7 @@ export const Edges: FC<EdgesProps> = ({
         <a.meshBasicMaterial
           attach="material-0"
           color={theme.edge.fill}
-          depthTest={false}
+          depthTest={true}
           fog={true}
           opacity={inactiveOpacity}
           side={DoubleSide}
@@ -257,7 +257,7 @@ export const Edges: FC<EdgesProps> = ({
         <a.meshBasicMaterial
           attach="material-1"
           color={theme.edge.activeFill}
-          depthTest={false}
+          depthTest={true}
           fog={true}
           opacity={activeOpacity}
           side={DoubleSide}

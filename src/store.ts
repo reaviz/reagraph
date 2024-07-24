@@ -48,6 +48,7 @@ export interface GraphState {
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
   setCollapsedNodeIds: (nodeIds: string[]) => void;
+  canvasRef: HTMLCanvasElement | null;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -56,7 +57,8 @@ export const createStore = ({
   actives = [],
   selections = [],
   collapsedNodeIds = [],
-  theme
+  theme,
+  canvasRef = null
 }: Partial<GraphState>) =>
   create<GraphState>(set => ({
     theme: {
@@ -133,5 +135,6 @@ export const createStore = ({
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
-      set(state => ({ ...state, collapsedNodeIds: nodeIds }))
+      set(state => ({ ...state, collapsedNodeIds: nodeIds })),
+    canvasRef
   }));

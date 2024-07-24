@@ -18,7 +18,7 @@ const calculateTextSize = (
 
   words.forEach(word => {
     const testLine = currentLine ? `${currentLine} ${word}` : word;
-    const testWidth = testLine.length * fontSize * 0.5;
+    const testWidth = testLine.length * fontSize * 1;
 
     if (testWidth > maxWidth) {
       lines.push(currentLine);
@@ -36,7 +36,7 @@ const calculateTextSize = (
     Math.min(
       maxWidth,
       lines.reduce(
-        (max, line) => Math.max(max, line.length * fontSize * 0.5),
+        (max, line) => Math.max(max, line.length * fontSize * 0.4),
         0
       )
     ) + 14;
