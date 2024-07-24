@@ -1372,7 +1372,8 @@
     actives = [],
     selections = [],
     collapsedNodeIds = [],
-    theme
+    theme,
+    canvasRef = null
   }) => zustand.create((set) => ({
     theme: {
       ...theme,
@@ -1442,7 +1443,8 @@
         nodes
       };
     }),
-    setCollapsedNodeIds: (nodeIds = []) => set((state) => ({ ...state, collapsedNodeIds: nodeIds }))
+    setCollapsedNodeIds: (nodeIds = []) => set((state) => ({ ...state, collapsedNodeIds: nodeIds })),
+    canvasRef
   }));
   function getHiddenChildren({
     nodeId,
@@ -1747,7 +1749,7 @@
     const words = shortText.split(" ");
     words.forEach((word) => {
       const testLine = currentLine ? `${currentLine} ${word}` : word;
-      const testWidth = testLine.length * fontSize * 0.5;
+      const testWidth = testLine.length * fontSize * 1;
       if (testWidth > maxWidth) {
         lines.push(currentLine);
         currentLine = word;
@@ -1761,7 +1763,7 @@
     const width = Math.min(
       maxWidth,
       lines.reduce(
-        (max, line) => Math.max(max, line.length * fontSize * 0.5),
+        (max, line) => Math.max(max, line.length * fontSize * 0.4),
         0
       )
     ) + 14;
@@ -3772,7 +3774,7 @@
           {
             attach: "material-0",
             color: theme.edge.fill,
-            depthTest: false,
+            depthTest: true,
             fog: true,
             opacity: inactiveOpacity,
             side: three.DoubleSide,
@@ -3784,7 +3786,7 @@
           {
             attach: "material-1",
             color: theme.edge.activeFill,
-            depthTest: false,
+            depthTest: true,
             fog: true,
             opacity: activeOpacity,
             side: three.DoubleSide,
@@ -3798,7 +3800,7 @@
           {
             attach: "material-0",
             color: theme.edge.fill,
-            depthTest: false,
+            depthTest: true,
             fog: true,
             opacity: inactiveOpacity,
             side: three.DoubleSide,
@@ -3810,7 +3812,7 @@
           {
             attach: "material-1",
             color: theme.edge.activeFill,
-            depthTest: false,
+            depthTest: true,
             fog: true,
             opacity: activeOpacity,
             side: three.DoubleSide,
@@ -4948,7 +4950,8 @@
                 selections,
                 actives,
                 theme,
-                collapsedNodeIds
+                collapsedNodeIds,
+                canvasRef: canvasRef.current
               }),
               children: [
                 ((_a2 = theme.canvas) == null ? void 0 : _a2.background) && /* @__PURE__ */ jsxRuntime.jsx("color", { attach: "background", args: [theme.canvas.background] }),

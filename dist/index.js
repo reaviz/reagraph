@@ -1377,7 +1377,8 @@ const createStore = ({
   actives = [],
   selections = [],
   collapsedNodeIds = [],
-  theme
+  theme,
+  canvasRef = null
 }) => create((set) => ({
   theme: {
     ...theme,
@@ -1447,7 +1448,8 @@ const createStore = ({
       nodes
     };
   }),
-  setCollapsedNodeIds: (nodeIds = []) => set((state) => ({ ...state, collapsedNodeIds: nodeIds }))
+  setCollapsedNodeIds: (nodeIds = []) => set((state) => ({ ...state, collapsedNodeIds: nodeIds })),
+  canvasRef
 }));
 function getHiddenChildren({
   nodeId,
@@ -1752,7 +1754,7 @@ const calculateTextSize = (text, fontSize, maxWidth, ellipsis, active) => {
   const words = shortText.split(" ");
   words.forEach((word) => {
     const testLine = currentLine ? `${currentLine} ${word}` : word;
-    const testWidth = testLine.length * fontSize * 0.5;
+    const testWidth = testLine.length * fontSize * 1;
     if (testWidth > maxWidth) {
       lines.push(currentLine);
       currentLine = word;
@@ -1766,7 +1768,7 @@ const calculateTextSize = (text, fontSize, maxWidth, ellipsis, active) => {
   const width = Math.min(
     maxWidth,
     lines.reduce(
-      (max, line) => Math.max(max, line.length * fontSize * 0.5),
+      (max, line) => Math.max(max, line.length * fontSize * 0.4),
       0
     )
   ) + 14;
@@ -3777,7 +3779,7 @@ const Edges = ({
         {
           attach: "material-0",
           color: theme.edge.fill,
-          depthTest: false,
+          depthTest: true,
           fog: true,
           opacity: inactiveOpacity,
           side: DoubleSide,
@@ -3789,7 +3791,7 @@ const Edges = ({
         {
           attach: "material-1",
           color: theme.edge.activeFill,
-          depthTest: false,
+          depthTest: true,
           fog: true,
           opacity: activeOpacity,
           side: DoubleSide,
@@ -3803,7 +3805,7 @@ const Edges = ({
         {
           attach: "material-0",
           color: theme.edge.fill,
-          depthTest: false,
+          depthTest: true,
           fog: true,
           opacity: inactiveOpacity,
           side: DoubleSide,
@@ -3815,7 +3817,7 @@ const Edges = ({
         {
           attach: "material-1",
           color: theme.edge.activeFill,
-          depthTest: false,
+          depthTest: true,
           fog: true,
           opacity: activeOpacity,
           side: DoubleSide,
@@ -4953,7 +4955,8 @@ const GraphCanvas = forwardRef(
               selections,
               actives,
               theme,
-              collapsedNodeIds
+              collapsedNodeIds,
+              canvasRef: canvasRef.current
             }),
             children: [
               ((_a2 = theme.canvas) == null ? void 0 : _a2.background) && /* @__PURE__ */ jsx("color", { attach: "background", args: [theme.canvas.background] }),
