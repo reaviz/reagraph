@@ -51,13 +51,15 @@ export const Sphere: FC<NodeRendererProps> = ({
         />
       </a.mesh>
       {showRing && (
-        <a.mesh position={[0, 0, 12]}>
+        <a.mesh position={[0, 0, 10]}>
           <Ring
             opacity={selected ? 0.5 : 0}
-            size={size / 1.5}
+            // size={size / 1.5}
+            size={size}
             animated={animated}
             color={selected ? theme.ring.activeFill : theme.ring.fill}
-            strokeWidth={3}
+            // strokeWidth={3}
+            strokeWidth={5}
           />
         </a.mesh>
       )}

@@ -12725,3 +12725,606 @@ export const CustomNew = () => {
     contextMenu={({ data, onClose }) => <div style={{ border: "1px solid", height: "200px", width: "200px" }} onClick={onClose}>{data.label}</div>}
   />
 }
+
+export const Connection = () => {
+  const theme: Theme = {
+    canvas: {
+      background: "#fff",
+    },
+    node: {
+      fill: "#000",
+      activeFill: "#1de9ac",
+      opacity: 1,
+      selectedOpacity: 1,
+      inactiveOpacity: 1,
+      // showRing: false,
+      label: {
+        color: "#FFF",
+        activeColor: "#fafafa",
+        fontSize: 4,
+        ellipsis: 0,
+        maxWidth: 50,
+        backgroundColor: "#000",
+        borderRadius: 2,
+      },
+    },
+    edge: {
+      fill: "#d8e6ea",
+      activeFill: "#1DE9AC",
+      opacity: 0.6,
+      selectedOpacity: 1,
+      inactiveOpacity: 1,
+      label: {
+        color: "#FFF",
+        activeColor: "#fafafa",
+        fontSize: 4,
+        ellipsis: 100,
+        maxWidth: 50,
+        backgroundColor: "#00a2a1",
+        borderRadius: 4,
+      },
+    },
+    lasso: {
+      background: "#fff",
+      border: "none",
+    },
+    arrow: {
+      fill: "#808080",
+      activeFill: "#1de9ac",
+    },
+    ring: {
+      fill: "red",
+      activeFill: "red",
+
+    },
+  };
+  const testData = {
+    "nodes": [
+      {
+        "id": "4874442",
+        "label": "FIDUCIARY SETTLEMENTS LTD",
+        "fill": "#7456DB",
+        "activeFill": "#2E233B",
+        "icon": "/assets/zoomcharts/icons/Company.png",
+        "data": {
+          "id": "4874442",
+          "loaded": true,
+          "extra": {
+            "id": "4874442",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:4874442",
+            "labels": [
+              "Company"
+            ],
+            "properties": {
+              "company_type": "ltd",
+              "date_neo4j_sync": "2024-07-24T05:55:07.874940288Z",
+              "address_posttown": "Croydon",
+              "latitude": 51.37501907348633,
+              "next_accounts_due": "2025-07-31",
+              "company_status_group": "Active",
+              "date_incorporated": "2012-10-24",
+              "last_confirmation_date": "2024-04-25",
+              "next_confirmation_due": "2025-05-09",
+              "address_line2": "Dingwall Road",
+              "address_line1": "6th Floor, Amp House",
+              "company_status": "active",
+              "id": 433593,
+              "last_accounts_type": "micro-entity",
+              "date_last_updated": "2024-06-27T13:30:29.110Z",
+              "longitude": -0.09498199820518494,
+              "company_status_display": "Active",
+              "address_string": "6th Floor, Amp House, Dingwall Road, Croydon, England, CR0 2LX",
+              "id_postcode_mapping": 738466,
+              "address_country": "England",
+              "coordinates": {
+                "type": "Point",
+                "coordinates": [
+                  -0.09498199820518494,
+                  51.37501907348633
+                ],
+                "crs": {
+                  "srid": 4326,
+                  "name": "wgs-84",
+                  "type": "link",
+                  "properties": {
+                    "href": "https://spatialreference.org/ref/epsg/4326/ogcwkt/",
+                    "type": "ogcwkt"
+                  }
+                }
+              },
+              "address_postcode": "CR0 2LX",
+              "company_type_display": "Private limited company",
+              "company_type_group": "Limited Company (LTD)",
+              "last_accounts_date": "2023-10-31",
+              "company_number": "08266173",
+              "name": "FIDUCIARY SETTLEMENTS LTD",
+              "is_company": 1,
+              "isRoot": 0
+            }
+          },
+          "className": "Company",
+          "style": {
+            "label": "FIDUCIARY SETTLEMENTS LTD"
+          }
+        }
+      },
+      {
+        "id": "157918667",
+        "label": "Mr Yomtov Eliezer Jacobs",
+        "fill": "#1dc564",
+        "activeFill": "#347851",
+        "icon": "/assets/zoomcharts/icons/Officer.png",
+        "data": {
+          "id": "157918667",
+          "loaded": true,
+          "extra": {
+            "id": "157918667",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:157918667",
+            "labels": [
+              "Person"
+            ],
+            "properties": {
+              "date_neo4j_sync": "2024-07-24T08:54:00.658571802Z",
+              "date_of_birth": "1970-10-01",
+              "birth_month": 10,
+              "last_name": "Jacobs",
+              "title": "Mr",
+              "middle_name": "Eliezer",
+              "birth_year": 1970,
+              "gender_name": "Male",
+              "total_entity_count": 11,
+              "current": 1,
+              "nationality": "British",
+              "is_bobble": 1,
+              "name": "Mr Yomtov Eliezer Jacobs",
+              "honours": "",
+              "id": 304,
+              "first_name_initial": "Y",
+              "is_company": 0,
+              "first_name": "Yomtov",
+              "date_last_updated": "2024-07-18T19:54:03.053Z",
+              "isRoot": 0
+            }
+          },
+          "className": "Person",
+          "fill": "#1dc564",
+          "style": {
+            "label": "Mr Yomtov Eliezer Jacobs"
+          }
+        }
+      },
+      {
+        "id": "7320792",
+        "label": "ENDEAVOUR CORPORATE LTD",
+        "fill": "#7456DB",
+        "activeFill": "#2E233B",
+        "icon": "/assets/zoomcharts/icons/Company.png",
+        "data": {
+          "id": "7320792",
+          "loaded": true,
+          "extra": {
+            "id": "7320792",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:7320792",
+            "labels": [
+              "Company"
+            ],
+            "properties": {
+              "company_type": "ltd",
+              "address_posttown": "Ashby-De-La-Zouch",
+              "date_neo4j_sync": "2024-07-24T07:56:26.121220764Z",
+              "latitude": 52.74614334106445,
+              "next_accounts_due": "2024-09-30",
+              "company_status_group": "Administration",
+              "date_incorporated": "2009-08-07",
+              "last_confirmation_date": "2023-08-07",
+              "next_confirmation_due": "2024-08-21",
+              "address_line2": "South Street",
+              "address_line1": "C/O Frost Group Limited, Court House The Old Police Station",
+              "company_status": "liquidation",
+              "id": 663023,
+              "last_accounts_type": "micro-entity",
+              "date_last_updated": "2024-06-20T10:00:33.540Z",
+              "longitude": -1.4704630374908447,
+              "company_status_display": "Liquidation",
+              "address_string": "C/O Frost Group Limited, Court House The Old Police Station, South Street, Ashby-De-La-Zouch, Leicestershire, LE65 1BR",
+              "id_postcode_mapping": 44932,
+              "coordinates": {
+                "type": "Point",
+                "coordinates": [
+                  -1.4704630374908447,
+                  52.74614334106445
+                ],
+                "crs": {
+                  "srid": 4326,
+                  "name": "wgs-84",
+                  "type": "link",
+                  "properties": {
+                    "href": "https://spatialreference.org/ref/epsg/4326/ogcwkt/",
+                    "type": "ogcwkt"
+                  }
+                }
+              },
+              "address_postcode": "LE65 1BR",
+              "company_type_display": "Private limited company",
+              "address_county": "Leicestershire",
+              "company_type_group": "Limited Company (LTD)",
+              "last_accounts_date": "2022-12-31",
+              "company_number": "06984563",
+              "name": "ENDEAVOUR CORPORATE LTD",
+              "is_company": 1,
+              "isRoot": 0
+            }
+          },
+          "className": "Company",
+          "style": {
+            "label": "ENDEAVOUR CORPORATE LTD"
+          }
+        }
+      },
+      {
+        "id": "157918165",
+        "label": "John George Cushing",
+        "fill": "#1dc564",
+        "activeFill": "#347851",
+        "icon": "/assets/zoomcharts/icons/Officer.png",
+        "data": {
+          "id": "157918165",
+          "loaded": true,
+          "extra": {
+            "id": "157918165",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:157918165",
+            "labels": [
+              "Person"
+            ],
+            "properties": {
+              "date_neo4j_sync": "2024-07-24T05:55:07.920072922Z",
+              "birth_month": 2,
+              "date_of_birth": "1979-02-01",
+              "last_name": "Cushing",
+              "middle_name": "George",
+              "title": "",
+              "gender_name": "Male",
+              "birth_year": 1979,
+              "total_entity_count": 26,
+              "current": 1,
+              "nationality": "British",
+              "is_bobble": 0,
+              "name": "John George Cushing",
+              "honours": "",
+              "id": 4029,
+              "first_name_initial": "J",
+              "is_company": 0,
+              "first_name": "John",
+              "date_last_updated": "2024-07-18T19:55:12.510Z",
+              "isRoot": 0
+            }
+          },
+          "className": "Person",
+          "fill": "#1dc564",
+          "style": {
+            "label": "John George Cushing"
+          }
+        }
+      },
+      {
+        "id": "487883",
+        "label": "44SOUTH LIMITED",
+        "fill": "red",
+        "activeFill": "#2E233B",
+        "icon": "/assets/zoomcharts/icons/Company.png",
+        "data": {
+          "id": "487883",
+          "loaded": true,
+          "extra": {
+            "id": "487883",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:487883",
+            "labels": [
+              "Company"
+            ],
+            "properties": {
+              "company_type": "ltd",
+              "date_neo4j_sync": "2024-07-23T16:33:22.327453788Z",
+              "address_posttown": "Harlow",
+              "latitude": 51.74839401245117,
+              "next_accounts_due": "2025-02-28",
+              "company_status_group": "Active",
+              "date_incorporated": "2013-05-10",
+              "last_confirmation_date": "2024-05-10",
+              "next_confirmation_due": "2025-05-24",
+              "address_line1": "51 Moorfield",
+              "company_status": "active",
+              "id": 51487,
+              "date_last_updated": "2024-05-24T14:50:38.760Z",
+              "longitude": 0.09091000258922577,
+              "company_status_display": "Active",
+              "address_string": "51 Moorfield, Harlow, Essex, CM18 7QF",
+              "id_postcode_mapping": 1831417,
+              "coordinates": {
+                "type": "Point",
+                "coordinates": [
+                  0.09091000258922577,
+                  51.74839401245117
+                ],
+                "crs": {
+                  "srid": 4326,
+                  "name": "wgs-84",
+                  "type": "link",
+                  "properties": {
+                    "href": "https://spatialreference.org/ref/epsg/4326/ogcwkt/",
+                    "type": "ogcwkt"
+                  }
+                }
+              },
+              "address_postcode": "CM18 7QF",
+              "company_type_display": "Private limited company",
+              "address_county": "Essex",
+              "company_type_group": "Limited Company (LTD)",
+              "last_accounts_date": "2023-05-31",
+              "company_number": "08523952",
+              "name": "44SOUTH LIMITED",
+              "is_company": 1,
+              "isRoot": 1
+            }
+          },
+          "fill": "red",
+          "className": "Company",
+          "style": {
+            "label": "44SOUTH LIMITED"
+          }
+        }
+      },
+      {
+        "id": "158016919",
+        "label": "Mr James Barclay Trigg",
+        "fill": "#1dc564",
+        "activeFill": "#347851",
+        "icon": "/assets/zoomcharts/icons/Officer.png",
+        "data": {
+          "id": "158016919",
+          "loaded": true,
+          "extra": {
+            "id": "158016919",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:158016919",
+            "labels": [
+              "Person"
+            ],
+            "properties": {
+              "date_neo4j_sync": "2024-07-24T07:56:26.136123713Z",
+              "birth_month": 3,
+              "date_of_birth": "1977-03-01",
+              "last_name": "Trigg",
+              "title": "Mr",
+              "middle_name": "Barclay",
+              "birth_year": 1977,
+              "gender_name": "Male",
+              "total_entity_count": 6,
+              "current": 1,
+              "nationality": "British",
+              "is_bobble": 0,
+              "name": "Mr James Barclay Trigg",
+              "honours": "",
+              "id": 17992378,
+              "first_name_initial": "J",
+              "is_company": 0,
+              "first_name": "James",
+              "date_last_updated": "2024-07-18T19:54:35.063Z",
+              "isRoot": 0
+            }
+          },
+          "className": "Person",
+          "fill": "#1dc564",
+          "style": {
+            "label": "Mr James Barclay Trigg"
+          }
+        }
+      },
+      {
+        "id": "32589261",
+        "label": "TOWER DERIVATIVES TRAINING LIMITED",
+        "fill": "#7456DB",
+        "activeFill": "#2E233B",
+        "icon": "/assets/zoomcharts/icons/Company.png",
+        "data": {
+          "id": "32589261",
+          "loaded": true,
+          "extra": {
+            "id": "32589261",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:32589261",
+            "labels": [
+              "Company"
+            ],
+            "properties": {
+              "company_type": "ltd",
+              "date_neo4j_sync": "2024-07-19T07:20:30.859505895Z",
+              "company_status_display": "Dissolved",
+              "id_postcode_mapping": 2338535,
+              "address_string": "New Bridge Street House, 30-34 New Bridge Street, London, EC4V 6BJ",
+              "address_posttown": "London",
+              "latitude": 51.512657165527344,
+              "coordinates": {
+                "type": "Point",
+                "coordinates": [
+                  -0.10403499752283096,
+                  51.512657165527344
+                ],
+                "crs": {
+                  "srid": 4326,
+                  "name": "wgs-84",
+                  "type": "link",
+                  "properties": {
+                    "href": "https://spatialreference.org/ref/epsg/4326/ogcwkt/",
+                    "type": "ogcwkt"
+                  }
+                }
+              },
+              "company_status_group": "Closed",
+              "address_postcode": "EC4V 6BJ",
+              "date_incorporated": "2009-02-20",
+              "company_type_display": "Private limited company",
+              "date_dissolved": "2018-09-04",
+              "company_type_group": "Limited Company (LTD)",
+              "last_accounts_date": "2016-06-30",
+              "company_number": "06825967",
+              "address_line2": "30-34 New Bridge Street",
+              "address_line1": "New Bridge Street House",
+              "name": "TOWER DERIVATIVES TRAINING LIMITED",
+              "company_status": "dissolved",
+              "id": 3112354,
+              "is_company": 1,
+              "longitude": -0.10403499752283096,
+              "date_last_updated": "2024-02-22T07:46:54.267Z",
+              "isRoot": 0
+            }
+          },
+          "className": "Company",
+          "style": {
+            "label": "TOWER DERIVATIVES TRAINING LIMITED"
+          }
+        }
+      },
+      {
+        "id": "752901",
+        "label": "Mr Richard James Midgley",
+        "fill": "#1dc564",
+        "activeFill": "#347851",
+        "icon": "/assets/zoomcharts/icons/Officer.png",
+        "data": {
+          "id": "752901",
+          "loaded": true,
+          "extra": {
+            "id": "752901",
+            "elementId": "4:9143ec59-4bd2-40a1-b4c2-3921e2aa8d4f:752901",
+            "labels": [
+              "Person"
+            ],
+            "properties": {
+              "date_neo4j_sync": "2024-07-24T08:08:57.343178941Z",
+              "date_of_birth": "1943-09-01",
+              "birth_month": 9,
+              "last_name": "Midgley",
+              "title": "Mr",
+              "middle_name": "James",
+              "gender_name": "Male",
+              "birth_year": 1943,
+              "total_entity_count": 8,
+              "current": 1,
+              "nationality": "British",
+              "is_bobble": 0,
+              "name": "Mr Richard James Midgley",
+              "honours": "",
+              "id": 221264,
+              "first_name_initial": "R",
+              "is_company": 0,
+              "first_name": "Richard",
+              "date_last_updated": "2024-07-18T19:54:39.367Z",
+              "isRoot": 0
+            }
+          },
+          "className": "Person",
+          "fill": "#1dc564",
+          "style": {
+            "label": "Mr Richard James Midgley"
+          }
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "289340891",
+        "source": "752901",
+        "target": "32589261",
+        "label": "",
+        "backgroundColor": "#00A2A1"
+      },
+      {
+        "id": "251059907",
+        "source": "752901",
+        "target": "4874442",
+        "label": "",
+        "backgroundColor": "#00A2A1"
+      },
+      {
+        "id": "251059906",
+        "source": "157918165",
+        "target": "4874442",
+        "label": "",
+        "backgroundColor": "#00A2A1"
+      },
+      {
+        "id": "245286136",
+        "source": "158016919",
+        "target": "487883",
+        "label": "",
+        "backgroundColor": "#00A2A1"
+      },
+      {
+        "id": "254238671",
+        "source": "158016919",
+        "target": "7320792",
+        "label": "",
+        "backgroundColor": "#00A2A1"
+      },
+      {
+        "id": "254238670",
+        "source": "157918667",
+        "target": "7320792",
+        "label": "",
+        "backgroundColor": "#00A2A1"
+      },
+      {
+        "id": "289340881",
+        "source": "157918667",
+        "target": "32589261",
+        "label": "",
+        "backgroundColor": "#00A2A1"
+      }
+    ]
+  }
+  const ref = useRef<GraphCanvasRef | null>(null);
+  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+    ref: ref,
+    nodes: testData.nodes,
+    edges: testData.edges,
+    pathHoverType: "direct",
+    pathSelectionType: "direct",
+    // type:"multi",
+// hotkeys:["selectAll"]
+// focusOnSelect:true
+// disabled:true
+});
+
+
+  return <GraphCanvas
+    theme={theme}
+    ref={ref}
+    selections={selections}
+    actives={actives}
+    onNodePointerOver={onNodePointerOver}
+    onNodePointerOut={onNodePointerOut}
+    onNodeClick={onNodeClick}
+    onCanvasClick={onCanvasClick}
+    layoutType="forceDirected2d"
+    draggable
+    cameraMode="pan"
+    edgeLabelPosition="natural"
+    edgeInterpolation='linear'    
+    labelType="all"
+    nodes={testData.nodes}
+    edges={testData.edges}
+    defaultNodeSize={1}
+    edgeArrowPosition="none"
+    renderNode={({ node, ...rest }) => (
+      <SphereWithIcon {...rest} node={node} image={node.icon || ""} />
+    )}
+    layoutOverrides={{
+      // nodeLevelRatio: 2.5,
+      linkDistance: 50,
+      // nodeStrength: -3000,
+      // clusterStrength: 1,
+      // forceLinkStrength: 1,
+      // forceLinkDistance: 300,
+      // nodeSeparation: 100,
+
+    }}
+  />
+}

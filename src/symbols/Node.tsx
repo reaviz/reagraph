@@ -200,7 +200,7 @@ export const Node: FC<NodeProps> = ({
           ? [
             position.x,
             position.y,
-            shouldHighlight ? position.z + 1 : position.z
+            shouldHighlight ? position.z + 50 : position.z
           ]
           : [0, 0, 0],
         labelPosition: [0, -(nodeSize + 4), 2],
