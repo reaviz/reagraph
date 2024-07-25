@@ -111,6 +111,11 @@ export interface LabelProps {
    * Type of the label.
    */
   type?: 'node' | 'edge';
+
+  /**
+   * label visible or not
+   */
+  labelVisible?: boolean;
 }
 
 export const Label: FC<LabelProps> = ({
@@ -125,7 +130,8 @@ export const Label: FC<LabelProps> = ({
   maxWidth = 100,
   ellipsis = 100,
   backgroundColor,
-  borderRadius
+  borderRadius,
+  labelVisible = true
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(

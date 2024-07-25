@@ -1,5 +1,5 @@
-import React from 'react';
-import { CustomLayoutInputs, GraphCanvas, NodePositionArgs, recommendLayout, SphereWithIcon, Theme } from '../../src';
+import React, { useRef } from 'react';
+import { CustomLayoutInputs, GraphCanvas, GraphCanvasRef, NodePositionArgs, recommendLayout, SphereWithIcon, Theme, useSelection } from '../../src';
 import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
@@ -12674,13 +12674,28 @@ export const CustomNew = () => {
       }
     ]
   }
+  const ref = useRef<GraphCanvasRef | null>(null);
+
+  const { selections, actives, onNodePointerOver, onNodePointerOut } = useSelection({
+    ref: ref,
+    nodes: testData.nodes,
+    edges: testData.edges,
+    pathHoverType: "all",
+    pathSelectionType: "all",
+  });
+
   return <GraphCanvas
+    ref={ref}
+    selections={selections}
+    actives={actives}
+    onNodePointerOver={onNodePointerOver}
+    onNodePointerOut={onNodePointerOut}
     theme={theme}
     layoutType="treeTd2d"
     draggable
     cameraMode="pan"
     edgeLabelPosition="natural"
-    edgeInterpolation='linear'    
+    edgeInterpolation='linear'
     labelType="all"
     nodes={testData.nodes}
     edges={testData.edges}
@@ -12689,14 +12704,24 @@ export const CustomNew = () => {
       <SphereWithIcon {...rest} node={node} image={node.icon || ""} />
     )}
     layoutOverrides={{
+      getNodePosition: (id: string, { nodes }: NodePositionArgs) => {
+        const idx = nodes.findIndex(n => n.id === id);
+        const node = nodes[idx];
+        return node
+        // return {
+        //   x: 25 * idx,
+        //   y: idx % 2 === 0 ? 0 : 50,
+        //   z: 1
+        // };
+      },
       nodeLevelRatio: 2.5,
-      linkDistance: 500,
+      linkDistance: 800,
       nodeStrength: -3000,
       // clusterStrength: 1,
       // forceLinkStrength: 1,
       // forceLinkDistance: 300,
       // nodeSeparation: 100,
-
-    }}
+    } as CustomLayoutInputs}
+    contextMenu={({ data, onClose }) => <div style={{ border: "1px solid", height: "200px", width: "200px" }} onClick={onClose}>{data.label}</div>}
   />
 }

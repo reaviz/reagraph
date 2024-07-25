@@ -316,7 +316,6 @@ export const Node: FC<NodeProps> = ({
 
   const labelComponent = useMemo(
     () =>
-      (labelVisible || isSelected || active) &&
       label && (
         <>
           <a.group position={labelPosition as any}>
@@ -336,6 +335,7 @@ export const Node: FC<NodeProps> = ({
                   : theme.node.label.color
               }
               type="node"
+              labelVisible={labelVisible}
             />
           </a.group>
           {subLabel && (
@@ -356,6 +356,7 @@ export const Node: FC<NodeProps> = ({
                     ? theme.node.subLabel?.activeColor
                     : theme.node.subLabel?.color
                 }
+                labelVisible={labelVisible}
               />
             </a.group>
           )}
