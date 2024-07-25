@@ -1871,7 +1871,7 @@ const Ring = ({
   opacity,
   animated,
   strokeWidth,
-  innerRadius = 4,
+  innerRadius = 2,
   segments = 25
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
@@ -1961,14 +1961,14 @@ const Sphere = ({
         }
       )
     ] }),
-    showRing && /* @__PURE__ */ jsx(a.mesh, { position: [0, 0, 12], children: /* @__PURE__ */ jsx(
+    showRing && /* @__PURE__ */ jsx(a.mesh, { position: [0, 0, 10], children: /* @__PURE__ */ jsx(
       Ring,
       {
         opacity: selected ? 0.5 : 0,
-        size: size / 1.5,
+        size,
         animated,
         color: selected ? theme.ring.activeFill : theme.ring.fill,
-        strokeWidth: 3
+        strokeWidth: 5
       }
     ) })
   ] });
@@ -2659,7 +2659,7 @@ const Node = ({
         nodePosition: position ? [
           position.x,
           position.y,
-          shouldHighlight ? position.z + 1 : position.z
+          shouldHighlight ? position.z + 50 : position.z
         ] : [0, 0, 0],
         labelPosition: [0, -(nodeSize + 4), 2],
         subLabelPosition: [0, -(nodeSize + 14), 2]

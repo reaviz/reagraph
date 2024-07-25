@@ -101,7 +101,6 @@ export const CustomNew = () => {
     ring: {
       fill: "#000",
       activeFill: "#000",
-      size:6
     },
   };
   const testData = {
