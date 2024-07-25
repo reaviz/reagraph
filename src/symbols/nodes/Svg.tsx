@@ -2,7 +2,11 @@ import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
 import { animationConfig } from '../../utils';
 import { NodeRendererProps } from '../../types';
-import { Billboard, Svg as DreiSvg, SvgProps as DreiSvgProps } from 'glodrei';
+import {
+  Billboard,
+  Svg as DreiSvg,
+  SvgProps as DreiSvgProps
+} from '@react-three/drei';
 import { Color, DoubleSide } from 'three';
 
 export type SvgProps = NodeRendererProps &

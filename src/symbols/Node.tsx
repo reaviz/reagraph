@@ -18,7 +18,7 @@ import {
   NodeRenderer,
   CollapseProps
 } from '../types';
-import { Html, useCursor } from 'glodrei';
+import { Html, useCursor } from '@react-three/drei';
 import { useCameraControls } from '../CameraControls';
 import { useStore } from '../store';
 import { useDrag } from '../utils/useDrag';
