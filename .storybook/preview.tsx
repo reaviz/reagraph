@@ -1,4 +1,4 @@
-import { Stats } from 'glodrei';
+import { Stats } from '@react-three/drei';
 import theme from './theme';
 import { Preview } from '@storybook/react';
 
