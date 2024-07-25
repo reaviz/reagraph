@@ -1787,7 +1787,8 @@ const Label = ({
   maxWidth = 100,
   ellipsis = 100,
   backgroundColor,
-  borderRadius
+  borderRadius,
+  labelVisible = true
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const normalizedBackgroundColor = useMemo(
@@ -2761,7 +2762,7 @@ const Node = ({
   const labelComponent = useMemo(
     () => {
       var _a3, _b3, _c2;
-      return (labelVisible || isSelected || active) && label && /* @__PURE__ */ jsxs(Fragment, { children: [
+      return label && /* @__PURE__ */ jsxs(Fragment, { children: [
         /* @__PURE__ */ jsx(a.group, { position: labelPosition, children: /* @__PURE__ */ jsx(
           Label,
           {
@@ -2775,7 +2776,8 @@ const Node = ({
             borderRadius: theme.node.label.borderRadius,
             active: isSelected || active || isDragging || isActive,
             color: isSelected || active || isDragging || isActive ? theme.node.label.activeColor : theme.node.label.color,
-            type: "node"
+            type: "node",
+            labelVisible
           }
         ) }),
         subLabel && /* @__PURE__ */ jsx(a.group, { position: subLabelPosition, children: /* @__PURE__ */ jsx(
@@ -2791,7 +2793,8 @@ const Node = ({
             opacity: selectionOpacity,
             stroke: (_a3 = theme.node.subLabel) == null ? void 0 : _a3.stroke,
             active: isSelected || active || isDragging || isActive,
-            color: isSelected || active || isDragging || isActive ? (_b3 = theme.node.subLabel) == null ? void 0 : _b3.activeColor : (_c2 = theme.node.subLabel) == null ? void 0 : _c2.color
+            color: isSelected || active || isDragging || isActive ? (_b3 = theme.node.subLabel) == null ? void 0 : _b3.activeColor : (_c2 = theme.node.subLabel) == null ? void 0 : _c2.color,
+            labelVisible
           }
         ) })
       ] });

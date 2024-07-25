@@ -54,5 +54,9 @@ export interface LabelProps {
      * Type of the label.
      */
     type?: 'node' | 'edge';
+    /**
+     * label visible or not
+     */
+    labelVisible?: boolean;
 }
 export declare const Label: FC<LabelProps>;

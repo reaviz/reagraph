@@ -1782,7 +1782,8 @@
     maxWidth = 100,
     ellipsis = 100,
     backgroundColor,
-    borderRadius
+    borderRadius,
+    labelVisible = true
   }) => {
     const normalizedColor = react.useMemo(() => new three.Color(color), [color]);
     const normalizedBackgroundColor = react.useMemo(
@@ -2756,7 +2757,7 @@
     const labelComponent = react.useMemo(
       () => {
         var _a3, _b3, _c2;
-        return (labelVisible || isSelected || active) && label && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+        return label && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(three$1.a.group, { position: labelPosition, children: /* @__PURE__ */ jsxRuntime.jsx(
             Label,
             {
@@ -2770,7 +2771,8 @@
               borderRadius: theme.node.label.borderRadius,
               active: isSelected || active || isDragging || isActive,
               color: isSelected || active || isDragging || isActive ? theme.node.label.activeColor : theme.node.label.color,
-              type: "node"
+              type: "node",
+              labelVisible
             }
           ) }),
           subLabel && /* @__PURE__ */ jsxRuntime.jsx(three$1.a.group, { position: subLabelPosition, children: /* @__PURE__ */ jsxRuntime.jsx(
@@ -2786,7 +2788,8 @@
               opacity: selectionOpacity,
               stroke: (_a3 = theme.node.subLabel) == null ? void 0 : _a3.stroke,
               active: isSelected || active || isDragging || isActive,
-              color: isSelected || active || isDragging || isActive ? (_b3 = theme.node.subLabel) == null ? void 0 : _b3.activeColor : (_c2 = theme.node.subLabel) == null ? void 0 : _c2.color
+              color: isSelected || active || isDragging || isActive ? (_b3 = theme.node.subLabel) == null ? void 0 : _b3.activeColor : (_c2 = theme.node.subLabel) == null ? void 0 : _c2.color,
+              labelVisible
             }
           ) })
         ] });
