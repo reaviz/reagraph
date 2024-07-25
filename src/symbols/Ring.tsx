@@ -49,7 +49,7 @@ export const Ring: FC<RingProps> = ({
   opacity,
   animated,
   strokeWidth,
-  innerRadius = 4,
+  innerRadius = 2,
   segments = 25
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
