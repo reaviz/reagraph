@@ -1,6 +1,7 @@
 import { Stats } from 'glodrei';
 import theme from './theme';
 import { Preview } from '@storybook/react';
+import React from 'react';
 
 const withProvider = (Story, context) => (
   <>
