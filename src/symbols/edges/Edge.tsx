@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo } from 'react';
 import { useSpring, a } from '@react-spring/three';
-import { Html } from '@react-three/drei';
+import { Html } from 'glodrei';
 import { ColorRepresentation, Euler } from 'three';
 
 import { useStore } from '../../store';
