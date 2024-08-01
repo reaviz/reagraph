@@ -39,6 +39,7 @@ Reagraph is a high-performance network graph visualization built in WebGL for Re
 - [Reaflow](https://reaflow.dev?utm=reagraph) - Open-source library for workflow and diagram graphs.
 - [Reablocks](https://reablocks.dev?utm=reagraph) - Open-source component library for React based on Tailwind.
 - [Reaviz](https://reaviz.dev?utm=reagraph) - Open-source library for data visualizations for React. 
+- [Reachat](https://reachat.dev?utm=reagraph) - Open-source library for building LLM/Chat UIs for React.
 
 ## ✨ Features
 - WebGL based for high performance
