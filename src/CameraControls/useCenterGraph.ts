@@ -161,7 +161,7 @@ export const useCenterGraph = ({
           void controls?.rotate(horizontalRotation, verticalRotation, true);
         }
 
-        void controls?.zoomTo(1, opts?.animated);
+        await controls?.zoomTo(1, opts?.animated);
 
         await controls?.fitToBox(
           new Box3(

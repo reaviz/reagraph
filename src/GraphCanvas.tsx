@@ -138,6 +138,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           rendererRef.current?.fitNodesInView(nodeIds, opts),
         zoomIn: () => controlsRef.current?.zoomIn(),
         zoomOut: () => controlsRef.current?.zoomOut(),
+        dollyIn: distance => controlsRef.current?.dollyIn(distance),
+        dollyOut: distance => controlsRef.current?.dollyOut(distance),
         panLeft: () => controlsRef.current?.panLeft(),
         panRight: () => controlsRef.current?.panRight(),
         panDown: () => controlsRef.current?.panDown(),

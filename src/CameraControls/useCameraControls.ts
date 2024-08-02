@@ -24,6 +24,16 @@ export interface CameraControlsContextProps {
   zoomOut: () => void;
 
   /**
+   * A function that dollies in the camera.
+   */
+  dollyIn: (distance?: number) => void;
+
+  /**
+   * A function that dollies out the camera.
+   */
+  dollyOut: (distance?: number) => void;
+
+  /**
    * A function that pans the camera to the left.
    */
   panLeft: () => void;
@@ -49,6 +59,8 @@ export const CameraControlsContext = createContext<CameraControlsContextProps>({
   resetControls: () => undefined,
   zoomIn: () => undefined,
   zoomOut: () => undefined,
+  dollyIn: () => undefined,
+  dollyOut: () => undefined,
   panLeft: () => undefined,
   panRight: () => undefined,
   panUp: () => undefined,

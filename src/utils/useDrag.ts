@@ -1,6 +1,6 @@
 import { useThree } from '@react-three/fiber';
 import { useMemo } from 'react';
-import { useGesture } from 'react-use-gesture';
+import { useGesture } from '@use-gesture/react';
 import { Vector2, Vector3, Plane } from 'three';
 import { InternalGraphPosition } from '../types';
 
@@ -61,12 +61,10 @@ export const useDrag = ({
         // Run user callback
         onDragStart();
       },
-      onDrag: ({ event }) => {
+      onDrag: ({ xy }) => {
         // Compute normalized mouse coordinates (screen space)
-        const nx =
-          ((event.clientX - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
-        const ny =
-          -((event.clientY - (clientRect?.top ?? 0)) / size.height) * 2 + 1;
+        const nx = ((xy[0] - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
+        const ny = -((xy[1] - (clientRect?.top ?? 0)) / size.height) * 2 + 1;
 
         // Unlike the mouse from useThree, this works offscreen
         mouse2D.set(nx, ny);
