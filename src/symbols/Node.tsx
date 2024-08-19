@@ -306,6 +306,7 @@ export const Node: FC<NodeProps> = ({
 
   const labelComponent = useMemo(
     () =>
+      labelVisible &&
       (labelVisible || isSelected || active) &&
       label && (
         <>
