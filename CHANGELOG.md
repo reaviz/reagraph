@@ -1,3 +1,7 @@
+# 4.19.3 - 8/20/24
+- [fix] fixed labelType none still shows label when hovering over node
+- [chore] replace react-use-gesture to @use-gesture/react #257
+
 # 4.19.2 - 6/24/24
 - [chore] Update reakeys #251
 
