@@ -317,7 +317,17 @@ export const Edge: FC<EdgeProps> = ({
     () =>
       labelVisible &&
       label && (
-        <a.group position={labelPosition as any}>
+        <a.group
+          position={labelPosition as any}
+          onContextMenu={() => {
+            if (!disabled) {
+              setMenuVisible(true);
+              onContextMenu?.(edge);
+            }
+          }}
+          onPointerOver={pointerOver}
+          onPointerOut={pointerOut}
+        >
           <Label
             text={label}
             ellipsis={15}
@@ -336,6 +346,8 @@ export const Edge: FC<EdgeProps> = ({
       ),
     [
       active,
+      disabled,
+      edge,
       isActive,
       isSelected,
       label,
@@ -343,6 +355,9 @@ export const Edge: FC<EdgeProps> = ({
       labelPosition,
       labelRotation,
       labelVisible,
+      onContextMenu,
+      pointerOut,
+      pointerOver,
       selectionOpacity,
       theme.edge.label.activeColor,
       theme.edge.label.color,
