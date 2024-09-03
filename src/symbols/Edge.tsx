@@ -295,6 +295,7 @@ export const Edge: FC<EdgeProps> = ({
         />
       ),
     [
+      fill,
       active,
       animated,
       arrowLength,
