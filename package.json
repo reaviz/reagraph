@@ -70,7 +70,7 @@
     "graphology-shortest-path": "^2.0.2",
     "hold-event": "^0.2.0",
     "reakeys": "^2.0.3",
-    "three": "^0.154.0",
+    "three": ">= 0.154.0",
     "three-stdlib": "^2.23.13",
     "zustand": "4.3.9"
   },
