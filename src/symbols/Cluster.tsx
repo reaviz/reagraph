@@ -92,14 +92,28 @@ export const Cluster: FC<ClusterProps> = ({
       : theme.cluster?.inactiveOpacity
     : theme.cluster?.opacity;
 
+  const labelPositionOffset = useMemo(() => {
+    const defaultPosition = [0, -offset, 2];
+    const themeOffset = theme.cluster?.label?.offset;
+    if (themeOffset) {
+      return [
+        defaultPosition[0] - themeOffset[0],
+        defaultPosition[1] - themeOffset[1],
+        defaultPosition[2] - themeOffset[2]
+      ];
+    }
+
+    return defaultPosition;
+  }, [offset, theme.cluster?.label?.offset]);
+
   const { circleOpacity, circlePosition, labelPosition } = useSpring({
     from: {
       circlePosition: [center.x, center.y, -1],
       circleOpacity: 0,
-      labelPosition: [0, -offset - (theme.cluster?.label?.yOffset ?? 0), 2]
+      labelPosition: labelPositionOffset
     },
     to: {
-      labelPosition: [0, -offset - (theme.cluster?.label?.yOffset ?? 0), 2],
+      labelPosition: labelPositionOffset,
       circlePosition: position ? [position.x, position.y, -1] : [0, 0, -1],
       circleOpacity: opacity
     },

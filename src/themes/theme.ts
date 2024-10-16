@@ -56,8 +56,10 @@ export interface Theme {
     label?: {
       stroke?: ColorRepresentation;
       color: ColorRepresentation;
+      // Size of the cluster label
       fontSize?: number;
-      yOffset?: number;
+      // Offset of the cluster label relative to the default position
+      offset?: [number, number, number];
     };
   };
 }
