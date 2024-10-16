@@ -56,6 +56,7 @@ export interface Theme {
     label?: {
       stroke?: ColorRepresentation;
       color: ColorRepresentation;
+      fontSize?: number;
     };
   };
 }

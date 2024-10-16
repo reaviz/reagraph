@@ -200,7 +200,7 @@ export const Cluster: FC<ClusterProps> = ({
                 stroke={theme.cluster.label.stroke}
                 active={false}
                 color={theme.cluster?.label.color}
-                fontSize={12}
+                fontSize={theme.cluster?.label.fontSize}
               />
             </a.group>
           )}
