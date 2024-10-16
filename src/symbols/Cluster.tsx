@@ -96,10 +96,10 @@ export const Cluster: FC<ClusterProps> = ({
     from: {
       circlePosition: [center.x, center.y, -1],
       circleOpacity: 0,
-      labelPosition: [0, -offset, 2]
+      labelPosition: [0, -offset - (theme.cluster?.label?.yOffset ?? 0), 2]
     },
     to: {
-      labelPosition: [0, -offset, 2],
+      labelPosition: [0, -offset - (theme.cluster?.label?.yOffset ?? 0), 2],
       circlePosition: position ? [position.x, position.y, -1] : [0, 0, -1],
       circleOpacity: opacity
     },
@@ -200,7 +200,7 @@ export const Cluster: FC<ClusterProps> = ({
                 stroke={theme.cluster.label.stroke}
                 active={false}
                 color={theme.cluster?.label.color}
-                fontSize={theme.cluster?.label.fontSize}
+                fontSize={theme.cluster?.label.fontSize ?? 12}
               />
             </a.group>
           )}
