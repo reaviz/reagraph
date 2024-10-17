@@ -1,3 +1,6 @@
+# 4.19.4 - 10/17/24
+- [chore] Add ability to customise Label font size and offset #285
+
 # 4.19.3 - 8/20/24
 - [fix] fixed labelType none still shows label when hovering over node
 - [chore] replace react-use-gesture to @use-gesture/react #257
