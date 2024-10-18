@@ -22,18 +22,38 @@ export function buildClusterGroups(
 }
 
 export interface CalculateClustersInput {
+  /**
+   * The nodes to calculate clusters for.
+   */
   nodes: InternalGraphNode[];
+  /**
+   * The attribute to use for clustering.
+   */
   clusterAttribute?: string;
 }
 
 export interface ClusterGroup {
+  /**
+   * The nodes in the cluster.
+   */
   nodes: InternalGraphNode[];
+  /**
+   * The position of the cluster.
+   */
   position: CenterPositionVector;
+  /**
+   * The label of the cluster.
+   */
   label: string;
 }
 
 /**
  * Builds the cluster map.
+ *
+ * This function:
+ *  - Builds the cluster groups
+ *  - Calculates the center position of each cluster group
+ *  - Creates a cluster object for each group
  */
 export function calculateClusters({
   nodes,
