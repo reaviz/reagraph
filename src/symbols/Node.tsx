@@ -143,6 +143,7 @@ export const Node: FC<NodeProps> = ({
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length > 0);
   const center = useStore(state => state.centerPosition);
+  const cluster = useStore(state => state.clusters.get(node.cluster));
 
   const isDragging = draggingId === id;
   const {
@@ -211,6 +212,7 @@ export const Node: FC<NodeProps> = ({
   const bind = useDrag({
     draggable,
     position,
+    cluster,
     // @ts-ignore
     set: pos => setNodePosition(id, pos),
     onDragStart: () => {

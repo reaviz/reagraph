@@ -3,10 +3,12 @@ import { useMemo } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { Vector2, Vector3, Plane } from 'three';
 import { InternalGraphPosition } from '../types';
+import { ClusterGroup } from './cluster';
 
 interface DragParams {
   draggable: boolean;
   position: InternalGraphPosition;
+  cluster?: ClusterGroup;
   set: (position: Vector3) => void;
   onDragStart: () => void;
   onDragEnd: () => void;
@@ -16,6 +18,7 @@ export const useDrag = ({
   draggable,
   set,
   position,
+  cluster,
   onDragStart,
   onDragEnd
 }: DragParams) => {
@@ -85,6 +88,27 @@ export const useDrag = ({
         const updated = new Vector3(position.x, position.y, position.z)
           .copy(mouse3D)
           .add(offset);
+
+        // If there's a cluster, clamp the position within its circular bounds
+        if (cluster?.position) {
+          const bounds = cluster.position;
+          const center = new Vector3(
+            (bounds.minX + bounds.maxX) / 2,
+            (bounds.minY + bounds.maxY) / 2,
+            (bounds.minZ + bounds.maxZ) / 2
+          );
+          const radius = (bounds.maxX - bounds.minX) / 2;
+
+          // Calculate direction from center to updated position
+          const direction = updated.clone().sub(center);
+          const distance = direction.length();
+
+          // If outside the circle, clamp to the circle's edge
+          if (distance > radius) {
+            direction.normalize().multiplyScalar(radius);
+            updated.copy(center).add(direction);
+          }
+        }
 
         return set(updated);
       },

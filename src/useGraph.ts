@@ -63,6 +63,7 @@ export const useGraph = ({
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
   const camera = useThree(state => state.camera) as PerspectiveCamera;
+  const dragRef = useRef<DragReferences>(drags);
 
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
@@ -73,12 +74,6 @@ export const useGraph = ({
       }),
     [stateCollapsedNodeIds, nodes, edges]
   );
-
-  // Transient updates
-  const dragRef = useRef<DragReferences>(drags);
-  useEffect(() => {
-    dragRef.current = drags;
-  }, [drags]);
 
   const updateLayout = useCallback(
     async (curLayout?: any) => {
@@ -105,7 +100,8 @@ export const useGraph = ({
         sizingAttribute,
         maxNodeSize,
         minNodeSize,
-        defaultNodeSize
+        defaultNodeSize,
+        clusterAttribute
       });
 
       // Calculate clusters
@@ -135,6 +131,11 @@ export const useGraph = ({
       setClusters
     ]
   );
+
+  // Transient updates
+  useEffect(() => {
+    dragRef.current = drags;
+  }, [drags, clusterAttribute, updateLayout]);
 
   useEffect(() => {
     const nodes = stateNodes.map(node => ({
