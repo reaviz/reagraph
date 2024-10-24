@@ -212,7 +212,7 @@ export const Node: FC<NodeProps> = ({
   const bind = useDrag({
     draggable,
     position,
-    cluster,
+    bounds: cluster?.position,
     // @ts-ignore
     set: pos => setNodePosition(id, pos),
     onDragStart: () => {
