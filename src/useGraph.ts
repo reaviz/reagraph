@@ -65,6 +65,7 @@ export const useGraph = ({
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const dragRef = useRef<DragReferences>(drags);
 
+  // Calculate the visible entities
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
       getVisibleEntities({
@@ -138,6 +139,7 @@ export const useGraph = ({
   }, [drags, clusterAttribute, updateLayout]);
 
   useEffect(() => {
+    // When the camera position/zoom changes, update the label visibility
     const nodes = stateNodes.map(node => ({
       ...node,
       labelVisible: calcLabelVisibility({
@@ -148,10 +150,12 @@ export const useGraph = ({
       })('node', node?.size)
     }));
 
+    // Determine if the label visibility has changed
     const isVisibilityUpdated = nodes.some(
       (node, i) => node.labelVisible !== stateNodes[i].labelVisible
     );
 
+    // Update the nodes if the label visibility has changed
     if (isVisibilityUpdated) {
       setNodes(nodes);
     }
