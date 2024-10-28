@@ -149,6 +149,11 @@ export interface GraphSceneProps {
   draggable?: boolean;
 
   /**
+   * Constrain dragging to the cluster bounds. Default is `false`.
+   */
+  constrainDragging?: boolean;
+
+  /**
    * Render a custom node
    */
   renderNode?: NodeRenderer;
@@ -322,6 +327,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         animated,
         disabled,
         draggable,
+        constrainDragging,
         edgeLabelPosition,
         edgeArrowPosition,
         edgeInterpolation,
@@ -384,6 +390,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               id={n?.id}
               labelFontUrl={labelFontUrl}
               draggable={draggable}
+              constrainDragging={constrainDragging}
               disabled={disabled}
               animated={animated}
               contextMenu={contextMenu}
@@ -397,6 +404,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
             />
           )),
         [
+          constrainDragging,
           animated,
           contextMenu,
           disabled,
@@ -503,5 +511,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
   );
 
 GraphScene.defaultProps = {
-  edgeInterpolation: 'linear'
+  edgeInterpolation: 'linear',
+  constrainDragging: false
 };
