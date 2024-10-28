@@ -193,8 +193,9 @@ export const Node: FC<NodeProps> = ({
       to: {
         nodePosition: position
           ? [
-            position.x,
-            position.y,
+            // If the node is in a cluster, adjust its position by the cluster's offset
+            cluster ? position.x - cluster.position.x : position.x,
+            cluster ? position.y - cluster.position.y : position.y,
             shouldHighlight ? position.z + 1 : position.z
           ]
           : [0, 0, 0],

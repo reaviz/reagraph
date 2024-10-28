@@ -48,6 +48,11 @@ export interface GraphState {
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
   setCollapsedNodeIds: (nodeIds: string[]) => void;
+  draggingClusterId?: string | null;
+  setDraggingClusterId: (id: string | null) => void;
+  setClusterPosition: (id: string, position: InternalGraphPosition) => void;
+  clusterDrags?: Map<string, Vector3>;
+  setClusterDrags: (drags: Map<string, Vector3>) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -133,5 +138,72 @@ export const createStore = ({
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
-      set(state => ({ ...state, collapsedNodeIds: nodeIds }))
+      set(state => ({ ...state, collapsedNodeIds: nodeIds })),
+    draggingClusterId: null,
+    setDraggingClusterId: draggingClusterId =>
+      set(state => ({ ...state, draggingClusterId })),
+    clusterDrags: new Map(),
+    setClusterDrags: drags => set(state => ({ ...state, clusterDrags: drags })),
+    setClusterPosition: (id, position) =>
+      set(state => {
+        const clusters = new Map(state.clusters);
+        const cluster = clusters.get(id);
+        const drags = { ...state.drags };
+        const nodes = [...state.nodes];
+
+        if (cluster) {
+          // Calculate the offset from current to new position
+          const oldPos = new Vector3(
+            cluster.position.x,
+            cluster.position.y,
+            cluster.position.z
+          );
+          const newPos = new Vector3(position.x, position.y, position.z);
+          const offset = newPos.clone().sub(oldPos);
+
+          // Update cluster position
+          clusters.set(id, {
+            ...cluster,
+            position: {
+              ...cluster.position,
+              x: position.x,
+              y: position.y,
+              z: position.z
+            }
+          });
+
+          // Update both drags and nodes for all nodes in this cluster
+          /*
+          cluster.nodes.forEach(clusterNode => {
+            const node = state.nodes.find(n => n.id === clusterNode.id);
+            if (node) {
+              // Update drags
+              drags[node.id] = {
+                ...node,
+                position: {
+                  x: node.position.x + offset.x,
+                  y: node.position.y + offset.y,
+                  z: node.position.z + offset.z
+                } as any
+              };
+
+              // Update nodes
+              const nodeIndex = nodes.indexOf(node);
+              nodes[nodeIndex] = updateNodePosition(node, offset);
+            }
+          });
+          */
+        }
+
+        return {
+          ...state,
+          clusters,
+          //drags,
+          //nodes,
+          clusterDrags: new Map(state.clusterDrags).set(
+            id,
+            new Vector3(position.x, position.y, position.z)
+          )
+        };
+      })
   }));

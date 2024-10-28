@@ -136,6 +136,12 @@ export const Edge: FC<EdgeProps> = ({
   const from = useStore(store => store.nodes.find(node => node.id === source));
   const to = useStore(store => store.nodes.find(node => node.id === target));
 
+  // TODO: Implement cluster update on `from.cluster` and `to.cluster` changes
+  const fromCluster = useStore(store => store.clusters.get(from?.cluster));
+  const toCluster = useStore(store => store.clusters.get(to?.cluster));
+  console.log('from', from, fromCluster);
+  console.log('to', to, toCluster);
+
   // Edge properties
   const labelOffset = (size + theme.edge.label.fontSize) / 2;
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);

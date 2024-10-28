@@ -110,6 +110,26 @@ export const useGraph = ({
         clusterAttribute
       });
 
+      /*
+      if (clusterAttribute) {
+        result.nodes = result.nodes.map(node => {
+          const nodeCluster = clusters.get(node.cluster);
+          if (nodeCluster) {
+            return {
+              ...node,
+              position: {
+                ...node.position,
+                x: node.position.x - nodeCluster.position.x,
+                y: node.position.y - nodeCluster.position.y,
+                z: node.position.z
+              }
+            };
+          }
+          return node;
+        });
+      }
+      */
+
       // Set our store outputs
       setEdges(result.edges);
       setNodes(result.nodes);

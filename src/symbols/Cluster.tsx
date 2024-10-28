@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, PropsWithChildren, useMemo, useState } from 'react';
 import { ClusterGroup, animationConfig, useHoverIntent } from '../utils';
 import { useSpring, a } from '@react-spring/three';
 import { Color, DoubleSide } from 'three';
@@ -6,10 +6,17 @@ import { useStore } from '../store';
 import { Label } from './Label';
 import { useCursor } from 'glodrei';
 import { ThreeEvent } from '@react-three/fiber';
+import { useDrag } from '../utils/useDrag';
+import { useCameraControls } from '../CameraControls';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 
-export interface ClusterProps extends ClusterGroup {
+export interface ClusterProps extends ClusterGroup, PropsWithChildren {
+  /**
+   * Whether the node is draggable.
+   */
+  draggable?: boolean;
+
   /**
    * Whether the circle should be animated.
    */
@@ -55,6 +62,11 @@ export interface ClusterProps extends ClusterGroup {
     cluster: ClusterEventArgs,
     event: ThreeEvent<PointerEvent>
   ) => void;
+
+  /**
+   * Triggered after a cluster was dragged.
+   */
+  onDragged?: (cluster: ClusterEventArgs) => void;
 }
 
 export const Cluster: FC<ClusterProps> = ({
@@ -62,13 +74,16 @@ export const Cluster: FC<ClusterProps> = ({
   position,
   padding,
   labelFontUrl,
+  children,
   disabled,
   radius,
   nodes,
   label,
   onClick,
   onPointerOver,
-  onPointerOut
+  onPointerOut,
+  draggable,
+  onDragged
 }) => {
   const theme = useStore(state => state.theme);
   const rad = Math.max(position.width, position.height) / 2;
@@ -133,11 +148,45 @@ export const Cluster: FC<ClusterProps> = ({
     [theme.cluster?.fill]
   );
 
-  useCursor(active && onClick !== undefined, 'pointer');
+  const draggingId = useStore(state => state.draggingId);
+  const draggingClusterId = useStore(state => state.draggingClusterId);
+  const setDraggingClusterId = useStore(state => state.setDraggingClusterId);
+  const setClusterPosition = useStore(state => state.setClusterPosition);
+  const isDragging = draggingClusterId === label;
+
+  const cameraControls = useCameraControls();
+
+  const bind = useDrag({
+    draggable: !draggingId && draggable,
+    position: position as any,
+    set: pos => setClusterPosition(label, pos as any),
+    onDragStart: () => {
+      cameraControls.controls.enabled = false;
+      setDraggingClusterId(label);
+      setActive(true);
+    },
+    onDragEnd: () => {
+      cameraControls.controls.enabled = true;
+      setDraggingClusterId(null);
+      setActive(false);
+      onDragged?.({
+        nodes,
+        label
+      });
+    }
+  });
+
+  useCursor(active && !draggingClusterId && onClick !== undefined, 'pointer');
+  useCursor(
+    active && draggable && !isDragging && onClick === undefined,
+    'grab'
+  );
+  useCursor(isDragging, 'grabbing');
 
   const { pointerOver, pointerOut } = useHoverIntent({
-    disabled,
+    disabled: disabled || isDragging,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
+      cameraControls.controls.truckSpeed = 0;
       setActive(true);
       onPointerOver?.(
         {
@@ -148,6 +197,7 @@ export const Cluster: FC<ClusterProps> = ({
       );
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
+      cameraControls.controls.truckSpeed = 2.0;
       setActive(false);
       onPointerOut?.(
         {
@@ -163,11 +213,12 @@ export const Cluster: FC<ClusterProps> = ({
     () =>
       theme.cluster && (
         <a.group
+          userData={{ id: label, type: 'cluster' }}
           position={circlePosition as any}
           onPointerOver={pointerOver}
           onPointerOut={pointerOut}
           onClick={(event: ThreeEvent<MouseEvent>) => {
-            if (!disabled) {
+            if (!disabled && !isDragging) {
               onClick?.(
                 {
                   nodes,
@@ -177,6 +228,7 @@ export const Cluster: FC<ClusterProps> = ({
               );
             }
           }}
+          {...(bind() as any)}
         >
           <mesh>
             <ringGeometry attach="geometry" args={[offset, 0, 128]} />
@@ -218,6 +270,7 @@ export const Cluster: FC<ClusterProps> = ({
               />
             </a.group>
           )}
+          {children}
         </a.group>
       ),
     [
@@ -237,7 +290,10 @@ export const Cluster: FC<ClusterProps> = ({
       labelFontUrl,
       disabled,
       onClick,
-      nodes
+      nodes,
+      isDragging,
+      bind,
+      children
     ]
   );
 

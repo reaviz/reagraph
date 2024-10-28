@@ -18,6 +18,7 @@ import { treemap, hierarchy } from 'd3-hierarchy';
  *  - Fixed node lookup for edges using array
  *  - Updated d3-force to use d3-force-3d
  *  - Removed template logic
+ *  - Fixed focus point calculation when nodes have fixed positions
  */
 export function forceInABox() {
   // d3 style
@@ -90,8 +91,8 @@ export function forceInABox() {
   }
 
   function computeClustersNodeCounts(nodes) {
-    let clustersCounts = new Map(),
-      tmpCount: any = {};
+    let clustersCounts = new Map();
+    let tmpCount: any = {};
 
     nodes.forEach(function (d) {
       if (!clustersCounts.has(groupBy(d))) {
@@ -211,10 +212,25 @@ export function forceInABox() {
           y: d.y0 + (d.y1 - d.y0) / 2 - offset[1]
         };
       } else {
-        foci[d.id] = {
-          x: d.x - offset[0],
-          y: d.y - offset[1]
-        };
+        // TODO: Make this performant for large graphs
+        // If there is a node in this cluster which was dragged ( fixed position )
+        // Let's find the FIRST such node and use its fixed position as the focus point
+        const foundNodes = nodes.filter(
+          n => groupBy(n) === d.id && n.fx !== undefined && n.fy !== undefined
+        );
+
+        if (foundNodes.length > 0) {
+          foci[d.id] = {
+            x: foundNodes[0].fx - offset[0],
+            y: foundNodes[0].fy - offset[1]
+          };
+        } else {
+          // Otherwise, use the template node position which is computed by the force layout
+          foci[d.id] = {
+            x: d.x - offset[0],
+            y: d.y - offset[1]
+          };
+        }
       }
     });
     return foci;

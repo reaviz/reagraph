@@ -105,7 +105,22 @@ export function forceDirected({
   clusterAttribute,
   forceLayout
 }: ForceDirectedLayoutInputs): LayoutStrategy {
-  const { nodes, edges } = buildNodeEdges(graph);
+  let { nodes, edges } = buildNodeEdges(graph);
+
+  // Map the nodes and add the drag points
+  // fx/fy are D3 force props for fixed positions
+  // We need to set these properties for d3/clusters to use them
+  nodes = nodes.map(n => {
+    const drag = drags?.[n.id];
+    if (drag) {
+      return {
+        ...n,
+        fx: drag.position.x,
+        fy: drag.position.y
+      };
+    }
+    return n;
+  });
 
   // Dynamically adjust node strength based on the number of edges
   const is2d = dimensions === 2;

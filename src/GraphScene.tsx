@@ -472,17 +472,23 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               key={c.label}
               animated={animated}
               disabled={disabled}
+              draggable={draggable}
               labelFontUrl={labelFontUrl}
               onClick={onClusterClick}
               onPointerOver={onClusterPointerOver}
               onPointerOut={onClusterPointerOut}
               {...c}
-            />
+            >
+              {c.nodes.map(n => (
+                <Node key={n.id} id={n.id} />
+              ))}
+            </Cluster>
           )),
         [
           animated,
           clusters,
           disabled,
+          draggable,
           labelFontUrl,
           onClusterClick,
           onClusterPointerOut,
@@ -494,7 +500,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         isCentered && (
           <Fragment>
             {edgeComponents}
-            {nodeComponents}
+            {!clusterAttribute && nodeComponents}
             {clusterComponents}
           </Fragment>
         )
