@@ -48,6 +48,11 @@ export interface GraphNode extends GraphElementBaseAttributes {
    * Fill color for the node.
    */
   fill?: string;
+
+  /**
+   * Cluster ID for the node.
+   */
+  cluster?: string;
 }
 
 export interface GraphEdge extends GraphElementBaseAttributes {

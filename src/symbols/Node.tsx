@@ -53,6 +53,11 @@ export interface NodeProps {
   draggable?: boolean;
 
   /**
+   * Constrain dragging to the cluster bounds.
+   */
+  constrainDragging?: boolean;
+
+  /**
    * The url for the label font.
    */
   labelFontUrl?: string;
@@ -127,7 +132,8 @@ export const Node: FC<NodeProps> = ({
   onDragged,
   onPointerOut,
   onContextMenu,
-  renderNode
+  renderNode,
+  constrainDragging
 }) => {
   const cameraControls = useCameraControls();
   const theme = useStore(state => state.theme);
@@ -143,6 +149,7 @@ export const Node: FC<NodeProps> = ({
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length > 0);
   const center = useStore(state => state.centerPosition);
+  const cluster = useStore(state => state.clusters.get(node.cluster));
 
   const isDragging = draggingId === id;
   const {
@@ -211,6 +218,8 @@ export const Node: FC<NodeProps> = ({
   const bind = useDrag({
     draggable,
     position,
+    // If dragging is constrained to the cluster, use the cluster's position as the bounds
+    bounds: constrainDragging ? cluster?.position : undefined,
     // @ts-ignore
     set: pos => setNodePosition(id, pos),
     onDragStart: () => {

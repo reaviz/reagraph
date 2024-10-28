@@ -49,6 +49,7 @@ interface TransformGraphInput {
   minNodeSize?: number;
   maxNodeSize?: number;
   defaultNodeSize?: number;
+  clusterAttribute?: string;
 }
 
 /**
@@ -62,7 +63,8 @@ export function transformGraph({
   sizingAttribute,
   defaultNodeSize,
   minNodeSize,
-  maxNodeSize
+  maxNodeSize,
+  clusterAttribute
 }: TransformGraphInput) {
   const nodes: InternalGraphNode[] = [];
   const edges: InternalGraphEdge[] = [];
@@ -96,6 +98,7 @@ export function transformGraph({
       label,
       icon,
       fill,
+      cluster: clusterAttribute ? data[clusterAttribute] : undefined,
       parents,
       data: {
         ...rest,

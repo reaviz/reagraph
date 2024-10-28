@@ -34,15 +34,17 @@ export interface CalculateClustersInput {
 
 export interface ClusterGroup {
   /**
-   * The nodes in the cluster.
+   * Nodes in the cluster.
    */
   nodes: InternalGraphNode[];
+
   /**
-   * The position of the cluster.
+   * Center position of the cluster.
    */
   position: CenterPositionVector;
+
   /**
-   * The label of the cluster.
+   * Label of the cluster.
    */
   label: string;
 }
