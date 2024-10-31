@@ -66,7 +66,7 @@ export const Arrow: FC<ArrowProps> = ({
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const meshRef = useRef<Mesh | null>(null);
-  const draggingId = useStore(state => state.draggingId);
+  const isDragging = useStore(state => state.draggingIds.length > 0);
   const center = useStore(state => state.centerPosition);
 
   const [{ pos, arrowOpacity }] = useSpring(
@@ -81,10 +81,10 @@ export const Arrow: FC<ArrowProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !draggingId ? undefined : 0
+        duration: animated && !isDragging ? undefined : 0
       }
     }),
-    [animated, draggingId, opacity, position]
+    [animated, isDragging, opacity, position]
   );
 
   const setQuaternion = useCallback(() => {
