@@ -88,7 +88,7 @@ export const Line: FC<LineProps> = ({
   onPointerOut
 }) => {
   const tubeRef = useRef<TubeGeometry | null>(null);
-  const draggingId = useStore(state => state.draggingId);
+  const isDragging = useStore(state => state.draggingIds.length > 0);
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const center = useStore(state => state.centerPosition);
   const mounted = useRef<boolean>(false);
@@ -132,10 +132,10 @@ export const Line: FC<LineProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !draggingId ? undefined : 0
+        duration: animated && !isDragging ? undefined : 0
       }
     };
-  }, [animated, draggingId, curve, size]);
+  }, [animated, isDragging, curve, size]);
 
   useEffect(() => {
     // Handle mount operation for initial render

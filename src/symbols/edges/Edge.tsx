@@ -82,7 +82,7 @@ export const Edge: FC<EdgeProps> = ({
   const nodes = useStore(store => store.nodes);
   const from = nodes.find(node => node.id === source);
   const to = nodes.find(node => node.id === target);
-  const draggingId = useStore(state => state.draggingId);
+  const isDragging = useStore(state => state.draggingIds.length > 0);
 
   const labelOffset = (size + theme.edge.label.fontSize) / 2;
 
@@ -109,10 +109,10 @@ export const Edge: FC<EdgeProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !draggingId ? undefined : 0
+        duration: animated && !isDragging ? undefined : 0
       }
     }),
-    [midPoint, animated, draggingId]
+    [midPoint, animated, isDragging]
   );
 
   const removeContextMenu = useCallback(

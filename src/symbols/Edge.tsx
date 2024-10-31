@@ -123,7 +123,7 @@ export const Edge: FC<EdgeProps> = ({
   onPointerOut
 }) => {
   const theme = useStore(state => state.theme);
-  const draggingId = useStore(state => state.draggingId);
+  const isDragging = useStore(state => state.draggingIds.length > 0);
 
   // UI states
   const [active, setActive] = useState<boolean>(false);
@@ -229,10 +229,10 @@ export const Edge: FC<EdgeProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !draggingId ? undefined : 0
+        duration: animated && !isDragging ? undefined : 0
       }
     }),
-    [midPoint, animated, draggingId]
+    [midPoint, animated, isDragging]
   );
 
   const labelRotation = useMemo(
@@ -256,7 +256,7 @@ export const Edge: FC<EdgeProps> = ({
     ]
   );
 
-  useCursor(active && !draggingId && onClick !== undefined, 'pointer');
+  useCursor(active && !isDragging && onClick !== undefined, 'pointer');
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled,

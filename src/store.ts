@@ -33,7 +33,7 @@ export interface GraphState {
   setEdgeContextMenus: (edges: Set<string>) => void;
   edgeMeshes: Array<Mesh<BufferGeometry>>;
   setEdgeMeshes: (edgeMeshes: Array<Mesh<BufferGeometry>>) => void;
-  draggingId?: string | null;
+  draggingIds?: string[];
   drags?: DragReferences;
   panning?: boolean;
   theme: Theme;
@@ -41,7 +41,7 @@ export interface GraphState {
   setClusters: (clusters: Map<string, ClusterGroup>) => void;
   setPanning: (panning: boolean) => void;
   setDrags: (drags: DragReferences) => void;
-  setDraggingId: (id: string | null) => void;
+  setDraggingIds: (id: string[]) => void;
   setActives: (actives: string[]) => void;
   setSelections: (selections: string[]) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
@@ -74,7 +74,7 @@ export const createStore = ({
     collapsedNodeIds,
     clusters: new Map(),
     panning: false,
-    draggingId: null,
+    draggingIds: [],
     actives,
     edgeContextMenus: new Set(),
     edgeMeshes: [],
@@ -91,7 +91,7 @@ export const createStore = ({
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
     setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
-    setDraggingId: draggingId => set(state => ({ ...state, draggingId })),
+    setDraggingIds: draggingIds => set(state => ({ ...state, draggingIds })),
     setActives: actives => set(state => ({ ...state, actives })),
     setSelections: selections => set(state => ({ ...state, selections })),
     setNodes: nodes =>

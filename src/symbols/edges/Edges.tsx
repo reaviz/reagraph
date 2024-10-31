@@ -101,7 +101,7 @@ export const Edges: FC<EdgesProps> = ({
     interpolation
   );
 
-  const draggingId = useStore(state => state.draggingId);
+  const draggingIds = useStore(state => state.draggingIds);
   const edgeMeshes = useStore(state => state.edgeMeshes);
   const setEdgeMeshes = useStore(state => state.setEdgeMeshes);
   const actives = useStore(state => state.actives || []);
@@ -113,7 +113,10 @@ export const Edges: FC<EdgesProps> = ({
     const draggingActive: Array<InternalGraphEdge> = [];
     const draggingInactive: Array<InternalGraphEdge> = [];
     edges.forEach(edge => {
-      if (draggingId === edge.source || draggingId === edge.target) {
+      if (
+        draggingIds.includes(edge.source) ||
+        draggingIds.includes(edge.target)
+      ) {
         if (selections.includes(edge.id) || actives.includes(edge.id)) {
           draggingActive.push(edge);
         } else {
@@ -129,7 +132,7 @@ export const Edges: FC<EdgesProps> = ({
       }
     });
     return [active, inactive, draggingActive, draggingInactive];
-  }, [edges, actives, selections, draggingId]);
+  }, [edges, actives, selections, draggingIds]);
 
   const hasSelections = !!selections.length;
 
@@ -147,12 +150,12 @@ export const Edges: FC<EdgesProps> = ({
   useEdgePositionAnimation(staticEdgesGeometry, animated);
 
   useEffect(() => {
-    if (draggingId === null) {
+    if (draggingIds.length === 0) {
       const edgeGeometries = getGeometries(edges);
       const edgeMeshes = edgeGeometries.map(edge => new Mesh(edge));
       setEdgeMeshes(edgeMeshes);
     }
-  }, [getGeometries, setEdgeMeshes, edges, draggingId]);
+  }, [getGeometries, setEdgeMeshes, edges, draggingIds.length]);
 
   const staticEdgesRef = useRef(new Mesh());
   const dynamicEdgesRef = useRef(new Mesh());
@@ -186,7 +189,7 @@ export const Edges: FC<EdgesProps> = ({
     disabled
   );
 
-  const draggingIdRef = useRef<string | null>(null);
+  const draggingIdRef = useRef<string[]>([]);
   const intersectingRef = useRef<Array<InternalGraphEdge>>([]);
 
   useFrame(state => {
@@ -197,15 +200,18 @@ export const Edges: FC<EdgesProps> = ({
     }
 
     const previousDraggingId = draggingIdRef.current;
-    if (draggingId || (draggingId === null && previousDraggingId !== null)) {
+    if (
+      draggingIds.length ||
+      (draggingIds.length === 0 && previousDraggingId !== null)
+    ) {
       dynamicEdgesRef.current.geometry = getGeometry(
         draggingActive,
         draggingInactive
       );
     }
 
-    draggingIdRef.current = draggingId;
-    if (draggingId) {
+    draggingIdRef.current = draggingIds;
+    if (draggingIds.length) {
       return;
     }
 

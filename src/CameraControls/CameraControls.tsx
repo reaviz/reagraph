@@ -116,7 +116,7 @@ export const CameraControls: FC<
     const gl = useThree(state => state.gl);
     const isOrbiting = mode === 'orbit';
     const setPanning = useStore(state => state.setPanning);
-    const draggingId = useStore(state => state.draggingId);
+    const isDragging = useStore(state => state.draggingIds.length > 0);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
@@ -277,7 +277,7 @@ export const CameraControls: FC<
 
     useEffect(() => {
       // If a node is being dragged, disable the camera controls
-      if (draggingId) {
+      if (isDragging) {
         cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
       } else {
         if (mode === 'rotate') {
@@ -288,7 +288,7 @@ export const CameraControls: FC<
             ThreeCameraControls.ACTION.TRUCK;
         }
       }
-    }, [draggingId, mode]);
+    }, [isDragging, mode]);
 
     useHotkeys([
       {
