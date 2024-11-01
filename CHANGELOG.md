@@ -1,3 +1,6 @@
+# 4.19.5 - 11/1/24
+- [fix] Update cluster position after node dragging #292
+
 # 4.19.4 - 10/17/24
 - [chore] Add ability to customise Label font size and offset #285
 
