@@ -4,6 +4,7 @@ import React, {
   Fragment,
   ReactNode,
   Ref,
+  useCallback,
   useImperativeHandle,
   useMemo
 } from 'react';
@@ -345,7 +346,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const camera = useThree(state => state.camera);
 
       // Mount and build the graph
-      useGraph(rest);
+      const { updateLayout } = useGraph(rest);
 
       if (
         clusterAttribute &&
@@ -382,6 +383,18 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         [centerNodesById, fitNodesInViewById, graph, gl, scene, camera]
       );
 
+      const onNodeDraggedHandler = useCallback(
+        (node: InternalGraphNode) => {
+          onNodeDragged?.(node);
+
+          // Update layout to recalculate the cluster positions when a node is dragged
+          if (clusterAttribute) {
+            updateLayout();
+          }
+        },
+        [clusterAttribute, onNodeDragged, updateLayout]
+      );
+
       const nodeComponents = useMemo(
         () =>
           nodes.map(n => (
@@ -400,7 +413,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               onContextMenu={onNodeContextMenu}
               onPointerOver={onNodePointerOver}
               onPointerOut={onNodePointerOut}
-              onDragged={onNodeDragged}
+              onDragged={onNodeDraggedHandler}
             />
           )),
         [
@@ -414,7 +427,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           onNodeClick,
           onNodeContextMenu,
           onNodeDoubleClick,
-          onNodeDragged,
+          onNodeDraggedHandler,
           onNodePointerOut,
           onNodePointerOver,
           renderNode
