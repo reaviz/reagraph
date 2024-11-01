@@ -214,4 +214,8 @@ export const useGraph = ({
       updateLayout(layout.current);
     }
   }, [sizingType, sizingAttribute, labelType, updateLayout]);
+
+  return {
+    updateLayout
+  };
 };
