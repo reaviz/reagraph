@@ -27,6 +27,7 @@ export function forceInABox() {
   // Default values
   let id = index;
   let nodes = [];
+  let clusters: any;
   let links = []; // needed for the force version
   let tree;
   let size = [100, 100];
@@ -61,6 +62,7 @@ export function forceInABox() {
       node.vx += (foci[groupBy(node)].x - node.x) * k;
       node.vy += (foci[groupBy(node)].y - node.y) * k;
     }
+    // console.log('[log] forceInABox nodes', JSON.parse(JSON.stringify(nodes)));
   }
 
   function initialize() {
@@ -203,7 +205,6 @@ export function forceInABox() {
   function getFocisFromTemplate() {
     //compute foci
     // @ts-ignore
-    foci.none = { x: 0, y: 0 };
     templateNodes.forEach(function (d) {
       if (template === 'treemap') {
         foci[d.data.id] = {
@@ -277,6 +278,23 @@ export function forceInABox() {
     checkLinksAsObjects();
 
     net = getGroupsGraph();
+    const ipCurrentCluster = net.nodes.find(n => n.id === 'IP');
+    const ipSavedCluster = clusters?.get('IP');
+    console.log('[log] initializeWithForce', ipCurrentCluster, {
+      x: ipSavedCluster?.position.x,
+      y: ipSavedCluster?.position.y
+    });
+    // if (ipCurrentCluster && ipSavedCluster) {
+    //   ipCurrentCluster.fx = ipSavedCluster.position.x;
+    //   ipCurrentCluster.fy = ipSavedCluster.position.y;
+    // }
+    if (clusters.size > 0) {
+      net.nodes.forEach(n => {
+        n.fx = clusters.get(n.id)?.position?.x;
+        n.fy = clusters.get(n.id)?.position?.y;
+      });
+    }
+
     templateForce = forceSimulation(net.nodes)
       .force('x', forceX(size[0] / 2).strength(0.1))
       .force('y', forceY(size[1] / 2).strength(0.1))
@@ -462,6 +480,12 @@ export function forceInABox() {
   };
 
   force.getFocis = getFocisFromTemplate;
+
+  force.setClusters = function (value: any) {
+    clusters = value;
+
+    return force;
+  };
 
   return force;
 }

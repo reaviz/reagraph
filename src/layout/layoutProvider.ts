@@ -26,7 +26,7 @@ export const FORCE_LAYOUTS = [
 export function layoutProvider({
   type,
   ...rest
-}: LayoutFactoryProps | LayoutOverrides): LayoutStrategy {
+}: (LayoutFactoryProps | LayoutOverrides) & { clusters: any }): LayoutStrategy {
   if (FORCE_LAYOUTS.includes(type)) {
     const { nodeStrength, linkDistance, nodeLevelRatio } =
       rest as ForceDirectedLayoutInputs;

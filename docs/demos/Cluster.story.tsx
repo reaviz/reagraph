@@ -35,7 +35,7 @@ export const Simple = () => {
 
   return (
     <>
-      <GraphCanvas nodes={nodes} draggable edges={[]} clusterAttribute="type" constrainDragging />
+      <GraphCanvas nodes={nodes} draggable edges={[]} clusterAttribute="type" />
       <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
         <button type="button" onClick={addNode}>
           Add node

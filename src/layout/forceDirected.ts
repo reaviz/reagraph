@@ -84,6 +84,8 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
    * Used to determine the simulation forceX and forceY values
    */
   forceLayout: (typeof FORCE_LAYOUTS)[number];
+
+  clusters: any;
 }
 
 export function forceDirected({
@@ -102,10 +104,24 @@ export function forceDirected({
   forceCharge = -700,
   getNodePosition,
   drags,
+  clusters,
   clusterAttribute,
   forceLayout
-}: ForceDirectedLayoutInputs): LayoutStrategy {
+}: ForceDirectedLayoutInputs & { clusters: any }): LayoutStrategy {
   const { nodes, edges } = buildNodeEdges(graph);
+  // const nodes = tmp.map(n => {
+  //   if (drags?.[n.id]?.position) {
+  //     return {
+  //       ...n,
+  //       x: drags?.[n.id]?.position.x,
+  //       y: drags?.[n.id]?.position.y,
+  //       vx: drags?.[n.id]?.position.vx,
+  //       vy: drags?.[n.id]?.position.vy
+  //     };
+  //   } else {
+  //     return n;
+  //   }
+  // });
 
   // Dynamically adjust node strength based on the number of edges
   const is2d = dimensions === 2;
@@ -156,6 +172,7 @@ export function forceDirected({
     }
 
     groupingForce = forceInABox()
+      .setClusters(clusters)
       // Strength to foci
       .strength(clusterStrength)
       // Either treemap or force

@@ -50,6 +50,7 @@ export const useGraph = ({
   layoutOverrides
 }: GraphInputs) => {
   const graph = useStore(state => state.graph);
+  const clusters = useStore(state => state.clusters);
   const setClusters = useStore(state => state.setClusters);
   const stateCollapsedNodeIds = useStore(state => state.collapsedNodeIds);
   const setEdges = useStore(state => state.setEdges);
@@ -64,6 +65,7 @@ export const useGraph = ({
   const layout = useRef<LayoutStrategy | null>(null);
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const dragRef = useRef<DragReferences>(drags);
+  const clustersRef = useRef<any>([]);
 
   // Calculate the visible entities
   const { visibleEdges, visibleNodes } = useMemo(
@@ -86,6 +88,7 @@ export const useGraph = ({
           type: layoutType,
           graph,
           drags: dragRef.current,
+          clusters: clustersRef?.current,
           clusterAttribute
         });
 
@@ -137,6 +140,10 @@ export const useGraph = ({
   useEffect(() => {
     dragRef.current = drags;
   }, [drags, clusterAttribute, updateLayout]);
+
+  useEffect(() => {
+    clustersRef.current = clusters;
+  }, [clusters]);
 
   useEffect(() => {
     // When the camera position/zoom changes, update the label visibility
