@@ -8,6 +8,7 @@ import { useCursor } from 'glodrei';
 import { ThreeEvent } from '@react-three/fiber';
 import { useDrag } from '../utils/useDrag';
 import { Vector3 } from 'three';
+import { useCameraControls } from 'CameraControls';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 
@@ -89,6 +90,7 @@ export const Cluster: FC<ClusterProps> = ({
   const offset = rad - radius + padding;
   const [active, setActive] = useState<boolean>(false);
   const center = useStore(state => state.centerPosition);
+  const cameraControls = useCameraControls();
 
   const isActive = useStore(state =>
     state.actives?.some(id => nodes.some(n => n.id === id))
@@ -184,6 +186,7 @@ export const Cluster: FC<ClusterProps> = ({
     disabled,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       setActive(true);
+      cameraControls.controls.truckSpeed = 0;
       onPointerOver?.(
         {
           nodes,
@@ -194,6 +197,7 @@ export const Cluster: FC<ClusterProps> = ({
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
       setActive(false);
+      cameraControls.controls.truckSpeed = 2.0;
       onPointerOut?.(
         {
           nodes,
