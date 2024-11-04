@@ -48,6 +48,7 @@ export interface GraphState {
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
   setCollapsedNodeIds: (nodeIds: string[]) => void;
+  setClusterPosition: (id: string, position: CenterPositionVector) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -133,5 +134,31 @@ export const createStore = ({
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
-      set(state => ({ ...state, collapsedNodeIds: nodeIds }))
+      set(state => ({ ...state, collapsedNodeIds: nodeIds })),
+    setClusterPosition: (id, position) =>
+      set(state => {
+        const clusters = new Map<string, any>(state.clusters);
+        const cluster = clusters.get(id);
+
+        if (cluster) {
+          clusters.set(id, {
+            ...cluster,
+            position: {
+              ...cluster.position,
+              x: position.x,
+              y: position.y,
+              z: position.z ?? cluster.position.z
+            }
+          });
+        }
+
+        return {
+          ...state,
+          drags: {
+            ...state.drags,
+            [id]: cluster
+          },
+          clusters
+        };
+      })
   }));

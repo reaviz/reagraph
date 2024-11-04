@@ -6,6 +6,8 @@ import { useStore } from '../store';
 import { Label } from './Label';
 import { useCursor } from 'glodrei';
 import { ThreeEvent } from '@react-three/fiber';
+import { useDrag } from '../utils/useDrag';
+import { Vector3 } from 'three';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 
@@ -55,6 +57,16 @@ export interface ClusterProps extends ClusterGroup {
     cluster: ClusterEventArgs,
     event: ThreeEvent<PointerEvent>
   ) => void;
+
+  /**
+   * Whether the cluster is draggable
+   */
+  draggable?: boolean;
+
+  /**
+   * Triggered after a cluster was dragged
+   */
+  onDragged?: (cluster: ClusterEventArgs) => void;
 }
 
 export const Cluster: FC<ClusterProps> = ({
@@ -68,7 +80,9 @@ export const Cluster: FC<ClusterProps> = ({
   label,
   onClick,
   onPointerOver,
-  onPointerOut
+  onPointerOut,
+  draggable = false,
+  onDragged
 }) => {
   const theme = useStore(state => state.theme);
   const rad = Math.max(position.width, position.height) / 2;
@@ -133,7 +147,38 @@ export const Cluster: FC<ClusterProps> = ({
     [theme.cluster?.fill]
   );
 
-  useCursor(active && onClick !== undefined, 'pointer');
+  const draggingIds = useStore(state => state.draggingIds);
+  const setDraggingIds = useStore(state => state.setDraggingIds);
+  const setClusterPosition = useStore(state => state.setClusterPosition);
+
+  const isDraggingCurrent = draggingIds.includes(label);
+  const isDragging = draggingIds.length > 0;
+
+  const bind = useDrag({
+    draggable,
+    position: {
+      x: position.x,
+      y: position.y,
+      z: -1
+    } as any,
+    set: (pos: Vector3) => setClusterPosition(label, pos as any),
+    onDragStart: () => {
+      setDraggingIds([...new Set([...draggingIds, label])]);
+      setActive(true);
+    },
+    onDragEnd: () => {
+      setDraggingIds(draggingIds.filter(id => id !== label));
+      setActive(false);
+      onDragged?.({ nodes, label });
+    }
+  });
+
+  useCursor(active && !isDragging && onClick !== undefined, 'pointer');
+  useCursor(
+    active && draggable && !isDraggingCurrent && onClick === undefined,
+    'grab'
+  );
+  useCursor(isDraggingCurrent, 'grabbing');
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled,
@@ -167,16 +212,11 @@ export const Cluster: FC<ClusterProps> = ({
           onPointerOver={pointerOver}
           onPointerOut={pointerOut}
           onClick={(event: ThreeEvent<MouseEvent>) => {
-            if (!disabled) {
-              onClick?.(
-                {
-                  nodes,
-                  label
-                },
-                event
-              );
+            if (!disabled && !isDraggingCurrent) {
+              onClick?.({ nodes, label }, event);
             }
           }}
+          {...(bind() as any)}
         >
           <mesh>
             <ringGeometry attach="geometry" args={[offset, 0, 128]} />
@@ -237,7 +277,9 @@ export const Cluster: FC<ClusterProps> = ({
       labelFontUrl,
       disabled,
       onClick,
-      nodes
+      nodes,
+      bind,
+      isDraggingCurrent
     ]
   );
 
@@ -246,5 +288,6 @@ export const Cluster: FC<ClusterProps> = ({
 
 Cluster.defaultProps = {
   radius: 2,
-  padding: 40
+  padding: 40,
+  draggable: false
 };

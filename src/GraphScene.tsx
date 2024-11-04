@@ -493,6 +493,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               key={c.label}
               animated={animated}
               disabled={disabled}
+              draggable={draggable}
               labelFontUrl={labelFontUrl}
               onClick={onClusterClick}
               onPointerOver={onClusterPointerOver}
@@ -504,6 +505,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           animated,
           clusters,
           disabled,
+          draggable,
           labelFontUrl,
           onClusterClick,
           onClusterPointerOut,
