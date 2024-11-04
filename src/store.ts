@@ -141,6 +141,15 @@ export const createStore = ({
         const cluster = clusters.get(id);
 
         if (cluster) {
+          // Calculate the offset between old and new position
+          const oldPos = cluster.position;
+          const offset = new Vector3(
+            position.x - oldPos.x,
+            position.y - oldPos.y,
+            position.z - (oldPos.z ?? 0)
+          );
+
+          // Update cluster position
           clusters.set(id, {
             ...cluster,
             position: {
@@ -150,15 +159,33 @@ export const createStore = ({
               z: position.z ?? cluster.position.z
             }
           });
+
+          // Update all nodes in the cluster
+          const nodes: any[] = [...state.nodes];
+          nodes.forEach((node, index) => {
+            if (node.cluster === id) {
+              nodes[index] = {
+                ...node,
+                position: {
+                  x: node.position.x + offset.x,
+                  y: node.position.y + offset.y,
+                  z: node.position.z + (offset.z ?? 0)
+                } as any
+              };
+            }
+          });
+
+          return {
+            ...state,
+            drags: {
+              ...state.drags,
+              [id]: cluster
+            },
+            clusters,
+            nodes
+          };
         }
 
-        return {
-          ...state,
-          drags: {
-            ...state.drags,
-            [id]: cluster
-          },
-          clusters
-        };
+        return state;
       })
   }));
