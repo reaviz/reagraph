@@ -154,17 +154,6 @@ export const createStore = ({
             position.z - (oldPos.z ?? 0)
           );
 
-          // Update cluster position
-          clusters.set(id, {
-            ...cluster,
-            position: {
-              ...cluster.position,
-              x: position.x,
-              y: position.y,
-              z: position.z ?? cluster.position.z
-            }
-          });
-
           // Update all nodes in the cluster
           const nodes: InternalGraphNode[] = [...state.nodes];
           const drags: DragReferences = { ...state.drags };
@@ -182,6 +171,16 @@ export const createStore = ({
               // Update node in drag reference
               drags[node.id] = node;
             }
+          });
+
+          const clusterNodes: InternalGraphNode[] = nodes.filter(
+            node => node.cluster === id
+          );
+          const newClusterPosition = getLayoutCenter(clusterNodes);
+          // Update cluster position
+          clusters.set(id, {
+            ...cluster,
+            position: newClusterPosition
           });
 
           return {
