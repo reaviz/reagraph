@@ -155,6 +155,7 @@ export const Node: FC<NodeProps> = ({
 
   const isDraggingCurrent = draggingIds.includes(id);
   const isDragging = draggingIds.length > 0;
+  const isNodeClusterDragging = draggingIds.includes(node.cluster);
 
   const {
     position,
@@ -213,7 +214,8 @@ export const Node: FC<NodeProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !isDragging ? undefined : 0
+        duration:
+          animated && (!isDragging || isNodeClusterDragging) ? undefined : 0
       }
     }),
     [isDraggingCurrent, position, animated, nodeSize, shouldHighlight]
