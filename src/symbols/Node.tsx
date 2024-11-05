@@ -235,8 +235,8 @@ export const Node: FC<NodeProps> = ({
     onDragEnd: () => {
       setDraggingIds(draggingIds.filter(id => id !== id));
       setActive(false);
-      setHoveredNodeId(null);
       onDragged?.(node);
+      setHoveredNodeId(null);
     }
   });
 
@@ -257,17 +257,14 @@ export const Node: FC<NodeProps> = ({
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.controls.truckSpeed = 0;
       setActive(true);
-      setHoveredNodeId(id);
       onPointerOver?.(node, event);
+      setHoveredNodeId(id);
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.controls.truckSpeed = 2.0;
       setActive(false);
-      // Don't reset the hovered node if the node is being dragged
-      if (!draggingIds.includes(id)) {
-        setHoveredNodeId(null);
-      }
       onPointerOut?.(node, event);
+      setHoveredNodeId(null);
     }
   });
 
