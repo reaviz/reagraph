@@ -168,10 +168,6 @@ export const Node: FC<NodeProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    setHoveredNodeId(active ? id : null);
-  }, [active, id, setHoveredNodeId]);
-
   const shouldHighlight = active || isSelected || isActive;
 
   const selectionOpacity = hasSelections
@@ -237,6 +233,7 @@ export const Node: FC<NodeProps> = ({
     onDragEnd: () => {
       setDraggingIds(draggingIds.filter(id => id !== id));
       setActive(false);
+      setHoveredNodeId(null);
       onDragged?.(node);
     }
   });
@@ -258,11 +255,16 @@ export const Node: FC<NodeProps> = ({
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.controls.truckSpeed = 0;
       setActive(true);
+      setHoveredNodeId(id);
       onPointerOver?.(node, event);
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.controls.truckSpeed = 2.0;
       setActive(false);
+      // Don't reset the hovered node if the node is being dragged
+      if (!draggingIds.includes(id)) {
+        setHoveredNodeId(null);
+      }
       onPointerOut?.(node, event);
     }
   });

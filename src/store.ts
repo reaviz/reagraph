@@ -173,6 +173,7 @@ export const createStore = ({
               nodes[index] = {
                 ...node,
                 position: {
+                  ...node.position,
                   x: node.position.x + offset.x,
                   y: node.position.y + offset.y,
                   z: node.position.z + (offset.z ?? 0)
