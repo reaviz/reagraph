@@ -2,6 +2,7 @@ import React, {
   FC,
   ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState
@@ -142,6 +143,7 @@ export const Node: FC<NodeProps> = ({
   const draggingIds = useStore(state => state.draggingIds);
   const collapsedNodeIds = useStore(state => state.collapsedNodeIds);
   const setDraggingIds = useStore(state => state.setDraggingIds);
+  const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
   const setNodePosition = useStore(state => state.setNodePosition);
   const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
   const isCollapsed = useStore(state => state.collapsedNodeIds.includes(id));
@@ -165,6 +167,10 @@ export const Node: FC<NodeProps> = ({
   const group = useRef<Group | null>(null);
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    setHoveredNodeId(active ? id : null);
+  }, [active, id, setHoveredNodeId]);
 
   const shouldHighlight = active || isSelected || isActive;
 

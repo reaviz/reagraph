@@ -29,6 +29,7 @@ export interface GraphState {
   centerPosition?: CenterPositionVector;
   actives?: string[];
   selections?: string[];
+  hoveredNodeId?: string;
   edgeContextMenus?: Set<string>;
   setEdgeContextMenus: (edges: Set<string>) => void;
   edgeMeshes: Array<Mesh<BufferGeometry>>;
@@ -44,6 +45,7 @@ export interface GraphState {
   setDraggingIds: (id: string[]) => void;
   setActives: (actives: string[]) => void;
   setSelections: (selections: string[]) => void;
+  setHoveredNodeId: (hoveredNodeId: string | null) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
@@ -80,6 +82,7 @@ export const createStore = ({
     edgeContextMenus: new Set(),
     edgeMeshes: [],
     selections,
+    hoveredNodeId: null,
     drags: {},
     graph: new Graph({ multi: true }),
     setTheme: theme => set(state => ({ ...state, theme })),
@@ -95,6 +98,8 @@ export const createStore = ({
     setDraggingIds: draggingIds => set(state => ({ ...state, draggingIds })),
     setActives: actives => set(state => ({ ...state, actives })),
     setSelections: selections => set(state => ({ ...state, selections })),
+    setHoveredNodeId: hoveredNodeId =>
+      set(state => ({ ...state, hoveredNodeId })),
     setNodes: nodes =>
       set(state => ({
         ...state,
@@ -161,7 +166,8 @@ export const createStore = ({
           });
 
           // Update all nodes in the cluster
-          const nodes: any[] = [...state.nodes];
+          const nodes: InternalGraphNode[] = [...state.nodes];
+          const drags: DragReferences = { ...state.drags };
           nodes.forEach((node, index) => {
             if (node.cluster === id) {
               nodes[index] = {
@@ -170,15 +176,17 @@ export const createStore = ({
                   x: node.position.x + offset.x,
                   y: node.position.y + offset.y,
                   z: node.position.z + (offset.z ?? 0)
-                } as any
+                } as InternalGraphPosition
               };
+              // Update node in drag reference
+              drags[node.id] = node;
             }
           });
 
           return {
             ...state,
             drags: {
-              ...state.drags,
+              ...drags,
               [id]: cluster
             },
             clusters,

@@ -95,6 +95,7 @@ export const Cluster: FC<ClusterProps> = ({
   const isActive = useStore(state =>
     state.actives?.some(id => nodes.some(n => n.id === id))
   );
+  const hoveredNodeId = useStore(state => state.hoveredNodeId);
 
   const isSelected = useStore(state =>
     state.selections?.some(id => nodes.some(n => n.id === id))
@@ -157,7 +158,7 @@ export const Cluster: FC<ClusterProps> = ({
   const isDragging = draggingIds.length > 0;
 
   const bind = useDrag({
-    draggable,
+    draggable: draggable && !hoveredNodeId,
     position: {
       x: position.x,
       y: position.y,
