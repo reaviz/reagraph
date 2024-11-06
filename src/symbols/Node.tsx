@@ -256,21 +256,14 @@ export const Node: FC<NodeProps> = ({
     : node.fill || theme.node.fill;
 
   const { pointerOver, pointerOut } = useHoverIntent({
-    disabled: disabled || isDraggingCurrent,
+    disabled: disabled || isDraggingCurrent || isDraggingOther,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
-      // If dragging another node, don't trigger hover
-      if (isDraggingOther) {
-        return;
-      }
       cameraControls.controls.truckSpeed = 0;
       setActive(true);
       onPointerOver?.(node, event);
       setHoveredNodeId(id);
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
-      if (isDraggingOther) {
-        return;
-      }
       cameraControls.controls.truckSpeed = 2.0;
       setActive(false);
       onPointerOut?.(node, event);
