@@ -152,6 +152,7 @@ export const Node: FC<NodeProps> = ({
   const hasSelections = useStore(state => state.selections?.length > 0);
   const center = useStore(state => state.centerPosition);
   const cluster = useStore(state => state.clusters.get(node.cluster));
+  const hoveredNodeId = useStore(state => state.hoveredNodeId);
 
   const isDraggingCurrent = draggingIds.includes(id);
   const isDragging = draggingIds.length > 0;
@@ -222,7 +223,7 @@ export const Node: FC<NodeProps> = ({
   );
 
   const bind = useDrag({
-    draggable,
+    draggable: draggable && hoveredNodeId === id,
     position,
     // If dragging is constrained to the cluster, use the cluster's position as the bounds
     bounds: constrainDragging ? cluster?.position : undefined,
