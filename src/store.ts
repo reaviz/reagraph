@@ -42,7 +42,8 @@ export interface GraphState {
   setClusters: (clusters: Map<string, ClusterGroup>) => void;
   setPanning: (panning: boolean) => void;
   setDrags: (drags: DragReferences) => void;
-  setDraggingIds: (id: string[]) => void;
+  addDraggingId: (id: string) => void;
+  removeDraggingId: (id: string) => void;
   setActives: (actives: string[]) => void;
   setSelections: (selections: string[]) => void;
   setHoveredNodeId: (hoveredNodeId: string | null) => void;
@@ -95,7 +96,13 @@ export const createStore = ({
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
     setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
-    setDraggingIds: draggingIds => set(state => ({ ...state, draggingIds })),
+    addDraggingId: id =>
+      set(state => ({ ...state, draggingIds: [...state.draggingIds, id] })),
+    removeDraggingId: id =>
+      set(state => ({
+        ...state,
+        draggingIds: state.draggingIds.filter(drag => drag !== id)
+      })),
     setActives: actives => set(state => ({ ...state, actives })),
     setSelections: selections => set(state => ({ ...state, selections })),
     setHoveredNodeId: hoveredNodeId =>

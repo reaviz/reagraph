@@ -142,7 +142,8 @@ export const Node: FC<NodeProps> = ({
   const edges = useStore(state => state.edges);
   const draggingIds = useStore(state => state.draggingIds);
   const collapsedNodeIds = useStore(state => state.collapsedNodeIds);
-  const setDraggingIds = useStore(state => state.setDraggingIds);
+  const addDraggingId = useStore(state => state.addDraggingId);
+  const removeDraggingId = useStore(state => state.removeDraggingId);
   const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
   const setNodePosition = useStore(state => state.setNodePosition);
   const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
@@ -157,6 +158,7 @@ export const Node: FC<NodeProps> = ({
   const isDraggingCurrent = draggingIds.includes(id);
   const isDragging = draggingIds.length > 0;
   const isNodeClusterDragging = draggingIds.includes(node.cluster);
+  const isDraggingOther = draggingIds.filter(drag => drag !== id).length > 0;
 
   const {
     position,
@@ -223,18 +225,18 @@ export const Node: FC<NodeProps> = ({
   );
 
   const bind = useDrag({
-    draggable: draggable && hoveredNodeId === id,
+    draggable: draggable && hoveredNodeId === id && !isDraggingOther,
     position,
     // If dragging is constrained to the cluster, use the cluster's position as the bounds
     bounds: constrainDragging ? cluster?.position : undefined,
     // @ts-ignore
     set: pos => setNodePosition(id, pos),
     onDragStart: () => {
-      setDraggingIds([...new Set([...draggingIds, id])]);
+      addDraggingId(id);
       setActive(true);
     },
     onDragEnd: () => {
-      setDraggingIds(draggingIds.filter(id => id !== id));
+      removeDraggingId(id);
       setActive(false);
       onDragged?.(node);
       setHoveredNodeId(null);

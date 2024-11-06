@@ -151,7 +151,8 @@ export const Cluster: FC<ClusterProps> = ({
   );
 
   const draggingIds = useStore(state => state.draggingIds);
-  const setDraggingIds = useStore(state => state.setDraggingIds);
+  const addDraggingId = useStore(state => state.addDraggingId);
+  const removeDraggingId = useStore(state => state.removeDraggingId);
   const setClusterPosition = useStore(state => state.setClusterPosition);
 
   const isDraggingCurrent = draggingIds.includes(label);
@@ -166,11 +167,11 @@ export const Cluster: FC<ClusterProps> = ({
     } as any,
     set: (pos: Vector3) => setClusterPosition(label, pos as any),
     onDragStart: () => {
-      setDraggingIds([...new Set([...draggingIds, label])]);
+      addDraggingId(label);
       setActive(true);
     },
     onDragEnd: () => {
-      setDraggingIds(draggingIds.filter(id => id !== label));
+      removeDraggingId(label);
       setActive(false);
       onDragged?.({ nodes, label });
     }
