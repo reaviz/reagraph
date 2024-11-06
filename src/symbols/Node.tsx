@@ -258,12 +258,19 @@ export const Node: FC<NodeProps> = ({
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDraggingCurrent,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
+      // If dragging another node, don't trigger hover
+      if (isDraggingOther) {
+        return;
+      }
       cameraControls.controls.truckSpeed = 0;
       setActive(true);
       onPointerOver?.(node, event);
       setHoveredNodeId(id);
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
+      if (isDraggingOther) {
+        return;
+      }
       cameraControls.controls.truckSpeed = 2.0;
       setActive(false);
       onPointerOut?.(node, event);
