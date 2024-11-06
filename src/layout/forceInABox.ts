@@ -7,6 +7,7 @@ import {
   forceCollide
 } from 'd3-force-3d';
 import { treemap, hierarchy } from 'd3-hierarchy';
+import { ClusterGroup } from '../utils/cluster';
 
 /**
  * Used for calculating clusterings of nodes.
@@ -28,6 +29,7 @@ export function forceInABox() {
   let id = index;
   let nodes = [];
   let links = []; // needed for the force version
+  let clusters: Map<string, ClusterGroup>;
   let tree;
   let size = [100, 100];
   let forceNodeSize = constant(1); // The expected node size used for computing the cluster node
@@ -277,6 +279,15 @@ export function forceInABox() {
     checkLinksAsObjects();
 
     net = getGroupsGraph();
+
+    // Use dragged clusters position if available
+    if (clusters.size > 0) {
+      net.nodes.forEach(n => {
+        n.fx = clusters.get(n.id)?.position?.x;
+        n.fy = clusters.get(n.id)?.position?.y;
+      });
+    }
+
     templateForce = forceSimulation(net.nodes)
       .force('x', forceX(size[0] / 2).strength(0.1))
       .force('y', forceY(size[1] / 2).strength(0.1))
@@ -462,6 +473,12 @@ export function forceInABox() {
   };
 
   force.getFocis = getFocisFromTemplate;
+
+  force.setClusters = function (value: any) {
+    clusters = value;
+
+    return force;
+  };
 
   return force;
 }

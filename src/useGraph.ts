@@ -10,7 +10,7 @@ import {
 } from './layout';
 import { LabelVisibilityType, calcLabelVisibility } from './utils/visibility';
 import { tick } from './layout/layoutUtils';
-import { GraphEdge, GraphNode } from './types';
+import { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { buildGraph, transformGraph } from './utils/graph';
 import { DragReferences, useStore } from './store';
 import { getVisibleEntities } from './collapse';
@@ -50,6 +50,8 @@ export const useGraph = ({
   layoutOverrides
 }: GraphInputs) => {
   const graph = useStore(state => state.graph);
+  const clusters = useStore(state => state.clusters);
+  const storedNodes = useStore(state => state.nodes);
   const setClusters = useStore(state => state.setClusters);
   const stateCollapsedNodeIds = useStore(state => state.collapsedNodeIds);
   const setEdges = useStore(state => state.setEdges);
@@ -64,6 +66,31 @@ export const useGraph = ({
   const layout = useRef<LayoutStrategy | null>(null);
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const dragRef = useRef<DragReferences>(drags);
+  const clustersRef = useRef<any>([]);
+
+  // When a new node is added, remove the dragged position of the cluster nodes to put new node in the right place
+  useEffect(() => {
+    if (!clusterAttribute) {
+      return;
+    }
+
+    const existedNodesIds = storedNodes.map(n => n.id);
+    const newNode = nodes.find(n => !existedNodesIds.includes(n.id));
+    if (newNode) {
+      const clusterName = newNode.data[clusterAttribute];
+      const cluster = clusters.get(clusterName);
+      const drags = { ...dragRef.current };
+
+      cluster?.nodes?.forEach(node => {
+        drags[node.id] = undefined;
+      });
+
+      dragRef.current = drags;
+      setDrags({
+        ...drags
+      });
+    }
+  }, [storedNodes, nodes, clusterAttribute, clusters, setDrags]);
 
   // Calculate the visible entities
   const { visibleEdges, visibleNodes } = useMemo(
@@ -76,6 +103,20 @@ export const useGraph = ({
     [stateCollapsedNodeIds, nodes, edges]
   );
 
+  const updateDrags = useCallback(
+    (nodes: InternalGraphNode[]) => {
+      const drags = { ...dragRef.current };
+      nodes.forEach(node => {
+        drags[node.id] = node;
+      });
+      dragRef.current = drags;
+      setDrags({
+        ...drags
+      });
+    },
+    [setDrags]
+  );
+
   const updateLayout = useCallback(
     async (curLayout?: any) => {
       // Cache the layout provider
@@ -86,6 +127,7 @@ export const useGraph = ({
           type: layoutType,
           graph,
           drags: dragRef.current,
+          clusters: clustersRef?.current,
           clusterAttribute
         });
 
@@ -115,6 +157,10 @@ export const useGraph = ({
       setEdges(result.edges);
       setNodes(result.nodes);
       setClusters(clusters);
+      if (clusterAttribute) {
+        // Set drag positions for nodes to prevent them from being moved by the layout update
+        updateDrags(result.nodes);
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -137,6 +183,10 @@ export const useGraph = ({
   useEffect(() => {
     dragRef.current = drags;
   }, [drags, clusterAttribute, updateLayout]);
+
+  useEffect(() => {
+    clustersRef.current = clusters;
+  }, [clusters]);
 
   useEffect(() => {
     // When the camera position/zoom changes, update the label visibility

@@ -13,6 +13,7 @@ import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { buildNodeEdges } from './layoutUtils';
 import { forceInABox } from './forceInABox';
 import { FORCE_LAYOUTS } from './layoutProvider';
+import { ClusterGroup } from '../utils/cluster';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**
@@ -44,6 +45,11 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
    * Strength of the cluster repulsion.
    */
   clusterStrength?: number;
+
+  /**
+   * The clusters dragged position to reuse for the layout.
+   */
+  clusters: Map<string, ClusterGroup>;
 
   /**
    * The type of clustering.
@@ -102,6 +108,7 @@ export function forceDirected({
   forceCharge = -700,
   getNodePosition,
   drags,
+  clusters,
   clusterAttribute,
   forceLayout
 }: ForceDirectedLayoutInputs): LayoutStrategy {
@@ -156,6 +163,8 @@ export function forceDirected({
     }
 
     groupingForce = forceInABox()
+      // The clusters dragged position to reuse for the layout
+      .setClusters(clusters)
       // Strength to foci
       .strength(clusterStrength)
       // Either treemap or force
