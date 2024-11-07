@@ -346,7 +346,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const camera = useThree(state => state.camera);
 
       // Mount and build the graph
-      const { updateLayout } = useGraph(rest);
+      const { updateLayout } = useGraph({ ...rest, constrainDragging });
 
       if (
         clusterAttribute &&

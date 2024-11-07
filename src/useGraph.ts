@@ -30,6 +30,7 @@ export interface GraphInputs {
   defaultNodeSize?: number;
   minNodeSize?: number;
   maxNodeSize?: number;
+  constrainDragging?: boolean;
   layoutOverrides?: LayoutOverrides;
 }
 
@@ -47,7 +48,8 @@ export const useGraph = ({
   defaultNodeSize,
   maxNodeSize,
   minNodeSize,
-  layoutOverrides
+  layoutOverrides,
+  constrainDragging
 }: GraphInputs) => {
   const graph = useStore(state => state.graph);
   const clusters = useStore(state => state.clusters);
@@ -148,15 +150,27 @@ export const useGraph = ({
       });
 
       // Calculate clusters
-      const clusters = calculateClusters({
+      const newClusters = calculateClusters({
         nodes: result.nodes,
         clusterAttribute
       });
 
+      if (constrainDragging) {
+        newClusters.forEach(cluster => {
+          const prevCluster = clustersRef.current.get(cluster.label);
+          // Do not decrease the cluster size is the number of nodes is the same
+          if (prevCluster?.nodes.length === cluster.nodes.length) {
+            cluster.position =
+              clustersRef.current?.get(cluster.label)?.position ??
+              cluster.position;
+          }
+        });
+      }
+
       // Set our store outputs
       setEdges(result.edges);
       setNodes(result.nodes);
-      setClusters(clusters);
+      setClusters(newClusters);
       if (clusterAttribute) {
         // Set drag positions for nodes to prevent them from being moved by the layout update
         updateDrags(result.nodes);
