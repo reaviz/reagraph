@@ -54,7 +54,9 @@ export const Simple = () => {
 };
 
 export const SimpleRenderNode = () => {
-  const [nodes, setNodes] = useState(clusterNodes.map(n => ({ ...n, icon: demonSvg })));
+  const [nodes, setNodes] = useState(
+    clusterNodes.map(n => ({ ...n, icon: demonSvg }))
+  );
 
   const addNode = useCallback(() => {
     const next = nodes.length + 2;
@@ -89,7 +91,7 @@ export const SimpleRenderNode = () => {
                 size={node.size}
                 opacity={0.5}
                 animated={false}
-                color={'purple'}
+                color="purple"
                 node={node.node}
                 active={false}
                 selected={node.selected}
@@ -100,7 +102,7 @@ export const SimpleRenderNode = () => {
                 size={node.size}
                 opacity={1}
                 animated={false}
-                color={'red'}
+                color="red"
                 node={node.node}
                 active={false}
                 selected={node.selected}
