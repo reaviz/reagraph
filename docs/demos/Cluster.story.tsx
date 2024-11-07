@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { GraphCanvas, lightTheme } from '../../src';
+import { GraphCanvas, Icon, lightTheme, Sphere } from '../../src';
 import {
   clusterNodes,
   clusterEdges,
@@ -8,6 +8,8 @@ import {
   imbalancedClusterNodes,
   manyClusterNodes
 } from '../assets/demo';
+
+import demonSvg from '../../docs/assets/twitter.svg';
 
 export default {
   title: 'Demos/Cluster',
@@ -41,6 +43,81 @@ export const Simple = () => {
         edges={[]}
         clusterAttribute="type"
         constrainDragging={false}
+      />
+      <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
+        <button type="button" onClick={addNode}>
+          Add node
+        </button>
+      </div>
+    </>
+  );
+};
+
+export const SimpleRenderNode = () => {
+  const [nodes, setNodes] = useState(clusterNodes.map(n => ({ ...n, icon: demonSvg })));
+
+  const addNode = useCallback(() => {
+    const next = nodes.length + 2;
+    setNodes(prev => [
+      ...prev,
+      {
+        id: `${next}`,
+        label: `Node ${next}`,
+        fill: '#3730a3',
+        icon: demonSvg,
+        data: {
+          type: 'IP',
+          segment: next % 2 === 0 ? 'A' : undefined
+        }
+      }
+    ]);
+  }, [nodes]);
+
+  return (
+    <>
+      <GraphCanvas
+        nodes={nodes}
+        draggable
+        edges={[]}
+        clusterAttribute="type"
+        constrainDragging={false}
+        renderNode={node => {
+          return (
+            <group>
+              <Sphere
+                id={node.id}
+                size={node.size}
+                opacity={0.5}
+                animated={false}
+                color={'purple'}
+                node={node.node}
+                active={false}
+                selected={node.selected}
+              ></Sphere>
+              {/* <Sphere
+                id={node.id}
+                size={node.size}
+                opacity={0.5}
+                animated={false}
+                color={'purple'}
+                node={node.node}
+                active={false}
+                selected={node.selected}
+              ></Sphere> */}
+              <Icon
+                id={node.id}
+                image={demonSvg}
+                size={node.size}
+                opacity={1}
+                animated={false}
+                color={'red'}
+                node={node.node}
+                active={false}
+                selected={node.selected}
+              />
+            </group>
+          );
+        }}
       />
       <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
         <button type="button" onClick={addNode}>
