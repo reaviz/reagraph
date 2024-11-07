@@ -94,16 +94,6 @@ export const SimpleRenderNode = () => {
                 active={false}
                 selected={node.selected}
               ></Sphere>
-              {/* <Sphere
-                id={node.id}
-                size={node.size}
-                opacity={0.5}
-                animated={false}
-                color={'purple'}
-                node={node.node}
-                active={false}
-                selected={node.selected}
-              ></Sphere> */}
               <Icon
                 id={node.id}
                 image={demonSvg}
