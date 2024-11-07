@@ -158,7 +158,6 @@ export const Node: FC<NodeProps> = ({
   const isDraggingCurrent = draggingIds.includes(id);
   const isDragging = draggingIds.length > 0;
   const isNodeClusterDragging = draggingIds.includes(node.cluster);
-  const isDraggingOther = draggingIds.filter(drag => drag !== id).length > 0;
 
   const {
     position,
@@ -225,7 +224,7 @@ export const Node: FC<NodeProps> = ({
   );
 
   const bind = useDrag({
-    draggable: draggable && hoveredNodeId === id && !isDraggingOther,
+    draggable: draggable,
     position,
     // If dragging is constrained to the cluster, use the cluster's position as the bounds
     bounds: constrainDragging ? cluster?.position : undefined,
@@ -256,7 +255,7 @@ export const Node: FC<NodeProps> = ({
     : node.fill || theme.node.fill;
 
   const { pointerOver, pointerOut } = useHoverIntent({
-    disabled: disabled || isDraggingCurrent || isDraggingOther,
+    disabled: disabled || isDraggingCurrent,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.controls.truckSpeed = 0;
       setActive(true);
