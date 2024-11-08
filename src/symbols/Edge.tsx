@@ -212,6 +212,9 @@ export const Edge: FC<EdgeProps> = ({
   const hasSelections = useStore(state => state.selections?.length);
   const isActive = useStore(state => state.actives?.includes(id));
   const center = useStore(state => state.centerPosition);
+  const draggingIds = useStore(state => state.draggingIds);
+  const isNodeClusterDragging =
+    draggingIds.includes(from.cluster) || draggingIds.includes(to.cluster);
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
@@ -229,7 +232,8 @@ export const Edge: FC<EdgeProps> = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !isDragging ? undefined : 0
+        duration:
+          animated && (!isDragging || isNodeClusterDragging) ? undefined : 0
       }
     }),
     [midPoint, animated, isDragging]
