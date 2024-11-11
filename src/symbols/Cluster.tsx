@@ -8,7 +8,7 @@ import { useCursor } from 'glodrei';
 import { ThreeEvent } from '@react-three/fiber';
 import { useDrag } from '../utils/useDrag';
 import { Vector3 } from 'three';
-import { useCameraControls } from 'CameraControls';
+import { useCameraControls } from '../CameraControls';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 
