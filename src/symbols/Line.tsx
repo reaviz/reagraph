@@ -92,17 +92,6 @@ export const Line: FC<LineProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const center = useStore(state => state.centerPosition);
   const mounted = useRef<boolean>(false);
-  const draggingIds = useStore(state => state.draggingIds);
-  const edges = useStore(state => state.edges);
-  const edge = edges.find(e => e.id === id);
-  const from = useStore(store =>
-    store.nodes.find(node => node.id === edge?.source)
-  );
-  const to = useStore(store =>
-    store.nodes.find(node => node.id === edge?.target)
-  );
-  const isNodeClusterDragging =
-    draggingIds.includes(from?.cluster) || draggingIds.includes(to?.cluster);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({
@@ -143,8 +132,7 @@ export const Line: FC<LineProps> = ({
       },
       config: {
         ...animationConfig,
-        duration:
-          animated && (!isDragging || isNodeClusterDragging) ? undefined : 0
+        duration: animated && !isDragging ? undefined : 0
       }
     };
   }, [animated, isDragging, curve, size]);

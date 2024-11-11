@@ -91,6 +91,9 @@ export const Cluster: FC<ClusterProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const center = useStore(state => state.centerPosition);
   const cameraControls = useCameraControls();
+  const draggingIds = useStore(state => state.draggingIds);
+  const isDraggingCurrent = draggingIds.includes(label);
+  const isDragging = draggingIds.length > 0;
 
   const isActive = useStore(state =>
     state.actives?.some(id => nodes.some(n => n.id === id))
@@ -136,7 +139,7 @@ export const Cluster: FC<ClusterProps> = ({
     },
     config: {
       ...animationConfig,
-      duration: animated ? undefined : 0
+      duration: animated && !isDragging ? undefined : 0
     }
   });
 
@@ -150,13 +153,9 @@ export const Cluster: FC<ClusterProps> = ({
     [theme.cluster?.fill]
   );
 
-  const draggingIds = useStore(state => state.draggingIds);
   const addDraggingId = useStore(state => state.addDraggingId);
   const removeDraggingId = useStore(state => state.removeDraggingId);
   const setClusterPosition = useStore(state => state.setClusterPosition);
-
-  const isDraggingCurrent = draggingIds.includes(label);
-  const isDragging = draggingIds.length > 0;
 
   const bind = useDrag({
     draggable: draggable && !hoveredNodeId,
