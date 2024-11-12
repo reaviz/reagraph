@@ -86,9 +86,7 @@ export const useGraph = ({
       cluster?.nodes?.forEach(node => (drags[node.id] = undefined));
 
       dragRef.current = drags;
-      setDrags({
-        ...drags
-      });
+      setDrags(drags);
     }
   }, [storedNodes, nodes, clusterAttribute, clusters, setDrags]);
 
