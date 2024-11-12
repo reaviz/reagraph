@@ -252,13 +252,13 @@ export const Node: FC<NodeProps> = ({
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDraggingCurrent,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
-      cameraControls.controls.truckSpeed = 0;
+      cameraControls.freeze();
       setActive(true);
       onPointerOver?.(node, event);
       setHoveredNodeId(id);
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
-      cameraControls.controls.truckSpeed = 2.0;
+      cameraControls.unFreeze();
       setActive(false);
       onPointerOut?.(node, event);
       setHoveredNodeId(null);

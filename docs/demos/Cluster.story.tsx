@@ -304,33 +304,31 @@ export const SimpleRenderNode = () => {
         edges={[]}
         clusterAttribute="type"
         constrainDragging={false}
-        renderNode={node => {
-          return (
-            <group>
-              <Sphere
-                id={node.id}
-                size={node.size}
-                opacity={0.5}
-                animated={false}
-                color="purple"
-                node={node.node}
-                active={false}
-                selected={node.selected}
-              ></Sphere>
-              <Icon
-                id={node.id}
-                image={demonSvg}
-                size={node.size}
-                opacity={1}
-                animated={false}
-                color="red"
-                node={node.node}
-                active={false}
-                selected={node.selected}
-              />
-            </group>
-          );
-        }}
+        renderNode={node => (
+          <group>
+            <Sphere
+              id={node.id}
+              size={node.size}
+              opacity={0.5}
+              animated={false}
+              color="purple"
+              node={node.node}
+              active={false}
+              selected={node.selected}
+            ></Sphere>
+            <Icon
+              id={node.id}
+              image={demonSvg}
+              size={node.size}
+              opacity={1}
+              animated={false}
+              color="red"
+              node={node.node}
+              active={false}
+              selected={node.selected}
+            />
+          </group>
+        )}
       />
       <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
         <button type="button" onClick={addNode}>

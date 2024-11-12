@@ -157,6 +157,7 @@ export const Cluster: FC<ClusterProps> = ({
   const removeDraggingId = useStore(state => state.removeDraggingId);
   const setClusterPosition = useStore(state => state.setClusterPosition);
 
+  // Define the drag event handlers for the cluster
   const bind = useDrag({
     draggable: draggable && !hoveredNodeId,
     position: {
@@ -176,18 +177,21 @@ export const Cluster: FC<ClusterProps> = ({
     }
   });
 
+  // Set the cursor to pointer when the cluster is active and not dragging
   useCursor(active && !isDragging && onClick !== undefined, 'pointer');
+  // Set the cursor to grab when the cluster is active and draggable
   useCursor(
     active && draggable && !isDraggingCurrent && onClick === undefined,
     'grab'
   );
+  // Set the cursor to grabbing when the cluster is dragging
   useCursor(isDraggingCurrent, 'grabbing');
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       setActive(true);
-      cameraControls.controls.truckSpeed = 0;
+      cameraControls.freeze();
       onPointerOver?.(
         {
           nodes,
@@ -198,7 +202,7 @@ export const Cluster: FC<ClusterProps> = ({
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
       setActive(false);
-      cameraControls.controls.truckSpeed = 2.0;
+      cameraControls.unFreeze();
       onPointerOut?.(
         {
           nodes,

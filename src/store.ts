@@ -147,6 +147,7 @@ export const createStore = ({
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
       set(state => ({ ...state, collapsedNodeIds: nodeIds })),
+    // Update the position of a cluster with nodes inside it
     setClusterPosition: (id, position) =>
       set(state => {
         const clusters = new Map<string, any>(state.clusters);

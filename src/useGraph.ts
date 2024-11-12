@@ -83,9 +83,7 @@ export const useGraph = ({
       const cluster = clusters.get(clusterName);
       const drags = { ...dragRef.current };
 
-      cluster?.nodes?.forEach(node => {
-        drags[node.id] = undefined;
-      });
+      cluster?.nodes?.forEach(node => (drags[node.id] = undefined));
 
       dragRef.current = drags;
       setDrags({
@@ -105,12 +103,11 @@ export const useGraph = ({
     [stateCollapsedNodeIds, nodes, edges]
   );
 
+  // Store node positions inside drags state
   const updateDrags = useCallback(
     (nodes: InternalGraphNode[]) => {
       const drags = { ...dragRef.current };
-      nodes.forEach(node => {
-        drags[node.id] = node;
-      });
+      nodes.forEach(node => (drags[node.id] = node));
       dragRef.current = drags;
       setDrags({
         ...drags
@@ -198,6 +195,7 @@ export const useGraph = ({
     dragRef.current = drags;
   }, [drags, clusterAttribute, updateLayout]);
 
+  // Transient cluster state
   useEffect(() => {
     clustersRef.current = clusters;
   }, [clusters]);

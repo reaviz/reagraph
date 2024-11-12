@@ -474,6 +474,7 @@ export function forceInABox() {
 
   force.getFocis = getFocisFromTemplate;
 
+  // Define the clusters to reuse positions from
   force.setClusters = function (value: any) {
     clusters = value;
 
