@@ -45,36 +45,53 @@ export function useEdgeGeometry(
 
   const geometryCacheRef = useRef(new Map<string, BufferGeometry>());
 
+  // Add memoized geometries for arrows and null geometry
+  const nullGeometryRef = useRef(new BoxGeometry(0, 0, 0));
+  const baseArrowGeometryRef = useRef<CylinderGeometry>();
+
   const curved = interpolation === 'curved';
   const getGeometries = useCallback(
     (edges: Array<InternalGraphEdge>): Array<BufferGeometry> => {
       const geometries: Array<BufferGeometry> = [];
       const cache = geometryCacheRef.current;
 
+      // Pre-compute values outside the loop
       const { nodes } = stateRef.current;
+      const nodesMap = new Map(nodes.map(node => [node.id, node]));
+      const labelFontSize = theme.edge.label.fontSize;
+
+      // Initialize base arrow geometry if needed
+      if (arrowPlacement !== 'none' && !baseArrowGeometryRef.current) {
+        baseArrowGeometryRef.current = new CylinderGeometry(
+          0,
+          1,
+          1,
+          20,
+          1,
+          true
+        );
+      }
 
       edges.forEach(edge => {
         const { target, source, size = 1 } = edge;
-
-        const from = nodes.find(node => node.id === source);
-        const to = nodes.find(node => node.id === target);
+        const from = nodesMap.get(source);
+        const to = nodesMap.get(target);
 
         if (!from || !to) {
           return;
         }
 
-        // Create hash so geometry can be reused if edge doesn't move:
-        const hash = `fromX:${from.position.x},fromY:${from.position.y},toX:${to.position.x}},toY:${to.position.y}`;
+        // Improved hash function to include size
+        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size}`;
         if (cache.has(hash)) {
-          const geometry = cache.get(hash);
-          geometries.push(geometry);
+          geometries.push(cache.get(hash));
           return;
         }
 
         const fromVector = getVector(from);
-        const fromOffset = from.size + theme.edge.label.fontSize;
+        const fromOffset = from.size + labelFontSize;
         const toVector = getVector(to);
-        const toOffset = to.size + theme.edge.label.fontSize;
+        const toOffset = to.size + labelFontSize;
         let curve = getCurve(
           fromVector,
           fromOffset,
@@ -91,8 +108,10 @@ export function useEdgeGeometry(
           return;
         }
 
+        // Reuse base arrow geometry and scale/rotate as needed
         const [arrowLength, arrowSize] = getArrowSize(size);
-
+        const arrowGeometry = baseArrowGeometryRef.current.clone();
+        arrowGeometry.scale(arrowSize, arrowLength, arrowSize);
         const [arrowPosition, arrowRotation] = getArrowVectors(
           arrowPlacement,
           curve,
@@ -100,15 +119,6 @@ export function useEdgeGeometry(
         );
         const quaternion = new Quaternion();
         quaternion.setFromUnitVectors(new Vector3(0, 1, 0), arrowRotation);
-
-        const arrowGeometry = new CylinderGeometry(
-          0,
-          arrowSize,
-          arrowLength,
-          20,
-          1,
-          true
-        );
         arrowGeometry.applyQuaternion(quaternion);
         arrowGeometry.translate(
           arrowPosition.x,
