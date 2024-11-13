@@ -8,8 +8,6 @@ export interface SphereWithIconProps extends NodeRendererProps {
    * The image to display on the icon.
    */
   image: string;
-  opacity?: number;
-  active?: boolean;
 }
 
 export const SphereWithIcon: FC<SphereWithIconProps> = ({
