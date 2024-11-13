@@ -73,10 +73,10 @@ export interface ClusterProps extends ClusterGroup {
 export const Cluster: FC<ClusterProps> = ({
   animated,
   position,
-  padding,
+  padding = 40,
   labelFontUrl,
   disabled,
-  radius,
+  radius = 2,
   nodes,
   label,
   onClick,
@@ -293,10 +293,4 @@ export const Cluster: FC<ClusterProps> = ({
   );
 
   return cluster;
-};
-
-Cluster.defaultProps = {
-  radius: 2,
-  padding: 40,
-  draggable: false
 };

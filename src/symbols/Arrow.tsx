@@ -55,12 +55,12 @@ export interface ArrowProps {
 
 export const Arrow: FC<ArrowProps> = ({
   animated,
-  color,
+  color = '#D8E6EA',
   length,
-  opacity,
+  opacity = 0.5,
   position,
   rotation,
-  size,
+  size = 1,
   onActive,
   onContextMenu
 }) => {
@@ -124,10 +124,4 @@ export const Arrow: FC<ArrowProps> = ({
       />
     </a.mesh>
   );
-};
-
-Arrow.defaultProps = {
-  size: 1,
-  opacity: 0.5,
-  color: '#D8E6EA'
 };

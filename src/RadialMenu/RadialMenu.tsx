@@ -39,10 +39,10 @@ interface RadialMenuProps {
 
 export const RadialMenu: FC<RadialMenuProps> = ({
   items,
-  radius,
+  radius = 175,
   className,
-  innerRadius,
-  startOffsetAngle,
+  innerRadius = 25,
+  startOffsetAngle = 0,
   onClose
 }) => {
   const { centralAngle, polar, startAngle, deltaAngle } = useMemo(
@@ -89,10 +89,4 @@ export const RadialMenu: FC<RadialMenuProps> = ({
       ))}
     </div>
   );
-};
-
-RadialMenu.defaultProps = {
-  radius: 175,
-  innerRadius: 25,
-  startOffsetAngle: 0
 };

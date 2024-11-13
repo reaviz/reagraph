@@ -76,12 +76,12 @@ export interface LineProps {
 export const Line: FC<LineProps> = ({
   curveOffset,
   animated,
-  color,
+  color = '#000',
   curve,
   curved = false,
   id,
-  opacity,
-  size,
+  opacity = 1,
+  size = 1,
   onContextMenu,
   onClick,
   onPointerOver,
@@ -167,10 +167,4 @@ export const Line: FC<LineProps> = ({
       />
     </mesh>
   );
-};
-
-Line.defaultProps = {
-  color: '#000',
-  size: 1,
-  opacity: 1
 };
