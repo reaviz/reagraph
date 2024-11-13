@@ -283,7 +283,9 @@ export function forceInABox() {
     // Use dragged clusters position if available
     if (clusters.size > 0) {
       net.nodes.forEach(n => {
+        // Set fixed X position for cluster
         n.fx = clusters.get(n.id)?.position?.x;
+        // Set fixed Y position for cluster
         n.fy = clusters.get(n.id)?.position?.y;
       });
     }

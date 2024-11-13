@@ -29,6 +29,7 @@ export interface GraphState {
   centerPosition?: CenterPositionVector;
   actives?: string[];
   selections?: string[];
+  // The node that is currently hovered, used to disable cluster dragging
   hoveredNodeId?: string;
   edgeContextMenus?: Set<string>;
   setEdgeContextMenus: (edges: Set<string>) => void;

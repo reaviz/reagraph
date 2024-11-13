@@ -107,9 +107,7 @@ export const useGraph = ({
       const drags = { ...dragRef.current };
       nodes.forEach(node => (drags[node.id] = node));
       dragRef.current = drags;
-      setDrags({
-        ...drags
-      });
+      setDrags(drags);
     },
     [setDrags]
   );

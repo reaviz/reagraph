@@ -221,7 +221,7 @@ export const Node: FC<NodeProps> = ({
   );
 
   const bind = useDrag({
-    draggable: draggable,
+    draggable,
     position,
     // If dragging is constrained to the cluster, use the cluster's position as the bounds
     bounds: constrainDragging ? cluster?.position : undefined,

@@ -118,9 +118,7 @@ export const CameraControls: FC<
     const isOrbiting = mode === 'orbit';
     const setPanning = useStore(state => state.setPanning);
     const isDragging = useStore(state => state.draggingIds.length > 0);
-    const [cameraSpeed, setCameraSpeed] = useState(
-      cameraRef.current?.truckSpeed ?? 0
-    );
+    const cameraSpeedRef = useRef(0);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
@@ -333,23 +331,14 @@ export const CameraControls: FC<
         freeze: () => {
           // Save the current speed
           if (cameraRef.current.truckSpeed) {
-            setCameraSpeed(cameraRef.current.truckSpeed);
+            cameraSpeedRef.current = cameraRef.current.truckSpeed;
           }
           cameraRef.current.truckSpeed = 0;
         },
-        unFreeze: () => (cameraRef.current.truckSpeed = cameraSpeed)
+        unFreeze: () => (cameraRef.current.truckSpeed = cameraSpeedRef.current)
       }),
       // eslint-disable-next-line
-      [
-        zoomIn,
-        zoomOut,
-        panLeft,
-        panRight,
-        panDown,
-        panUp,
-        cameraRef.current,
-        cameraSpeed
-      ]
+      [zoomIn, zoomOut, panLeft, panRight, panDown, panUp, cameraRef.current]
     );
 
     useImperativeHandle(ref, () => values);
