@@ -64,7 +64,12 @@ export const useDrag = ({
         // Run user callback
         onDragStart();
       },
-      onDrag: ({ xy }) => {
+      onDrag: ({ xy, buttons, cancel }) => {
+        // If the left mouse button is not pressed, cancel the drag
+        if (buttons !== 1) {
+          cancel();
+          return;
+        }
         // Compute normalized mouse coordinates (screen space)
         const nx = ((xy[0] - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
         const ny = -((xy[1] - (clientRect?.top ?? 0)) / size.height) * 2 + 1;

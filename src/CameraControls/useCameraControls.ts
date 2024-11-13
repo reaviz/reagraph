@@ -52,6 +52,16 @@ export interface CameraControlsContextProps {
    * A function that pans the camera downwards.
    */
   panDown: () => void;
+
+  /**
+   * A function that freezes the camera.
+   */
+  freeze: () => void;
+
+  /**
+   * A function that unfreezes the camera.
+   */
+  unFreeze: () => void;
 }
 
 export const CameraControlsContext = createContext<CameraControlsContextProps>({
@@ -64,7 +74,9 @@ export const CameraControlsContext = createContext<CameraControlsContextProps>({
   panLeft: () => undefined,
   panRight: () => undefined,
   panUp: () => undefined,
-  panDown: () => undefined
+  panDown: () => undefined,
+  freeze: () => undefined,
+  unFreeze: () => undefined
 });
 
 export const useCameraControls = () => {

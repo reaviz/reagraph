@@ -2,6 +2,7 @@ import React, {
   FC,
   ReactNode,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState
@@ -141,7 +142,9 @@ export const Node: FC<NodeProps> = ({
   const edges = useStore(state => state.edges);
   const draggingIds = useStore(state => state.draggingIds);
   const collapsedNodeIds = useStore(state => state.collapsedNodeIds);
-  const setDraggingIds = useStore(state => state.setDraggingIds);
+  const addDraggingId = useStore(state => state.addDraggingId);
+  const removeDraggingId = useStore(state => state.removeDraggingId);
+  const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
   const setNodePosition = useStore(state => state.setNodePosition);
   const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
   const isCollapsed = useStore(state => state.collapsedNodeIds.includes(id));
@@ -225,12 +228,11 @@ export const Node: FC<NodeProps> = ({
     // @ts-ignore
     set: pos => setNodePosition(id, pos),
     onDragStart: () => {
-      setDraggingIds([...new Set([...draggingIds, id])]);
+      addDraggingId(id);
       setActive(true);
     },
     onDragEnd: () => {
-      setDraggingIds(draggingIds.filter(id => id !== id));
-      setActive(false);
+      removeDraggingId(id);
       onDragged?.(node);
     }
   });
@@ -250,14 +252,16 @@ export const Node: FC<NodeProps> = ({
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDraggingCurrent,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
-      cameraControls.controls.truckSpeed = 0;
+      cameraControls.freeze();
       setActive(true);
       onPointerOver?.(node, event);
+      setHoveredNodeId(id);
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
-      cameraControls.controls.truckSpeed = 2.0;
+      cameraControls.unFreeze();
       setActive(false);
       onPointerOut?.(node, event);
+      setHoveredNodeId(null);
     }
   });
 

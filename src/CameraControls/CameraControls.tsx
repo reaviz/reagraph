@@ -7,7 +7,8 @@ import React, {
   Ref,
   useImperativeHandle,
   useMemo,
-  ReactNode
+  ReactNode,
+  useState
 } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
 import {
@@ -117,6 +118,7 @@ export const CameraControls: FC<
     const isOrbiting = mode === 'orbit';
     const setPanning = useStore(state => state.setPanning);
     const isDragging = useStore(state => state.draggingIds.length > 0);
+    const cameraSpeedRef = useRef(0);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
@@ -325,7 +327,15 @@ export const CameraControls: FC<
         panDown: (deltaTime = 100) => panDown({ deltaTime }),
         panUp: (deltaTime = 100) => panUp({ deltaTime }),
         resetControls: (animated?: boolean) =>
-          cameraRef.current?.reset(animated)
+          cameraRef.current?.reset(animated),
+        freeze: () => {
+          // Save the current speed
+          if (cameraRef.current.truckSpeed) {
+            cameraSpeedRef.current = cameraRef.current.truckSpeed;
+          }
+          cameraRef.current.truckSpeed = 0;
+        },
+        unFreeze: () => (cameraRef.current.truckSpeed = cameraSpeedRef.current)
       }),
       // eslint-disable-next-line
       [zoomIn, zoomOut, panLeft, panRight, panDown, panUp, cameraRef.current]

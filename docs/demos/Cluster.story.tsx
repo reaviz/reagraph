@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { GraphCanvas, lightTheme } from '../../src';
+import { GraphCanvas, Icon, lightTheme, Sphere } from '../../src';
 import {
   clusterNodes,
   clusterEdges,
@@ -9,13 +9,229 @@ import {
   manyClusterNodes
 } from '../assets/demo';
 
+import demonSvg from '../../docs/assets/twitter.svg';
+
 export default {
   title: 'Demos/Cluster',
   component: GraphCanvas
 };
 
 export const Simple = () => {
-  const [nodes, setNodes] = useState(clusterNodes);
+  const [nodes, setNodes] = useState([
+    {
+      id: 'n-0',
+      label: 'MD5 0',
+      fill: '#075985',
+      data: {
+        type: 'MD5',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-1',
+      label: 'Email 1',
+      fill: '#166534',
+      data: {
+        type: 'Email'
+      }
+    },
+    {
+      id: 'n-2',
+      label: 'MD5 2',
+      fill: '#075985',
+      data: {
+        type: 'MD5',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-3',
+      label: 'URL 3',
+      fill: '#c2410c',
+      data: {
+        type: 'URL'
+      }
+    },
+    {
+      id: 'n-4',
+      label: 'MD5 4',
+      fill: '#075985',
+      data: {
+        type: 'MD5',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-5',
+      label: 'MD5 5',
+      fill: '#075985',
+      data: {
+        type: 'MD5'
+      }
+    },
+    {
+      id: 'n-6',
+      label: 'IP 6',
+      fill: '#3730a3',
+      data: {
+        type: 'IP',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-7',
+      label: 'IP 7',
+      fill: '#3730a3',
+      data: {
+        type: 'IP'
+      }
+    },
+    {
+      id: 'n-8',
+      label: 'URL 8',
+      fill: '#c2410c',
+      data: {
+        type: 'URL',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-9',
+      label: 'MD5 9',
+      fill: '#075985',
+      data: {
+        type: 'MD5'
+      }
+    },
+    {
+      id: 'n-10',
+      label: 'URL 10',
+      fill: '#c2410c',
+      data: {
+        type: 'URL',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-11',
+      label: 'URL 11',
+      fill: '#c2410c',
+      data: {
+        type: 'URL'
+      }
+    },
+    {
+      id: 'n-12',
+      label: 'URL 12',
+      fill: '#c2410c',
+      data: {
+        type: 'URL',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-13',
+      label: 'Email 13',
+      fill: '#166534',
+      data: {
+        type: 'Email'
+      }
+    },
+    {
+      id: 'n-14',
+      label: 'URL 14',
+      fill: '#c2410c',
+      data: {
+        type: 'URL',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-15',
+      label: 'IP 15',
+      fill: '#3730a3',
+      data: {
+        type: 'IP'
+      }
+    },
+    {
+      id: 'n-16',
+      label: 'Email 16',
+      fill: '#166534',
+      data: {
+        type: 'Email',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-17',
+      label: 'Email 17',
+      fill: '#166534',
+      data: {
+        type: 'Email'
+      }
+    },
+    {
+      id: 'n-18',
+      label: 'URL 18',
+      fill: '#c2410c',
+      data: {
+        type: 'URL',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-19',
+      label: 'Email 19',
+      fill: '#166534',
+      data: {
+        type: 'Email'
+      }
+    },
+    {
+      id: 'n-20',
+      label: 'Email 20',
+      fill: '#166534',
+      data: {
+        type: 'Email',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-21',
+      label: 'Email 21',
+      fill: '#166534',
+      data: {
+        type: 'Email'
+      }
+    },
+    {
+      id: 'n-22',
+      label: 'Email 22',
+      fill: '#166534',
+      data: {
+        type: 'Email',
+        segment: 'A'
+      }
+    },
+    {
+      id: 'n-23',
+      label: 'URL 23',
+      fill: '#c2410c',
+      data: {
+        type: 'URL'
+      }
+    },
+    {
+      id: 'n-24',
+      label: 'Email 24',
+      fill: '#166534',
+      data: {
+        type: 'Email',
+        segment: 'A'
+      }
+    }
+  ] as any);
 
   const addNode = useCallback(() => {
     const next = nodes.length + 2;
@@ -35,7 +251,85 @@ export const Simple = () => {
 
   return (
     <>
-      <GraphCanvas nodes={nodes} draggable edges={[]} clusterAttribute="type" constrainDragging />
+      <GraphCanvas
+        nodes={nodes}
+        draggable
+        edges={[
+          {
+            source: 'n-6',
+            target: 'n-1',
+            id: 'n-6-n-1',
+            label: 'n-6-n-1'
+          }
+        ]}
+        clusterAttribute="type"
+        constrainDragging={false}
+      />
+      <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
+        <button type="button" onClick={addNode}>
+          Add node
+        </button>
+      </div>
+    </>
+  );
+};
+
+export const SimpleRenderNode = () => {
+  const [nodes, setNodes] = useState(
+    clusterNodes.map(n => ({ ...n, icon: demonSvg }))
+  );
+
+  const addNode = useCallback(() => {
+    const next = nodes.length + 2;
+    setNodes(prev => [
+      ...prev,
+      {
+        id: `${next}`,
+        label: `Node ${next}`,
+        fill: '#3730a3',
+        icon: demonSvg,
+        data: {
+          type: 'IP',
+          segment: next % 2 === 0 ? 'A' : undefined
+        }
+      }
+    ]);
+  }, [nodes]);
+
+  return (
+    <>
+      <GraphCanvas
+        nodes={nodes}
+        draggable
+        edges={[]}
+        clusterAttribute="type"
+        constrainDragging={false}
+        renderNode={node => (
+          <group>
+            <Sphere
+              id={node.id}
+              size={node.size}
+              opacity={0.5}
+              animated={false}
+              color="purple"
+              node={node.node}
+              active={false}
+              selected={node.selected}
+            ></Sphere>
+            <Icon
+              id={node.id}
+              image={demonSvg}
+              size={node.size}
+              opacity={1}
+              animated={false}
+              color="red"
+              node={node.node}
+              active={false}
+              selected={node.selected}
+            />
+          </group>
+        )}
+      />
       <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
         <button type="button" onClick={addNode}>
           Add node

@@ -151,7 +151,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         exportCanvas: () => {
           rendererRef.current.renderScene();
           return canvasRef.current.toDataURL();
-        }
+        },
+        freeze: () => controlsRef.current?.freeze(),
+        unFreeze: () => controlsRef.current?.unFreeze()
       }));
 
       // Defaults to pass to the store

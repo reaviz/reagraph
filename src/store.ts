@@ -29,6 +29,8 @@ export interface GraphState {
   centerPosition?: CenterPositionVector;
   actives?: string[];
   selections?: string[];
+  // The node that is currently hovered, used to disable cluster dragging
+  hoveredNodeId?: string;
   edgeContextMenus?: Set<string>;
   setEdgeContextMenus: (edges: Set<string>) => void;
   edgeMeshes: Array<Mesh<BufferGeometry>>;
@@ -41,13 +43,16 @@ export interface GraphState {
   setClusters: (clusters: Map<string, ClusterGroup>) => void;
   setPanning: (panning: boolean) => void;
   setDrags: (drags: DragReferences) => void;
-  setDraggingIds: (id: string[]) => void;
+  addDraggingId: (id: string) => void;
+  removeDraggingId: (id: string) => void;
   setActives: (actives: string[]) => void;
   setSelections: (selections: string[]) => void;
+  setHoveredNodeId: (hoveredNodeId: string | null) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
   setCollapsedNodeIds: (nodeIds: string[]) => void;
+  setClusterPosition: (id: string, position: CenterPositionVector) => void;
 }
 
 export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
@@ -79,6 +84,7 @@ export const createStore = ({
     edgeContextMenus: new Set(),
     edgeMeshes: [],
     selections,
+    hoveredNodeId: null,
     drags: {},
     graph: new Graph({ multi: true }),
     setTheme: theme => set(state => ({ ...state, theme })),
@@ -91,9 +97,17 @@ export const createStore = ({
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
     setPanning: panning => set(state => ({ ...state, panning })),
     setDrags: drags => set(state => ({ ...state, drags })),
-    setDraggingIds: draggingIds => set(state => ({ ...state, draggingIds })),
+    addDraggingId: id =>
+      set(state => ({ ...state, draggingIds: [...state.draggingIds, id] })),
+    removeDraggingId: id =>
+      set(state => ({
+        ...state,
+        draggingIds: state.draggingIds.filter(drag => drag !== id)
+      })),
     setActives: actives => set(state => ({ ...state, actives })),
     setSelections: selections => set(state => ({ ...state, selections })),
+    setHoveredNodeId: hoveredNodeId =>
+      set(state => ({ ...state, hoveredNodeId })),
     setNodes: nodes =>
       set(state => ({
         ...state,
@@ -133,5 +147,62 @@ export const createStore = ({
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
-      set(state => ({ ...state, collapsedNodeIds: nodeIds }))
+      set(state => ({ ...state, collapsedNodeIds: nodeIds })),
+    // Update the position of a cluster with nodes inside it
+    setClusterPosition: (id, position) =>
+      set(state => {
+        const clusters = new Map<string, any>(state.clusters);
+        const cluster = clusters.get(id);
+
+        if (cluster) {
+          // Calculate the offset between old and new position
+          const oldPos = cluster.position;
+          const offset = new Vector3(
+            position.x - oldPos.x,
+            position.y - oldPos.y,
+            position.z - (oldPos.z ?? 0)
+          );
+
+          // Update all nodes in the cluster
+          const nodes: InternalGraphNode[] = [...state.nodes];
+          const drags: DragReferences = { ...state.drags };
+          nodes.forEach((node, index) => {
+            if (node.cluster === id) {
+              nodes[index] = {
+                ...node,
+                position: {
+                  ...node.position,
+                  x: node.position.x + offset.x,
+                  y: node.position.y + offset.y,
+                  z: node.position.z + (offset.z ?? 0)
+                } as InternalGraphPosition
+              };
+              // Update node in drag reference
+              drags[node.id] = node;
+            }
+          });
+
+          const clusterNodes: InternalGraphNode[] = nodes.filter(
+            node => node.cluster === id
+          );
+          const newClusterPosition = getLayoutCenter(clusterNodes);
+          // Update cluster position
+          clusters.set(id, {
+            ...cluster,
+            position: newClusterPosition
+          });
+
+          return {
+            ...state,
+            drags: {
+              ...drags,
+              [id]: cluster
+            },
+            clusters,
+            nodes
+          };
+        }
+
+        return state;
+      })
   }));
