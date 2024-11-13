@@ -1,3 +1,6 @@
+# 4.20.1 - 11/13/24
+- [feature] Add onClusterDragged event #296
+
 # 4.20.0 - 11/13/24
 - [chore] Performance Optimizations #295
 - [feature] Cluster Dragging #294
