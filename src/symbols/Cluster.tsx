@@ -217,6 +217,7 @@ export const Cluster: FC<ClusterProps> = ({
     () =>
       theme.cluster && (
         <a.group
+          userData={{ id: label, type: 'cluster' }}
           position={circlePosition as any}
           onPointerOver={pointerOver}
           onPointerOut={pointerOut}
