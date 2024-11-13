@@ -239,7 +239,8 @@ export const useGraph = ({
       layoutMounted.current = false;
       buildGraph(graph, visibleNodes, visibleEdges);
       await updateLayout();
-      layoutMounted.current = true;
+      // rqf to prevent race condition
+      requestAnimationFrame(() => (layoutMounted.current = true));
     }
 
     update();
