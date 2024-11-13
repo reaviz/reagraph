@@ -110,10 +110,10 @@ const LABEL_PLACEMENT_OFFSET = 3;
 
 export const Edge: FC<EdgeProps> = ({
   animated,
-  arrowPlacement,
+  arrowPlacement = 'end',
   contextMenu,
   disabled,
-  labelPlacement,
+  labelPlacement = 'inline',
   id,
   interpolation,
   labelFontUrl,
@@ -412,9 +412,4 @@ export const Edge: FC<EdgeProps> = ({
       {menuComponent}
     </group>
   );
-};
-
-Edge.defaultProps = {
-  labelPlacement: 'inline',
-  arrowPlacement: 'end'
 };

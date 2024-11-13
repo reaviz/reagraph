@@ -53,13 +53,13 @@ export interface LabelProps {
 
 export const Label: FC<LabelProps> = ({
   text,
-  fontSize,
+  fontSize = 7,
   fontUrl,
-  color,
-  opacity,
+  color = '#2A6475',
+  opacity = 1,
   stroke,
   active,
-  ellipsis,
+  ellipsis = 75,
   rotation
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
@@ -88,11 +88,4 @@ export const Label: FC<LabelProps> = ({
       </Text>
     </Billboard>
   );
-};
-
-Label.defaultProps = {
-  opacity: 1,
-  fontSize: 7,
-  color: '#2A6475',
-  ellipsis: 75
 };

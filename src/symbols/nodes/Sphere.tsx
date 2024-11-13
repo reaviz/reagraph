@@ -10,9 +10,8 @@ export const Sphere: FC<NodeRendererProps> = ({
   color,
   id,
   size,
-  active,
   selected,
-  opacity,
+  opacity = 1,
   animated
 }) => {
   const { scale, nodeOpacity } = useSpring({
@@ -54,9 +53,4 @@ export const Sphere: FC<NodeRendererProps> = ({
       />
     </>
   );
-};
-
-Sphere.defaultProps = {
-  opacity: 1,
-  active: false
 };

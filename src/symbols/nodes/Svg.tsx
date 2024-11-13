@@ -18,7 +18,7 @@ export const Svg: FC<SvgProps> = ({
   image,
   color,
   size,
-  opacity,
+  opacity = 1,
   animated,
   ...rest
 }) => {
@@ -64,8 +64,4 @@ export const Svg: FC<SvgProps> = ({
       </Billboard>
     </a.group>
   );
-};
-
-Svg.defaultProps = {
-  opacity: 1
 };

@@ -124,7 +124,7 @@ export const Node: FC<NodeProps> = ({
   animated,
   disabled,
   id,
-  draggable,
+  draggable = false,
   labelFontUrl,
   contextMenu,
   onClick,
@@ -438,8 +438,4 @@ export const Node: FC<NodeProps> = ({
       {labelComponent}
     </a.group>
   );
-};
-
-Node.defaultProps = {
-  draggable: false
 };

@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useEffect } from 'react';
 
 import { useStore } from '../../store';
 import { InternalGraphEdge } from '../../types';
@@ -15,10 +15,15 @@ export function useEdgeEvents(
   contextMenu,
   disabled: boolean
 ) {
-  const { onClick, onContextMenu, onPointerOut, onPointerOver } = events;
+  const memoizedEvents = useRef(events);
+  useEffect(() => {
+    memoizedEvents.current = events;
+  }, [events]);
 
   const edgeContextMenus = useStore(state => state.edgeContextMenus);
-  const setEdgeContextMenus = useStore(state => state.setEdgeContextMenus);
+  const setEdgeContextMenus = useStore(
+    useCallback(state => state.setEdgeContextMenus, [])
+  );
 
   const clickRef = useRef(false);
   const handleClick = useCallback(() => {
@@ -35,24 +40,35 @@ export function useEdgeEvents(
       previous: Array<InternalGraphEdge>,
       intersected: Array<InternalGraphEdge>
     ) => {
-      if (onClick && clickRef.current) {
+      const { onClick, onContextMenu, onPointerOver, onPointerOut } =
+        memoizedEvents.current;
+
+      if (onClick && clickRef.current && !disabled) {
         clickRef.current = false;
-        if (!disabled) {
-          intersected.forEach(edge => {
-            onClick(edge);
-          });
+        for (const edge of intersected) {
+          onClick(edge);
         }
       }
 
-      if ((contextMenu || onContextMenu) && contextMenuEventRef.current) {
+      if (
+        (contextMenu || onContextMenu) &&
+        contextMenuEventRef.current &&
+        !disabled
+      ) {
         contextMenuEventRef.current = false;
-        if (!disabled) {
-          intersected.forEach(edge => {
-            if (!edgeContextMenus.has(edge.id)) {
-              setEdgeContextMenus(new Set([...edgeContextMenus, edge.id]));
-              onContextMenu?.(edge);
-            }
-          });
+        const newEdges = new Set(edgeContextMenus);
+        let hasChanges = false;
+
+        for (const edge of intersected) {
+          if (!edgeContextMenus.has(edge.id)) {
+            newEdges.add(edge.id);
+            hasChanges = true;
+            onContextMenu?.(edge);
+          }
+        }
+
+        if (hasChanges) {
+          setEdgeContextMenus(newEdges);
         }
       }
 
@@ -70,16 +86,7 @@ export function useEdgeEvents(
         });
       }
     },
-    [
-      contextMenu,
-      disabled,
-      edgeContextMenus,
-      setEdgeContextMenus,
-      onClick,
-      onContextMenu,
-      onPointerOver,
-      onPointerOut
-    ]
+    [contextMenu, disabled, edgeContextMenus, setEdgeContextMenus]
   );
 
   return {

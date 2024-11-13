@@ -109,7 +109,14 @@ export const CameraControls: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
 > = forwardRef(
   (
-    { mode, children, animated, disabled, minDistance, maxDistance },
+    {
+      mode = 'rotate',
+      children,
+      animated,
+      disabled,
+      minDistance = 1000,
+      maxDistance = 50000
+    },
     ref: Ref<CameraControlsRef>
   ) => {
     const cameraRef = useRef<ThreeCameraControls | null>(null);
@@ -358,9 +365,3 @@ export const CameraControls: FC<
     );
   }
 );
-
-CameraControls.defaultProps = {
-  mode: 'rotate',
-  minDistance: 1000,
-  maxDistance: 50000
-};

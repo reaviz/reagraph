@@ -109,20 +109,26 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
     (
       {
-        cameraMode,
+        cameraMode = 'pan',
+        layoutType = 'forceDirected2d',
+        sizingType = 'default',
+        labelType = 'auto',
+        theme = lightTheme,
+        animated = true,
+        defaultNodeSize = 7,
+        minNodeSize = 5,
+        maxNodeSize = 15,
+        lassoType = 'none',
+        glOptions = {},
         edges,
         children,
         nodes,
-        theme,
         minDistance,
         maxDistance,
         onCanvasClick,
-        animated,
         disabled,
-        lassoType,
         onLasso,
         onLassoEnd,
-        glOptions,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -217,6 +223,12 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                       animated={finalAnimated}
                       edges={edges}
                       nodes={nodes}
+                      layoutType={layoutType}
+                      sizingType={sizingType}
+                      labelType={labelType}
+                      defaultNodeSize={defaultNodeSize}
+                      minNodeSize={minNodeSize}
+                      maxNodeSize={maxNodeSize}
                       {...rest}
                     />
                   </Suspense>
@@ -228,17 +240,3 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       );
     }
   );
-
-GraphCanvas.defaultProps = {
-  cameraMode: 'pan',
-  layoutType: 'forceDirected2d',
-  sizingType: 'default',
-  labelType: 'auto',
-  theme: lightTheme,
-  animated: true,
-  defaultNodeSize: 7,
-  minNodeSize: 5,
-  maxNodeSize: 15,
-  lassoType: 'none',
-  glOptions: {}
-};

@@ -73,18 +73,26 @@ export const Edge: FC<EdgeProps> = ({
   contextMenu,
   edge,
   labelFontUrl,
-  labelPlacement,
+  labelPlacement = 'inline',
   opacity
 }) => {
   const theme = useStore(state => state.theme);
   const { target, source, label, labelVisible = false, size = 1 } = edge;
 
   const nodes = useStore(store => store.nodes);
-  const from = nodes.find(node => node.id === source);
-  const to = nodes.find(node => node.id === target);
+  const [from, to] = useMemo(
+    () => [
+      nodes.find(node => node.id === source),
+      nodes.find(node => node.id === target)
+    ],
+    [nodes, source, target]
+  );
   const isDragging = useStore(state => state.draggingIds.length > 0);
 
-  const labelOffset = (size + theme.edge.label.fontSize) / 2;
+  const labelOffset = useMemo(
+    () => (size + theme.edge.label.fontSize) / 2,
+    [size, theme.edge.label.fontSize]
+  );
 
   const midPoint = useMemo(
     () =>
@@ -116,31 +124,61 @@ export const Edge: FC<EdgeProps> = ({
   );
 
   const removeContextMenu = useCallback(
-    (edge: InternalGraphEdge) => {
-      edgeContextMenus.delete(edge.id);
-      setEdgeContextMenus(new Set(edgeContextMenus.values()));
+    (edgeId: string) => {
+      edgeContextMenus.delete(edgeId);
+      setEdgeContextMenus(new Set(edgeContextMenus));
     },
     [edgeContextMenus, setEdgeContextMenus]
   );
 
-  const labelRotation = useMemo(
-    () =>
-      new Euler(
-        0,
-        0,
-        labelPlacement === 'natural'
-          ? 0
-          : Math.atan(
-            (to.position.y - from.position.y) /
-                (to.position.x - from.position.x)
-          )
-      ),
+  const labelRotation = useMemo(() => {
+    if (labelPlacement === 'natural') {
+      return new Euler(0, 0, 0);
+    }
+    return new Euler(
+      0,
+      0,
+      Math.atan2(
+        to.position.y - from.position.y,
+        to.position.x - from.position.x
+      )
+    );
+  }, [
+    labelPlacement,
+    to.position.y,
+    to.position.x,
+    from.position.y,
+    from.position.x
+  ]);
+
+  const htmlProps = useMemo(
+    () => ({
+      prepend: true,
+      center: true,
+      position: midPoint
+    }),
+    [midPoint]
+  );
+
+  const labelProps = useMemo(
+    () => ({
+      text: label,
+      ellipsis: 15,
+      fontUrl: labelFontUrl,
+      stroke: theme.edge.label.stroke,
+      color,
+      opacity,
+      fontSize: theme.edge.label.fontSize,
+      rotation: labelRotation
+    }),
     [
-      to.position.x,
-      to.position.y,
-      from.position.x,
-      from.position.y,
-      labelPlacement
+      label,
+      labelFontUrl,
+      theme.edge.label.stroke,
+      color,
+      opacity,
+      theme.edge.label.fontSize,
+      labelRotation
     ]
   );
 
@@ -148,30 +186,17 @@ export const Edge: FC<EdgeProps> = ({
     <group>
       {labelVisible && label && (
         <a.group position={labelPosition as any}>
-          <Label
-            text={label}
-            ellipsis={15}
-            fontUrl={labelFontUrl}
-            stroke={theme.edge.label.stroke}
-            color={color}
-            opacity={opacity}
-            fontSize={theme.edge.label.fontSize}
-            rotation={labelRotation}
-          />
+          <Label {...labelProps} />
         </a.group>
       )}
       {contextMenu && edgeContextMenus.has(edge.id) && (
-        <Html prepend={true} center={true} position={midPoint}>
+        <Html {...htmlProps}>
           {contextMenu({
             data: edge,
-            onClose: () => removeContextMenu(edge)
+            onClose: () => removeContextMenu(edge.id)
           })}
         </Html>
       )}
     </group>
   );
-};
-
-Edge.defaultProps = {
-  labelPlacement: 'inline'
 };

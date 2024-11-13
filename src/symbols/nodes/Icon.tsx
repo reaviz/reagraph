@@ -11,7 +11,13 @@ export interface IconProps extends NodeRendererProps {
   image: string;
 }
 
-export const Icon: FC<IconProps> = ({ image, id, size, opacity, animated }) => {
+export const Icon: FC<IconProps> = ({
+  image,
+  id,
+  size,
+  opacity = 1,
+  animated
+}) => {
   const texture = useMemo(() => new TextureLoader().load(image), [image]);
 
   const { scale, spriteOpacity } = useSpring({
@@ -43,8 +49,4 @@ export const Icon: FC<IconProps> = ({ image, id, size, opacity, animated }) => {
       </a.spriteMaterial>
     </a.sprite>
   );
-};
-
-Icon.defaultProps = {
-  opacity: 1
 };
