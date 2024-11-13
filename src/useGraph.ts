@@ -148,10 +148,10 @@ export const useGraph = ({
         clusterAttribute
       });
 
+      // Do not decrease the cluster size is the number of nodes is the same
       if (constrainDragging) {
         newClusters.forEach(cluster => {
           const prevCluster = clustersRef.current.get(cluster.label);
-          // Do not decrease the cluster size is the number of nodes is the same
           if (prevCluster?.nodes.length === cluster.nodes.length) {
             cluster.position =
               clustersRef.current?.get(cluster.label)?.position ??
