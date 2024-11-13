@@ -1,3 +1,7 @@
+# 4.20.0 - 11/13/24
+- [chore] Performance Optimizations #295
+- [feature] Cluster Dragging #294
+
 # 4.19.5 - 11/1/24
 - [fix] Update cluster position after node dragging #292
 
