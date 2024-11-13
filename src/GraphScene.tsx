@@ -211,6 +211,11 @@ export interface GraphSceneProps {
   onNodeDragged?: (node: InternalGraphNode) => void;
 
   /**
+   * Triggered after a cluster was dragged.
+   */
+  onClusterDragged?: (cluster: ClusterEventArgs) => void;
+
+  /**
    * When a edge context menu happened.
    */
   onEdgeContextMenu?: (edge?: InternalGraphEdge) => void;
@@ -322,6 +327,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onNodePointerOut,
         onClusterClick,
         onNodeDragged,
+        onClusterDragged,
         onClusterPointerOver,
         onClusterPointerOut,
         contextMenu,
@@ -498,6 +504,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               onClick={onClusterClick}
               onPointerOver={onClusterPointerOver}
               onPointerOut={onClusterPointerOut}
+              onDragged={onClusterDragged}
               {...c}
             />
           )),
@@ -509,7 +516,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           labelFontUrl,
           onClusterClick,
           onClusterPointerOut,
-          onClusterPointerOver
+          onClusterPointerOver,
+          onClusterDragged
         ]
       );
 

@@ -90,6 +90,7 @@ export const Cluster: FC<ClusterProps> = ({
   const offset = rad - radius + padding;
   const [active, setActive] = useState<boolean>(false);
   const center = useStore(state => state.centerPosition);
+  const nodesState = useStore(state => state.nodes);
   const cameraControls = useCameraControls();
   const draggingIds = useStore(state => state.draggingIds);
   const isDraggingCurrent = draggingIds.includes(label);
@@ -173,7 +174,9 @@ export const Cluster: FC<ClusterProps> = ({
     onDragEnd: () => {
       removeDraggingId(label);
       setActive(false);
-      onDragged?.({ nodes, label });
+      // Get nodes from store with updated position after dragging
+      const updatedClusterNodes = nodesState.filter(n => n.cluster === label);
+      onDragged?.({ nodes: updatedClusterNodes, label });
     }
   });
 
