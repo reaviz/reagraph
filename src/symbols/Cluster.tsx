@@ -9,6 +9,7 @@ import { ThreeEvent } from '@react-three/fiber';
 import { useDrag } from '../utils/useDrag';
 import { Vector3 } from 'three';
 import { useCameraControls } from '../CameraControls';
+import { ClusterLabelRenderer } from '../types';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 
@@ -68,6 +69,11 @@ export interface ClusterProps extends ClusterGroup {
    * Triggered after a cluster was dragged
    */
   onDragged?: (cluster: ClusterEventArgs) => void;
+
+  /**
+   * Render a custom cluster label
+   */
+  renderLabel?: ClusterLabelRenderer;
 }
 
 export const Cluster: FC<ClusterProps> = ({
@@ -83,7 +89,8 @@ export const Cluster: FC<ClusterProps> = ({
   onPointerOver,
   onPointerOut,
   draggable = false,
-  onDragged
+  onDragged,
+  renderLabel
 }) => {
   const theme = useStore(state => state.theme);
   const rad = Math.max(position.width, position.height) / 2;
@@ -260,21 +267,30 @@ export const Cluster: FC<ClusterProps> = ({
           </mesh>
           {theme.cluster?.label && (
             <a.group position={labelPosition as any}>
-              <Label
-                text={label}
-                opacity={opacity}
-                fontUrl={labelFontUrl}
-                stroke={theme.cluster.label.stroke}
-                active={false}
-                color={theme.cluster?.label.color}
-                fontSize={theme.cluster?.label.fontSize ?? 12}
-              />
+              {renderLabel ? (
+                renderLabel({
+                  label,
+                  opacity,
+                  fontUrl: labelFontUrl,
+                  theme: theme
+                })
+              ) : (
+                <Label
+                  text={label}
+                  opacity={opacity}
+                  fontUrl={labelFontUrl}
+                  stroke={theme.cluster.label.stroke}
+                  active={false}
+                  color={theme.cluster?.label.color}
+                  fontSize={theme.cluster?.label.fontSize ?? 12}
+                />
+              )}
             </a.group>
           )}
         </a.group>
       ),
     [
-      theme.cluster,
+      theme,
       circlePosition,
       pointerOver,
       pointerOut,
@@ -292,7 +308,8 @@ export const Cluster: FC<ClusterProps> = ({
       onClick,
       nodes,
       bind,
-      isDraggingCurrent
+      isDraggingCurrent,
+      renderLabel
     ]
   );
 

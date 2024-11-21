@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Theme } from './themes';
 import { ColorRepresentation } from 'three';
 
 export interface GraphElementBaseAttributes<T = any> {
@@ -264,3 +265,14 @@ export interface NodeRendererProps {
 }
 
 export type NodeRenderer = (args: NodeRendererProps) => ReactNode;
+
+export interface ClusterLabelRendererProps {
+  label: string;
+  opacity?: number;
+  fontUrl?: string;
+  theme?: Theme;
+}
+
+export type ClusterLabelRenderer = (
+  args: ClusterLabelRendererProps
+) => ReactNode;

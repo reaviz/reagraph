@@ -1,4 +1,6 @@
 import React, { useCallback, useState } from 'react';
+import { Billboard, Svg, Text } from 'glodrei';
+import { Color } from 'three';
 import { GraphCanvas, Icon, lightTheme, Sphere } from '../../src';
 import {
   clusterNodes,
@@ -10,6 +12,7 @@ import {
 } from '../assets/demo';
 
 import demonSvg from '../../docs/assets/twitter.svg';
+
 
 export default {
   title: 'Demos/Cluster',
@@ -454,6 +457,29 @@ export const LabelsOnly = () => (
     draggable
     edges={clusterEdges}
     clusterAttribute="type"
+  />
+);
+
+export const CustomLabel = () => (
+  <GraphCanvas
+    theme={lightTheme}
+    nodes={clusterNodes}
+    draggable
+    edges={clusterEdges}
+    clusterAttribute="type"
+    renderClusterLabel={({ label, opacity, fontUrl }) => (
+      <Billboard position={[0, 0, 1]}>
+        <Svg src={demonSvg} />
+        <Text
+          font={fontUrl}
+          fontSize={12}
+          color={new Color('#2A6475')}
+          fillOpacity={opacity}
+        >
+          Custom {label}
+        </Text>
+      </Billboard>
+    )}
   />
 );
 
