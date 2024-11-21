@@ -19,7 +19,7 @@ import {
   InternalGraphNode,
   NodeRenderer,
   CollapseProps,
-  ClusterLabelRenderer
+  ClusterRenderer
 } from './types';
 import { SizingType } from './sizing';
 import {
@@ -161,9 +161,9 @@ export interface GraphSceneProps {
   renderNode?: NodeRenderer;
 
   /**
-   * Render a custom cluster label
+   * Render a custom cluster
    */
-  renderClusterLabel?: ClusterLabelRenderer;
+  onRenderCluster?: ClusterRenderer;
 
   /**
    * Advanced overrides for the layout.
@@ -346,7 +346,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         edgeInterpolation = 'linear',
         labelFontUrl,
         renderNode,
-        renderClusterLabel,
+        onRenderCluster,
         ...rest
       },
       ref
@@ -512,7 +512,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               onPointerOver={onClusterPointerOver}
               onPointerOut={onClusterPointerOut}
               onDragged={onClusterDragged}
-              renderLabel={renderClusterLabel}
+              onRender={onRenderCluster}
               {...c}
             />
           )),
@@ -526,7 +526,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           onClusterPointerOut,
           onClusterPointerOver,
           onClusterDragged,
-          renderClusterLabel
+          onRenderCluster
         ]
       );
 

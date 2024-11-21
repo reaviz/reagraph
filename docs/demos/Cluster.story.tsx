@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Billboard, Svg, Text } from 'glodrei';
-import { Color } from 'three';
+import { Color, DoubleSide } from 'three';
+import { a } from '@react-spring/three';
 import { GraphCanvas, Icon, lightTheme, Sphere } from '../../src';
 import {
   clusterNodes,
@@ -12,7 +13,6 @@ import {
 } from '../assets/demo';
 
 import demonSvg from '../../docs/assets/twitter.svg';
-
 
 export default {
   title: 'Demos/Cluster',
@@ -467,18 +467,40 @@ export const CustomLabel = () => (
     draggable
     edges={clusterEdges}
     clusterAttribute="type"
-    renderClusterLabel={({ label, opacity, fontUrl }) => (
-      <Billboard position={[0, 0, 1]}>
-        <Svg src={demonSvg} />
-        <Text
-          font={fontUrl}
-          fontSize={12}
-          color={new Color('#2A6475')}
-          fillOpacity={opacity}
-        >
-          Custom {label}
-        </Text>
-      </Billboard>
+    onRenderCluster={({
+      label,
+      opacity,
+      offset,
+      rad,
+      padding,
+    }) => (
+      <>
+        <mesh>
+          <ringGeometry attach="geometry" args={[offset, rad + padding, 128]} />
+          <a.meshBasicMaterial
+            attach="material"
+            color="gray"
+            transparent={true}
+            depthTest={false}
+            opacity={opacity}
+            side={DoubleSide}
+            fog={true}
+          />
+        </mesh>
+        <a.group position={label.position}>
+          <Billboard position={[0, 0, 1]}>
+            <Svg src={demonSvg} />
+            <Text
+              font={label.fontUrl}
+              fontSize={12}
+              color={new Color('#2A6475')}
+              fillOpacity={label.opacity}
+            >
+              Custom {label.text}
+            </Text>
+          </Billboard>
+        </a.group>
+      </>
     )}
   />
 );
