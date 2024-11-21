@@ -267,17 +267,57 @@ export interface NodeRendererProps {
 
 export type NodeRenderer = (args: NodeRendererProps) => ReactNode;
 
+export interface ClusterLabel {
+  /**
+   * Position of the label.
+   */
+  position: SpringValue<[number, number, number]> | [number, number, number];
+
+  /**
+   * Text of the label.
+   */
+  text: string;
+
+  /**
+   * Opacity of the label.
+   */
+  opacity?: number;
+
+  /**
+   * Font URL of the label.
+   */
+  fontUrl?: string;
+}
+
 export interface ClusterRendererProps {
-  offset: number;
-  rad: number;
+  /**
+   * Outer radius of the cluster.
+   */
+  outerRadius: number;
+
+  /**
+   * Inner radius of the cluster.
+   */
+  innerRadius: number;
+
+  /**
+   * Padding of the cluster.
+   */
   padding: number;
-  opacity: SpringValue<number>;
-  label: {
-    position: SpringValue<[number, number, number]>;
-    text: string;
-    opacity?: number;
-    fontUrl?: string;
-  };
+
+  /**
+   * Opacity of the cluster.
+   */
+  opacity: SpringValue<number> | number;
+
+  /**
+   * Label of the cluster.
+   */
+  label?: ClusterLabel;
+
+  /**
+   * Theme of the graph.
+   */
   theme?: Theme;
 }
 

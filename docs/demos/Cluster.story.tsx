@@ -460,7 +460,7 @@ export const LabelsOnly = () => (
   />
 );
 
-export const CustomLabel = () => (
+export const Custom = () => (
   <GraphCanvas
     theme={lightTheme}
     nodes={clusterNodes}
@@ -470,13 +470,16 @@ export const CustomLabel = () => (
     onRenderCluster={({
       label,
       opacity,
-      offset,
-      rad,
-      padding,
+      outerRadius,
+      innerRadius,
+      padding
     }) => (
       <>
         <mesh>
-          <ringGeometry attach="geometry" args={[offset, rad + padding, 128]} />
+          <ringGeometry
+            attach="geometry"
+            args={[outerRadius, innerRadius + padding, 128]}
+          />
           <a.meshBasicMaterial
             attach="material"
             color="gray"
@@ -487,19 +490,21 @@ export const CustomLabel = () => (
             fog={true}
           />
         </mesh>
-        <a.group position={label.position}>
-          <Billboard position={[0, 0, 1]}>
-            <Svg src={demonSvg} />
-            <Text
-              font={label.fontUrl}
-              fontSize={12}
-              color={new Color('#2A6475')}
-              fillOpacity={label.opacity}
-            >
-              Custom {label.text}
-            </Text>
-          </Billboard>
-        </a.group>
+        {label && (
+          <a.group position={label.position}>
+            <Billboard position={[0, 0, 1]}>
+              <Svg src={demonSvg} />
+              <Text
+                font={label.fontUrl}
+                fontSize={12}
+                color={new Color('#2A6475')}
+                fillOpacity={label.opacity}
+              >
+                Custom {label.text}
+              </Text>
+            </Billboard>
+          </a.group>
+        )}
       </>
     )}
   />

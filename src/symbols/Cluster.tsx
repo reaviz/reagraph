@@ -249,8 +249,8 @@ export const Cluster: FC<ClusterProps> = ({
                 fontUrl: labelFontUrl
               },
               opacity: circleOpacity,
-              offset,
-              rad,
+              outerRadius: offset,
+              innerRadius: rad,
               padding,
               theme
             })
