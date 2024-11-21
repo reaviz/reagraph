@@ -272,7 +272,7 @@ export const Cluster: FC<ClusterProps> = ({
                   label,
                   opacity,
                   fontUrl: labelFontUrl,
-                  theme: theme
+                  theme
                 })
               ) : (
                 <Label
