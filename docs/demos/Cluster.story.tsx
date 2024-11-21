@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Billboard, Svg, Text } from 'glodrei';
 import { Color, DoubleSide } from 'three';
 import { a } from '@react-spring/three';
-import { GraphCanvas, Icon, lightTheme, Sphere } from '../../src';
+import { GraphCanvas, Icon, Label, lightTheme, Sphere } from '../../src';
 import {
   clusterNodes,
   clusterEdges,
@@ -13,6 +13,7 @@ import {
 } from '../assets/demo';
 
 import demonSvg from '../../docs/assets/twitter.svg';
+import { Ring } from '../../src/symbols/clusters/Ring';
 
 export default {
   title: 'Demos/Cluster',
@@ -472,37 +473,29 @@ export const Custom = () => (
       opacity,
       outerRadius,
       innerRadius,
-      padding
+      theme
     }) => (
       <>
-        <mesh>
-          <ringGeometry
-            attach="geometry"
-            args={[outerRadius, innerRadius + padding, 128]}
-          />
-          <a.meshBasicMaterial
-            attach="material"
-            color="gray"
-            transparent={true}
-            depthTest={false}
-            opacity={opacity}
-            side={DoubleSide}
-            fog={true}
-          />
-        </mesh>
+        <Ring
+          outerRadius={outerRadius}
+          innerRadius={innerRadius}
+          padding={40}
+          normalizedFill={new Color('#075985')}
+          normalizedStroke={new Color('#075985')}
+          circleOpacity={opacity}
+          theme={theme ?? lightTheme}
+        />
         {label && (
-          <a.group position={label.position}>
-            <Billboard position={[0, 0, 1]}>
-              <Svg src={demonSvg} />
-              <Text
-                font={label.fontUrl}
-                fontSize={12}
-                color={new Color('#2A6475')}
-                fillOpacity={label.opacity}
-              >
-                Custom {label.text}
-              </Text>
-            </Billboard>
+          <a.group position={label.position as any}>
+            <Label
+              text={label.text}
+              opacity={label.opacity}
+              fontUrl={label.fontUrl}
+              stroke={theme?.cluster?.label?.stroke}
+              active={false}
+              color={new Color('#2A6475')}
+              fontSize={theme?.cluster?.label?.fontSize ?? 12}
+            />
           </a.group>
         )}
       </>

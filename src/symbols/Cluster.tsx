@@ -10,6 +10,7 @@ import { useDrag } from '../utils/useDrag';
 import { Vector3 } from 'three';
 import { useCameraControls } from '../CameraControls';
 import { ClusterRenderer } from '../types';
+import { Ring } from './clusters/Ring';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 
@@ -256,33 +257,15 @@ export const Cluster: FC<ClusterProps> = ({
             })
           ) : (
             <>
-              <mesh>
-                <ringGeometry attach="geometry" args={[offset, 0, 128]} />
-                <a.meshBasicMaterial
-                  attach="material"
-                  color={normalizedFill}
-                  transparent={true}
-                  depthTest={false}
-                  opacity={theme.cluster?.fill ? circleOpacity : 0}
-                  side={DoubleSide}
-                  fog={true}
-                />
-              </mesh>
-              <mesh>
-                <ringGeometry
-                  attach="geometry"
-                  args={[offset, rad + padding, 128]}
-                />
-                <a.meshBasicMaterial
-                  attach="material"
-                  color={normalizedStroke}
-                  transparent={true}
-                  depthTest={false}
-                  opacity={circleOpacity}
-                  side={DoubleSide}
-                  fog={true}
-                />
-              </mesh>
+              <Ring
+                outerRadius={offset}
+                innerRadius={rad}
+                padding={padding}
+                normalizedFill={normalizedFill}
+                normalizedStroke={normalizedStroke}
+                circleOpacity={circleOpacity}
+                theme={theme}
+              />
               {theme.cluster?.label && (
                 <a.group position={labelPosition as any}>
                   <Label
