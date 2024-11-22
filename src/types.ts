@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
-import { ColorRepresentation } from 'three';
+import { Theme } from './themes';
+import { ColorRepresentation, Vector3 } from 'three';
+import { SpringValue } from '@react-spring/three';
 
 export interface GraphElementBaseAttributes<T = any> {
   /**
@@ -264,3 +266,59 @@ export interface NodeRendererProps {
 }
 
 export type NodeRenderer = (args: NodeRendererProps) => ReactNode;
+
+export interface ClusterLabel {
+  /**
+   * Position of the label.
+   */
+  position: [number, number, number];
+
+  /**
+   * Text of the label.
+   */
+  text: string;
+
+  /**
+   * Opacity of the label.
+   */
+  opacity?: number;
+
+  /**
+   * Font URL of the label.
+   */
+  fontUrl?: string;
+}
+
+export interface ClusterRendererProps {
+  /**
+   * Outer radius of the cluster.
+   */
+  outerRadius: number;
+
+  /**
+   * Inner radius of the cluster.
+   */
+  innerRadius: number;
+
+  /**
+   * Padding of the cluster.
+   */
+  padding: number;
+
+  /**
+   * Opacity of the cluster.
+   */
+  opacity: number;
+
+  /**
+   * Label of the cluster.
+   */
+  label?: ClusterLabel;
+
+  /**
+   * Theme of the graph.
+   */
+  theme?: Theme;
+}
+
+export type ClusterRenderer = (args: ClusterRendererProps) => ReactNode;
