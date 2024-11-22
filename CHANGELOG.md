@@ -1,3 +1,6 @@
+# 4.21.0 - 11/22/24
+- [feature] Add ability to define custom cluster #297
+
 # 4.20.1 - 11/13/24
 - [feature] Add onClusterDragged event #296
 
