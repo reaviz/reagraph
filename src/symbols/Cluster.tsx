@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 import { ClusterGroup, animationConfig, useHoverIntent } from '../utils';
-import { useSpring, a, SpringValue } from '@react-spring/three';
-import { Color, DoubleSide } from 'three';
+import { useSpring, a } from '@react-spring/three';
+import { Color } from 'three';
 import { useStore } from '../store';
 import { Label } from './Label';
 import { useCursor } from 'glodrei';
@@ -121,8 +121,8 @@ export const Cluster: FC<ClusterProps> = ({
       : theme.cluster?.inactiveOpacity
     : theme.cluster?.opacity;
 
-  const labelPositionOffset = useMemo(() => {
-    const defaultPosition = [0, -offset, 2];
+  const labelPosition: [number, number, number] = useMemo(() => {
+    const defaultPosition: [number, number, number] = [0, -offset, 2];
     const themeOffset = theme.cluster?.label?.offset;
     if (themeOffset) {
       return [
@@ -135,18 +135,14 @@ export const Cluster: FC<ClusterProps> = ({
     return defaultPosition;
   }, [offset, theme.cluster?.label?.offset]);
 
-  const { circleOpacity, circlePosition, labelPosition } = useSpring({
+  const { circlePosition } = useSpring({
     from: {
-      circlePosition: [center.x, center.y, -1] as [number, number, number],
-      circleOpacity: 0,
-      labelPosition: labelPositionOffset as [number, number, number]
+      circlePosition: [center.x, center.y, -1] as [number, number, number]
     },
     to: {
-      labelPosition: labelPositionOffset as [number, number, number],
       circlePosition: position
         ? ([position.x, position.y, -1] as [number, number, number])
-        : ([0, 0, -1] as [number, number, number]),
-      circleOpacity: opacity
+        : ([0, 0, -1] as [number, number, number])
     },
     config: {
       ...animationConfig,
@@ -249,7 +245,7 @@ export const Cluster: FC<ClusterProps> = ({
                 opacity: opacity,
                 fontUrl: labelFontUrl
               },
-              opacity: circleOpacity,
+              opacity,
               outerRadius: offset,
               innerRadius: rad,
               padding,
@@ -263,11 +259,12 @@ export const Cluster: FC<ClusterProps> = ({
                 padding={padding}
                 normalizedFill={normalizedFill}
                 normalizedStroke={normalizedStroke}
-                circleOpacity={circleOpacity}
+                opacity={opacity}
+                animated={animated}
                 theme={theme}
               />
               {theme.cluster?.label && (
-                <a.group position={labelPosition as any}>
+                <a.group position={labelPosition}>
                   <Label
                     text={label}
                     opacity={opacity}
@@ -290,7 +287,6 @@ export const Cluster: FC<ClusterProps> = ({
       pointerOut,
       offset,
       normalizedFill,
-      circleOpacity,
       rad,
       padding,
       normalizedStroke,
@@ -303,7 +299,8 @@ export const Cluster: FC<ClusterProps> = ({
       nodes,
       bind,
       isDraggingCurrent,
-      onRender
+      onRender,
+      animated
     ]
   );
 

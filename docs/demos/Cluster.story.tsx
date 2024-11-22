@@ -482,8 +482,9 @@ export const Custom = () => (
           padding={40}
           normalizedFill={new Color('#075985')}
           normalizedStroke={new Color('#075985')}
-          circleOpacity={opacity}
+          opacity={opacity}
           theme={theme ?? lightTheme}
+          animated
         />
         {label && (
           <a.group position={label.position as any}>

@@ -271,7 +271,7 @@ export interface ClusterLabel {
   /**
    * Position of the label.
    */
-  position: SpringValue<[number, number, number]> | [number, number, number];
+  position: [number, number, number];
 
   /**
    * Text of the label.
@@ -308,7 +308,7 @@ export interface ClusterRendererProps {
   /**
    * Opacity of the cluster.
    */
-  opacity: SpringValue<number> | number;
+  opacity: number;
 
   /**
    * Label of the cluster.
