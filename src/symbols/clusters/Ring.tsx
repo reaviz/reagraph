@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { a, useSpring } from '@react-spring/three';
 import { Color, DoubleSide } from 'three';
 
@@ -16,7 +16,7 @@ export interface RingProps {
   theme: Theme;
 }
 
-export const Ring = ({
+export const Ring: FC<RingProps> = ({
   outerRadius,
   innerRadius,
   padding,
@@ -25,7 +25,7 @@ export const Ring = ({
   opacity,
   animated,
   theme
-}: RingProps) => {
+}) => {
   const { opacity: springOpacity } = useSpring({
     from: { opacity: 0 },
     to: { opacity },
