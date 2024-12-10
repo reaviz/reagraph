@@ -1,6 +1,13 @@
 import { ReactNode } from 'react';
 import { ColorRepresentation } from 'three';
 
+export interface CustomEdgeAttributes {
+  /**
+   * color of label.
+   */
+  labelColor?: string;
+}
+
 export interface GraphElementBaseAttributes<T = any> {
   /**
    * ID of the element.
@@ -50,7 +57,9 @@ export interface GraphNode extends GraphElementBaseAttributes {
   fill?: string;
 }
 
-export interface GraphEdge extends GraphElementBaseAttributes {
+export interface GraphEdge
+  extends GraphElementBaseAttributes,
+    CustomEdgeAttributes {
   /**
    * Source ID of the node.
    */
