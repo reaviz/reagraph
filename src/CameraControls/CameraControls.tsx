@@ -263,7 +263,6 @@ export const CameraControls: FC<
         cameraRef.current.mouseButtons.middle =
           ThreeCameraControls.ACTION.TRUCK;
         cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.DOLLY;
-        cameraRef.current.touches.one = ThreeCameraControls.ACTION.TOUCH_TRUCK;
       }
     }, [disabled]);
 
@@ -304,7 +303,6 @@ export const CameraControls: FC<
         }
       }
     }, [isDragging, mode]);
-
 
     useHotkeys([
       {
