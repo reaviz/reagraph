@@ -288,11 +288,16 @@ export const CameraControls: FC<
       // If a node is being dragged, disable the camera controls
       if (isDragging) {
         cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.touches.one = ThreeCameraControls.ACTION.NONE;
       } else {
         if (mode === 'rotate') {
           cameraRef.current.mouseButtons.left =
             ThreeCameraControls.ACTION.ROTATE;
+          cameraRef.current.touches.one =
+            ThreeCameraControls.ACTION.TOUCH_ROTATE;
         } else {
+          cameraRef.current.touches.one =
+            ThreeCameraControls.ACTION.TOUCH_TRUCK;
           cameraRef.current.mouseButtons.left =
             ThreeCameraControls.ACTION.TRUCK;
         }
