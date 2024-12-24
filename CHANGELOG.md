@@ -1,3 +1,6 @@
+# 4.21.1 - 12/24/24
+- [fix] fix pan mode on touch devices
+
 # 4.21.0 - 11/22/24
 - [feature] Add ability to define custom cluster #297
 
