@@ -310,7 +310,7 @@ export const useSelection = ({
   );
 
   const onKeyDown = useCallback((event: KeyboardEvent) => {
-    const element = event.target as any;
+    const element = event.target as HTMLElement;
     const isSafe =
       element.tagName !== 'INPUT' &&
       element.tagName !== 'SELECT' &&
@@ -318,8 +318,9 @@ export const useSelection = ({
       !element.isContentEditable;
 
     const isMeta = event.metaKey || event.ctrlKey;
+    const isSystemShortcut = ['c', 'x', 'v'].includes(event.key.toLowerCase());
 
-    if (isSafe && isMeta) {
+    if (isSafe && isMeta && !isSystemShortcut) {
       event.preventDefault();
       setMetaKeyDown(true);
     }
