@@ -318,10 +318,8 @@ export const useSelection = ({
       !element.isContentEditable;
 
     const isMeta = event.metaKey || event.ctrlKey;
-    const isSystemShortcut = ['c', 'x', 'v'].includes(event.key.toLowerCase());
 
-    if (isSafe && isMeta && !isSystemShortcut) {
-      event.preventDefault();
+    if (isSafe && isMeta) {
       setMetaKeyDown(true);
     }
   }, []);
