@@ -1,3 +1,6 @@
+# 4.21.2 - 1/13/25
+- [fix] Fix to make Copy/Paste keyboard shortcuts working with useSelection #302
+
 # 4.21.1 - 12/24/24
 - [fix] fix pan mode on touch devices
 
