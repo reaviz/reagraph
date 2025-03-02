@@ -14,9 +14,9 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
   color,
   id,
   size,
-  opacity,
+  opacity = 1,
+  active = false,
   node,
-  active,
   animated,
   image,
   selected
@@ -45,8 +45,3 @@ export const SphereWithIcon: FC<SphereWithIconProps> = ({
     />
   </>
 );
-
-SphereWithIcon.defaultProps = {
-  opacity: 1,
-  active: false
-};

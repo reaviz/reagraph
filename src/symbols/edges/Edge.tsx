@@ -73,8 +73,8 @@ export const Edge: FC<EdgeProps> = ({
   contextMenu,
   edge,
   labelFontUrl,
-  labelPlacement,
-  opacity
+  opacity,
+  labelPlacement = 'inline'
 }) => {
   const theme = useStore(state => state.theme);
   const { target, source, label, labelVisible = false, size = 1 } = edge;
@@ -170,8 +170,4 @@ export const Edge: FC<EdgeProps> = ({
       )}
     </group>
   );
-};
-
-Edge.defaultProps = {
-  labelPlacement: 'inline'
 };

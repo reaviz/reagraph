@@ -125,9 +125,3 @@ export const Arrow: FC<ArrowProps> = ({
     </a.mesh>
   );
 };
-
-Arrow.defaultProps = {
-  size: 1,
-  opacity: 0.5,
-  color: '#D8E6EA'
-};

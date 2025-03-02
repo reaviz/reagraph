@@ -19,10 +19,10 @@ export const SphereWithSvg: FC<SphereWithSvgProps> = ({
   color,
   id,
   size,
-  opacity,
+  opacity = 1,
+  active = false,
   node,
   svgFill,
-  active,
   animated,
   image,
   selected,
@@ -53,8 +53,3 @@ export const SphereWithSvg: FC<SphereWithSvgProps> = ({
     />
   </>
 );
-
-SphereWithSvg.defaultProps = {
-  opacity: 1,
-  active: false
-};

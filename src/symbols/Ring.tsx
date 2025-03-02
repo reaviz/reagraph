@@ -44,13 +44,13 @@ export interface RingProps {
 }
 
 export const Ring: FC<RingProps> = ({
-  color,
-  size,
-  opacity,
   animated,
-  strokeWidth,
   innerRadius = 4,
-  segments = 25
+  segments = 25,
+  color = '#D8E6EA',
+  size = 1,
+  opacity = 0.5,
+  strokeWidth = 5
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
 
@@ -91,11 +91,4 @@ export const Ring: FC<RingProps> = ({
       </a.mesh>
     </Billboard>
   );
-};
-
-Ring.defaultProps = {
-  color: '#D8E6EA',
-  size: 1,
-  opacity: 0.5,
-  strokeWidth: 5
 };

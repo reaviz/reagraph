@@ -53,14 +53,14 @@ export interface LabelProps {
 
 export const Label: FC<LabelProps> = ({
   text,
-  fontSize,
   fontUrl,
-  color,
-  opacity,
   stroke,
   active,
-  ellipsis,
-  rotation
+  rotation,
+  opacity = 1,
+  fontSize = 7,
+  color = '#2A6475',
+  ellipsis = 75
 }) => {
   const shortText = ellipsis && !active ? ellipsize(text, ellipsis) : text;
   const normalizedColor = useMemo(() => new Color(color), [color]);
@@ -88,11 +88,4 @@ export const Label: FC<LabelProps> = ({
       </Text>
     </Billboard>
   );
-};
-
-Label.defaultProps = {
-  opacity: 1,
-  fontSize: 7,
-  color: '#2A6475',
-  ellipsis: 75
 };

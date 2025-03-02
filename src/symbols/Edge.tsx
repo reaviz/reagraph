@@ -110,17 +110,17 @@ const LABEL_PLACEMENT_OFFSET = 3;
 
 export const Edge: FC<EdgeProps> = ({
   animated,
-  arrowPlacement,
   contextMenu,
   disabled,
-  labelPlacement,
   id,
   interpolation,
   labelFontUrl,
   onContextMenu,
   onClick,
   onPointerOver,
-  onPointerOut
+  onPointerOut,
+  labelPlacement = 'inline',
+  arrowPlacement = 'end'
 }) => {
   const theme = useStore(state => state.theme);
   const draggingId = useStore(state => state.draggingId);
@@ -412,9 +412,4 @@ export const Edge: FC<EdgeProps> = ({
       {menuComponent}
     </group>
   );
-};
-
-Edge.defaultProps = {
-  labelPlacement: 'inline',
-  arrowPlacement: 'end'
 };

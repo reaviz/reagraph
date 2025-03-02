@@ -76,16 +76,16 @@ export interface LineProps {
 export const Line: FC<LineProps> = ({
   curveOffset,
   animated,
-  color,
   curve,
   curved = false,
   id,
-  opacity,
-  size,
   onContextMenu,
   onClick,
   onPointerOver,
-  onPointerOut
+  onPointerOut,
+  color = '#000',
+  size = 1,
+  opacity = 1
 }) => {
   const tubeRef = useRef<TubeGeometry | null>(null);
   const draggingId = useStore(state => state.draggingId);
@@ -167,10 +167,4 @@ export const Line: FC<LineProps> = ({
       />
     </mesh>
   );
-};
-
-Line.defaultProps = {
-  color: '#000',
-  size: 1,
-  opacity: 1
 };
