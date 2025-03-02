@@ -324,7 +324,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         draggable,
         edgeLabelPosition,
         edgeArrowPosition,
-        edgeInterpolation,
+        edgeInterpolation = 'linear',
         labelFontUrl,
         renderNode,
         ...rest
@@ -501,7 +501,3 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       );
     }
   );
-
-GraphScene.defaultProps = {
-  edgeInterpolation: 'linear'
-};

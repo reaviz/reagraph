@@ -55,14 +55,14 @@ export interface ArrowProps {
 
 export const Arrow: FC<ArrowProps> = ({
   animated,
-  color,
   length,
-  opacity,
   position,
   rotation,
-  size,
   onActive,
-  onContextMenu
+  onContextMenu,
+  size = 1,
+  opacity = 0.5,
+  color = '#D8E6EA'
 }) => {
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const meshRef = useRef<Mesh | null>(null);
