@@ -1,3 +1,6 @@
+# 4.21.4 - 3/5/25
+- [fix] bugfix: Fixing hardcoded radius #311
+
 # 4.21.3 - 3/5/25
 - [fix] bugfix: Exporting types for hierarchical layout #310
 
