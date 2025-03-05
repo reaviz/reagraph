@@ -6,7 +6,7 @@ export interface CircularLayoutInputs extends LayoutFactoryProps {
   /**
    * Radius of the circle.
    */
-  radius: 300;
+  radius: number;
 }
 
 export function circular2d({
