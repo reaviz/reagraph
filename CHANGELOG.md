@@ -1,3 +1,6 @@
+# 4.21.3 - 3/5/25
+- [fix] bugfix: Exporting types for hierarchical layout #310
+
 # 4.21.2 - 1/13/25
 - [fix] Fix to make Copy/Paste keyboard shortcuts working with useSelection #302
 
