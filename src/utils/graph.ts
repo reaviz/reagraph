@@ -29,8 +29,8 @@ export function buildGraph(
         graph.addNode(node.id, node);
         addedNodes.add(node.id);
       }
-    } catch ({ message }) {
-      console.error(`[Graph] Error adding node '${node.id}': ${message}`);
+    } catch (e) {
+      console.error(`[Graph] Error adding node '${node.id}`, e);
     }
   }
 
@@ -41,8 +41,8 @@ export function buildGraph(
 
     try {
       graph.addEdge(edge.source, edge.target, edge);
-    } catch ({ message }) {
-      console.error(`[Graph] Error adding edge '${edge.source} -> ${edge.target}': ${message}`);
+    } catch (e) {
+      console.error(`[Graph] Error adding edge '${edge.source} -> ${edge.target}`, e);
     }
   }
 
