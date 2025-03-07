@@ -1,3 +1,6 @@
+# 4.21.5 - 3/7/25
+- [fix] bugfix: Validation when adding nodes and edges when building the graph #312
+
 # 4.21.4 - 3/5/25
 - [fix] bugfix: Fixing hardcoded radius #311
 
