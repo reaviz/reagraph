@@ -21,19 +21,28 @@ export function buildGraph(
   // smarter and only add/remove nodes
   graph.clear();
 
+  const addedNodes = new Set<string>();
+
   for (const node of nodes) {
     try {
-      graph.addNode(node.id, node);
-    } catch ({ message }) {
-      console.error(`[Graph] ${message}`);
+      if (!addedNodes.has(node.id)) {
+        graph.addNode(node.id, node);
+        addedNodes.add(node.id);
+      }
+    } catch (e) {
+      console.error(`[Graph] Error adding node '${node.id}`, e);
     }
   }
 
   for (const edge of edges) {
+    if (!addedNodes.has(edge.source) || !addedNodes.has(edge.target)) {
+      continue;
+    }
+
     try {
       graph.addEdge(edge.source, edge.target, edge);
-    } catch ({ message }) {
-      console.error(`[Graph] ${message}`);
+    } catch (e) {
+      console.error(`[Graph] Error adding edge '${edge.source} -> ${edge.target}`, e);
     }
   }
 
