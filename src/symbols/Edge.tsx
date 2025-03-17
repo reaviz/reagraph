@@ -328,6 +328,7 @@ export const Edge: FC<EdgeProps> = ({
     () =>
       labelVisible &&
       label && (
+        // @ts-ignore
         <a.group position={labelPosition as any}>
           <Label
             text={label}
@@ -345,6 +346,7 @@ export const Edge: FC<EdgeProps> = ({
             fontSize={theme.edge.label.fontSize}
             rotation={labelRotation}
           />
+          {/* @ts-ignore */}
         </a.group>
       ),
     [

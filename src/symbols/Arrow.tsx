@@ -95,6 +95,7 @@ export const Arrow: FC<ArrowProps> = ({
   useEffect(() => setQuaternion(), [setQuaternion]);
 
   return (
+    // @ts-ignore
     <a.mesh
       position={pos as any}
       ref={meshRef}
@@ -113,6 +114,7 @@ export const Arrow: FC<ArrowProps> = ({
         args={[0, size, length, 20, 1, true]}
         attach="geometry"
       />
+      {/* @ts-ignore */}
       <a.meshBasicMaterial
         attach="material"
         color={normalizedColor}
@@ -122,6 +124,7 @@ export const Arrow: FC<ArrowProps> = ({
         side={DoubleSide}
         fog={true}
       />
+      {/* @ts-ignore */}
     </a.mesh>
   );
 };

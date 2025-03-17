@@ -157,6 +157,7 @@ export const Line: FC<LineProps> = ({
       }}
     >
       <tubeGeometry attach="geometry" ref={tubeRef} />
+      {/* @ts-ignore */}
       <a.mesh
         attach="material"
         opacity={lineOpacity}

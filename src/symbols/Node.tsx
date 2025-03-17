@@ -310,6 +310,7 @@ export const Node: FC<NodeProps> = ({
       (labelVisible || isSelected || active) &&
       label && (
         <>
+          {/* @ts-ignore */}
           <a.group position={labelPosition as any}>
             <Label
               text={label}
@@ -323,8 +324,10 @@ export const Node: FC<NodeProps> = ({
                   : theme.node.label.color
               }
             />
+            {/* @ts-ignore */}
           </a.group>
           {subLabel && (
+            // @ts-ignore
             <a.group position={subLabelPosition as any}>
               <Label
                 text={subLabel}
@@ -339,6 +342,7 @@ export const Node: FC<NodeProps> = ({
                     : theme.node.subLabel?.color
                 }
               />
+              {/* @ts-ignore */}
             </a.group>
           )}
         </>
@@ -382,6 +386,7 @@ export const Node: FC<NodeProps> = ({
   );
 
   return (
+    // @ts-ignore
     <a.group
       renderOrder={1}
       userData={{ id, type: 'node' }}
@@ -421,6 +426,7 @@ export const Node: FC<NodeProps> = ({
       {nodeComponent}
       {menuComponent}
       {labelComponent}
+      {/* @ts-ignore */}
     </a.group>
   );
 };
