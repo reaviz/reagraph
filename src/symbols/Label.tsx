@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, Text } from 'glodrei';
+import { Billboard, Text } from '@react-three/drei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 

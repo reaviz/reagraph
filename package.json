@@ -53,6 +53,7 @@
   "homepage": "https://github.com/reaviz/reagraph#readme",
   "dependencies": {
     "@react-spring/three": "9.6.1",
+    "@react-three/drei": "^10.0.4",
     "@react-three/fiber": "^9.1.0",
     "camera-controls": "^2.8.3",
     "classnames": "^2.5.1",
@@ -61,7 +62,6 @@
     "d3-hierarchy": "^3.1.2",
     "d3-scale": "^4.0.2",
     "ellipsize": "^0.5.1",
-    "glodrei": "^0.0.1",
     "graphology": "^0.25.4",
     "graphology-layout": "^0.6.1",
     "graphology-layout-forceatlas2": "^0.10.1",
@@ -90,7 +90,9 @@
     }
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.26.9",
     "@babel/preset-react": "^7.23.3",
+    "@babel/preset-typescript": "^7.26.0",
     "@chromatic-com/storybook": "^3.2.6",
     "@storybook/addon-docs": "^8.6.6",
     "@storybook/addon-essentials": "^8.6.6",
