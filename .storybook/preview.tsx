@@ -14,7 +14,7 @@ const preview: Preview = {
   parameters: {
     layout: 'centered',
     controls: { hideNoControlsWarning: true },
-    actions: { argTypesRegex: '^on.*' },
+    actions: {},
     docs: {
       theme
     },
