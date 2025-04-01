@@ -9,6 +9,7 @@ export type SizingType =
   | 'pagerank'
   | 'centrality'
   | 'attribute'
+  | 'node-size'
   | 'default';
 
 export interface NodeSizeProviderInputs extends SizingStrategyInputs {
@@ -29,7 +30,7 @@ const providers = {
 
 export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
   const provider = providers[type]?.(rest);
-  if (!provider && type !== 'default') {
+  if (!provider && type !== 'default' && type !== 'node-size') {
     throw new Error(`Unknown sizing strategy: ${type}`);
   }
 
@@ -40,7 +41,7 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
 
   graph.forEachNode((id, node) => {
     let size;
-    if (type === 'default') {
+    if (type === 'default' || type === 'node-size') {
       size = node.size || rest.defaultSize;
     } else {
       size = provider.getSizeForNode(id);
@@ -58,7 +59,7 @@ export function nodeSizeProvider({ type, ...rest }: NodeSizeProviderInputs) {
   });
 
   // Relatively scale the sizes
-  if (type !== 'none') {
+  if (type !== 'none' && type !== 'node-size') {
     const scale = scaleLinear()
       .domain([min, max])
       .rangeRound([minSize, maxSize]);

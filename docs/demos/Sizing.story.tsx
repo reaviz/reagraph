@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 
@@ -12,11 +12,20 @@ export const None = () => (
 );
 
 export const Centrality = () => (
-  <GraphCanvas sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas
+    sizingType="centrality"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );
 
-const MinMaxSizesStory = (props) => (
-  <GraphCanvas {...props} sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
+const MinMaxSizesStory = props => (
+  <GraphCanvas
+    {...props}
+    sizingType="centrality"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );
 
 export const MinMaxSizes = MinMaxSizesStory.bind({});
@@ -39,3 +48,26 @@ export const Attribute = () => (
     edges={simpleEdges}
   />
 );
+
+export const ZoomInSelected = () => {
+  const [selected, setSelected] = useState<string>();
+
+  const nodes = useMemo(() => {
+    return simpleNodes.map(node => ({
+      ...node,
+      size: selected === node.id ? 14 : 7
+    }));
+  }, [selected]);
+
+  return (
+    <GraphCanvas
+      nodes={nodes}
+      draggable
+      edges={[]}
+      sizingType="node-size"
+      selections={selected ? [selected] : []}
+      onNodeClick={node => setSelected(node.id)}
+      onCanvasClick={() => setSelected(undefined)}
+    />
+  );
+};
