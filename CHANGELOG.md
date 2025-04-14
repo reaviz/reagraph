@@ -1,3 +1,6 @@
+# 4.21.6 - 4/14/25
+- [fix] Update reakeys & fix hotkeys #317
+
 # 4.21.5 - 3/7/25
 - [fix] bugfix: Validation when adding nodes and edges when building the graph #312
 
