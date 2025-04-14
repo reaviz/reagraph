@@ -309,7 +309,8 @@ export const CameraControls: FC<
         name: 'Zoom In',
         disabled,
         category: 'Graph',
-        keys: 'command+shift+i',
+        keys: 'mod+shift+i',
+        action: 'keydown',
         callback: event => {
           event.preventDefault();
           zoomIn();
@@ -319,7 +320,8 @@ export const CameraControls: FC<
         name: 'Zoom Out',
         category: 'Graph',
         disabled,
-        keys: 'command+shift+o',
+        keys: 'mod+shift+o',
+        action: 'keydown',
         callback: event => {
           event.preventDefault();
           zoomOut();

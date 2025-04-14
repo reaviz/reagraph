@@ -249,7 +249,8 @@ export const useCenterGraph = ({
       name: 'Center',
       disabled,
       category: 'Graph',
-      keys: ['command+shift+c'],
+      keys: ['mod+shift+c'],
+      action: 'keydown',
       callback: () => centerNodes(nodes)
     }
   ]);

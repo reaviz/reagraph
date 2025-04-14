@@ -414,6 +414,7 @@ export const useSelection = ({
     {
       name: 'Select All',
       keys: 'mod+a',
+      action: 'keydown',
       disabled: !hotkeys.includes('selectAll'),
       category: 'Graph',
       description: 'Select all nodes and edges',
@@ -433,6 +434,7 @@ export const useSelection = ({
       disabled: !hotkeys.includes('deselect'),
       description: 'Deselect selected nodes and edges',
       keys: 'escape',
+      action: 'keydown',
       callback: event => {
         if (!disabled) {
           event.preventDefault();
