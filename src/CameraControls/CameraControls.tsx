@@ -126,12 +126,7 @@ export const CameraControls: FC<
     const setPanning = useStore(state => state.setPanning);
     const isDragging = useStore(state => state.draggingIds.length > 0);
     const cameraSpeedRef = useRef(0);
-    const [_, setIsMounted] = useState(false);
-
-    // This is a hack to force the camera to update when the component is mounted
-    useLayoutEffect(() => {
-      setIsMounted(true);
-    }, []);
+    const [controlMounted, setControlMounted] = useState<boolean>(false);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
@@ -341,7 +336,12 @@ export const CameraControls: FC<
     return (
       <CameraControlsContext.Provider value={values}>
         <threeCameraControls
-          ref={cameraRef}
+          ref={controls => {
+            cameraRef.current = controls;
+            if (!controlMounted) {
+              setControlMounted(true);
+            }
+          }}
           args={[camera, gl.domElement]}
           smoothTime={0.1}
           minDistance={minDistance}
