@@ -42,8 +42,6 @@ import { useStore } from './store';
 import Graph from 'graphology';
 import { ThreeEvent, useThree } from '@react-three/fiber';
 
-export type CanvasHotkeyTypes = 'zoom in' | 'zoom out' | 'center';
-
 export interface GraphSceneProps {
   /**
    * Type of layout.
@@ -156,11 +154,6 @@ export interface GraphSceneProps {
    * Constrain dragging to the cluster bounds. Default is `false`.
    */
   constrainDragging?: boolean;
-
-  /**
-   * Hotkeys categories to enable.
-   */
-  hotkeys?: Array<CanvasHotkeyTypes>;
 
   /**
    * Render a custom node
@@ -352,7 +345,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         edgeArrowPosition,
         edgeInterpolation = 'linear',
         labelFontUrl,
-        hotkeys,
         renderNode,
         onRenderCluster,
         ...rest
@@ -389,8 +381,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         useCenterGraph({
           animated,
           disabled,
-          layoutType,
-          hotkeys
+          layoutType
         });
 
       // Let's expose some helper methods

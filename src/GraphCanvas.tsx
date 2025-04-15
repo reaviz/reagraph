@@ -9,12 +9,7 @@ import React, {
   useMemo
 } from 'react';
 import { Canvas } from '@react-three/fiber';
-import {
-  CanvasHotkeyTypes,
-  GraphScene,
-  GraphSceneProps,
-  GraphSceneRef
-} from './GraphScene';
+import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
 import {
   CameraMode,
   CameraControls,
@@ -118,7 +113,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         layoutType = 'forceDirected2d',
         sizingType = 'default',
         labelType = 'auto',
-        hotkeys = ['zoom in', 'zoom out', 'center'] as CanvasHotkeyTypes[],
         theme = lightTheme,
         animated = true,
         defaultNodeSize = 7,
@@ -215,7 +209,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 minDistance={minDistance}
                 maxDistance={maxDistance}
                 animated={animated}
-                hotkeys={hotkeys}
               >
                 <Lasso
                   disabled={disabled}
@@ -236,7 +229,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                       defaultNodeSize={defaultNodeSize}
                       minNodeSize={minNodeSize}
                       maxNodeSize={maxNodeSize}
-                      hotkeys={hotkeys}
                       {...rest}
                     />
                   </Suspense>

@@ -7,8 +7,7 @@ import React, {
   Ref,
   useImperativeHandle,
   useMemo,
-  ReactNode,
-  useState
+  ReactNode
 } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
 import {
@@ -29,10 +28,8 @@ import {
   CameraControlsContext,
   CameraControlsContextProps
 } from './useCameraControls';
-import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
-import { CanvasHotkeyTypes } from '../GraphScene';
 
 // Install the camera controls
 // Use a subset for better three shaking
@@ -102,11 +99,6 @@ export interface CameraControlsProps {
    * The minimum distance for the camera.
    */
   minDistance?: number;
-
-  /**
-   * Hotkeys to enable.
-   */
-  hotkeys: Array<CanvasHotkeyTypes>;
 }
 
 export type CameraControlsRef = CameraControlsContextProps;
@@ -121,8 +113,7 @@ export const CameraControls: FC<
       animated,
       disabled,
       minDistance = 1000,
-      maxDistance = 50000,
-      hotkeys
+      maxDistance = 50000
     },
     ref: Ref<CameraControlsRef>
   ) => {
@@ -310,31 +301,6 @@ export const CameraControls: FC<
         }
       }
     }, [isDragging, mode]);
-
-    useHotkeys([
-      {
-        name: 'Zoom In',
-        disabled: disabled || !hotkeys.includes('zoom in'),
-        category: 'Graph',
-        keys: 'mod+shift+i',
-        action: 'keydown',
-        callback: event => {
-          event.preventDefault();
-          zoomIn();
-        }
-      },
-      {
-        name: 'Zoom Out',
-        category: 'Graph',
-        disabled: disabled || !hotkeys.includes('zoom out'),
-        keys: 'mod+shift+o',
-        action: 'keydown',
-        callback: event => {
-          event.preventDefault();
-          zoomOut();
-        }
-      }
-    ]);
 
     const values = useMemo(
       () => ({

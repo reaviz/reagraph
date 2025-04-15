@@ -2,13 +2,11 @@ import { useThree } from '@react-three/fiber';
 import { useCameraControls } from './useCameraControls';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Vector3, Box3, PerspectiveCamera } from 'three';
-import { useHotkeys } from 'reakeys';
 import { getLayoutCenter } from '../utils/layout';
 import { InternalGraphNode } from '../types';
 import { useStore } from '../store';
 import { isNodeInView, getDegreesToClosest2dAxis } from './utils';
 import { LayoutTypes } from 'layout/types';
-import { CanvasHotkeyTypes } from '../GraphScene';
 
 const PADDING = 50;
 
@@ -37,11 +35,6 @@ export interface CenterGraphInput {
    * The layout type of the graph used to determine rotation logic.
    */
   layoutType: LayoutTypes;
-
-  /**
-   * Hotkeys to enable. Default is `['zoom in', 'zoom out', 'center']`.
-   */
-  hotkeys: Array<CanvasHotkeyTypes>;
 }
 
 export interface CenterGraphOutput {
@@ -101,8 +94,7 @@ export interface CenterGraphOutput {
 export const useCenterGraph = ({
   animated,
   disabled,
-  layoutType,
-  hotkeys
+  layoutType
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
   const [isCentered, setIsCentered] = useState<boolean>(false);
@@ -250,20 +242,6 @@ export const useCenterGraph = ({
 
     load();
   }, [controls, centerNodes, nodes, animated, camera, fitNodesInView]);
-
-  useHotkeys([
-    {
-      name: 'Center',
-      disabled: disabled || !hotkeys?.includes('center'),
-      category: 'Graph',
-      keys: 'mod+shift+c',
-      action: 'keydown',
-      callback: event => {
-        event.preventDefault();
-        centerNodes(nodes);
-      }
-    }
-  ]);
 
   return { centerNodes, centerNodesById, fitNodesInViewById, isCentered };
 };

@@ -4,35 +4,94 @@ import { Meta } from '@storybook/blocks';
 
 # Hotkeys
 
-Under the hood the library uses [reakeys](https://github.com/reaviz/reakeys) for
-binding hotkeys.
+### We recommend using [reakeys](https://github.com/reaviz/reakeys) for binding hotkeys.
 
-### Camera Controls
+There are a few examples below of how to bind hotkeys via `reakeys`.
+Follow these steps to bind hotkeys using Reakeys:
 
-```ts
-{
-  name: 'Zoom In',
-  keys: 'mod+shift+i'
-},
-{
-  name: 'Zoom Out',
-  keys: 'mod+shift+o'
-},
-{
-  name: 'Center',
-  keys: ['mod+shift+c']
-}
-```
-
-### Selection
+### 1. Import `useHotkeys` hook from `reakeys`.
 
 ```ts
-{
-  name: 'Select All',
-  keys: 'mod+a',
-},
-{
-  name: 'Deselect Selections',
-  keys: 'escape'
-}
+import { useHotkeys } from 'reakeys';
 ```
+
+### 2. Create a ref for the graph.
+
+```tsx
+const graphRef = useRef<GraphCanvasRef | null>(null);
+
+return <GraphCanvas ref={graphRef} />;
+```
+
+### 3. Bind Hotkeys to the Graph:
+
+```ts
+useHotkeys([
+  {
+    name: 'Zoom In',
+    keys: 'shift+i',
+    category: 'Graph',
+    callback: event => {
+      event.preventDefault();
+      graphRef.current?.zoomIn();
+    }
+  },
+  {
+    name: 'Zoom Out',
+    keys: 'shift+o',
+    category: 'Graph',
+    callback: event => {
+      event.preventDefault();
+      graphRef.current?.zoomOut();
+    }
+  },
+  {
+    name: 'Center',
+    category: 'Graph',
+    keys: 'mod+shift+c',
+    action: 'keydown',
+    callback: event => {
+      event.preventDefault();
+      graphRef.current?.centerGraph(nodeIds);
+    }
+  }
+]);
+```
+
+### 4. Bind Hotkeys to Selection Actions:
+
+```ts
+const { clearSelections, setSelections } = useSelection({
+  ref: graphRef,
+  nodes,
+  edges,
+  pathSelectionType: 'all'
+});
+
+useHotkeys([
+  {
+    name: 'Select All',
+    keys: 'mod+a',
+    action: 'keydown',
+    category: 'Graph',
+    description: 'Select all nodes and edges',
+    callback: event => {
+      event.preventDefault();
+      setSelections(nodes.map(node => node.id));
+    }
+  },
+  {
+    name: 'Deselect Selections',
+    category: 'Graph',
+    description: 'Deselect selected nodes and edges',
+    keys: 'escape',
+    action: 'keydown',
+    callback: event => {
+      event.preventDefault();
+      clearSelections();
+    }
+  }
+]);
+```
+
+#### Note: You can bind any available Graph actions to hotkeys via reference.

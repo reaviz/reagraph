@@ -6,7 +6,6 @@ import React, {
   useState
 } from 'react';
 import { GraphCanvasRef } from '../GraphCanvas';
-import { useHotkeys } from 'reakeys';
 import { GraphEdge, GraphNode } from '../types';
 import { findPath } from '../utils/paths';
 import { getAdjacents, PathSelectionTypes } from './utils';
@@ -47,11 +46,6 @@ export interface SelectionProps {
    * Disabled or not.
    */
   disabled?: boolean;
-
-  /**
-   * Hotkey types
-   */
-  hotkeys?: HotkeyTypes[];
 
   /**
    * Whether to focus on select or not.
@@ -160,7 +154,6 @@ export const useSelection = ({
   pathHoverType = 'out',
   pathSelectionType = 'direct',
   ref,
-  hotkeys = ['selectAll', 'deselect', 'delete'],
   disabled,
   onSelection
 }: SelectionProps): SelectionResult => {
@@ -409,41 +402,6 @@ export const useSelection = ({
       }
     }
   }, [internalSelections, pathSelectionType, ref]);
-
-  useHotkeys([
-    {
-      name: 'Select All',
-      keys: 'mod+a',
-      action: 'keydown',
-      disabled: !hotkeys.includes('selectAll'),
-      category: 'Graph',
-      description: 'Select all nodes and edges',
-      callback: event => {
-        event.preventDefault();
-
-        if (!disabled && type !== 'single') {
-          const next = nodes.map(n => n.id);
-          onSelection?.(next);
-          setInternalSelections(next);
-        }
-      }
-    },
-    {
-      name: 'Deselect Selections',
-      category: 'Graph',
-      disabled: !hotkeys.includes('deselect'),
-      description: 'Deselect selected nodes and edges',
-      keys: 'escape',
-      action: 'keydown',
-      callback: event => {
-        if (!disabled) {
-          event.preventDefault();
-          onSelection?.([]);
-          setInternalSelections([]);
-        }
-      }
-    }
-  ]);
 
   const joinedActives = useMemo(
     () => [...internalActives, ...internalHovers],

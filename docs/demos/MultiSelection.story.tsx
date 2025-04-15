@@ -89,29 +89,6 @@ export const ModifierKey = () => {
   );
 };
 
-export const DisableHotkeys = () => {
-  const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, onNodeClick, onCanvasClick } = useSelection({
-    ref: graphRef,
-    nodes: complexNodes,
-    edges: complexEdges,
-    type: 'multi',
-    selections: [complexNodes[0].id, complexNodes[1].id]
-  });
-
-  return (
-    <GraphCanvas
-      ref={graphRef}
-      nodes={complexNodes}
-      edges={complexEdges}
-      selections={selections}
-      onNodeClick={onNodeClick}
-      onCanvasClick={onCanvasClick}
-      hotkeys={[]}
-    />
-  );
-};
-
 export const PathFinding = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, actives, selectNodePaths, onNodeClick, onCanvasClick } =
