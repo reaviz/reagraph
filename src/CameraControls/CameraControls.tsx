@@ -339,6 +339,7 @@ export const CameraControls: FC<
           ref={controls => {
             cameraRef.current = controls;
             if (!controlMounted) {
+              // Update the state when the controls are mounted to notify about it component that using that controls
               setControlMounted(true);
             }
           }}

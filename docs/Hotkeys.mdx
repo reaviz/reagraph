@@ -29,19 +29,21 @@ return <GraphCanvas ref={graphRef} />;
 useHotkeys([
   {
     name: 'Zoom In',
-    keys: 'shift+i',
+    keys: 'mod+shift+i',
+    action: 'keydown',
     category: 'Graph',
     callback: event => {
-      event.preventDefault();
+      event?.preventDefault();
       graphRef.current?.zoomIn();
     }
   },
   {
     name: 'Zoom Out',
-    keys: 'shift+o',
+    keys: 'mod+shift+o',
+    action: 'keydown',
     category: 'Graph',
     callback: event => {
-      event.preventDefault();
+      event?.preventDefault();
       graphRef.current?.zoomOut();
     }
   },
@@ -51,8 +53,8 @@ useHotkeys([
     keys: 'mod+shift+c',
     action: 'keydown',
     callback: event => {
-      event.preventDefault();
-      graphRef.current?.centerGraph(nodeIds);
+      event?.preventDefault();
+      graphRef.current?.centerGraph(complexNodes.map(node => node.id));
     }
   }
 ]);
