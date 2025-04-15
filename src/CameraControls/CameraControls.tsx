@@ -7,7 +7,9 @@ import React, {
   Ref,
   useImperativeHandle,
   useMemo,
-  ReactNode
+  ReactNode,
+  useState,
+  useLayoutEffect
 } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
 import {
@@ -124,6 +126,12 @@ export const CameraControls: FC<
     const setPanning = useStore(state => state.setPanning);
     const isDragging = useStore(state => state.draggingIds.length > 0);
     const cameraSpeedRef = useRef(0);
+    const [_, setIsMounted] = useState(false);
+
+    // This is a hack to force the camera to update when the component is mounted
+    useLayoutEffect(() => {
+      setIsMounted(true);
+    }, []);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
