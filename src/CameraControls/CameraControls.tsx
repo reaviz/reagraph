@@ -32,6 +32,7 @@ import {
 import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
+import { CanvasHotkeyTypes } from '../GraphScene';
 
 // Install the camera controls
 // Use a subset for better three shaking
@@ -101,6 +102,11 @@ export interface CameraControlsProps {
    * The minimum distance for the camera.
    */
   minDistance?: number;
+
+  /**
+   * Hotkeys to enable.
+   */
+  hotkeys: Array<CanvasHotkeyTypes>;
 }
 
 export type CameraControlsRef = CameraControlsContextProps;
@@ -115,7 +121,8 @@ export const CameraControls: FC<
       animated,
       disabled,
       minDistance = 1000,
-      maxDistance = 50000
+      maxDistance = 50000,
+      hotkeys
     },
     ref: Ref<CameraControlsRef>
   ) => {
@@ -307,7 +314,7 @@ export const CameraControls: FC<
     useHotkeys([
       {
         name: 'Zoom In',
-        disabled,
+        disabled: disabled || !hotkeys.includes('zoom in'),
         category: 'Graph',
         keys: 'mod+shift+i',
         action: 'keydown',
@@ -319,7 +326,7 @@ export const CameraControls: FC<
       {
         name: 'Zoom Out',
         category: 'Graph',
-        disabled,
+        disabled: disabled || !hotkeys.includes('zoom out'),
         keys: 'mod+shift+o',
         action: 'keydown',
         callback: event => {

@@ -8,6 +8,7 @@ import { InternalGraphNode } from '../types';
 import { useStore } from '../store';
 import { isNodeInView, getDegreesToClosest2dAxis } from './utils';
 import { LayoutTypes } from 'layout/types';
+import { CanvasHotkeyTypes } from '../GraphScene';
 
 const PADDING = 50;
 
@@ -36,6 +37,11 @@ export interface CenterGraphInput {
    * The layout type of the graph used to determine rotation logic.
    */
   layoutType: LayoutTypes;
+
+  /**
+   * Hotkeys to enable. Default is `['zoom in', 'zoom out', 'center']`.
+   */
+  hotkeys: Array<CanvasHotkeyTypes>;
 }
 
 export interface CenterGraphOutput {
@@ -95,7 +101,8 @@ export interface CenterGraphOutput {
 export const useCenterGraph = ({
   animated,
   disabled,
-  layoutType
+  layoutType,
+  hotkeys
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
   const [isCentered, setIsCentered] = useState<boolean>(false);
@@ -247,9 +254,9 @@ export const useCenterGraph = ({
   useHotkeys([
     {
       name: 'Center',
-      disabled,
+      disabled: disabled || !hotkeys?.includes('center'),
       category: 'Graph',
-      keys: ['mod+shift+c'],
+      keys: 'mod+shift+c',
       action: 'keydown',
       callback: event => {
         event.preventDefault();
