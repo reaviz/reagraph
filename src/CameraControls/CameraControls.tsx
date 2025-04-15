@@ -8,7 +8,8 @@ import React, {
   useImperativeHandle,
   useMemo,
   ReactNode,
-  useState
+  useState,
+  useLayoutEffect
 } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
 import {
@@ -29,7 +30,6 @@ import {
   CameraControlsContext,
   CameraControlsContextProps
 } from './useCameraControls';
-import { useHotkeys } from 'reakeys';
 import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
 
@@ -126,6 +126,7 @@ export const CameraControls: FC<
     const setPanning = useStore(state => state.setPanning);
     const isDragging = useStore(state => state.draggingIds.length > 0);
     const cameraSpeedRef = useRef(0);
+    const [controlMounted, setControlMounted] = useState<boolean>(false);
 
     useFrame((_state, delta) => {
       if (cameraRef.current?.enabled) {
@@ -304,31 +305,6 @@ export const CameraControls: FC<
       }
     }, [isDragging, mode]);
 
-    useHotkeys([
-      {
-        name: 'Zoom In',
-        disabled,
-        category: 'Graph',
-        keys: 'mod+shift+i',
-        action: 'keydown',
-        callback: event => {
-          event.preventDefault();
-          zoomIn();
-        }
-      },
-      {
-        name: 'Zoom Out',
-        category: 'Graph',
-        disabled,
-        keys: 'mod+shift+o',
-        action: 'keydown',
-        callback: event => {
-          event.preventDefault();
-          zoomOut();
-        }
-      }
-    ]);
-
     const values = useMemo(
       () => ({
         controls: cameraRef.current,
@@ -360,7 +336,13 @@ export const CameraControls: FC<
     return (
       <CameraControlsContext.Provider value={values}>
         <threeCameraControls
-          ref={cameraRef}
+          ref={controls => {
+            cameraRef.current = controls;
+            if (!controlMounted) {
+              // Update the state when the controls are mounted to notify about it component that using that controls
+              setControlMounted(true);
+            }
+          }}
           args={[camera, gl.domElement]}
           smoothTime={0.1}
           minDistance={minDistance}

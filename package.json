@@ -69,7 +69,6 @@
     "graphology-metrics": "^2.1.0",
     "graphology-shortest-path": "^2.0.2",
     "hold-event": "^0.2.0",
-    "reakeys": "^2.0.6",
     "three": "^0.154.0",
     "three-stdlib": "^2.23.13",
     "zustand": "4.3.9"
@@ -113,6 +112,7 @@
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "reakeys": "^2.0.6",
     "rollup-plugin-peer-deps-external": "2.2.4",
     "stats.js": "^0.17.0",
     "storybook": "^7.6.17",

@@ -63,8 +63,19 @@ export const ModifierKey = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
-        <h3 style={{ margin: 5 }}>Hold Command/CTRL and Click to Select Multiples</h3>
+      <div
+        style={{
+          zIndex: 9,
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'rgba(0, 0, 0, .5)',
+          color: 'white'
+        }}
+      >
+        <h3 style={{ margin: 5 }}>
+          Hold Command/CTRL and Click to Select Multiples
+        </h3>
       </div>
       <GraphCanvas
         ref={graphRef}
