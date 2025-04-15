@@ -1,3 +1,6 @@
+# 4.22.0 - 4/15/25
+- [feature] Remove default hotkeys #319
+
 # 4.21.6 - 4/14/25
 - [fix] Update reakeys & fix hotkeys #317
 
