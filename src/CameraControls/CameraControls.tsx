@@ -33,30 +33,6 @@ import {
 import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
 
-// Install the camera controls
-// Use a subset for better three shaking
-ThreeCameraControls.install({
-  THREE: {
-    MOUSE: MOUSE,
-    Vector2: Vector2,
-    Vector3: Vector3,
-    Vector4: Vector4,
-    Quaternion: Quaternion,
-    Matrix4: Matrix4,
-    Spherical: Spherical,
-    Box3: Box3,
-    Sphere: Sphere,
-    Raycaster: Raycaster,
-    MathUtils: {
-      DEG2RAD: MathUtils?.DEG2RAD,
-      clamp: MathUtils?.clamp
-    }
-  }
-});
-
-// Extend r3f with the new controls
-extend({ ThreeCameraControls });
-
 const KEY_CODES = {
   ARROW_LEFT: 37,
   ARROW_UP: 38,
@@ -119,6 +95,36 @@ export const CameraControls: FC<
     },
     ref: Ref<CameraControlsRef>
   ) => {
+    // useMemo is used here instead of useEffect, otherwise the useMemo below runs first and throws
+    useMemo(() => {
+      // to allow for tree shaking, we only import the subset of THREE that is used by camera-controls
+      // see https://github.com/yomotsu/camera-controls#important
+
+      // Install the camera controls
+      // Use a subset for better three shaking
+      ThreeCameraControls.install({
+        THREE: {
+          MOUSE: MOUSE,
+          Vector2: Vector2,
+          Vector3: Vector3,
+          Vector4: Vector4,
+          Quaternion: Quaternion,
+          Matrix4: Matrix4,
+          Spherical: Spherical,
+          Box3: Box3,
+          Sphere: Sphere,
+          Raycaster: Raycaster,
+          MathUtils: {
+            DEG2RAD: MathUtils?.DEG2RAD,
+            clamp: MathUtils?.clamp
+          }
+        }
+      });
+
+      // Extend r3f with the new controls
+      extend({ ThreeCameraControls });
+    }, []);
+
     const cameraRef = useRef<ThreeCameraControls | null>(null);
     const camera = useThree(state => state.camera);
     const gl = useThree(state => state.gl);
