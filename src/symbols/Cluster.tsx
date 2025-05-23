@@ -4,7 +4,7 @@ import { useSpring, a } from '@react-spring/three';
 import { Color } from 'three';
 import { useStore } from '../store';
 import { Label } from './Label';
-import { useCursor } from 'glodrei';
+import { useCursor } from '@react-three/drei';
 import { ThreeEvent } from '@react-three/fiber';
 import { useDrag } from '../utils/useDrag';
 import { Vector3 } from 'three';

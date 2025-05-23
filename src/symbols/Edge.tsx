@@ -15,7 +15,7 @@ import {
 import { Line } from './Line';
 import { useStore } from '../store';
 import { ContextMenuEvent, InternalGraphEdge } from '../types';
-import { Html, useCursor } from 'glodrei';
+import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { Euler, Vector3 } from 'three';
 import { ThreeEvent } from '@react-three/fiber';

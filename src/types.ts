@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { Theme } from './themes';
 import { ColorRepresentation, Vector3 } from 'three';
-import { SpringValue } from '@react-spring/three';
 
 export interface GraphElementBaseAttributes<T = any> {
   /**

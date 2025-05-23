@@ -2,7 +2,7 @@ import React, { FC, useMemo } from 'react';
 import { Color, ColorRepresentation, DoubleSide } from 'three';
 import { animationConfig } from '../utils/animation';
 import { useSpring, a } from '@react-spring/three';
-import { Billboard } from 'glodrei';
+import { Billboard } from '@react-three/drei';
 
 export interface RingProps {
   /**

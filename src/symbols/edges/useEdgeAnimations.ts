@@ -10,7 +10,7 @@ export function useEdgePositionAnimation(
   animated: boolean
 ): void {
   const geometryRef = useRef<BufferGeometry>(geometry);
-  const bufferPool = useRef<Float32Array>();
+  const bufferPool = useRef<Float32Array | null>(null);
 
   useEffect(() => {
     geometryRef.current = geometry;

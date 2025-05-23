@@ -1,4 +1,4 @@
-import { Stats } from 'glodrei';
+import { Stats } from '@react-three/drei';
 import theme from './theme';
 import { Preview } from '@storybook/react';
 import React from 'react';
@@ -15,7 +15,7 @@ const preview: Preview = {
   parameters: {
     layout: 'centered',
     controls: { hideNoControlsWarning: true },
-    actions: { argTypesRegex: '^on.*' },
+    actions: { argTypesRegex: '^on[A-Z].*' },
     docs: {
       theme
     },

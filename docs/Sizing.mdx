@@ -1,5 +1,6 @@
-import { Meta, Story, ArgsTable } from '@storybook/blocks';
+import { Meta, Story } from '@storybook/blocks';
 import { GraphCanvas } from '../src';
+import * as SizingStories from './demos/Sizing.story';
 
 <Meta title="Docs/Advanced/Sizing" />
 
@@ -17,7 +18,7 @@ it uses [Graphology Metrics](https://graphology.github.io/standard-library/metri
 calculate the rank.
 
 <div style={{ height: 500, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
-  <Story id="demos-sizing--page-rank" />
+  <Story id="demos-sizing--page-rank" of={SizingStories.PageRank} />
 </div>
 
 ### Centrality
@@ -26,12 +27,12 @@ it uses [Graphology Metrics](https://graphology.github.io/standard-library/metri
 calculate the rank.
 
 <div style={{ height: 500, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
-  <Story id="demos-sizing--centrality" />
+  <Story id="demos-sizing--centrality" of={SizingStories.Centrality} />
 </div>
 
 ### Attribute
 The attribute sizing strategy sizes nodes based on the value of a given attribute.
 
 <div style={{ height: 500, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
-  <Story id="demos-sizing--attribute" />
+  <Story id="demos-sizing--attribute" of={SizingStories.Attribute} />
 </div>

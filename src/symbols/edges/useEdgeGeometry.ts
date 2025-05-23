@@ -37,7 +37,7 @@ export function useEdgeGeometry(
   // We don't want to rerun everything when the state changes,
   // but we do want to use the most recent nodes whenever `getGeometries`
   // or `getGeometry` is run, so we store it in a ref:
-  const stateRef = useRef<GraphState>();
+  const stateRef = useRef<GraphState | null>(null);
   const theme = useStore(state => state.theme);
   useStore(state => {
     stateRef.current = state;
@@ -47,7 +47,7 @@ export function useEdgeGeometry(
 
   // Add memoized geometries for arrows and null geometry
   const nullGeometryRef = useRef(new BoxGeometry(0, 0, 0));
-  const baseArrowGeometryRef = useRef<CylinderGeometry>();
+  const baseArrowGeometryRef = useRef<CylinderGeometry | null>(null);
 
   const curved = interpolation === 'curved';
   const getGeometries = useCallback(

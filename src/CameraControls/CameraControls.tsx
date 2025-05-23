@@ -8,8 +8,7 @@ import React, {
   useImperativeHandle,
   useMemo,
   ReactNode,
-  useState,
-  useLayoutEffect
+  useState
 } from 'react';
 import { useThree, useFrame, extend } from '@react-three/fiber';
 import {

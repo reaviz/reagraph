@@ -43,6 +43,8 @@ export const Sphere: FC<NodeRendererProps> = ({
           fog={true}
           opacity={nodeOpacity}
           color={normalizedColor}
+          emissive={normalizedColor}
+          emissiveIntensity={0.7}
         />
       </a.mesh>
       <Ring

@@ -1,4 +1,5 @@
-import { Meta, Story, ArgsTable } from '@storybook/blocks';
+import { Meta, Story } from '@storybook/blocks';
+import * as LayoutsStories from './demos/Layouts.story';
 
 <Meta title="Docs/Advanced/Custom Layout" />
 
@@ -81,5 +82,5 @@ export interface NodePositionArgs {
 ## Example
 
 <div style={{ height: 400, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
-  <Story id="demos-layouts--custom" />
+  <Story id="demos-layouts--custom" of={LayoutsStories.Custom} />
 </div>

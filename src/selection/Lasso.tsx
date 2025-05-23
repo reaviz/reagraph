@@ -60,7 +60,6 @@ export const Lasso: FC<LassoProps> = ({
   const edges = useStore(state => state.edges);
   const edgeMeshes = useStore(state => state.edgeMeshes);
 
-  const mountedRef = useRef<boolean>(false);
   const selectionBoxRef = useRef<SelectionBox | null>(null);
   const edgeMeshSelectionBoxRef = useRef<SelectionBox | null>(null);
   const elementRef = useRef<HTMLDivElement>(createElement(theme));
@@ -70,14 +69,6 @@ export const Lasso: FC<LassoProps> = ({
   const oldControlsEnabledRef = useRef<boolean>(
     cameraControls.controls?.enabled
   );
-
-  useEffect(() => {
-    if (mountedRef.current) {
-      onLasso?.(actives);
-    }
-
-    mountedRef.current = true;
-  }, [actives, onLasso]);
 
   const onPointerMove = useCallback(
     event => {
@@ -125,6 +116,7 @@ export const Lasso: FC<LassoProps> = ({
         // it prevents the render thrashing and causing flickering
         requestAnimationFrame(() => {
           setActives(allSelected);
+          onLasso?.(allSelected);
         });
 
         document.addEventListener('pointermove', onPointerMove, {
@@ -134,7 +126,7 @@ export const Lasso: FC<LassoProps> = ({
         });
       }
     },
-    [edges, edgeMeshes, setActives, size, type]
+    [size, edges, edgeMeshes, type, setActives, onLasso]
   );
 
   const onPointerUp = useCallback(() => {
