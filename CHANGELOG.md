@@ -1,3 +1,6 @@
+# 4.23.0 - 5/27/25
+- [feature] Upgraded deps to have React v19 compatibility #326
+
 # 4.22.0 - 4/15/25
 - [feature] Remove default hotkeys #319
 
