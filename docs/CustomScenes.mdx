@@ -1,4 +1,5 @@
-import { Meta, Story, ArgsTable } from '@storybook/blocks';
+import { Meta, Story } from '@storybook/blocks';
+import * as BasicStories from './demos/Basic.story';
 
 <Meta title="Docs/Advanced/Custom Scenes" />
 
@@ -23,5 +24,5 @@ gives it a nice 3d effect.
 The edge result will look something like:
 
 <div style={{ height: 400, width: '100%', position: 'relative', margin: '0 auto', background: 'white', borderRadius: 4, border: '1px solid rgba(0,0,0,.1)', boxShadow: 'rgb(0 0 0 / 10%) 0 1px 3px 0', overflow: 'hidden' }}>
-  <Story id="demos-basic--custom-lighting" />
+  <Story id="demos-basic--custom-lighting" of={BasicStories.CustomLighting} />
 </div>
