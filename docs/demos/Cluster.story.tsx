@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Billboard, Html, Svg, Text } from '@react-three/drei';;
+import { Billboard, Html, Svg, Text } from '@react-three/drei';
 import { Color, DoubleSide } from 'three';
 import { a } from '@react-spring/three';
 import { GraphCanvas, Icon, Label, lightTheme, Sphere } from '../../src';
