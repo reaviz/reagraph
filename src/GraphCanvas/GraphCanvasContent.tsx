@@ -10,7 +10,7 @@ import React, {
   useState,
   useEffect
 } from 'react';
-// import { Canvas } from '@react-three/fiber';
+import { Canvas } from '@react-three/fiber';
 import GraphSceneContent from '../GraphScene/GraphSceneContent';
 import type { GraphSceneProps, GraphSceneRef } from '../GraphScene';
 import { CameraControls } from '../CameraControls';
@@ -180,18 +180,6 @@ const GraphCanvasContent: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           collapsedNodeIds
         })
       ).current;
-
-      const [Canvas, setCanvas] = useState<any>(null);
-
-      useEffect(() => {
-        import('@react-three/fiber').then(module => {
-          setCanvas(() => module.Canvas);
-        });
-      }, []);
-
-      if (!Canvas) {
-        return <div className={css.canvas} />;
-      }
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666

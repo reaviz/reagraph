@@ -8,7 +8,6 @@ const isServer = typeof window === 'undefined';
 export const CameraControls: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
 > = forwardRef((props, ref) => {
-  // Check for server-side rendering before mounting the component
   if (isServer) {
     return null;
   }

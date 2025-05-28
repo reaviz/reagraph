@@ -224,7 +224,6 @@ const CameraControlsComponent: FC<
       [mode]
     );
 
-    // Initialize keyboard controls only on client side
     const [keyControls, setKeyControls] = useState<{
       leftKey: holdEvent.KeyboardKeyHold;
       rightKey: holdEvent.KeyboardKeyHold;
