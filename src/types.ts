@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Theme } from './themes';
-import { ColorRepresentation, Vector3 } from 'three';
+import { ColorRepresentation } from 'three';
 
 export interface GraphElementBaseAttributes<T = any> {
   /**

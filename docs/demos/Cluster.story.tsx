@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { Billboard, Html, Svg, Text } from '@react-three/drei';;
-import { Color, DoubleSide } from 'three';
+import { Html } from '@react-three/drei';
+import { Color } from 'three';
 import { a } from '@react-spring/three';
-import { GraphCanvas, Icon, Label, lightTheme, Sphere } from '../../src';
+import { GraphCanvas, lightTheme } from '../../src';
 import {
   clusterNodes,
   clusterEdges,
@@ -13,7 +13,7 @@ import {
 } from '../assets/demo';
 
 import demonSvg from '../../docs/assets/twitter.svg';
-import { Ring } from '../../src/symbols/clusters/Ring';
+import { Icon, Sphere, Ring } from '../../src/symbols';
 
 export default {
   title: 'Demos/Cluster',

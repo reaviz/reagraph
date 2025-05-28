@@ -8,8 +8,8 @@ import React, {
   useImperativeHandle,
   useMemo
 } from 'react';
-import { useGraph } from './useGraph';
-import { LayoutOverrides, LayoutTypes } from './layout';
+import { useGraph } from '../hooks/useGraph';
+import { LayoutOverrides, LayoutTypes } from '../layout';
 import {
   NodeContextMenuProps,
   ContextMenuEvent,
@@ -20,27 +20,25 @@ import {
   NodeRenderer,
   CollapseProps,
   ClusterRenderer
-} from './types';
-import { SizingType } from './sizing';
+} from '../types';
+import { SizingType } from '../sizing';
+import type { ClusterEventArgs } from '../symbols/Cluster';
 import {
   Cluster,
-  ClusterEventArgs,
   Edge,
   EdgeArrowPosition,
   EdgeInterpolation,
   EdgeLabelPosition,
   Edges,
   Node
-} from './symbols';
-import {
-  CenterNodesParams,
-  FitNodesParams,
-  useCenterGraph
-} from './CameraControls';
-import { LabelVisibilityType } from './utils';
-import { useStore } from './store';
+} from '../symbols';
+import type { CenterNodesParams, FitNodesParams } from '../CameraControls';
+import { useCenterGraph } from '../CameraControls/useCenterGraph';
+import { LabelVisibilityType } from '../utils';
+import { useStore } from '../store';
 import Graph from 'graphology';
-import { ThreeEvent, useThree } from '@react-three/fiber';
+import type { ThreeEvent } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 
 export interface GraphSceneProps {
   /**
@@ -318,7 +316,7 @@ export interface GraphSceneRef {
   renderScene: () => void;
 }
 
-export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
+const GraphSceneContent: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
   forwardRef(
     (
       {
@@ -541,3 +539,5 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       );
     }
   );
+
+export default GraphSceneContent;

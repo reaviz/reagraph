@@ -9,7 +9,7 @@ import {
   Curve
 } from 'three';
 import { useStore } from '../store';
-import { ThreeEvent } from '@react-three/fiber';
+import type { ThreeEvent } from '@react-three/fiber';
 
 export interface LineProps {
   /**

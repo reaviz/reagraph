@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { useGesture } from '@use-gesture/react';
 import { Vector2, Vector3, Plane } from 'three';
 import { InternalGraphPosition } from '../types';
-import { CenterPositionVector } from './layout';
+import { CenterPositionVector } from '../utils/layout';
 
 interface DragParams {
   draggable: boolean;

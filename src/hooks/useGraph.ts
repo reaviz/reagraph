@@ -1,20 +1,20 @@
 import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
 import { PerspectiveCamera } from 'three';
-import { SizingType } from './sizing';
+import { SizingType } from '../sizing';
 import {
   LayoutTypes,
   layoutProvider,
   LayoutStrategy,
   LayoutOverrides
-} from './layout';
-import { LabelVisibilityType, calcLabelVisibility } from './utils/visibility';
-import { tick } from './layout/layoutUtils';
-import { GraphEdge, GraphNode, InternalGraphNode } from './types';
-import { buildGraph, transformGraph } from './utils/graph';
-import { DragReferences, useStore } from './store';
-import { getVisibleEntities } from './collapse';
-import { calculateClusters } from './utils/cluster';
+} from '../layout';
+import { LabelVisibilityType, calcLabelVisibility } from '../utils/visibility';
+import { tick } from '../layout/layoutUtils';
+import { GraphEdge, GraphNode, InternalGraphNode } from '../types';
+import { buildGraph, transformGraph } from '../utils/graph';
+import { DragReferences, useStore } from '../store';
+import { getVisibleEntities } from '../collapse';
+import { calculateClusters } from '../utils/cluster';
 
 export interface GraphInputs {
   nodes: GraphNode[];

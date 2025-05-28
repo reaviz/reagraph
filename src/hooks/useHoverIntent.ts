@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react';
-import { ThreeEvent } from '@react-three/fiber';
+import type { ThreeEvent } from '@react-three/fiber';
 
 export interface HoverIntentOptions {
   interval?: number;

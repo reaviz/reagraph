@@ -6,19 +6,20 @@ import React, {
   Suspense,
   useImperativeHandle,
   useRef,
-  useMemo
+  useMemo,
+  useState,
+  useEffect
 } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
-import {
-  CameraMode,
-  CameraControls,
-  CameraControlsRef
-} from './CameraControls';
-import { Theme, lightTheme } from './themes';
-import { createStore, Provider } from './store';
+// import { Canvas } from '@react-three/fiber';
+import GraphSceneContent from '../GraphScene/GraphSceneContent';
+import type { GraphSceneProps, GraphSceneRef } from '../GraphScene';
+import { CameraControls } from '../CameraControls';
+import type { CameraMode, CameraControlsRef } from '../CameraControls';
+import { Theme, lightTheme } from '../themes';
+import { createStore, Provider } from '../store';
 import Graph from 'graphology';
-import { Lasso, LassoType } from './selection';
+import { Lasso } from '../selection';
+import type { LassoType } from '../selection';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
 
@@ -105,7 +106,7 @@ const CAMERA_DEFAULTS: any = {
   fov: 10
 };
 
-export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
+const GraphCanvasContent: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
   forwardRef(
     (
       {
@@ -170,6 +171,27 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         edges.length + nodes.length > 400 ? false : animated;
 
       const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
+      // zustand/context migration (https://github.com/pmndrs/zustand/discussions/1180)
+      const store = useRef(
+        createStore({
+          selections,
+          actives,
+          theme,
+          collapsedNodeIds
+        })
+      ).current;
+
+      const [Canvas, setCanvas] = useState<any>(null);
+
+      useEffect(() => {
+        import('@react-three/fiber').then(module => {
+          setCanvas(() => module.Canvas);
+        });
+      }, []);
+
+      if (!Canvas) {
+        return <div className={css.canvas} />;
+      }
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
@@ -184,16 +206,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
           >
-            <Provider
-              createStore={() =>
-                createStore({
-                  selections,
-                  actives,
-                  theme,
-                  collapsedNodeIds
-                })
-              }
-            >
+            <Provider store={store}>
               {theme.canvas?.background && (
                 <color attach="background" args={[theme.canvas.background]} />
               )}
@@ -217,7 +230,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                   onLassoEnd={onLassoEnd}
                 >
                   <Suspense>
-                    <GraphScene
+                    <GraphSceneContent
                       ref={rendererRef as any}
                       disabled={disabled}
                       animated={finalAnimated}
@@ -240,3 +253,5 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       );
     }
   );
+
+export default GraphCanvasContent;

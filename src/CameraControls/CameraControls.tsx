@@ -63,10 +63,7 @@ const KEY_CODES = {
   ARROW_DOWN: 40
 };
 
-const leftKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_LEFT, 100);
-const rightKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_RIGHT, 100);
-const upKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_UP, 100);
-const downKey = new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_DOWN, 100);
+const isServer = typeof window === 'undefined';
 
 export type CameraMode = 'pan' | 'rotate' | 'orbit';
 
@@ -104,7 +101,7 @@ export interface CameraControlsProps {
 
 export type CameraControlsRef = CameraControlsContextProps;
 
-export const CameraControls: FC<
+const CameraControlsComponent: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
 > = forwardRef(
   (
@@ -227,31 +224,58 @@ export const CameraControls: FC<
       [mode]
     );
 
-    useEffect(() => {
-      if (!disabled) {
-        leftKey.addEventListener('holding', panLeft);
-        rightKey.addEventListener('holding', panRight);
-        upKey.addEventListener('holding', panUp);
-        downKey.addEventListener('holding', panDown);
+    // Initialize keyboard controls only on client side
+    const [keyControls, setKeyControls] = useState<{
+      leftKey: holdEvent.KeyboardKeyHold;
+      rightKey: holdEvent.KeyboardKeyHold;
+      upKey: holdEvent.KeyboardKeyHold;
+      downKey: holdEvent.KeyboardKeyHold;
+    } | null>(null);
 
-        if (typeof window !== 'undefined') {
-          window.addEventListener('keydown', onKeyDown);
-          window.addEventListener('keyup', onKeyUp);
-        }
+    useEffect(() => {
+      // Only initialize on client side
+      if (!isServer) {
+        setKeyControls({
+          leftKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_LEFT, 100),
+          rightKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_RIGHT, 100),
+          upKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_UP, 100),
+          downKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_DOWN, 100)
+        });
+      }
+    }, []);
+
+    useEffect(() => {
+      if (!disabled && keyControls) {
+        keyControls.leftKey.addEventListener('holding', panLeft);
+        keyControls.rightKey.addEventListener('holding', panRight);
+        keyControls.upKey.addEventListener('holding', panUp);
+        keyControls.downKey.addEventListener('holding', panDown);
+
+        window.addEventListener('keydown', onKeyDown);
+        window.addEventListener('keyup', onKeyUp);
       }
 
       return () => {
-        leftKey.removeEventListener('holding', panLeft);
-        rightKey.removeEventListener('holding', panRight);
-        upKey.removeEventListener('holding', panUp);
-        downKey.removeEventListener('holding', panDown);
+        if (keyControls) {
+          keyControls.leftKey.removeEventListener('holding', panLeft);
+          keyControls.rightKey.removeEventListener('holding', panRight);
+          keyControls.upKey.removeEventListener('holding', panUp);
+          keyControls.downKey.removeEventListener('holding', panDown);
 
-        if (typeof window !== 'undefined') {
           window.removeEventListener('keydown', onKeyDown);
           window.removeEventListener('keyup', onKeyUp);
         }
       };
-    }, [disabled, onKeyDown, onKeyUp, panDown, panLeft, panRight, panUp]);
+    }, [
+      disabled,
+      onKeyDown,
+      onKeyUp,
+      panDown,
+      panLeft,
+      panRight,
+      panUp,
+      keyControls
+    ]);
 
     useEffect(() => {
       if (disabled) {
@@ -353,3 +377,5 @@ export const CameraControls: FC<
     );
   }
 );
+
+export default CameraControlsComponent;
