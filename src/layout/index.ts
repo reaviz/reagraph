@@ -10,3 +10,4 @@ export * from './nooverlap';
 export * from './forceatlas2';
 export * from './custom';
 export * from './hierarchical';
+export * from './forceInABox';

@@ -1,5 +1,5 @@
 import { forceRadial as d3ForceRadial } from 'd3-force-3d';
-import { InternalGraphEdge, InternalGraphNode } from 'types';
+import { InternalGraphEdge, InternalGraphNode } from '../types';
 import { getNodeDepth } from './depthUtils';
 
 const RADIALS: DagMode[] = ['radialin', 'radialout'];

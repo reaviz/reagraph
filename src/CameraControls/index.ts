@@ -1,13 +1,8 @@
-export { CameraControls } from './CameraControlsWrapper';
+export { CameraControls } from './CameraControls';
 export type {
   CameraControlsProps,
   CameraControlsRef,
   CameraMode
-} from './CameraControls';
-export type {
-  CenterGraphInput,
-  CenterGraphOutput,
-  CenterNodesParams,
-  FitNodesParams
-} from './useCenterGraph';
+} from './CameraControlsContent';
+
 export * from './utils';

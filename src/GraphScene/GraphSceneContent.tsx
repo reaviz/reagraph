@@ -32,8 +32,8 @@ import {
   Edges,
   Node
 } from '../symbols';
-import type { CenterNodesParams, FitNodesParams } from '../CameraControls';
-import { useCenterGraph } from '../CameraControls/useCenterGraph';
+import type { CenterNodesParams, FitNodesParams } from '../hooks';
+import { useCenterGraph } from '../hooks';
 import { LabelVisibilityType } from '../utils';
 import { useStore } from '../store';
 import Graph from 'graphology';

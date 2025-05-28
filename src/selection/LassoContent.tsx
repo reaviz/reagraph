@@ -8,7 +8,7 @@ import React, {
 import { useThree } from '@react-three/fiber';
 import { SelectionBox } from 'three-stdlib';
 import { Mesh, Scene, TubeGeometry, Vector2 } from 'three';
-import { useCameraControls } from '../CameraControls/useCameraControls';
+import { useCameraControls } from '../hooks';
 import { useStore } from '../store';
 import { createElement, prepareRay } from './utils';
 

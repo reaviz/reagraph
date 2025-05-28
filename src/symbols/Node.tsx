@@ -20,7 +20,7 @@ import {
   CollapseProps
 } from '../types';
 import { Html, useCursor } from '@react-three/drei';
-import { useCameraControls } from '../CameraControls/useCameraControls';
+import { useCameraControls } from '../hooks';
 import { useStore } from '../store';
 import { useDrag, useHoverIntent } from '../hooks';
 import { Icon } from './nodes';

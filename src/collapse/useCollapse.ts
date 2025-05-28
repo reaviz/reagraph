@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { GraphEdge, GraphNode } from 'types';
+import { GraphEdge, GraphNode } from '../types';
 import { getExpandPath, getVisibleEntities } from './utils';
 
 export interface UseCollapseProps {

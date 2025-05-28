@@ -6,9 +6,8 @@ import { useStore } from '../store';
 import { Label } from './Label';
 import { useCursor } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
-import { useDrag, useHoverIntent } from '../hooks';
+import { useDrag, useHoverIntent, useCameraControls } from '../hooks';
 import { Vector3 } from 'three';
-import { useCameraControls } from '../CameraControls/useCameraControls';
 import { ClusterRenderer } from '../types';
 import { Ring } from './clusters/Ring';
 
