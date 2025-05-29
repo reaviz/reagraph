@@ -1,2 +1,2 @@
-export { GraphCanvas } from './GraphCanvas';
-export type { GraphCanvasProps, GraphCanvasRef } from './GraphCanvasContent';
+export { GraphCanvasWrapper as GraphCanvas } from './GraphCanvasWrapper';
+export type { GraphCanvasProps, GraphCanvasRef } from './GraphCanvas';

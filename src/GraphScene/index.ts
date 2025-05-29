@@ -1,2 +1,2 @@
-export { GraphScene } from './GraphScene';
-export type { GraphSceneProps, GraphSceneRef } from './GraphSceneContent';
+export { GraphSceneWrapper as GraphScene } from './GraphSceneWrapper';
+export type { GraphSceneProps, GraphSceneRef } from './GraphScene';

@@ -1,8 +1,8 @@
-export { CameraControls } from './CameraControls';
+export { CameraControlsWrapper as CameraControls } from './CameraControlsWrapper';
 export type {
   CameraControlsProps,
   CameraControlsRef,
   CameraMode
-} from './CameraControlsContent';
+} from './CameraControls';
 
 export * from './utils';
