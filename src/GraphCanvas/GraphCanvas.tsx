@@ -17,7 +17,7 @@ import { Theme, lightTheme } from '../themes';
 import { createStore, Provider } from '../store';
 import Graph from 'graphology';
 import { Lasso } from '../selection/Lasso';
-import type { LassoType } from '../selection';
+import type { LassoType } from '../selection/Lasso';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
 

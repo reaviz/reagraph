@@ -21,20 +21,20 @@ import {
   CollapseProps,
   ClusterRenderer
 } from '../types';
-import { SizingType } from '../sizing';
+import type { SizingType } from '../sizing';
 import type { ClusterEventArgs } from '../symbols/Cluster';
-import {
-  Cluster,
-  Edge,
-  EdgeArrowPosition,
-  EdgeInterpolation,
-  EdgeLabelPosition,
-  Edges,
-  Node
-} from '../symbols';
-import type { CenterNodesParams, FitNodesParams } from '../hooks';
-import { useCenterGraph } from '../hooks';
-import { LabelVisibilityType } from '../utils';
+import type { EdgeArrowPosition } from '../symbols/edges/Edge';
+import type { EdgeInterpolation, EdgeLabelPosition } from '../symbols/Edge';
+import type {
+  CenterNodesParams,
+  FitNodesParams
+} from '../hooks/useCenterGraph';
+import { Cluster } from '../symbols/Cluster';
+import { Edge } from '../symbols/Edge';
+import { Edges } from '../symbols/edges';
+import { Node } from '../symbols';
+import { useCenterGraph } from '../hooks/useCenterGraph';
+import { LabelVisibilityType } from '../utils/visibility';
 import { useStore } from '../store';
 import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
