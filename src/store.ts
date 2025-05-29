@@ -1,6 +1,7 @@
 import { createContext, useContext, FC, ReactNode } from 'react';
 import React from 'react';
 import { StoreApi, create, useStore as useZustandStore } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import {
   InternalGraphEdge,
   InternalGraphNode,
@@ -226,5 +227,6 @@ export const Provider: FC<{
 
 export const useStore = <T>(selector: (state: GraphState) => T): T => {
   const store = useContext(StoreContext);
-  return useZustandStore(store, selector);
+  // use the useShallow hook, which will return a stable reference (https://zustand.docs.pmnd.rs/migrations/migrating-to-v5)
+  return useZustandStore(store, useShallow(selector));
 };
