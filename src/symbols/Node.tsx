@@ -2,7 +2,6 @@ import React, {
   FC,
   ReactNode,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState
@@ -20,10 +19,10 @@ import {
   CollapseProps
 } from '../types';
 import { Html, useCursor } from '@react-three/drei';
-import { useCameraControls } from '../hooks/useCameraControls';
+import { useCameraControls } from '../CameraControls/useCameraControls';
 import { useStore } from '../store';
-import { useDrag } from '../hooks/useDrag';
-import { useHoverIntent } from '../hooks/useHoverIntent';
+import { useDrag } from '../utils/useDrag';
+import { useHoverIntent } from '../utils/useHoverIntent';
 import { Icon } from './nodes';
 import type { ThreeEvent } from '@react-three/fiber';
 

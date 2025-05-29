@@ -5,26 +5,17 @@ import * as BasicStories from './demos/Basic.story';
 
 # NextJS
 For NextJS, you need to use the `use client` directive to make the component client side.
-If you don't, the reagraph will render only a placeholder on the server side.
-
-## Importing
-To avoid issues with the context, you need to import the components, hooks and symbols separately.
-
-```jsx
-// ✅ Components only (no hooks, no context issues)
-import { GraphCanvas, GraphScene } from 'reagraph';
-
-// ✅ Hooks only (when you need them)
-import { useCameraControls, useCenterGraph } from 'reagraph/hooks';
-
-// ✅ Symbols only (when you need them)
-import { Node, Edge, Arrow } from 'reagraph/symbols';
-```
+Also, you need to use the `dynamic` import to make import components only on the client side.
 
 ## Example
 ```jsx
 'use client';
-import { GraphCanvas } from 'reagraph';
+import dynamic from 'next/dynamic';
+
+const GraphCanvas = dynamic(
+  () => import('reagraph').then((mod) => mod.GraphCanvas),
+  { ssr: false }
+);
 
 export const SimpleGraph = () => {
   return (

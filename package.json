@@ -16,26 +16,15 @@
   },
   "type": "module",
   "types": "dist/index.d.ts",
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
   "source": "src/index.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./hooks": {
-      "types": "./dist/hooks/index.d.ts",
-      "import": "./dist/hooks/index.js",
-      "require": "./dist/hooks/index.cjs"
-    },
-    "./symbols": {
-      "types": "./dist/symbols/index.d.ts",
-      "import": "./dist/symbols/index.js",
-      "require": "./dist/symbols/index.cjs"
-    },
-    "./package.json": "./package.json"
+      "require": "./dist/index.umd.cjs"
+    }
   },
   "browser": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -133,7 +122,7 @@
     "typescript": "^5.3.3",
     "vite": "^5.1.4",
     "vite-plugin-checker": "^0.6.4",
-    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vite-plugin-css-injected-by-js": "^3.4.0",
     "vite-plugin-dts": "^3.7.3",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.1",

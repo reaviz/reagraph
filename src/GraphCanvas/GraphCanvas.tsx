@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene } from '../GraphScene';
-import { GraphSceneProps, GraphSceneRef } from '../GraphScene';
+import type { GraphSceneProps, GraphSceneRef } from '../GraphScene';
 import { CameraControls } from '../CameraControls';
 import type { CameraMode, CameraControlsRef } from '../CameraControls';
 import { Theme, lightTheme } from '../themes';

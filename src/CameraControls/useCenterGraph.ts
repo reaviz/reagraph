@@ -1,5 +1,5 @@
 import { useThree } from '@react-three/fiber';
-import { useCameraControls } from './useCameraControls';
+import { useCameraControls } from '../CameraControls/useCameraControls';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Vector3, Box3, PerspectiveCamera } from 'three';
 import { getLayoutCenter } from '../utils/layout';

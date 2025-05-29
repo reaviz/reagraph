@@ -1,4 +1,4 @@
-export { CameraControlsWrapper as CameraControls } from './CameraControlsWrapper';
+export { CameraControls } from './CameraControls';
 export type {
   CameraControlsProps,
   CameraControlsRef,

@@ -35,28 +35,16 @@ export default defineConfig(({ mode }) =>
         sourcemap: true,
         copyPublicDir: false,
         lib: {
-          entry: {
-            index: resolve('src', 'index.ts'),
-            'hooks/index': resolve('src', 'hooks/index.ts'),
-            'symbols/index': resolve('src', 'symbols/index.ts')
-          },
+          entry: resolve('src', 'index.ts'),
           name: 'reagraph',
-          formats: ['es', 'cjs'],
-          fileName: (format, entryName) => {
-            const ext = format === 'es' ? 'js' : 'cjs';
-            return `${entryName}.${ext}`;
-          }
+          fileName: 'index'
         },
         rollupOptions: {
           plugins: [
             external({
               includeDependencies: true
             })
-          ],
-          output: {
-            preserveModules: false,
-            exports: 'named'
-          }
+          ]
         }
       }
     }

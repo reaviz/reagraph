@@ -28,7 +28,7 @@ import ThreeCameraControls from 'camera-controls';
 import {
   CameraControlsContext,
   CameraControlsContextProps
-} from '../hooks/useCameraControls';
+} from './useCameraControls';
 import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
 import { isServerRender } from '../utils/visibility';

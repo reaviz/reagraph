@@ -8,8 +8,8 @@ import React, {
   useImperativeHandle,
   useMemo
 } from 'react';
-import { useGraph } from '../hooks/useGraph';
-import { LayoutOverrides, LayoutTypes } from '../layout';
+import { useGraph } from './useGraph';
+import { LayoutOverrides, LayoutTypes } from './layout';
 import {
   NodeContextMenuProps,
   ContextMenuEvent,
@@ -20,22 +20,22 @@ import {
   NodeRenderer,
   CollapseProps,
   ClusterRenderer
-} from '../types';
-import type { SizingType } from '../sizing';
-import type { ClusterEventArgs } from '../symbols/Cluster';
-import type { EdgeArrowPosition } from '../symbols/edges/Edge';
-import type { EdgeInterpolation, EdgeLabelPosition } from '../symbols/Edge';
+} from './types';
+import type { SizingType } from './sizing';
+import type { ClusterEventArgs } from './symbols/Cluster';
+import type { EdgeArrowPosition } from './symbols/edges/Edge';
+import type { EdgeInterpolation, EdgeLabelPosition } from './symbols/Edge';
 import type {
   CenterNodesParams,
   FitNodesParams
-} from '../hooks/useCenterGraph';
-import { Cluster } from '../symbols/Cluster';
-import { Edge } from '../symbols/Edge';
-import { Edges } from '../symbols/edges';
-import { Node } from '../symbols';
-import { useCenterGraph } from '../hooks/useCenterGraph';
-import { LabelVisibilityType } from '../utils/visibility';
-import { useStore } from '../store';
+} from './CameraControls/useCenterGraph';
+import { Cluster } from './symbols/Cluster';
+import { Edge } from './symbols/Edge';
+import { Edges } from './symbols/edges';
+import { Node } from './symbols';
+import { useCenterGraph } from './CameraControls/useCenterGraph';
+import { LabelVisibilityType } from './utils/visibility';
+import { useStore } from './store';
 import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';

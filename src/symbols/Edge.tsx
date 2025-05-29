@@ -16,7 +16,7 @@ import { Line } from './Line';
 import { useStore } from '../store';
 import type { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
-import { useHoverIntent } from '../hooks/useHoverIntent';
+import { useHoverIntent } from '../utils/useHoverIntent';
 import { Euler, Vector3 } from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
 
