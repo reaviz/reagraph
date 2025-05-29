@@ -1,6 +1,6 @@
 import React, { FC, forwardRef, Ref, Suspense } from 'react';
 import type { CameraControlsProps, CameraControlsRef } from './CameraControls';
-import { isRenderOnServer } from '../utils/visibility';
+import { isServerRender } from '../utils/visibility';
 
 // Used lazy loading to avoid SSR issues with creating context for @react-three/fiber
 const CameraControls = React.lazy(() =>
@@ -13,7 +13,7 @@ const CameraControls = React.lazy(() =>
 export const CameraControlsWrapper: FC<
   CameraControlsProps & { ref?: Ref<CameraControlsRef> }
 > = forwardRef((props, ref) => {
-  if (isRenderOnServer) {
+  if (isServerRender) {
     return null;
   }
 

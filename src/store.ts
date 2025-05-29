@@ -14,7 +14,7 @@ import {
   getVector,
   updateNodePosition
 } from './utils';
-import { isRenderOnServer } from './utils/visibility';
+import { isServerRender } from './utils/visibility';
 import Graph from 'graphology';
 import { Theme } from './themes';
 
@@ -209,7 +209,7 @@ export const createStore = ({
   }));
 
 const defaultStore = createStore({});
-const StoreContext = isRenderOnServer
+const StoreContext = isServerRender
   ? null
   : createContext<StoreApi<GraphState>>(defaultStore);
 
@@ -217,7 +217,7 @@ export const Provider: FC<{
   children: ReactNode;
   store?: StoreApi<GraphState>;
 }> = ({ children, store = defaultStore }) => {
-  if (isRenderOnServer) {
+  if (isServerRender) {
     return children;
   }
 

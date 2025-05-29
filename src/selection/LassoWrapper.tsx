@@ -1,6 +1,6 @@
 import React, { FC, Suspense } from 'react';
 import type { LassoProps } from './Lasso';
-import { isRenderOnServer } from '../utils/visibility';
+import { isServerRender } from '../utils/visibility';
 
 // Used lazy loading to avoid SSR issues with creating context for @react-three/fiber
 const Lasso = React.lazy(() =>
@@ -9,7 +9,7 @@ const Lasso = React.lazy(() =>
 
 // Create a wrapper component that handles SSR
 export const LassoWrapper: FC<LassoProps> = props => {
-  if (isRenderOnServer) {
+  if (isServerRender) {
     return null;
   }
 

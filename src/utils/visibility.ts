@@ -63,4 +63,4 @@ export function getLabelOffsetByType(
   }
 }
 
-export const isRenderOnServer = typeof window === 'undefined';
+export const isServerRender = typeof window === 'undefined';

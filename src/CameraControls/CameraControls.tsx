@@ -31,7 +31,7 @@ import {
 } from '../hooks/useCameraControls';
 import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
-import { isRenderOnServer } from '../utils/visibility';
+import { isServerRender } from '../utils/visibility';
 
 // Install the camera controls
 // Use a subset for better three shaking
@@ -232,7 +232,7 @@ export const CameraControls: FC<
 
     useEffect(() => {
       // Only initialize on client side
-      if (!isRenderOnServer) {
+      if (!isServerRender) {
         setKeyControls({
           leftKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_LEFT, 100),
           rightKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_RIGHT, 100),
