@@ -1,3 +1,7 @@
+
+# 4.24.0 - 5/30/25
+- [feature] Add support for the NextJS framework #327
+
 # 4.23.1 - 5/30/25
 - [fix] Can't deselect nodes in multiModifier mode #329
 
