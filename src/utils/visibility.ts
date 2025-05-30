@@ -62,3 +62,5 @@ export function getLabelOffsetByType(
     return 0;
   }
 }
+
+export const isServerRender = typeof window === 'undefined';

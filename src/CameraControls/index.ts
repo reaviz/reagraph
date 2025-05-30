@@ -1,4 +1,8 @@
-export * from './CameraControls';
-export * from './useCameraControls';
-export * from './useCenterGraph';
+export { CameraControls } from './CameraControls';
+export type {
+  CameraControlsProps,
+  CameraControlsRef,
+  CameraMode
+} from './CameraControls';
+
 export * from './utils';

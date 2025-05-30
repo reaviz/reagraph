@@ -1,14 +1,15 @@
 import React, { FC, useMemo, useState } from 'react';
-import { ClusterGroup, animationConfig, useHoverIntent } from '../utils';
+import { ClusterGroup, animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
 import { Color } from 'three';
 import { useStore } from '../store';
 import { Label } from './Label';
 import { useCursor } from '@react-three/drei';
-import { ThreeEvent } from '@react-three/fiber';
+import type { ThreeEvent } from '@react-three/fiber';
 import { useDrag } from '../utils/useDrag';
+import { useHoverIntent } from '../utils/useHoverIntent';
+import { useCameraControls } from '../CameraControls/useCameraControls';
 import { Vector3 } from 'three';
-import { useCameraControls } from '../CameraControls';
 import { ClusterRenderer } from '../types';
 import { Ring } from './clusters/Ring';
 

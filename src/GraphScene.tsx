@@ -21,26 +21,24 @@ import {
   CollapseProps,
   ClusterRenderer
 } from './types';
-import { SizingType } from './sizing';
-import {
-  Cluster,
-  ClusterEventArgs,
-  Edge,
-  EdgeArrowPosition,
-  EdgeInterpolation,
-  EdgeLabelPosition,
-  Edges,
-  Node
-} from './symbols';
-import {
+import type { SizingType } from './sizing';
+import type { ClusterEventArgs } from './symbols/Cluster';
+import type { EdgeArrowPosition } from './symbols/edges/Edge';
+import type { EdgeInterpolation, EdgeLabelPosition } from './symbols/Edge';
+import type {
   CenterNodesParams,
-  FitNodesParams,
-  useCenterGraph
-} from './CameraControls';
-import { LabelVisibilityType } from './utils';
+  FitNodesParams
+} from './CameraControls/useCenterGraph';
+import { Cluster } from './symbols/Cluster';
+import { Edge } from './symbols/Edge';
+import { Edges } from './symbols/edges';
+import { Node } from './symbols';
+import { useCenterGraph } from './CameraControls/useCenterGraph';
+import { LabelVisibilityType } from './utils/visibility';
 import { useStore } from './store';
 import Graph from 'graphology';
-import { ThreeEvent, useThree } from '@react-three/fiber';
+import type { ThreeEvent } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
 
 export interface GraphSceneProps {
   /**

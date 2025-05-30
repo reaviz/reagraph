@@ -4,7 +4,6 @@ import { Html } from '@react-three/drei';
 import { ColorRepresentation, Euler } from 'three';
 
 import { useStore } from '../../store';
-import { Theme } from '../../themes';
 import { ContextMenuEvent, InternalGraphEdge } from '../../types';
 import {
   animationConfig,

@@ -9,16 +9,15 @@ import React, {
   useMemo
 } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { GraphScene, GraphSceneProps, GraphSceneRef } from './GraphScene';
-import {
-  CameraMode,
-  CameraControls,
-  CameraControlsRef
-} from './CameraControls';
-import { Theme, lightTheme } from './themes';
-import { createStore, Provider } from './store';
+import { GraphScene } from '../GraphScene';
+import type { GraphSceneProps, GraphSceneRef } from '../GraphScene';
+import { CameraControls } from '../CameraControls';
+import type { CameraMode, CameraControlsRef } from '../CameraControls';
+import { Theme, lightTheme } from '../themes';
+import { createStore, Provider } from '../store';
 import Graph from 'graphology';
-import { Lasso, LassoType } from './selection';
+import { Lasso } from '../selection/Lasso';
+import type { LassoType } from '../selection/Lasso';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
 
@@ -170,6 +169,15 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         edges.length + nodes.length > 400 ? false : animated;
 
       const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
+      // zustand/context migration (https://github.com/pmndrs/zustand/discussions/1180)
+      const store = useRef(
+        createStore({
+          selections,
+          actives,
+          theme,
+          collapsedNodeIds
+        })
+      ).current;
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
@@ -184,16 +192,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
           >
-            <Provider
-              createStore={() =>
-                createStore({
-                  selections,
-                  actives,
-                  theme,
-                  collapsedNodeIds
-                })
-              }
-            >
+            <Provider store={store}>
               {theme.canvas?.background && (
                 <color attach="background" args={[theme.canvas.background]} />
               )}

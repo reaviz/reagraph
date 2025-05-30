@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { GraphCanvas, Svg, LayoutTypes, SphereWithIcon, SphereWithSvg } from '../../src';
+import { GraphCanvas, LayoutTypes } from '../../src';
+import { Svg, SphereWithIcon, SphereWithSvg } from '../../src/symbols';
 import {
   iconNodes,
   manyNodes,

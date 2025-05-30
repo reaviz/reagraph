@@ -1,5 +1,7 @@
-import { StoreApi, create } from 'zustand';
-import createContext from 'zustand/context';
+import { createContext, useContext, FC, ReactNode } from 'react';
+import React from 'react';
+import { StoreApi, create, useStore as useZustandStore } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import {
   InternalGraphEdge,
   InternalGraphNode,
@@ -13,6 +15,7 @@ import {
   getVector,
   updateNodePosition
 } from './utils';
+import { isServerRender } from './utils/visibility';
 import Graph from 'graphology';
 import { Theme } from './themes';
 
@@ -55,8 +58,7 @@ export interface GraphState {
   setClusterPosition: (id: string, position: CenterPositionVector) => void;
 }
 
-export const { Provider, useStore } = createContext<StoreApi<GraphState>>();
-
+// Create a store factory function
 export const createStore = ({
   actives = [],
   selections = [],
@@ -67,10 +69,10 @@ export const createStore = ({
     theme: {
       ...theme,
       edge: {
-        ...theme.edge,
+        ...theme?.edge,
         label: {
-          ...theme.edge.label,
-          fontSize: theme.edge.label.fontSize ?? 6
+          ...theme?.edge?.label,
+          fontSize: theme?.edge?.label?.fontSize ?? 6
         }
       }
     },
@@ -206,3 +208,25 @@ export const createStore = ({
         return state;
       })
   }));
+
+const defaultStore = createStore({});
+const StoreContext = isServerRender
+  ? null
+  : createContext<StoreApi<GraphState>>(defaultStore);
+
+export const Provider: FC<{
+  children: ReactNode;
+  store?: StoreApi<GraphState>;
+}> = ({ children, store = defaultStore }) => {
+  if (isServerRender) {
+    return children;
+  }
+
+  return React.createElement(StoreContext.Provider, { value: store }, children);
+};
+
+export const useStore = <T>(selector: (state: GraphState) => T): T => {
+  const store = useContext(StoreContext);
+  // use the useShallow hook, which will return a stable reference (https://zustand.docs.pmnd.rs/migrations/migrating-to-v5)
+  return useZustandStore(store, useShallow(selector));
+};

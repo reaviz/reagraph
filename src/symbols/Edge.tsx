@@ -14,11 +14,11 @@ import {
 } from '../utils';
 import { Line } from './Line';
 import { useStore } from '../store';
-import { ContextMenuEvent, InternalGraphEdge } from '../types';
+import type { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { Euler, Vector3 } from 'three';
-import { ThreeEvent } from '@react-three/fiber';
+import type { ThreeEvent } from '@react-three/fiber';
 
 /**
  * Label positions relatively edge.

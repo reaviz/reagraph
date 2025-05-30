@@ -5,7 +5,5 @@ export * from './position';
 export * from './layout';
 export * from './graph';
 export * from './cluster';
-export * from './useHoverIntent';
-export * from './useDrag';
 export * from './paths';
 export * from './dom';

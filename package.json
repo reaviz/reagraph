@@ -72,7 +72,7 @@
     "hold-event": "^0.2.0",
     "three": "^0.176.0",
     "three-stdlib": "^2.36.0",
-    "zustand": "4.3.9"
+    "zustand": "5.0.5"
   },
   "peerDependencies": {
     "react": ">=16",
