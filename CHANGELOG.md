@@ -1,3 +1,6 @@
+# 4.23.1 - 5/30/25
+- [fix] Can't deselect nodes in multiModifier mode #329
+
 # 4.23.0 - 5/27/25
 - [feature] Upgraded deps to have React v19 compatibility #326
 
