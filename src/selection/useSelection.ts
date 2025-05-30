@@ -5,6 +5,7 @@ import React, {
   useMemo,
   useState
 } from 'react';
+import { isNotEditableElement } from '../utils/dom';
 import { GraphCanvasRef } from '../GraphCanvas';
 import { GraphEdge, GraphNode } from '../types';
 import { findPath } from '../utils/paths';
@@ -304,12 +305,7 @@ export const useSelection = ({
 
   const onKeyDown = useCallback((event: KeyboardEvent) => {
     const element = event.target as HTMLElement;
-    const isSafe =
-      element.tagName !== 'INPUT' &&
-      element.tagName !== 'SELECT' &&
-      element.tagName !== 'TEXTAREA' &&
-      !element.isContentEditable;
-
+    const isSafe = isNotEditableElement(element);
     const isMeta = event.metaKey || event.ctrlKey;
 
     if (isSafe && isMeta) {
@@ -317,17 +313,29 @@ export const useSelection = ({
     }
   }, []);
 
+  const onKeyUp = useCallback((event: KeyboardEvent) => {
+    const element = event.target as HTMLElement;
+    const isSafe = isNotEditableElement(element);
+    const isMeta = ['Meta', 'Control'].includes(event.key);
+
+    if (isSafe && isMeta) {
+      setMetaKeyDown(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.addEventListener('keydown', onKeyDown);
+      window.addEventListener('keyup', onKeyUp);
     }
 
     return () => {
       if (typeof window !== 'undefined') {
         window.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener('keyup', onKeyUp);
       }
     };
-  }, [onKeyDown]);
+  }, [onKeyDown, onKeyUp]);
 
   const onCanvasClick = useCallback(
     (event: MouseEvent) => {
