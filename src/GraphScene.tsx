@@ -458,12 +458,12 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         const promotedEdges = edges.filter(
           e => selectedOrActiveNodes.has(e.source) || selectedOrActiveNodes.has(e.target)
         );
-        console.log('promotedEdges', promotedEdges);
+    
         // Edges to keep in batch
         const batchedEdges = edges.filter(
           e => !selectedOrActiveNodes.has(e.source) && !selectedOrActiveNodes.has(e.target)
         );
-        console.log('batchedEdges', batchedEdges);
+
 
         return (
           <>
