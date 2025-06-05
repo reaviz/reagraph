@@ -83,8 +83,6 @@ export const CyberInvestigation = () => {
       }
     }
 
-    console.log('nodes', n.length);
-    console.log('edges', e.length);
     return [
       n,
       e
@@ -129,7 +127,6 @@ export const MitreTools = () => {
     const e = [];
 
     for (const node of mitreTools.nodes) {
-      
       if (!n.find(nn => nn.id === node.id)) {
         n.push({
           id: node.id,
@@ -215,7 +212,6 @@ export const MitreTechniques = () => {
   }, []);
 
   const graphRef = useRef<GraphCanvasRef | null>(null);
-
   const {
     selections,
     actives,
