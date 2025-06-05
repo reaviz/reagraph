@@ -272,7 +272,7 @@ export const Edges: FC<EdgesProps> = ({
       </mesh>
       {edges.map(edge => (
         <Edge
-          animated={animated}
+          animated={false}
           contextMenu={contextMenu}
           color={theme.edge.label.color}
           disabled={disabled}
