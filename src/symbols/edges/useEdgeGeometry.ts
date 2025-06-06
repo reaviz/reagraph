@@ -58,7 +58,6 @@ export function useEdgeGeometry(
       // Pre-compute values outside the loop
       const { nodes } = stateRef.current;
       const nodesMap = new Map(nodes.map(node => [node.id, node]));
-      const labelFontSize = theme.edge.label.fontSize;
 
       // Initialize base arrow geometry if needed
       if (arrowPlacement !== 'none' && !baseArrowGeometryRef.current) {
@@ -89,9 +88,9 @@ export function useEdgeGeometry(
         }
 
         const fromVector = getVector(from);
-        const fromOffset = from.size + labelFontSize;
+        const fromOffset = from.size; // Match individual edge behavior
         const toVector = getVector(to);
-        const toOffset = to.size + labelFontSize;
+        const toOffset = to.size; // Match individual edge behavior
         let curve = getCurve(
           fromVector,
           fromOffset,
@@ -144,7 +143,7 @@ export function useEdgeGeometry(
       });
       return geometries;
     },
-    [arrowPlacement, curved, theme.edge.label.fontSize]
+    [arrowPlacement, curved]
   );
 
   const getGeometry = useCallback(

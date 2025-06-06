@@ -445,57 +445,40 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         ]
       );
 
-      const edgeComponents = useMemo(
-        () =>
-          animated ? (
-            edges.map(e => (
-              <Edge
-                key={e.id}
-                id={e.id}
-                disabled={disabled}
-                animated={animated}
-                labelFontUrl={labelFontUrl}
-                labelPlacement={edgeLabelPosition}
-                arrowPlacement={edgeArrowPosition}
-                interpolation={edgeInterpolation}
-                contextMenu={contextMenu}
-                onClick={onEdgeClick}
-                onContextMenu={onEdgeContextMenu}
-                onPointerOver={onEdgePointerOver}
-                onPointerOut={onEdgePointerOut}
-              />
-            ))
-          ) : (
-            <Edges
-              edges={edges}
-              disabled={disabled}
-              animated={animated}
-              labelFontUrl={labelFontUrl}
-              labelPlacement={edgeLabelPosition}
-              arrowPlacement={edgeArrowPosition}
-              interpolation={edgeInterpolation}
-              contextMenu={contextMenu}
-              onClick={onEdgeClick}
-              onContextMenu={onEdgeContextMenu}
-              onPointerOver={onEdgePointerOver}
-              onPointerOut={onEdgePointerOut}
-            />
-          ),
-        [
-          animated,
-          contextMenu,
-          disabled,
-          edgeArrowPosition,
-          edgeInterpolation,
-          edgeLabelPosition,
-          edges,
-          labelFontUrl,
-          onEdgeClick,
-          onEdgeContextMenu,
-          onEdgePointerOut,
-          onEdgePointerOver
-        ]
-      );
+      // Use unified edge rendering with consistent animation behavior
+      const edgeComponents = useMemo(() => {
+        // Always use the batched Edges component for better performance
+        // Let the Edges component handle promotion of edges internally
+        return (
+          <Edges
+            edges={edges}
+            disabled={disabled}
+            animated={animated} // Respect the global animation setting
+            labelFontUrl={labelFontUrl}
+            labelPlacement={edgeLabelPosition}
+            arrowPlacement={edgeArrowPosition}
+            interpolation={edgeInterpolation}
+            contextMenu={contextMenu}
+            onClick={onEdgeClick}
+            onContextMenu={onEdgeContextMenu}
+            onPointerOver={onEdgePointerOver}
+            onPointerOut={onEdgePointerOut}
+          />
+        );
+      }, [
+        edges,
+        animated,
+        contextMenu,
+        disabled,
+        edgeArrowPosition,
+        edgeInterpolation,
+        edgeLabelPosition,
+        labelFontUrl,
+        onEdgeClick,
+        onEdgeContextMenu,
+        onEdgePointerOut,
+        onEdgePointerOver
+      ]);
 
       const clusterComponents = useMemo(
         () =>
