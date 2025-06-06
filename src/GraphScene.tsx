@@ -445,67 +445,29 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         ]
       );
 
-      // Unified edge rendering: batch by default, promote animated edges to individual components
+      // Use unified edge rendering with consistent animation behavior
       const edgeComponents = useMemo(() => {
-        // Determine which edges need to be animated (selection, hover, layout transition)
-        // For this example, we'll assume animated edges are those in selections or actives
-        // (You may want to extend this logic to include hover or layout transition as needed)
-        const selections = rest.selections || [];
-        const actives = rest.actives || [];
-        const selectedOrActiveNodes = new Set([...selections, ...actives]);
-
-        // Promote edges connected to selected or active nodes
-        const promotedEdges = edges.filter(
-          e => selectedOrActiveNodes.has(e.source) || selectedOrActiveNodes.has(e.target)
-        );
-    
-        // Edges to keep in batch
-        const batchedEdges = edges.filter(
-          e => !selectedOrActiveNodes.has(e.source) && !selectedOrActiveNodes.has(e.target)
-        );
-
-
+        // Always use the batched Edges component for better performance
+        // Let the Edges component handle promotion of edges internally
         return (
-          <>
-            {batchedEdges.length > 0 && (
-              <Edges
-                edges={batchedEdges}
-                disabled={disabled}
-                animated={false}
-                labelFontUrl={labelFontUrl}
-                labelPlacement={edgeLabelPosition}
-                arrowPlacement={edgeArrowPosition}
-                interpolation={edgeInterpolation}
-                contextMenu={contextMenu}
-                onClick={onEdgeClick}
-                onContextMenu={onEdgeContextMenu}
-                onPointerOver={onEdgePointerOver}
-                onPointerOut={onEdgePointerOut}
-              />
-            )}
-            {promotedEdges.map(e => (
-              <Edge
-                key={e.id}
-                id={e.id}
-                disabled={disabled}
-                animated={true}
-                labelFontUrl={labelFontUrl}
-                labelPlacement={edgeLabelPosition}
-                arrowPlacement={edgeArrowPosition}
-                interpolation={edgeInterpolation}
-                contextMenu={contextMenu}
-                onClick={onEdgeClick}
-                onContextMenu={onEdgeContextMenu}
-                onPointerOver={onEdgePointerOver}
-                onPointerOut={onEdgePointerOut}
-              />
-            ))}
-          </>
+          <Edges
+            edges={edges}
+            disabled={disabled}
+            animated={animated} // Respect the global animation setting
+            labelFontUrl={labelFontUrl}
+            labelPlacement={edgeLabelPosition}
+            arrowPlacement={edgeArrowPosition}
+            interpolation={edgeInterpolation}
+            contextMenu={contextMenu}
+            onClick={onEdgeClick}
+            onContextMenu={onEdgeContextMenu}
+            onPointerOver={onEdgePointerOver}
+            onPointerOut={onEdgePointerOut}
+          />
         );
       }, [
         edges,
-        rest.selections,
-        rest.actives,
+        animated,
         contextMenu,
         disabled,
         edgeArrowPosition,

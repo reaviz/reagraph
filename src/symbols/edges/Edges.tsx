@@ -13,7 +13,8 @@ import {
   useEdgePositionAnimation,
   useEdgeOpacityAnimation
 } from './useEdgeAnimations';
-import { Edge } from './Edge';
+import { Edge as UnifiedEdge } from '../Edge';
+import { Edge as BatchedLabelEdge } from './Edge';
 
 export type EdgesProps = {
   /**
@@ -58,34 +59,27 @@ export type EdgesProps = {
 } & EdgeEvents;
 
 /**
- * Three.js rendering starts to get slower if you have an individual mesh for each edge
- * and a high number of edges.
+ * Optimized edge rendering that balances performance and animation quality.
  *
- * Instead, we take the edges and split them into their different render states:
+ * Performance Strategy:
+ * - Uses batched mesh rendering for most edges (high performance)
+ * - Promotes edges to individual components only when needed for smooth animations
+ * - Maintains visual consistency by respecting global animation settings
  *
- *  * - Active (any edges that are marked as "selected" or "active" in the state)
- *  * - Dragging (any edges that are connected to a node that is being dragged)
- *  * - Intersecting (any edges that are currently intersected by the ray from the mouse position)
- *  * - Inactive (any edges that aren't active, dragging, or intersected)
+ * Edge Promotion Logic:
+ * - When animated=false: All edges use batched rendering
+ * - When animated=true: Edges connected to selected/active/dragging nodes get individual rendering
  *
- * We generate the geometry for each edge in each of these groups, and then merge them
- * into a single geometry for each group. This merged mesh is rendered as one object
- * which gives much better performance. This means that we only need to update geometry
- * and positions when edges move between the different states, rather than updating all
- * edges whenever any other edge changes.
- *
- * To get this all working, we have to do a few things outside the @react-three/fiber world,
- * specifically:
- *
- *  * manually create edge/arrow geometries (see `useEdgeGeometry`)
- *  * manually track mouse/edge interactions and fire events (see `useEdgeEvents`)
- *  * manually update edge/arrow positions during aniamations (see `useEdgeAnimations`)
+ * This provides the best of both worlds:
+ * - High performance for large graphs (batched rendering)
+ * - Smooth animations where they matter most (promoted edges)
+ * - Visual consistency (no jarring mixed animation states)
  */
 export const Edges: FC<EdgesProps> = ({
   interpolation = 'linear',
   arrowPlacement = 'end',
   labelPlacement = 'inline',
-  animated,
+  animated = true,
   contextMenu,
   disabled,
   edges,
@@ -107,12 +101,48 @@ export const Edges: FC<EdgesProps> = ({
   const actives = useStore(state => state.actives || []);
   const selections = useStore(state => state.selections || []);
 
+  // Determine which edges need individual rendering for animations
+  const [batchedEdges, promotedEdges] = useMemo(() => {
+    if (!animated) {
+      // When animation is disabled, batch all edges for maximum performance
+      return [edges, []];
+    }
+
+    // When animated, promote edges that need smooth animations
+    const selectedOrActiveNodes = new Set([...selections, ...actives]);
+    const draggingNodes = new Set(draggingIds);
+
+    const promoted: Array<InternalGraphEdge> = [];
+    const batched: Array<InternalGraphEdge> = [];
+
+    edges.forEach(edge => {
+      // Promote edges if they're connected to selected, active, or dragging nodes
+      const needsPromotion =
+        selectedOrActiveNodes.has(edge.source) ||
+        selectedOrActiveNodes.has(edge.target) ||
+        draggingNodes.has(edge.source) ||
+        draggingNodes.has(edge.target) ||
+        selections.includes(edge.id) ||
+        actives.includes(edge.id);
+
+      if (needsPromotion) {
+        promoted.push(edge);
+      } else {
+        batched.push(edge);
+      }
+    });
+
+    return [batched, promoted];
+  }, [edges, animated, selections, actives, draggingIds]);
+
+  // Legacy grouping for batched edges (still needed for the batched mesh rendering)
   const [active, inactive, draggingActive, draggingInactive] = useMemo(() => {
     const active: Array<InternalGraphEdge> = [];
     const inactive: Array<InternalGraphEdge> = [];
     const draggingActive: Array<InternalGraphEdge> = [];
     const draggingInactive: Array<InternalGraphEdge> = [];
-    edges.forEach(edge => {
+
+    batchedEdges.forEach(edge => {
       if (
         draggingIds.includes(edge.source) ||
         draggingIds.includes(edge.target)
@@ -132,7 +162,7 @@ export const Edges: FC<EdgesProps> = ({
       }
     });
     return [active, inactive, draggingActive, draggingInactive];
-  }, [edges, actives, selections, draggingIds]);
+  }, [batchedEdges, actives, selections, draggingIds]);
 
   const hasSelections = !!selections.length;
 
@@ -151,11 +181,12 @@ export const Edges: FC<EdgesProps> = ({
 
   useEffect(() => {
     if (draggingIds.length === 0) {
-      const edgeGeometries = getGeometries(edges);
+      // Only create meshes for batched edges to avoid duplicating promoted edges
+      const edgeGeometries = getGeometries(batchedEdges);
       const edgeMeshes = edgeGeometries.map(edge => new Mesh(edge));
       setEdgeMeshes(edgeMeshes);
     }
-  }, [getGeometries, setEdgeMeshes, edges, draggingIds.length]);
+  }, [getGeometries, setEdgeMeshes, batchedEdges, draggingIds.length]);
 
   const staticEdgesRef = useRef(new Mesh());
   const dynamicEdgesRef = useRef(new Mesh());
@@ -172,10 +203,10 @@ export const Edges: FC<EdgesProps> = ({
         return [];
       }
       return intersections.map(
-        intersection => edges[edgeMeshes.indexOf(intersection.object)]
+        intersection => batchedEdges[edgeMeshes.indexOf(intersection.object)]
       );
     },
-    [edgeMeshes, edges]
+    [edgeMeshes, batchedEdges]
   );
 
   const { handleClick, handleContextMenu, handleIntersections } = useEdgeEvents(
@@ -270,9 +301,28 @@ export const Edges: FC<EdgesProps> = ({
           transparent={true}
         />
       </mesh>
-      {edges.map(edge => (
-        <Edge
-          animated={false}
+      {/* Render promoted edges as individual components for smooth animations */}
+      {promotedEdges.map(edge => (
+        <UnifiedEdge
+          key={edge.id}
+          id={edge.id}
+          animated={animated}
+          disabled={disabled}
+          labelFontUrl={labelFontUrl}
+          labelPlacement={labelPlacement}
+          arrowPlacement={arrowPlacement}
+          interpolation={interpolation}
+          contextMenu={contextMenu}
+          onClick={onClick}
+          onContextMenu={onContextMenu}
+          onPointerOver={onPointerOver}
+          onPointerOut={onPointerOut}
+        />
+      ))}
+      {/* Render labels only for batched edges (geometry is handled by batched meshes above) */}
+      {batchedEdges.map(edge => (
+        <BatchedLabelEdge
+          animated={animated}
           contextMenu={contextMenu}
           color={theme.edge.label.color}
           disabled={disabled}
