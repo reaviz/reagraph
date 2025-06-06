@@ -1,3 +1,5 @@
+# 4.24.1 - 6/6/25
+- [chore] Update dependencies including React, Three.js, and graphology packages #333
 
 # 4.24.0 - 5/30/25
 - [feature] Add support for the NextJS framework #327
