@@ -1,0 +1,9 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Reagraph",
+  "description": "Reagraph is a high-performance network graph visualization built in WebGL for React.. Maintained by @goodcodeus.",
+  "folders": ["docs"],
+  "excludeFolders": [],
+  "excludeFiles": [],
+  "rules": ["Use dynamic imports for reagraph in case of using with NextJS"]
+}
