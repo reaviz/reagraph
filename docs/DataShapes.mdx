@@ -10,6 +10,7 @@ The graph is made up of 2 basic data shape objects you can pass to the graph.
 - `GraphEdge` - The link between Nodes
 
 ## GraphElementBaseAttributes
+
 ```ts
 export interface GraphElementBaseAttributes<T = any> {
   /**
@@ -28,6 +29,11 @@ export interface GraphElementBaseAttributes<T = any> {
   label?: string;
 
   /**
+   * SubLabel for the element.
+   */
+  subLabel?: string;
+
+  /**
    * Size of the element.
    */
   size?: number;
@@ -40,6 +46,7 @@ export interface GraphElementBaseAttributes<T = any> {
 ```
 
 ## GraphNode
+
 ```ts
 export interface GraphNode extends GraphElementBaseAttributes {
   /**
@@ -55,6 +62,7 @@ export interface GraphNode extends GraphElementBaseAttributes {
 ```
 
 ## GraphEdge
+
 ```ts
 export interface GraphEdge extends GraphElementBaseAttributes {
   /**
@@ -66,5 +74,12 @@ export interface GraphEdge extends GraphElementBaseAttributes {
    * Target ID of the node.
    */
   target: string;
+
+  /**
+   * Placement of the subLabel relative to the main label.
+   * - 'below': Show subLabel below the main label (default)
+   * - 'above': Show subLabel above the main label
+   */
+  subLabelPlacement?: 'below' | 'above';
 }
 ```
