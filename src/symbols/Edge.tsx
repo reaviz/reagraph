@@ -31,6 +31,14 @@ import type { ThreeEvent } from '@react-three/fiber';
 export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
 
 /**
+ * SubLabel positions relatively to the main label.
+ *
+ * - below: show subLabel below the main label
+ * - above: show subLabel above the main label
+ */
+export type EdgeSubLabelPosition = 'below' | 'above';
+
+/**
  * Type of edge interpolation.
  *
  * - Linear is straight
@@ -63,6 +71,11 @@ export interface EdgeProps {
    * The placement of the edge label.
    */
   labelPlacement?: EdgeLabelPosition;
+
+  /**
+   * The placement of the edge subLabel relative to the main label.
+   */
+  subLabelPlacement?: EdgeSubLabelPosition;
 
   /**
    * The placement of the edge arrow.
@@ -120,7 +133,8 @@ export const Edge: FC<EdgeProps> = ({
   onContextMenu,
   onClick,
   onPointerOver,
-  onPointerOut
+  onPointerOut,
+  subLabelPlacement = 'below'
 }) => {
   const theme = useStore(state => state.theme);
   const isDragging = useStore(state => state.draggingIds.length > 0);
@@ -141,6 +155,11 @@ export const Edge: FC<EdgeProps> = ({
     size = 1,
     fill
   } = edge;
+
+  // Use subLabelPlacement from edge data if available, otherwise use the prop value
+  const effectiveSubLabelPlacement =
+    edge.subLabelPlacement || subLabelPlacement;
+
   const from = useStore(store => store.nodes.find(node => node.id === source));
   const to = useStore(store => store.nodes.find(node => node.id === target));
 
@@ -227,7 +246,7 @@ export const Edge: FC<EdgeProps> = ({
       : theme.edge.inactiveOpacity
     : theme.edge.opacity;
 
-  // Calculate subLabel position based on edge orientation
+  // Calculate subLabel position based on edge orientation and subLabelPlacement
   const subLabelOffset = useMemo(() => {
     // Calculate direction vector between nodes
     const dx = to.position.x - from.position.x;
@@ -236,10 +255,16 @@ export const Edge: FC<EdgeProps> = ({
     // Get angle of the edge
     const angle = Math.atan2(dy, dx);
 
-    // Calculate perpendicular angle based on edge direction
-    // If dx is negative (edge going right to left), add PI/2 instead of subtracting
-    // This ensures the subLabel is always placed below the main label
-    const perpAngle = dx >= 0 ? angle - Math.PI / 2 : angle + Math.PI / 2;
+    // Calculate perpendicular angle based on edge direction and effectiveSubLabelPlacement
+    // If dx is negative (edge going right to left), add PI/2 and if positive, subtract PI/2
+    const perpAngle =
+      effectiveSubLabelPlacement === 'below'
+        ? dx >= 0
+          ? angle - Math.PI / 2
+          : angle + Math.PI / 2
+        : dx >= 0
+          ? angle + Math.PI / 2
+          : angle - Math.PI / 2;
 
     // Offset distance for subLabel
     const offsetDistance = 7;
@@ -249,7 +274,7 @@ export const Edge: FC<EdgeProps> = ({
     const offsetY = Math.sin(perpAngle) * offsetDistance;
 
     return [offsetX, offsetY, 0];
-  }, [from.position, to.position]);
+  }, [from.position, to.position, effectiveSubLabelPlacement]);
 
   const [{ labelPosition, subLabelPosition }] = useSpring(
     () => ({

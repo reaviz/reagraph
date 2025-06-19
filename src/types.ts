@@ -71,6 +71,13 @@ export interface GraphEdge extends GraphElementBaseAttributes {
    * Target ID of the node.
    */
   target: string;
+
+  /**
+   * Placement of the subLabel relative to the main label.
+   * - 'below': Show subLabel below the main label (default)
+   * - 'above': Show subLabel above the main label
+   */
+  subLabelPlacement?: 'below' | 'above';
 }
 
 export interface Graph {
