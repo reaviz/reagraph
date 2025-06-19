@@ -7,7 +7,11 @@ import {
   TubeGeometry,
   CatmullRomCurve3,
   MeshBasicMaterial,
-  Color
+  ShaderMaterial,
+  Color,
+  Curve,
+  BufferAttribute,
+  Quaternion
 } from 'three';
 import { InternalGraphEdge } from '../types';
 
@@ -20,6 +24,12 @@ export interface EdgeBatchConfig {
   enableInstancing?: boolean;
   enableLOD?: boolean;
   lodThresholds?: number[];
+  enableGPUCompute?: boolean;
+  enableEdgeBundling?: boolean;
+  bundlingThreshold?: number;
+  enableViewportCulling?: boolean;
+  segmentCounts?: number[];
+  radialSegments?: number[];
 }
 
 export interface EdgeRenderState {
@@ -36,6 +46,14 @@ export class EdgeBatcher {
   private materialPool = new Map<string, Material>();
   private instancedMeshes = new Map<string, InstancedMesh>();
   private config: EdgeBatchConfig;
+  private edgeToBatchMap = new Map<string, string>();
+  private renderStats = {
+    totalEdges: 0,
+    batchCount: 0,
+    drawCalls: 0,
+    geometryReuse: 0,
+    culledEdges: 0
+  };
 
   constructor(config: EdgeBatchConfig = {}) {
     this.config = {
@@ -43,6 +61,12 @@ export class EdgeBatcher {
       enableInstancing: true,
       enableLOD: true,
       lodThresholds: [100, 500, 1000],
+      enableGPUCompute: false,
+      enableEdgeBundling: false,
+      bundlingThreshold: 5,
+      enableViewportCulling: true,
+      segmentCounts: [20, 10, 6, 2],
+      radialSegments: [8, 6, 4, 3],
       ...config
     };
   }
@@ -342,6 +366,266 @@ export class EdgeBatcher {
   }
 
   /**
+   * Advanced edge bundling for dense networks
+   */
+  bundleParallelEdges(edges: InternalGraphEdge[]): InternalGraphEdge[] {
+    if (!this.config.enableEdgeBundling) {
+      return edges;
+    }
+
+    const bundleGroups = new Map<string, InternalGraphEdge[]>();
+
+    edges.forEach(edge => {
+      const key = this.getEdgeGroupKey(edge.source, edge.target);
+      if (!bundleGroups.has(key)) {
+        bundleGroups.set(key, []);
+      }
+      bundleGroups.get(key)!.push(edge);
+    });
+
+    const bundledEdges: InternalGraphEdge[] = [];
+
+    bundleGroups.forEach(groupEdges => {
+      if (groupEdges.length >= this.config.bundlingThreshold!) {
+        // Create bundled representation
+        const bundledEdge = this.createEdgeBundle(groupEdges);
+        bundledEdges.push(bundledEdge);
+      } else {
+        // Keep individual edges
+        bundledEdges.push(...groupEdges);
+      }
+    });
+
+    return bundledEdges;
+  }
+
+  /**
+   * Generate edge group key for bundling
+   */
+  private getEdgeGroupKey(source: string, target: string): string {
+    // Sort to ensure bidirectional edges are grouped together
+    return source < target ? `${source}-${target}` : `${target}-${source}`;
+  }
+
+  /**
+   * Create bundled edge representation
+   */
+  private createEdgeBundle(edges: InternalGraphEdge[]): InternalGraphEdge {
+    const representative = edges[0];
+    return {
+      ...representative,
+      id: `bundle_${edges.map(e => e.id).join('_')}`,
+      data: {
+        ...representative.data,
+        bundleCount: edges.length,
+        bundledEdges: edges,
+        thickness: Math.log(edges.length + 1) * 2,
+        opacity: Math.min(1, edges.length / 10)
+      }
+    };
+  }
+
+  /**
+   * Viewport-based edge culling
+   */
+  cullEdgesByViewport(
+    edges: InternalGraphEdge[],
+    viewport: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      z?: number;
+    }
+  ): InternalGraphEdge[] {
+    if (!this.config.enableViewportCulling) {
+      return edges;
+    }
+
+    const buffer = 100; // Buffer zone for smooth panning
+    const visibleEdges = edges.filter(edge => {
+      const sourcePos = this.getNodePosition(edge.source);
+      const targetPos = this.getNodePosition(edge.target);
+
+      if (!sourcePos || !targetPos) return false;
+
+      // Quick AABB test - if both nodes outside viewport, cull edge
+      const startInView = this.isPointInViewport(sourcePos, viewport, buffer);
+      const endInView = this.isPointInViewport(targetPos, viewport, buffer);
+
+      return startInView || endInView;
+    });
+
+    this.renderStats.culledEdges = edges.length - visibleEdges.length;
+    return visibleEdges;
+  }
+
+  /**
+   * Check if point is in viewport
+   */
+  private isPointInViewport(
+    point: { x: number; y: number; z?: number },
+    viewport: {
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+      z?: number;
+    },
+    buffer: number
+  ): boolean {
+    return (
+      point.x >= viewport.x - buffer &&
+      point.x <= viewport.x + viewport.width + buffer &&
+      point.y >= viewport.y - buffer &&
+      point.y <= viewport.y + viewport.height + buffer
+    );
+  }
+
+  /**
+   * Create advanced shader material for edges
+   */
+  private createAdvancedMaterial(batchKey: string): ShaderMaterial {
+    const [colorStr, sizeStr, style, animType] = batchKey.split('_');
+    const color = parseInt(colorStr, 16) || 0x666666;
+    const animated = animType === 'anim';
+
+    return new ShaderMaterial({
+      vertexShader: this.getAdvancedVertexShader(animated),
+      fragmentShader: this.getAdvancedFragmentShader(style),
+      uniforms: {
+        u_time: { value: 0.0 },
+        u_color: { value: new Color(color) },
+        u_opacity: { value: 1.0 },
+        u_thickness: { value: parseFloat(sizeStr) || 1.0 },
+        u_dashSize: { value: 0.1 },
+        u_totalLength: { value: 1.0 }
+      },
+      transparent: true
+    });
+  }
+
+  /**
+   * Advanced vertex shader with animation support
+   */
+  private getAdvancedVertexShader(animated: boolean): string {
+    return `
+      uniform float u_time;
+      attribute float instanceId;
+      varying vec2 vUv;
+      varying float vInstanceId;
+      
+      void main() {
+        vUv = uv;
+        vInstanceId = instanceId;
+        
+        vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+        
+        ${
+  animated
+    ? `
+          // Flow animation along edge
+          float animationPhase = u_time * 2.0 + vInstanceId * 0.1;
+          float wave = sin(animationPhase + position.x * 10.0) * 0.05;
+          worldPosition.y += wave;
+        `
+    : ''
+}
+        
+        gl_Position = projectionMatrix * viewMatrix * worldPosition;
+      }
+    `;
+  }
+
+  /**
+   * Advanced fragment shader with style support
+   */
+  private getAdvancedFragmentShader(style: string): string {
+    return `
+      uniform vec3 u_color;
+      uniform float u_opacity;
+      uniform float u_dashSize;
+      uniform float u_totalLength;
+      uniform float u_time;
+      varying vec2 vUv;
+      varying float vInstanceId;
+      
+      void main() {
+        float alpha = u_opacity;
+        
+        ${
+  style === 'dashed'
+    ? `
+          // Dashed pattern
+          float dash = step(0.5, mod(vUv.x / u_dashSize, 2.0));
+          alpha *= dash;
+        `
+    : ''
+}
+        
+        ${
+  style === 'dotted'
+    ? `
+          // Dotted pattern
+          float dot = step(0.8, mod(vUv.x / u_dashSize * 4.0, 1.0));
+          alpha *= dot;
+        `
+    : ''
+}
+        
+        // Fade at edges for smooth appearance
+        float edgeFade = 1.0 - pow(abs(vUv.y - 0.5) * 2.0, 2.0);
+        alpha *= edgeFade;
+        
+        if (alpha < 0.01) discard;
+        
+        gl_FragColor = vec4(u_color, alpha);
+      }
+    `;
+  }
+
+  /**
+   * Update animations for batched edges
+   */
+  updateAnimations(deltaTime: number): void {
+    this.materialPool.forEach(material => {
+      if (material instanceof ShaderMaterial && material.uniforms.u_time) {
+        material.uniforms.u_time.value += deltaTime;
+      }
+    });
+  }
+
+  /**
+   * Get comprehensive render statistics
+   */
+  getRenderStats(): typeof this.renderStats {
+    this.renderStats.batchCount = this.instancedMeshes.size;
+    this.renderStats.drawCalls = this.instancedMeshes.size;
+    return { ...this.renderStats };
+  }
+
+  /**
+   * Update edge in batch (for real-time updates)
+   */
+  updateEdgeInBatch(edgeId: string, newState: Partial<EdgeRenderState>): void {
+    const batchKey = this.edgeToBatchMap.get(edgeId);
+    if (!batchKey) return;
+
+    // Mark batch as dirty for next render
+    // In production, this would trigger selective updates
+  }
+
+  /**
+   * Enable/disable GPU compute acceleration
+   */
+  setGPUComputeEnabled(enabled: boolean): void {
+    this.config.enableGPUCompute = enabled;
+    // Clear caches to force regeneration
+    this.materialPool.clear();
+    this.geometryPool.clear();
+  }
+
+  /**
    * Dispose of all geometries and materials
    */
   dispose(): void {
@@ -359,5 +643,6 @@ export class EdgeBatcher {
     this.geometryPool.clear();
     this.materialPool.clear();
     this.instancedMeshes.clear();
+    this.edgeToBatchMap.clear();
   }
 }

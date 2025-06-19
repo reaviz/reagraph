@@ -17,7 +17,14 @@ export function detectBundlerEnvironment(): string {
   if (typeof __webpack_require__ !== 'undefined') return 'webpack';
 
   // Check for Vite
-  if (typeof import.meta !== 'undefined' && 'env' in import.meta) return 'vite';
+  try {
+    const importMeta = new Function(
+      'return typeof import !== "undefined" ? import.meta : undefined'
+    )();
+    if (importMeta?.env) return 'vite';
+  } catch {
+    // import.meta not available
+  }
 
   // Check for Parcel
   // eslint-disable-next-line no-undef
@@ -75,13 +82,17 @@ export async function createWorker(
 
   // Strategy 1: Modern import.meta.url (Webpack 5, Vite, modern bundlers)
   try {
-    if (typeof import.meta?.url !== 'undefined') {
+    // Use eval to avoid TypeScript compilation issues with import.meta
+    const importMeta = new Function(
+      'return typeof import !== "undefined" ? import.meta : undefined'
+    )();
+    if (importMeta?.url) {
       const extensions = ['.js', '.mjs'];
       for (const ext of extensions) {
         try {
           const workerUrl = new URL(
             `${basePath}/${workerName}${ext}`,
-            import.meta.url
+            importMeta.url
           );
           if (debug) {
             console.log(

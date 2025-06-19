@@ -58,16 +58,9 @@ class LayoutWorker {
   private isRunning = false;
   private tickCount = 0;
   private maxTicks = 300;
-  private onPositionUpdate: ((positions: PositionUpdate[]) => void) | null =
-    null;
 
-  async initialize(
-    nodeCount: number,
-    onPositionUpdate: (positions: PositionUpdate[]) => void
-  ): Promise<void> {
+  async initialize(nodeCount: number): Promise<void> {
     console.log(`[LayoutWorker] Initializing for ${nodeCount} nodes`);
-
-    this.onPositionUpdate = onPositionUpdate;
 
     // Create simulation with default forces
     this.simulation = forceSimulation<WorkerNode, WorkerEdge>()
@@ -82,7 +75,7 @@ class LayoutWorker {
         forceCollide<WorkerNode>(d => (d.radius || 5) + 1)
       )
       .on('tick', () => {
-        if (this.isRunning && this.onPositionUpdate) {
+        if (this.isRunning) {
           this.handleTick();
         }
       })
@@ -191,7 +184,7 @@ class LayoutWorker {
   private handleTick(): void {
     this.tickCount++;
 
-    // Send position updates
+    // Send position updates via postMessage
     const positions: PositionUpdate[] = this.nodes.map(node => ({
       nodeId: node.id,
       x: node.x || 0,
@@ -199,9 +192,11 @@ class LayoutWorker {
       z: node.z || 0
     }));
 
-    if (this.onPositionUpdate) {
-      this.onPositionUpdate(positions);
-    }
+    // Use postMessage to communicate with main thread
+    self.postMessage({
+      type: 'positionUpdate',
+      data: positions
+    });
 
     // Check stopping conditions
     const alpha = this.simulation?.alpha() || 0;
@@ -263,6 +258,12 @@ class LayoutWorker {
     if (this.simulation) {
       this.simulation.stop();
     }
+
+    // Notify main thread that simulation has stopped
+    self.postMessage({
+      type: 'simulationStopped',
+      data: { tickCount: this.tickCount }
+    });
   }
 
   async isSimulationRunning(): Promise<boolean> {

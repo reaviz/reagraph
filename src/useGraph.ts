@@ -119,51 +119,16 @@ export const useGraph = ({
     [setDrags]
   );
 
-  // Helper function to update node positions from worker updates
-  const updateNodePositionsFromWorker = useCallback(
-    (positions: PositionUpdate[]) => {
-      // Update the graph with new positions
-      positions.forEach(({ nodeId, x, y, z }) => {
-        if (graph.hasNode(nodeId)) {
-          graph.setNodeAttribute(nodeId, 'x', x);
-          graph.setNodeAttribute(nodeId, 'y', y);
-          graph.setNodeAttribute(nodeId, 'z', z);
-        }
-      });
-
-      // Trigger a re-render by updating the nodes in the store
-      // This is a lightweight update that doesn't recalculate the entire layout
-      const currentNodes = stateNodes;
-      const updatedNodes = currentNodes.map(node => {
-        const positionUpdate = positions.find(p => p.nodeId === node.id);
-        if (positionUpdate) {
-          return {
-            ...node,
-            position: {
-              ...node.position,
-              x: positionUpdate.x,
-              y: positionUpdate.y,
-              z: positionUpdate.z
-            }
-          };
-        }
-        return node;
-      });
-
-      setNodes(updatedNodes);
-    },
-    [graph, setNodes, stateNodes]
-  );
-
   // Helper function to determine if we should use workers for the current layout
   const shouldUseWorkers = useCallback(
     (layoutType: LayoutTypes | undefined, nodeCount: number) => {
       // Use workers for force-directed layouts with sufficient nodes
-      return (
+      const result =
         (layoutType === 'forceDirected2d' ||
           layoutType === 'forceDirected3d') &&
-        nodeCount >= 100 // Threshold for when workers become beneficial
-      );
+        nodeCount >= 100; // Threshold for when workers become beneficial
+      // console.log(`[useGraph] shouldUseWorkers: layoutType=${layoutType}, nodeCount=${nodeCount}, result=${result}`);
+      return result;
     },
     []
   );
@@ -199,61 +164,113 @@ export const useGraph = ({
       });
     });
 
+    console.log(
+      `[convertToWorkerFormat] Final result: ${workerNodes.length} nodes, ${workerEdges.length} edges`
+    );
     return { workerNodes, workerEdges };
   }, []);
+
+  // Update node positions from worker
+  const updateNodePositionsFromWorker = useCallback(
+    (positions: PositionUpdate[]) => {
+      positions.forEach(({ nodeId, x, y, z }) => {
+        // Don't update positions for nodes being dragged
+        if (dragRef.current?.[nodeId]) {
+          return;
+        }
+
+        // Update the node position in the graph
+        try {
+          const nodeAttr = graph.getNodeAttributes(nodeId);
+          if (nodeAttr) {
+            graph.setNodeAttribute(nodeId, 'x', x);
+            graph.setNodeAttribute(nodeId, 'y', y);
+            graph.setNodeAttribute(nodeId, 'z', z);
+          }
+        } catch (error) {
+          // Node might not exist anymore, ignore silently
+        }
+      });
+    },
+    [graph, dragRef]
+  );
 
   const updateLayout = useCallback(
     async (curLayout?: any) => {
       const nodeCount = graph.order;
       const useWorkers = shouldUseWorkers(layoutType, nodeCount);
-
       if (useWorkers && !curLayout) {
         console.log(
           `[useGraph] Using worker-based layout for ${nodeCount} nodes`
         );
 
-        // Initialize layout manager if needed
-        if (!layoutManager.current) {
-          layoutManager.current = new LayoutManager();
-          await layoutManager.current.initialize(
-            nodeCount,
-            (positions: PositionUpdate[]) => {
-              // Update node positions in real-time as they come from the worker
-              updateNodePositionsFromWorker(positions);
-            }
+        try {
+          // Initialize layout manager if needed
+          if (!layoutManager.current) {
+            console.log('[useGraph] Creating new LayoutManager');
+            layoutManager.current = new LayoutManager();
+            console.log('[useGraph] Initializing LayoutManager...');
+            await layoutManager.current.initialize(
+              nodeCount,
+              updateNodePositionsFromWorker
+            );
+            console.log('[useGraph] LayoutManager initialized');
+          }
+
+          // Convert to worker format
+          console.log('[useGraph] Converting graph to worker format...');
+          const { workerNodes, workerEdges } = convertToWorkerFormat(graph);
+          console.log(
+            `[useGraph] Converted ${workerNodes.length} nodes and ${workerEdges.length} edges`
           );
+
+          // Start worker simulation
+          console.log('[useGraph] About to call layoutManager.simulate()...');
+          await layoutManager.current.simulate(workerNodes, workerEdges, {
+            center: { x: 0, y: 0, z: 0 },
+            manyBodyStrength: -250,
+            linkDistance: 50,
+            linkStrength: 0.1,
+            alpha: 1.0,
+            alphaDecay: 0.0228,
+            velocityDecay: 0.4
+          });
+          console.log('[useGraph] layoutManager.simulate() completed');
+        } catch (error) {
+          console.error('[useGraph] Worker simulation failed:', error);
+          console.log('[useGraph] Falling back to traditional layout');
+          // Fall back to traditional layout
+          layout.current = layoutProvider({
+            ...layoutOverrides,
+            type: layoutType,
+            graph,
+            drags: dragRef.current,
+            clusters: clustersRef?.current,
+            clusterAttribute
+          });
+          await tick(layout.current);
         }
 
-        // Convert to worker format
-        const { workerNodes, workerEdges } = convertToWorkerFormat(graph);
-
-        // Start worker simulation
-        await layoutManager.current.simulate(workerNodes, workerEdges, {
-          center: { x: 0, y: 0, z: 0 },
-          manyBodyStrength: -250,
-          linkDistance: 50,
-          linkStrength: 0.1,
-          alpha: 1.0,
-          alphaDecay: 0.0228,
-          velocityDecay: 0.4
-        });
-
-        // After simulation completes, do final transform
+        // After simulation completes, create layout strategy that reads from graph
         layout.current = {
           step: () => true,
           getNodePosition: (id: string) => {
             if (dragRef.current?.[id]?.position) {
               return dragRef.current[id].position as any;
             }
-            // Find the node from the last worker update
-            const workerNode = workerNodes.find(n => n.id === id);
-            if (workerNode) {
-              return {
-                id: workerNode.id,
-                x: workerNode.x || 0,
-                y: workerNode.y || 0,
-                z: workerNode.z || 0
-              } as any;
+            // Get position from the graph which has been updated by the worker
+            try {
+              const nodeAttr = graph.getNodeAttributes(id);
+              if (nodeAttr) {
+                return {
+                  id,
+                  x: nodeAttr.x || 0,
+                  y: nodeAttr.y || 0,
+                  z: nodeAttr.z || 0
+                } as any;
+              }
+            } catch (error) {
+              // Node might not exist anymore
             }
             return { id, x: 0, y: 0, z: 0 } as any;
           }

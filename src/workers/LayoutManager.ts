@@ -22,10 +22,7 @@ import type {
 export type { WorkerNode, WorkerEdge, SimulationParams, PositionUpdate };
 
 interface LayoutWorker {
-  initialize(
-    nodeCount: number,
-    onPositionUpdate: (positions: PositionUpdate[]) => void
-  ): Promise<void>;
+  initialize(nodeCount: number): Promise<void>;
   simulate(
     nodes: WorkerNode[],
     edges: WorkerEdge[],
@@ -94,7 +91,11 @@ export class LayoutManager {
         // Success - initialize worker
         this.worker = this.workerLoadResult.worker;
         this.layoutWorker = wrap<LayoutWorker>(this.worker);
-        await this.layoutWorker.initialize(nodeCount, onPositionUpdate);
+
+        // Set up worker message handling
+        this.setupWorkerMessageHandling();
+
+        await this.layoutWorker.initialize(nodeCount);
         this.initialized = true;
 
         console.log(
@@ -124,8 +125,15 @@ export class LayoutManager {
 
     try {
       if (this.layoutWorker) {
+        console.log(
+          '[LayoutManager] Calling worker simulate with',
+          nodes.length,
+          'nodes'
+        );
         await this.layoutWorker.simulate(nodes, edges, params);
+        console.log('[LayoutManager] Worker simulate completed');
       } else {
+        console.log('[LayoutManager] Using main thread fallback');
         // Main thread fallback
         return this.simulateMainThread(nodes, edges, params);
       }
@@ -230,6 +238,8 @@ export class LayoutManager {
     this.stop();
 
     if (this.worker) {
+      // Remove message listener before terminating
+      this.worker.removeEventListener('message', this.handleWorkerMessage);
       this.worker.terminate();
       this.worker = null;
     }
@@ -238,6 +248,32 @@ export class LayoutManager {
     this.initialized = false;
     this.onPositionUpdate = null;
   }
+
+  private setupWorkerMessageHandling(): void {
+    if (!this.worker) return;
+
+    // Add event listener for worker messages
+    this.worker.addEventListener('message', this.handleWorkerMessage);
+  }
+
+  private handleWorkerMessage = (event: MessageEvent): void => {
+    const { type, data } = event.data;
+
+    switch (type) {
+    case 'positionUpdate':
+      if (this.onPositionUpdate && data) {
+        this.onPositionUpdate(data as PositionUpdate[]);
+      }
+      break;
+    case 'simulationStopped':
+      console.log('[LayoutManager] Worker simulation stopped', data);
+      this.isSimulationRunning = false;
+      break;
+    default:
+      // Ignore other message types (from Comlink)
+      break;
+    }
+  };
 
   private initializeMainThreadFallback(nodeCount: number): void {
     console.log('[LayoutManager] Initializing main thread fallback layout');

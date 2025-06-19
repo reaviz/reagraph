@@ -24,6 +24,10 @@ export interface EdgeLODConfig {
   enableDistanceCulling?: boolean;
   maxRenderDistance?: number;
   adaptiveQuality?: boolean;
+  enableOcclusion?: boolean;
+  occlusionSamples?: number;
+  dynamicBatching?: boolean;
+  performanceTarget?: number;
 }
 
 export class EdgeLOD {
@@ -37,6 +41,10 @@ export class EdgeLOD {
       enableDistanceCulling: true,
       maxRenderDistance: 2000,
       adaptiveQuality: true,
+      enableOcclusion: false,
+      occlusionSamples: 8,
+      dynamicBatching: true,
+      performanceTarget: 60,
       ...config
     };
 
@@ -367,6 +375,194 @@ export class EdgeLOD {
   clearCache(): void {
     this.geometryCache.forEach(geometry => geometry.dispose());
     this.geometryCache.clear();
+  }
+
+  /**
+   * Get edges organized by LOD level for batching
+   */
+  organizeEdgesByLOD(
+    edges: InternalGraphEdge[],
+    camera: PerspectiveCamera | OrthographicCamera
+  ): Map<string, InternalGraphEdge[]> {
+    const lodGroups = new Map<string, InternalGraphEdge[]>();
+
+    edges.forEach(edge => {
+      if (!this.shouldRenderEdge(edge, camera)) {
+        return; // Skip culled edges
+      }
+
+      const distance = this.calculateEdgeDistance(edge, camera);
+      const lodLevel = this.getLODLevel(distance);
+      const groupKey = `${lodLevel.quality}_${lodLevel.segments}_${lodLevel.radialSegments}`;
+
+      if (!lodGroups.has(groupKey)) {
+        lodGroups.set(groupKey, []);
+      }
+      lodGroups.get(groupKey)!.push(edge);
+    });
+
+    return lodGroups;
+  }
+
+  /**
+   * Get optimal quality for current performance
+   */
+  getOptimalQuality(
+    edgeCount: number,
+    currentFrameRate: number
+  ): 'high' | 'medium' | 'low' | 'minimal' {
+    const target = this.config.performanceTarget || 60;
+
+    if (currentFrameRate >= target * 0.9) {
+      return edgeCount < 5000 ? 'high' : 'medium';
+    } else if (currentFrameRate >= target * 0.7) {
+      return edgeCount < 2000 ? 'medium' : 'low';
+    } else {
+      return edgeCount < 1000 ? 'low' : 'minimal';
+    }
+  }
+
+  /**
+   * Occlusion culling for edges behind large objects
+   */
+  performOcclusionCulling(
+    edges: InternalGraphEdge[],
+    camera: PerspectiveCamera | OrthographicCamera,
+    occluders: Array<{ position: Vector3; radius: number }>
+  ): InternalGraphEdge[] {
+    if (!this.config.enableOcclusion || occluders.length === 0) {
+      return edges;
+    }
+
+    return edges.filter(edge => {
+      const sourcePos = this.getNodePosition(edge.source);
+      const targetPos = this.getNodePosition(edge.target);
+
+      if (!sourcePos || !targetPos) return false;
+
+      // Check if edge is occluded by any large object
+      const edgeStart = new Vector3(sourcePos.x, sourcePos.y, sourcePos.z || 0);
+      const edgeEnd = new Vector3(targetPos.x, targetPos.y, targetPos.z || 0);
+
+      return !this.isEdgeOccluded(edgeStart, edgeEnd, camera, occluders);
+    });
+  }
+
+  /**
+   * Check if edge is occluded by objects
+   */
+  private isEdgeOccluded(
+    start: Vector3,
+    end: Vector3,
+    camera: PerspectiveCamera | OrthographicCamera,
+    occluders: Array<{ position: Vector3; radius: number }>
+  ): boolean {
+    const samples = this.config.occlusionSamples || 8;
+
+    for (let i = 0; i <= samples; i++) {
+      const t = i / samples;
+      const samplePoint = start.clone().lerp(end, t);
+
+      // Check if this point is occluded
+      for (const occluder of occluders) {
+        const distanceToOccluder = samplePoint.distanceTo(occluder.position);
+        const distanceToCamera = samplePoint.distanceTo(camera.position);
+        const occluderToCamera = occluder.position.distanceTo(camera.position);
+
+        // Simple occlusion test
+        if (
+          distanceToOccluder < occluder.radius &&
+          occluderToCamera < distanceToCamera
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Get performance statistics
+   */
+  getPerformanceStats(): {
+    cachedGeometries: number;
+    memoryUsage: number;
+    lodDistribution: Record<string, number>;
+    } {
+    const lodDistribution: Record<string, number> = {};
+    let memoryUsage = 0;
+
+    this.geometryCache.forEach((geometry, key) => {
+      const quality = key.split('_')[1];
+      lodDistribution[quality] = (lodDistribution[quality] || 0) + 1;
+
+      // Estimate memory usage (rough calculation)
+      const positionArray = geometry.getAttribute('position');
+      if (positionArray) {
+        memoryUsage += positionArray.array.byteLength;
+      }
+    });
+
+    return {
+      cachedGeometries: this.geometryCache.size,
+      memoryUsage,
+      lodDistribution
+    };
+  }
+
+  /**
+   * Preload geometries for expected LOD levels
+   */
+  preloadGeometries(
+    sampleEdges: InternalGraphEdge[],
+    expectedDistances: number[]
+  ): void {
+    const sampleEdge = sampleEdges[0];
+    if (!sampleEdge) return;
+
+    expectedDistances.forEach(distance => {
+      const lod = this.getLODLevel(distance);
+      const cacheKey = this.getGeometryCacheKey(sampleEdge, lod, 1.0);
+
+      if (!this.geometryCache.has(cacheKey)) {
+        const geometry = this.createTubeGeometry(sampleEdge, lod, 1.0);
+        this.geometryCache.set(cacheKey, geometry);
+      }
+    });
+  }
+
+  /**
+   * Adaptive LOD adjustment based on GPU capabilities
+   */
+  adjustForGPUCapabilities(
+    gpuMemory: number,
+    gpuTier: 'low' | 'medium' | 'high'
+  ): void {
+    switch (gpuTier) {
+    case 'low':
+      this.lodLevels = this.lodLevels.map(level => ({
+        ...level,
+        segments: Math.max(2, Math.floor(level.segments * 0.5)),
+        radialSegments: Math.max(3, Math.floor(level.radialSegments * 0.5)),
+        distance: level.distance * 0.7
+      }));
+      break;
+    case 'high':
+      if (gpuMemory > 4000) {
+        // 4GB+ VRAM
+        this.lodLevels = this.lodLevels.map(level => ({
+          ...level,
+          segments: Math.min(32, Math.floor(level.segments * 1.5)),
+          radialSegments: Math.min(
+            12,
+            Math.floor(level.radialSegments * 1.3)
+          ),
+          distance: level.distance * 1.5
+        }));
+      }
+      break;
+    }
   }
 
   /**

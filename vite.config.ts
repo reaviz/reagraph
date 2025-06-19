@@ -16,7 +16,12 @@ export default defineConfig(({ mode }) =>
       plugins: [
         svgrPlugin(),
         tsconfigPaths(),
-        cssInjectedByJsPlugin(),
+        cssInjectedByJsPlugin({
+          jsAssetsFilterFunction: function(outputChunk) {
+            // Don't inject CSS into worker files
+            return !outputChunk.name.includes('worker');
+          }
+        }),
         react(),
         dts({
           insertTypesEntry: true,

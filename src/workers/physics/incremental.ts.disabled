@@ -1,0 +1,466 @@
+/**
+ * Incremental simulation system for smooth, non-blocking layout computation
+ * Breaks physics simulation into small chunks to maintain UI responsiveness
+ */
+
+export interface SimulationConfig {
+  maxIterationsPerFrame: number;
+  targetIterations: number;
+  targetAlpha: number;
+  alphaDecay: number;
+  velocityDecay: number;
+  timeStep: number;
+}
+
+export interface SimulationProgress {
+  currentIteration: number;
+  totalIterations: number;
+  currentAlpha: number;
+  targetAlpha: number;
+  progress: number; // 0-1
+  isComplete: boolean;
+  frameTime: number;
+}
+
+export interface ProgressCallback {
+  (progress: SimulationProgress): void;
+}
+
+export interface CompletionCallback {
+  (finalPositions: Float32Array): void;
+}
+
+/**
+ * Incremental physics simulation that yields control periodically
+ */
+export class IncrementalSimulation {
+  private config: SimulationConfig;
+  private currentIteration = 0;
+  private alpha = 1.0;
+  private isRunning = false;
+  private isPaused = false;
+  private startTime = 0;
+  private frameStartTime = 0;
+  
+  // Callbacks
+  private onProgress?: ProgressCallback;
+  private onComplete?: CompletionCallback;
+  
+  // Animation frame scheduling
+  private animationFrameId?: number;
+  private timeoutId?: number;
+
+  constructor(config: Partial<SimulationConfig> = {}) {
+    this.config = {
+      maxIterationsPerFrame: 10,
+      targetIterations: 300,
+      targetAlpha: 0.01,
+      alphaDecay: 0.0228,
+      velocityDecay: 0.4,
+      timeStep: 1.0,
+      ...config
+    };
+  }
+
+  /**
+   * Start incremental simulation
+   */
+  async runIncremental(
+    simulation: any,
+    onProgress?: ProgressCallback,
+    onComplete?: CompletionCallback
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.onProgress = onProgress;
+      this.onComplete = (positions) => {
+        onComplete?.(positions);
+        resolve();
+      };
+
+      this.currentIteration = 0;
+      this.alpha = 1.0;
+      this.isRunning = true;
+      this.isPaused = false;
+      this.startTime = performance.now();
+
+      // Initialize simulation
+      simulation.alpha(this.alpha);
+      simulation.alphaDecay(this.config.alphaDecay);
+      simulation.velocityDecay(this.config.velocityDecay);
+
+      this.runChunk(simulation);
+    });
+  }
+
+  /**
+   * Run a chunk of simulation iterations
+   */
+  private runChunk(simulation: any) {
+    if (!this.isRunning || this.isPaused) {
+      return;
+    }
+
+    this.frameStartTime = performance.now();
+    let iterationsThisFrame = 0;
+
+    // Run iterations for this frame
+    while (
+      iterationsThisFrame < this.config.maxIterationsPerFrame &&
+      this.currentIteration < this.config.targetIterations &&
+      this.alpha > this.config.targetAlpha
+    ) {
+      simulation.tick();
+      this.currentIteration++;
+      iterationsThisFrame++;
+      this.alpha = simulation.alpha();
+    }
+
+    const frameTime = performance.now() - this.frameStartTime;
+    const progress = this.calculateProgress();
+
+    // Report progress
+    if (this.onProgress) {
+      this.onProgress({
+        currentIteration: this.currentIteration,
+        totalIterations: this.config.targetIterations,
+        currentAlpha: this.alpha,
+        targetAlpha: this.config.targetAlpha,
+        progress: progress.normalized,
+        isComplete: progress.isComplete,
+        frameTime
+      });
+    }
+
+    // Check completion
+    if (progress.isComplete) {
+      this.complete(simulation);
+      return;
+    }
+
+    // Schedule next chunk
+    this.scheduleNextChunk(simulation, frameTime);
+  }
+
+  /**
+   * Calculate simulation progress
+   */
+  private calculateProgress(): { normalized: number; isComplete: boolean } {
+    const iterationProgress = this.currentIteration / this.config.targetIterations;
+    const alphaProgress = (1.0 - this.alpha) / (1.0 - this.config.targetAlpha);
+    
+    // Use the more conservative progress indicator
+    const progress = Math.min(iterationProgress, alphaProgress);
+    const isComplete = 
+      this.currentIteration >= this.config.targetIterations ||
+      this.alpha <= this.config.targetAlpha;
+
+    return {
+      normalized: Math.min(1.0, progress),
+      isComplete
+    };
+  }
+
+  /**
+   * Schedule the next simulation chunk
+   */
+  private scheduleNextChunk(simulation: any, frameTime: number) {
+    // Adaptive scheduling based on frame time
+    const targetFrameTime = 16; // ~60fps
+    let delay = 0;
+
+    if (frameTime > targetFrameTime) {
+      // If we're taking too long, reduce iterations per frame
+      this.config.maxIterationsPerFrame = Math.max(1, 
+        Math.floor(this.config.maxIterationsPerFrame * 0.8)
+      );
+      delay = Math.min(frameTime, 32); // Max 32ms delay
+    } else if (frameTime < targetFrameTime * 0.5) {
+      // If we have time to spare, increase iterations per frame
+      this.config.maxIterationsPerFrame = Math.min(50,
+        Math.ceil(this.config.maxIterationsPerFrame * 1.1)
+      );
+    }
+
+    if (delay > 0) {
+      // Use setTimeout for longer delays
+      this.timeoutId = setTimeout(() => {
+        this.runChunk(simulation);
+      }, delay);
+    } else {
+      // Use requestAnimationFrame for smooth animation
+      this.animationFrameId = requestAnimationFrame(() => {
+        this.runChunk(simulation);
+      });
+    }
+  }
+
+  /**
+   * Complete the simulation
+   */
+  private complete(simulation: any) {
+    this.isRunning = false;
+    
+    // Extract final positions
+    const nodes = simulation.nodes();
+    const positions = new Float32Array(nodes.length * 3);
+    
+    for (let i = 0; i < nodes.length; i++) {
+      positions[i * 3] = nodes[i].x || 0;
+      positions[i * 3 + 1] = nodes[i].y || 0;
+      positions[i * 3 + 2] = nodes[i].z || 0;
+    }
+
+    if (this.onComplete) {
+      this.onComplete(positions);
+    }
+  }
+
+  /**
+   * Pause the simulation
+   */
+  pause() {
+    this.isPaused = true;
+    this.cancelScheduledWork();
+  }
+
+  /**
+   * Resume the simulation
+   */
+  resume(simulation: any) {
+    if (this.isRunning && this.isPaused) {
+      this.isPaused = false;
+      this.runChunk(simulation);
+    }
+  }
+
+  /**
+   * Stop the simulation
+   */
+  stop() {
+    this.isRunning = false;
+    this.isPaused = false;
+    this.cancelScheduledWork();
+  }
+
+  /**
+   * Cancel any scheduled work
+   */
+  private cancelScheduledWork() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+      this.animationFrameId = undefined;
+    }
+    
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = undefined;
+    }
+  }
+
+  /**
+   * Get current simulation status
+   */
+  getStatus(): {
+    isRunning: boolean;
+    isPaused: boolean;
+    progress: number;
+    currentIteration: number;
+    alpha: number;
+    elapsedTime: number;
+  } {
+    return {
+      isRunning: this.isRunning,
+      isPaused: this.isPaused,
+      progress: this.calculateProgress().normalized,
+      currentIteration: this.currentIteration,
+      alpha: this.alpha,
+      elapsedTime: this.startTime ? performance.now() - this.startTime : 0
+    };
+  }
+
+  /**
+   * Update configuration during simulation
+   */
+  updateConfig(newConfig: Partial<SimulationConfig>) {
+    this.config = { ...this.config, ...newConfig };
+  }
+}
+
+/**
+ * Web Worker optimized incremental simulation
+ */
+export class WorkerIncrementalSimulation extends IncrementalSimulation {
+  private messageHandler?: (data: any) => void;
+
+  constructor(config: Partial<SimulationConfig> = {}) {
+    super(config);
+    this.setupWorkerCommunication();
+  }
+
+  /**
+   * Setup communication with main thread
+   */
+  private setupWorkerCommunication() {
+    if (typeof importScripts !== 'undefined') {
+      // We're in a worker context
+      this.messageHandler = (event: MessageEvent) => {
+        const { type, data } = event.data;
+        
+        switch (type) {
+          case 'pause':
+            this.pause();
+            break;
+          case 'resume':
+            this.resume(data.simulation);
+            break;
+          case 'stop':
+            this.stop();
+            break;
+          case 'updateConfig':
+            this.updateConfig(data.config);
+            break;
+        }
+      };
+
+      self.addEventListener('message', this.messageHandler);
+    }
+  }
+
+  /**
+   * Send progress updates to main thread
+   */
+  protected sendProgressUpdate(progress: SimulationProgress) {
+    if (typeof importScripts !== 'undefined') {
+      self.postMessage({
+        type: 'progress',
+        data: progress
+      });
+    }
+  }
+
+  /**
+   * Send completion notification to main thread
+   */
+  protected sendCompletion(positions: Float32Array) {
+    if (typeof importScripts !== 'undefined') {
+      self.postMessage({
+        type: 'complete',
+        data: { positions: positions.buffer }
+      }, [positions.buffer]);
+    }
+  }
+
+  /**
+   * Enhanced run method for worker context
+   */
+  async runIncrementalWorker(
+    simulation: any,
+    onProgress?: ProgressCallback,
+    onComplete?: CompletionCallback
+  ): Promise<void> {
+    // Wrap callbacks to also send worker messages
+    const wrappedProgress = (progress: SimulationProgress) => {
+      onProgress?.(progress);
+      this.sendProgressUpdate(progress);
+    };
+
+    const wrappedComplete = (positions: Float32Array) => {
+      onComplete?.(positions);
+      this.sendCompletion(positions);
+    };
+
+    return this.runIncremental(simulation, wrappedProgress, wrappedComplete);
+  }
+
+  /**
+   * Cleanup worker resources
+   */
+  destroy() {
+    this.stop();
+    
+    if (this.messageHandler && typeof importScripts !== 'undefined') {
+      self.removeEventListener('message', this.messageHandler);
+    }
+  }
+}
+
+/**
+ * Adaptive simulation that adjusts parameters based on performance
+ */
+export class AdaptiveIncrementalSimulation extends IncrementalSimulation {
+  private performanceHistory: number[] = [];
+  private readonly maxHistorySize = 10;
+  private readonly targetFrameTime = 16; // 60fps
+
+  /**
+   * Enhanced chunk runner with adaptive performance tuning
+   */
+  protected runChunk(simulation: any) {
+    const frameStart = performance.now();
+    
+    // Run the normal chunk
+    super['runChunk'].call(this, simulation);
+    
+    const frameTime = performance.now() - frameStart;
+    this.recordPerformance(frameTime);
+    this.adaptConfiguration();
+  }
+
+  /**
+   * Record frame performance
+   */
+  private recordPerformance(frameTime: number) {
+    this.performanceHistory.push(frameTime);
+    
+    if (this.performanceHistory.length > this.maxHistorySize) {
+      this.performanceHistory.shift();
+    }
+  }
+
+  /**
+   * Adapt configuration based on performance history
+   */
+  private adaptConfiguration() {
+    if (this.performanceHistory.length < 3) return;
+
+    const avgFrameTime = this.performanceHistory.reduce((a, b) => a + b) / this.performanceHistory.length;
+    
+    if (avgFrameTime > this.targetFrameTime * 1.5) {
+      // Performance is poor - reduce iterations per frame
+      this.config.maxIterationsPerFrame = Math.max(1, 
+        Math.floor(this.config.maxIterationsPerFrame * 0.8)
+      );
+    } else if (avgFrameTime < this.targetFrameTime * 0.7) {
+      // Performance is good - increase iterations per frame
+      this.config.maxIterationsPerFrame = Math.min(50,
+        Math.ceil(this.config.maxIterationsPerFrame * 1.1)
+      );
+    }
+  }
+
+  /**
+   * Get performance statistics
+   */
+  getPerformanceStats(): {
+    averageFrameTime: number;
+    worstFrameTime: number;
+    bestFrameTime: number;
+    currentIterationsPerFrame: number;
+  } {
+    if (this.performanceHistory.length === 0) {
+      return {
+        averageFrameTime: 0,
+        worstFrameTime: 0,
+        bestFrameTime: 0,
+        currentIterationsPerFrame: this.config.maxIterationsPerFrame
+      };
+    }
+
+    return {
+      averageFrameTime: this.performanceHistory.reduce((a, b) => a + b) / this.performanceHistory.length,
+      worstFrameTime: Math.max(...this.performanceHistory),
+      bestFrameTime: Math.min(...this.performanceHistory),
+      currentIterationsPerFrame: this.config.maxIterationsPerFrame
+    };
+  }
+}

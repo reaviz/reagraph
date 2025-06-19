@@ -87,6 +87,7 @@
     "@babel/preset-env": "^7.27.2",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.27.1",
+    "@playwright/test": "^1.53.1",
     "@storybook/addon-docs": "^8.6.12",
     "@storybook/addon-essentials": "^8.6.12",
     "@storybook/addon-mdx-gfm": "^8.6.12",

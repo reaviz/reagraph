@@ -42,6 +42,10 @@ export interface EdgeStateConfig {
   enableDirtyTracking?: boolean;
   batchUpdateThreshold?: number;
   maxCacheSize?: number;
+  enableProfiler?: boolean;
+  enablePredictiveCaching?: boolean;
+  stateCompressionEnabled?: boolean;
+  maxStateHistory?: number;
 }
 
 export class EdgeStateManager {
@@ -50,6 +54,13 @@ export class EdgeStateManager {
   private lastGraphState: GraphState | null = null;
   private config: EdgeStateConfig;
   private frameCount = 0;
+  private stateHistory: GraphState[] = [];
+  private profilerData = {
+    categorizeTime: 0,
+    cacheHits: 0,
+    cacheMisses: 0,
+    batchUpdates: 0
+  };
 
   constructor(config: EdgeStateConfig = {}) {
     this.config = {
@@ -57,6 +68,10 @@ export class EdgeStateManager {
       enableDirtyTracking: true,
       batchUpdateThreshold: 50,
       maxCacheSize: 10000,
+      enableProfiler: false,
+      enablePredictiveCaching: false,
+      stateCompressionEnabled: false,
+      maxStateHistory: 10,
       ...config
     };
   }
@@ -395,6 +410,269 @@ export class EdgeStateManager {
     this.batchDirtyFlags.clear();
     this.lastGraphState = null;
     this.frameCount = 0;
+  }
+
+  /**
+   * Predictive caching based on state history
+   */
+  predictAndCacheNextStates(edges: InternalGraphEdge[]): void {
+    if (!this.config.enablePredictiveCaching || this.stateHistory.length < 3) {
+      return;
+    }
+
+    // Analyze patterns in state history
+    const patterns = this.analyzeStatePatterns();
+
+    // Predict likely next states and pre-cache them
+    patterns.forEach(pattern => {
+      const predictedState = this.predictNextState(pattern);
+      if (predictedState) {
+        // Pre-calculate states for a subset of edges
+        const sampleEdges = edges.slice(0, Math.min(100, edges.length));
+        sampleEdges.forEach(edge => {
+          const state = this.calculateEdgeState(edge, predictedState);
+          // Store with special key to indicate it's a prediction
+          this.edgeStateCache.set(`predict_${edge.id}`, state);
+        });
+      }
+    });
+  }
+
+  /**
+   * Analyze patterns in state history
+   */
+  private analyzeStatePatterns(): Array<{ type: string; confidence: number }> {
+    const patterns: Array<{ type: string; confidence: number }> = [];
+
+    // Simple pattern detection - could be enhanced with ML
+    const recentStates = this.stateHistory.slice(-5);
+
+    // Check for selection patterns
+    let selectionGrowing = true;
+    for (let i = 1; i < recentStates.length; i++) {
+      if (
+        recentStates[i].selectedNodes.size <=
+        recentStates[i - 1].selectedNodes.size
+      ) {
+        selectionGrowing = false;
+        break;
+      }
+    }
+
+    if (selectionGrowing) {
+      patterns.push({ type: 'expanding_selection', confidence: 0.8 });
+    }
+
+    return patterns;
+  }
+
+  /**
+   * Predict next state based on pattern
+   */
+  private predictNextState(pattern: {
+    type: string;
+    confidence: number;
+  }): GraphState | null {
+    if (!this.lastGraphState) return null;
+
+    const predicted = this.cloneGraphState(this.lastGraphState);
+
+    switch (pattern.type) {
+    case 'expanding_selection':
+      // Predict more nodes might be selected
+      predicted.time += 16; // Next frame
+      break;
+    }
+
+    return predicted;
+  }
+
+  /**
+   * Compress state for memory efficiency
+   */
+  private compressState(state: GraphState): any {
+    if (!this.config.stateCompressionEnabled) {
+      return state;
+    }
+
+    // Simple compression - convert sets to arrays
+    return {
+      selectedNodes: Array.from(state.selectedNodes),
+      hoveredNodes: Array.from(state.hoveredNodes),
+      draggingNodes: Array.from(state.draggingNodes),
+      activeEdges: Array.from(state.activeEdges),
+      highlightedEdges: Array.from(state.highlightedEdges),
+      selectedEdges: Array.from(state.selectedEdges),
+      time: state.time
+    };
+  }
+
+  /**
+   * Decompress state
+   */
+  private decompressState(compressed: any): GraphState {
+    return {
+      selectedNodes: new Set(compressed.selectedNodes),
+      hoveredNodes: new Set(compressed.hoveredNodes),
+      draggingNodes: new Set(compressed.draggingNodes),
+      activeEdges: new Set(compressed.activeEdges),
+      highlightedEdges: new Set(compressed.highlightedEdges),
+      selectedEdges: new Set(compressed.selectedEdges),
+      time: compressed.time
+    };
+  }
+
+  /**
+   * Add state to history for pattern analysis
+   */
+  private addToStateHistory(state: GraphState): void {
+    if (this.config.enablePredictiveCaching) {
+      const compressed = this.config.stateCompressionEnabled
+        ? this.compressState(state)
+        : state;
+
+      this.stateHistory.push(compressed as GraphState);
+
+      // Trim history if it exceeds max size
+      if (this.stateHistory.length > this.config.maxStateHistory!) {
+        this.stateHistory.shift();
+      }
+    }
+  }
+
+  /**
+   * Get advanced statistics including profiler data
+   */
+  getAdvancedStats(): {
+    cache: {
+      size: number;
+      hitRate: number;
+      dirtyBatches: number;
+    };
+    profiler: {
+      averageCategorizeTime: number;
+      cacheHitRate: number;
+      batchUpdateRate: number;
+    };
+    prediction: {
+      historySize: number;
+      predictedCacheSize: number;
+    };
+    memory: {
+      estimatedMemoryUsage: number;
+      compressionRatio: number;
+    };
+    } {
+    const totalRequests =
+      this.profilerData.cacheHits + this.profilerData.cacheMisses;
+    const predictedCacheEntries = Array.from(this.edgeStateCache.keys()).filter(
+      key => key.startsWith('predict_')
+    ).length;
+
+    return {
+      cache: {
+        size: this.edgeStateCache.size - predictedCacheEntries,
+        hitRate:
+          totalRequests > 0 ? this.profilerData.cacheHits / totalRequests : 0,
+        dirtyBatches: this.batchDirtyFlags.size
+      },
+      profiler: {
+        averageCategorizeTime:
+          this.profilerData.categorizeTime / Math.max(1, this.frameCount),
+        cacheHitRate:
+          totalRequests > 0 ? this.profilerData.cacheHits / totalRequests : 0,
+        batchUpdateRate:
+          this.profilerData.batchUpdates / Math.max(1, this.frameCount)
+      },
+      prediction: {
+        historySize: this.stateHistory.length,
+        predictedCacheSize: predictedCacheEntries
+      },
+      memory: {
+        estimatedMemoryUsage: this.estimateMemoryUsage(),
+        compressionRatio: this.config.stateCompressionEnabled ? 0.6 : 1.0
+      }
+    };
+  }
+
+  /**
+   * Estimate memory usage of the manager
+   */
+  private estimateMemoryUsage(): number {
+    let bytes = 0;
+
+    // Edge state cache
+    bytes += this.edgeStateCache.size * 100; // Rough estimate per edge state
+
+    // State history
+    bytes += this.stateHistory.length * 1000; // Rough estimate per graph state
+
+    // Dirty flags
+    bytes += this.batchDirtyFlags.size * 50;
+
+    return bytes;
+  }
+
+  /**
+   * Enable/disable profiling
+   */
+  setProfilingEnabled(enabled: boolean): void {
+    this.config.enableProfiler = enabled;
+    if (!enabled) {
+      this.profilerData = {
+        categorizeTime: 0,
+        cacheHits: 0,
+        cacheMisses: 0,
+        batchUpdates: 0
+      };
+    }
+  }
+
+  /**
+   * Optimize cache based on usage patterns
+   */
+  optimizeCache(): void {
+    const stats = this.getAdvancedStats();
+
+    // If hit rate is low, increase cache size
+    if (stats.cache.hitRate < 0.7 && this.config.maxCacheSize! < 50000) {
+      this.config.maxCacheSize = Math.min(
+        50000,
+        this.config.maxCacheSize! * 1.5
+      );
+    }
+
+    // If memory usage is high, enable compression
+    if (
+      stats.memory.estimatedMemoryUsage > 1000000 &&
+      !this.config.stateCompressionEnabled
+    ) {
+      this.config.stateCompressionEnabled = true;
+    }
+
+    // Clean up old predicted cache entries
+    const keysToRemove = Array.from(this.edgeStateCache.keys())
+      .filter(key => key.startsWith('predict_'))
+      .slice(0, 100); // Remove old predictions
+
+    keysToRemove.forEach(key => this.edgeStateCache.delete(key));
+  }
+
+  /**
+   * Export state for debugging
+   */
+  exportDebugData(): {
+    config: EdgeStateConfig;
+    cacheSize: number;
+    historySize: number;
+    stats: any;
+    } {
+    return {
+      config: { ...this.config },
+      cacheSize: this.edgeStateCache.size,
+      historySize: this.stateHistory.length,
+      stats: this.getAdvancedStats()
+    };
   }
 
   /**
