@@ -80,57 +80,22 @@ export async function createWorker(
     );
   }
 
-  // Strategy 1: Modern import.meta.url (Webpack 5, Vite, modern bundlers)
-  try {
-    // Use eval to avoid TypeScript compilation issues with import.meta
-    const importMeta = new Function(
-      'return typeof import !== "undefined" ? import.meta : undefined'
-    )();
-    if (importMeta?.url) {
-      const extensions = ['.js', '.mjs'];
-      for (const ext of extensions) {
-        try {
-          const workerUrl = new URL(
-            `${basePath}/${workerName}${ext}`,
-            importMeta.url
-          );
-          if (debug) {
-            console.log(
-              `[WorkerLoader] Trying import.meta.url: ${workerUrl.href}`
-            );
-          }
-          const worker = new Worker(workerUrl, { type: 'module' });
-          if (debug) {
-            console.log(
-              '[WorkerLoader] Successfully loaded worker via import.meta.url'
-            );
-          }
-          return { worker, method: 'import-meta-url' };
-        } catch (error) {
-          if (debug) {
-            console.log(
-              `[WorkerLoader] Failed to load ${workerName}${ext} via import.meta.url:`,
-              error
-            );
-          }
-        }
-      }
-    }
-  } catch (error) {
-    if (debug) {
-      console.log('[WorkerLoader] import.meta.url strategy failed:', error);
-    }
-  }
-
-  // Strategy 2: Static path loading (Parcel, legacy bundlers)
+  // Strategy 1: Static path loading (Storybook, Parcel, legacy bundlers)
   try {
     const staticPaths = [
+      // Storybook/dev server paths (most likely)
+      `/dist/${workerName}.js`,
+      `/dist/${workerName}.mjs`,
+      // Standard worker paths
       `/workers/${workerName}.js`,
       `/workers/${workerName}.mjs`,
       `./workers/${workerName}.js`,
       `./workers/${workerName}.mjs`,
       `${basePath}/${workerName}.js`,
-      `${basePath}/${workerName}.mjs`
+      `${basePath}/${workerName}.mjs`,
+      // Alternative static paths
+      `/static/${workerName}.js`,
+      `/static/workers/${workerName}.js`
     ];
 
     for (const path of staticPaths) {
