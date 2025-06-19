@@ -24,7 +24,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.umd.cjs"
-    }
+    },
+    "./workers/*": "./dist/*"
   },
   "browser": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -33,7 +34,8 @@
     "url": "git+https://github.com/reaviz/reagraph.git"
   },
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
   "keywords": [
     "react",
@@ -58,9 +60,11 @@
     "@use-gesture/react": "^10.3.1",
     "camera-controls": "^2.8.3",
     "classnames": "^2.5.1",
+    "comlink": "^4.4.2",
     "d3-array": "^3.2.4",
     "d3-force-3d": "^3.0.3",
     "d3-hierarchy": "^3.1.2",
+    "d3-quadtree": "^3.0.1",
     "d3-scale": "^4.0.2",
     "ellipsize": "^0.5.1",
     "graphology": "^0.25.4",
@@ -92,6 +96,7 @@
     "@storybook/theming": "^8.6.12",
     "@types/d3-array": "^3.2.1",
     "@types/d3-hierarchy": "^3.1.6",
+    "@types/d3-quadtree": "^3.0.6",
     "@types/d3-scale": "^4.0.8",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",

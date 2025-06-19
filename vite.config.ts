@@ -44,8 +44,25 @@ export default defineConfig(({ mode }) =>
             external({
               includeDependencies: true
             })
+          ],
+          input: {
+            main: resolve('src', 'index.ts'),
+            'layout.worker': resolve('src', 'workers', 'layout.worker.ts')
+          },
+          output: [
+            {
+              entryFileNames: '[name].js',
+              format: 'es'
+            },
+            {
+              entryFileNames: '[name].mjs', 
+              format: 'es'
+            }
           ]
         }
+      },
+      worker: {
+        format: 'es'
       }
     }
     : {

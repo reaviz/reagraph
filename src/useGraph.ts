@@ -15,6 +15,12 @@ import { buildGraph, transformGraph } from './utils/graph';
 import { DragReferences, useStore } from './store';
 import { getVisibleEntities } from './collapse';
 import { calculateClusters } from './utils/cluster';
+import {
+  LayoutManager,
+  type PositionUpdate,
+  type WorkerNode,
+  type WorkerEdge
+} from './workers/LayoutManager';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -66,6 +72,7 @@ export const useGraph = ({
   const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
   const layoutMounted = useRef<boolean>(false);
   const layout = useRef<LayoutStrategy | null>(null);
+  const layoutManager = useRef<LayoutManager | null>(null);
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const dragRef = useRef<DragReferences>(drags);
   const clustersRef = useRef<any>([]);
@@ -112,22 +119,161 @@ export const useGraph = ({
     [setDrags]
   );
 
+  // Helper function to update node positions from worker updates
+  const updateNodePositionsFromWorker = useCallback(
+    (positions: PositionUpdate[]) => {
+      // Update the graph with new positions
+      positions.forEach(({ nodeId, x, y, z }) => {
+        if (graph.hasNode(nodeId)) {
+          graph.setNodeAttribute(nodeId, 'x', x);
+          graph.setNodeAttribute(nodeId, 'y', y);
+          graph.setNodeAttribute(nodeId, 'z', z);
+        }
+      });
+
+      // Trigger a re-render by updating the nodes in the store
+      // This is a lightweight update that doesn't recalculate the entire layout
+      const currentNodes = stateNodes;
+      const updatedNodes = currentNodes.map(node => {
+        const positionUpdate = positions.find(p => p.nodeId === node.id);
+        if (positionUpdate) {
+          return {
+            ...node,
+            position: {
+              ...node.position,
+              x: positionUpdate.x,
+              y: positionUpdate.y,
+              z: positionUpdate.z
+            }
+          };
+        }
+        return node;
+      });
+
+      setNodes(updatedNodes);
+    },
+    [graph, setNodes, stateNodes]
+  );
+
+  // Helper function to determine if we should use workers for the current layout
+  const shouldUseWorkers = useCallback(
+    (layoutType: LayoutTypes | undefined, nodeCount: number) => {
+      // Use workers for force-directed layouts with sufficient nodes
+      return (
+        (layoutType === 'forceDirected2d' ||
+          layoutType === 'forceDirected3d') &&
+        nodeCount >= 100 // Threshold for when workers become beneficial
+      );
+    },
+    []
+  );
+
+  // Convert graph nodes/edges to worker format
+  const convertToWorkerFormat = useCallback((graph: any) => {
+    const workerNodes: WorkerNode[] = [];
+    const workerEdges: WorkerEdge[] = [];
+
+    graph.forEachNode((id: string, node: any) => {
+      const draggedPosition = dragRef.current?.[id]?.position;
+      workerNodes.push({
+        id,
+        x: draggedPosition?.x ?? node.x ?? 0,
+        y: draggedPosition?.y ?? node.y ?? 0,
+        z: draggedPosition?.z ?? node.z ?? 0,
+        radius: node.radius || node.size || 5,
+        mass: node.mass || 1,
+        // Fix nodes that have been dragged
+        fx: draggedPosition ? draggedPosition.x : null,
+        fy: draggedPosition ? draggedPosition.y : null,
+        fz: draggedPosition ? draggedPosition.z : null
+      });
+    });
+
+    graph.forEachEdge((id: string, edge: any) => {
+      workerEdges.push({
+        id,
+        source: edge.source,
+        target: edge.target,
+        distance: edge.distance || 50,
+        strength: edge.strength || 0.1
+      });
+    });
+
+    return { workerNodes, workerEdges };
+  }, []);
+
   const updateLayout = useCallback(
     async (curLayout?: any) => {
-      // Cache the layout provider
-      layout.current =
-        curLayout ||
-        layoutProvider({
-          ...layoutOverrides,
-          type: layoutType,
-          graph,
-          drags: dragRef.current,
-          clusters: clustersRef?.current,
-          clusterAttribute
+      const nodeCount = graph.order;
+      const useWorkers = shouldUseWorkers(layoutType, nodeCount);
+
+      if (useWorkers && !curLayout) {
+        console.log(
+          `[useGraph] Using worker-based layout for ${nodeCount} nodes`
+        );
+
+        // Initialize layout manager if needed
+        if (!layoutManager.current) {
+          layoutManager.current = new LayoutManager();
+          await layoutManager.current.initialize(
+            nodeCount,
+            (positions: PositionUpdate[]) => {
+              // Update node positions in real-time as they come from the worker
+              updateNodePositionsFromWorker(positions);
+            }
+          );
+        }
+
+        // Convert to worker format
+        const { workerNodes, workerEdges } = convertToWorkerFormat(graph);
+
+        // Start worker simulation
+        await layoutManager.current.simulate(workerNodes, workerEdges, {
+          center: { x: 0, y: 0, z: 0 },
+          manyBodyStrength: -250,
+          linkDistance: 50,
+          linkStrength: 0.1,
+          alpha: 1.0,
+          alphaDecay: 0.0228,
+          velocityDecay: 0.4
         });
 
-      // Run the layout
-      await tick(layout.current);
+        // After simulation completes, do final transform
+        layout.current = {
+          step: () => true,
+          getNodePosition: (id: string) => {
+            if (dragRef.current?.[id]?.position) {
+              return dragRef.current[id].position as any;
+            }
+            // Find the node from the last worker update
+            const workerNode = workerNodes.find(n => n.id === id);
+            if (workerNode) {
+              return {
+                id: workerNode.id,
+                x: workerNode.x || 0,
+                y: workerNode.y || 0,
+                z: workerNode.z || 0
+              } as any;
+            }
+            return { id, x: 0, y: 0, z: 0 } as any;
+          }
+        };
+      } else {
+        // Use traditional layout
+        layout.current =
+          curLayout ||
+          layoutProvider({
+            ...layoutOverrides,
+            type: layoutType,
+            graph,
+            drags: dragRef.current,
+            clusters: clustersRef?.current,
+            clusterAttribute
+          });
+
+        // Run the layout
+        await tick(layout.current);
+      }
 
       // Transform the graph
       const result = transformGraph({
@@ -274,7 +420,18 @@ export const useGraph = ({
     }
   }, [sizingType, sizingAttribute, labelType, updateLayout]);
 
+  // Cleanup layout manager on unmount
+  useEffect(() => {
+    return () => {
+      if (layoutManager.current) {
+        layoutManager.current.dispose();
+        layoutManager.current = null;
+      }
+    };
+  }, []);
+
   return {
-    updateLayout
+    updateLayout,
+    getLayoutManagerStatus: () => layoutManager.current?.getStatus() || null
   };
 };
