@@ -63,7 +63,8 @@ export const EdgeSubLabels = () => (
     nodes={[
       { id: '1', label: 'Node 1' },
       { id: '2', label: 'Node 2' },
-      { id: '3', label: 'Node 3' }
+      { id: '3', label: 'Node 3' },
+      { id: '4', label: 'Node 4' },
     ]}
     edges={[
       {
@@ -71,16 +72,21 @@ export const EdgeSubLabels = () => (
         target: '2',
         id: '1-2',
         label: 'Edge 1-2',
-        subLabel: 'Sub Label 1-2',
-        labelVisible: true
+        subLabel: 'Sub Label 1-2'
       },
       {
         source: '1',
         target: '3',
         id: '1-3',
         label: 'Edge 1-3',
-        subLabel: 'Sub Label 1-3',
-        labelVisible: true
+        subLabel: 'Sub Label 1-3'
+      },
+      {
+        source: '4',
+        target: '2',
+        id: '4-2',
+        label: 'Edge 4-2',
+        subLabel: 'Sub Label 4-2'
       }
     ]}
   />

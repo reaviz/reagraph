@@ -236,10 +236,10 @@ export const Edge: FC<EdgeProps> = ({
     // Get angle of the edge
     const angle = Math.atan2(dy, dx);
 
-    // Calculate perpendicular angle
-    // Use PI/2 (90 degrees) for perpendicular direction
-    // Adding PI/2 instead of subtracting ensures the subLabel is placed below the main label
-    const perpAngle = angle + Math.PI / 2;
+    // Calculate perpendicular angle based on edge direction
+    // If dx is negative (edge going right to left), add PI/2 instead of subtracting
+    // This ensures the subLabel is always placed below the main label
+    const perpAngle = dx >= 0 ? angle - Math.PI / 2 : angle + Math.PI / 2;
 
     // Offset distance for subLabel
     const offsetDistance = 7;
@@ -255,7 +255,13 @@ export const Edge: FC<EdgeProps> = ({
     () => ({
       from: {
         labelPosition: center ? [center.x, center.y, center.z] : [0, 0, 0],
-        subLabelPosition: center ? [center.x, center.y, center.z] : [0, 0, 0]
+        subLabelPosition: center
+          ? [
+            center.x + subLabelOffset[0],
+            center.y + subLabelOffset[1],
+            center.z
+          ]
+          : [0, 0, 0]
       },
       to: {
         labelPosition: [midPoint.x, midPoint.y, midPoint.z],
