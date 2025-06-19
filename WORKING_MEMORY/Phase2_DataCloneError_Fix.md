@@ -89,16 +89,33 @@ cssInjectedByJsPlugin({
    - ESLint passes without errors
    - Worker files build without CSS injection
 
+## Current Status (After Import.meta Fix)
+
+### ✅ **Additional Fixes Applied:**
+- **Worker Loading Strategy**: Removed problematic import.meta.url strategy that caused SyntaxError
+- **Static Path Priority**: Added `/dist/` paths as primary option for Storybook compatibility
+- **Simplified Loading**: Using static paths only for better environment compatibility
+
+### ⚠️ **Current Issue:**
+Even with all fixes applied, graphs are still not loading properly in Storybook. The issue appears to be deeper than just worker loading - even with workers completely disabled, the basic graph functionality is not working.
+
+### 🔍 **Debugging Needed:**
+1. **Verify Base Functionality**: Check if the core graph rendering works without any worker code
+2. **Dependency Issues**: Ensure all graph dependencies (graphology, d3-force-3d, three.js) are loading correctly
+3. **React Hook Issues**: Verify that useGraph hook is not causing infinite loops or other React issues
+4. **Build Process**: Ensure the build process is generating correct code
+
+### 📊 **Test Results:**
+- ❌ Basic Simple story (5 nodes) - hangs/doesn't load
+- ❌ No Edges story (100 nodes) - hangs/doesn't load  
+- ❌ Both with workers enabled and disabled
+
 ## Next Steps
 
-1. **Performance Testing**: Create the planned performance testing playground to verify worker performance benefits
-2. **Re-enable Phase 2 Components**: Once core functionality is stable, re-enable the advanced components:
-   - `src/workers/physics/incremental.ts.disabled`
-   - `src/workers/shared-memory.ts.disabled` 
-   - `src/workers/shared-edge-memory.ts.disabled`
-   - `src/workers/gpu.disabled/`
-
-3. **Production Testing**: Test in actual production environments beyond Storybook
+1. **Root Cause Analysis**: Debug why basic graph functionality is broken (this is blocking)
+2. **Systematic Testing**: Test individual components (GraphCanvas, GraphScene, etc.) in isolation
+3. **Performance Testing**: Once basic functionality works, create the planned performance testing playground
+4. **Re-enable Phase 2 Components**: After stability is achieved, re-enable advanced components
 
 ## Technical Notes
 

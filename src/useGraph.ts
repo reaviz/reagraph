@@ -123,10 +123,8 @@ export const useGraph = ({
   const shouldUseWorkers = useCallback(
     (layoutType: LayoutTypes | undefined, nodeCount: number) => {
       // Use workers for force-directed layouts with sufficient nodes
-      const result =
-        (layoutType === 'forceDirected2d' ||
-          layoutType === 'forceDirected3d') &&
-        nodeCount >= 100; // Threshold for when workers become beneficial
+      // TEMPORARILY DISABLE WORKERS FOR TESTING
+      const result = false;
       // console.log(`[useGraph] shouldUseWorkers: layoutType=${layoutType}, nodeCount=${nodeCount}, result=${result}`);
       return result;
     },
