@@ -13,3 +13,28 @@ export type {
   GraphState,
   EdgeStateConfig
 } from './EdgeStateManager';
+
+// Phase 2A: Advanced Memory Management exports
+export {
+  AdvancedMemoryManager,
+  NodeDataBuffer,
+  EdgeDataBuffer,
+  ObjectPool,
+  ViewportCuller
+} from './MemoryManager';
+export type { MemoryConfig, NodeData, EdgeData } from './MemoryManager';
+
+// Phase 2B: Instanced Rendering exports
+export {
+  AdvancedInstancedRenderer,
+  NodeInstancedRenderer,
+  EdgeInstancedRenderer,
+  LODManager,
+  TextureAtlasManager
+} from './InstancedRenderer';
+export type {
+  RenderConfig,
+  LODLevel as InstancedLODLevel,
+  NodeInstanceData,
+  EdgeInstanceData
+} from './InstancedRenderer';

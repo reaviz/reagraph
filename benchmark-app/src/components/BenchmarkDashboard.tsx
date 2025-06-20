@@ -6,11 +6,14 @@ import { createBenchmarkTests } from '../utils/datasetGenerators';
 import { createStorybookBenchmarkTests } from '../data/storybookDatasets';
 import { BenchmarkTest } from '../types/benchmark.types';
 import { getBrowserInfo, detectWorkerSupport } from '../utils/performanceUtils';
+import { DiagnosticRunner } from '../utils/diagnosticRunner';
 
 export const BenchmarkDashboard: React.FC = () => {
   const [selectedTest, setSelectedTest] = useState<BenchmarkTest | null>(null);
   const [workerEnabled, setWorkerEnabled] = useState(true);
   const [autoStart, setAutoStart] = useState(false);
+  const [diagnosticRunning, setDiagnosticRunning] = useState(false);
+  const [diagnosticResults, setDiagnosticResults] = useState<any>(null);
   
   // Combine generated tests and Storybook tests
   const [benchmarkTests] = useState(() => {
@@ -76,6 +79,26 @@ export const BenchmarkDashboard: React.FC = () => {
     } else {
       reset();
       start();
+    }
+  };
+
+  const runPhase2Diagnostic = async () => {
+    setDiagnosticRunning(true);
+    setDiagnosticResults(null);
+    
+    try {
+      const diagnosticRunner = new DiagnosticRunner();
+      const results = await diagnosticRunner.runFullDiagnostic();
+      setDiagnosticResults(results);
+      
+      // Export results to console for analysis
+      console.log('Phase 2 Diagnostic Results:');
+      console.log(diagnosticRunner.exportResults());
+      
+    } catch (error) {
+      console.error('Diagnostic failed:', error);
+    } finally {
+      setDiagnosticRunning(false);
     }
   };
 
@@ -160,6 +183,16 @@ export const BenchmarkDashboard: React.FC = () => {
             Reset
           </button>
         </div>
+
+        <div style={styles.controlGroup}>
+          <button
+            style={diagnosticRunning ? styles.diagnosticRunningButton : styles.diagnosticButton}
+            onClick={runPhase2Diagnostic}
+            disabled={diagnosticRunning}
+          >
+            {diagnosticRunning ? 'Running Phase 2 Diagnostic...' : 'Run Phase 2 Diagnostic'}
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -229,6 +262,73 @@ export const BenchmarkDashboard: React.FC = () => {
                 <div style={styles.validationItem}>
                   <span>Node Count:</span>
                   <span>{performanceValidation.nodeCount.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Phase 2 Diagnostic Results Panel */}
+          {diagnosticResults && (
+            <div style={styles.diagnosticPanel}>
+              <h3 style={styles.diagnosticTitle}>
+                Phase 2 Integration Readiness Report
+              </h3>
+              <div style={styles.diagnosticGrid}>
+                <div style={styles.diagnosticSection}>
+                  <h4 style={styles.diagnosticSectionTitle}>GPU Capabilities</h4>
+                  <div style={styles.diagnosticItem}>
+                    <span>WebGL2:</span>
+                    <span style={{color: diagnosticResults.gpuCapabilities?.webgl2?.supported ? '#00ff88' : '#ff6b6b'}}>
+                      {diagnosticResults.gpuCapabilities?.webgl2?.supported ? '✅' : '❌'}
+                    </span>
+                  </div>
+                  <div style={styles.diagnosticItem}>
+                    <span>SharedArrayBuffer:</span>
+                    <span style={{color: diagnosticResults.gpuCapabilities?.sharedArrayBuffer?.supported ? '#00ff88' : '#ff6b6b'}}>
+                      {diagnosticResults.gpuCapabilities?.sharedArrayBuffer?.supported ? '✅' : '❌'}
+                    </span>
+                  </div>
+                  <div style={styles.diagnosticItem}>
+                    <span>Cross-Origin:</span>
+                    <span style={{color: diagnosticResults.gpuCapabilities?.sharedArrayBuffer?.crossOriginIsolated ? '#00ff88' : '#ffaa00'}}>
+                      {diagnosticResults.gpuCapabilities?.sharedArrayBuffer?.crossOriginIsolated ? '✅' : '⚠️'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div style={styles.diagnosticSection}>
+                  <h4 style={styles.diagnosticSectionTitle}>Current Performance</h4>
+                  {diagnosticResults.baselinePerformance?.rendering?.fps && (
+                    <div style={styles.diagnosticItem}>
+                      <span>Current FPS:</span>
+                      <span>{diagnosticResults.baselinePerformance.rendering.fps.toFixed(1)}</span>
+                    </div>
+                  )}
+                  {diagnosticResults.baselinePerformance?.memory?.peakUsed && (
+                    <div style={styles.diagnosticItem}>
+                      <span>Memory Usage:</span>
+                      <span>{diagnosticResults.baselinePerformance.memory.peakUsed.toFixed(2)}MB</span>
+                    </div>
+                  )}
+                  {diagnosticResults.baselinePerformance?.interaction?.averageResponseTime && (
+                    <div style={styles.diagnosticItem}>
+                      <span>Response Time:</span>
+                      <span>{diagnosticResults.baselinePerformance.interaction.averageResponseTime.toFixed(2)}ms</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div style={styles.diagnosticSummary}>
+                <div style={styles.diagnosticItem}>
+                  <span>Integration Readiness:</span>
+                  <span style={{
+                    color: diagnosticResults.summary?.readiness?.score >= 75 ? '#00ff88' : 
+                           diagnosticResults.summary?.readiness?.score >= 50 ? '#ffaa00' : '#ff6b6b',
+                    fontWeight: 'bold'
+                  }}>
+                    {diagnosticResults.summary?.readiness?.status || 'Analyzing...'}
+                  </span>
                 </div>
               </div>
             </div>
@@ -372,6 +472,27 @@ const styles = {
     cursor: 'pointer' as const,
     marginLeft: '0.5rem'
   },
+  diagnosticButton: {
+    padding: '0.5rem 1rem',
+    background: '#9945ff',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '4px',
+    fontWeight: 'bold' as const,
+    cursor: 'pointer' as const,
+    fontSize: '0.9rem'
+  },
+  diagnosticRunningButton: {
+    padding: '0.5rem 1rem',
+    background: '#7035cc',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '4px',
+    fontWeight: 'bold' as const,
+    cursor: 'not-allowed' as const,
+    fontSize: '0.9rem',
+    opacity: 0.7
+  },
   mainContent: {
     display: 'flex',
     flex: 1,
@@ -459,5 +580,45 @@ const styles = {
     justifyContent: 'space-between',
     padding: '0.25rem 0',
     borderBottom: '1px solid #333'
+  },
+  diagnosticPanel: {
+    background: '#1a1a1a',
+    padding: '1rem',
+    borderRadius: '8px',
+    border: '1px solid #9945ff',
+    marginTop: '1rem'
+  },
+  diagnosticTitle: {
+    margin: '0 0 1rem 0',
+    color: '#9945ff',
+    fontSize: '1rem',
+    fontWeight: 'bold' as const
+  },
+  diagnosticGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '1rem',
+    marginBottom: '1rem'
+  },
+  diagnosticSection: {
+    // No specific styles needed
+  },
+  diagnosticSectionTitle: {
+    margin: '0 0 0.5rem 0',
+    color: '#00d4ff',
+    fontSize: '0.9rem',
+    fontWeight: 'bold' as const
+  },
+  diagnosticItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '0.25rem 0',
+    borderBottom: '1px solid #333',
+    fontSize: '0.8rem'
+  },
+  diagnosticSummary: {
+    borderTop: '1px solid #9945ff',
+    paddingTop: '1rem',
+    marginTop: '1rem'
   }
 };

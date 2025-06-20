@@ -66,7 +66,10 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
           manager = new WorkerManager({
             nodeCount: data.nodes.length,
             onPositionUpdate: (positions) => {
-              console.log(`[GraphRenderer] Received position update for ${positions.length} nodes from worker`);
+              // Log only occasionally to avoid console spam
+              if (Math.random() < 0.1) { // Log ~10% of updates
+                console.log(`[GraphRenderer] Received position update for ${positions.length} nodes from worker`);
+              }
               setPositionUpdates(positions);
             },
             onStatusChange: (status) => {
