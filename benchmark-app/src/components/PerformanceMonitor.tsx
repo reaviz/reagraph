@@ -1,6 +1,6 @@
 import React from 'react';
-import { PerformanceMetrics } from '@/types/benchmark.types';
-import { formatMemorySize, getPerformanceGrade } from '@/utils/performanceUtils';
+import { PerformanceMetrics } from '../types/benchmark.types';
+import { formatMemorySize, getPerformanceGrade } from '../utils/performanceUtils';
 
 interface PerformanceMonitorProps {
   metrics: PerformanceMetrics | null;

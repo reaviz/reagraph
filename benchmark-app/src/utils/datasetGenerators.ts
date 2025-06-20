@@ -1,4 +1,4 @@
-import { GraphData, GraphNode, GraphEdge, DatasetGenerator, BenchmarkTest } from '@/types/benchmark.types';
+import { GraphData, GraphNode, GraphEdge, DatasetGenerator, BenchmarkTest } from '../types/benchmark.types';
 
 export class DatasetGeneratorImpl implements DatasetGenerator {
   generateRandom(nodeCount: number, edgeDensity = 1.5): GraphData {

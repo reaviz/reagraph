@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { PerformanceMetrics } from '@/types/benchmark.types';
-import { PerformanceTrackerImpl } from '@/utils/performanceUtils';
+import { PerformanceMetrics } from '../types/benchmark.types';
+import { PerformanceTrackerImpl } from '../utils/performanceUtils';
 
 interface PerformanceValidation {
   avgFps: number;

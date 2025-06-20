@@ -3,7 +3,7 @@
  * Imported from the main library's Storybook demos for comprehensive testing
  */
 
-import { GraphData, BenchmarkTest } from '@/types/benchmark.types';
+import { GraphData, BenchmarkTest } from '../types/benchmark.types';
 
 // Utility functions
 const range = (n: number) => Array.from({ length: n }, (_, i) => i);

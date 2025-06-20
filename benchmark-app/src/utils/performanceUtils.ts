@@ -1,4 +1,4 @@
-import { PerformanceMetrics, PerformanceTracker } from '@/types/benchmark.types';
+import { PerformanceMetrics, PerformanceTracker } from '../types/benchmark.types';
 
 export class PerformanceTrackerImpl implements PerformanceTracker {
   private metrics: PerformanceMetrics[] = [];

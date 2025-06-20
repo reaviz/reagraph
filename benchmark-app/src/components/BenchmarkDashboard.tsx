@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { GraphRenderer } from './GraphRenderer';
-import { usePerformanceTracker } from '@/hooks/usePerformanceTracker';
-import { createBenchmarkTests } from '@/utils/datasetGenerators';
-import { createStorybookBenchmarkTests } from '@/data/storybookDatasets';
-import { BenchmarkTest } from '@/types/benchmark.types';
-import { getBrowserInfo, detectWorkerSupport } from '@/utils/performanceUtils';
+import { usePerformanceTracker } from '../hooks/usePerformanceTracker';
+import { createBenchmarkTests } from '../utils/datasetGenerators';
+import { createStorybookBenchmarkTests } from '../data/storybookDatasets';
+import { BenchmarkTest } from '../types/benchmark.types';
+import { getBrowserInfo, detectWorkerSupport } from '../utils/performanceUtils';
 
 export const BenchmarkDashboard: React.FC = () => {
   const [selectedTest, setSelectedTest] = useState<BenchmarkTest | null>(null);

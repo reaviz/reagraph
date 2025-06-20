@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -25,7 +26,15 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': '/src'
+      '@': resolve(__dirname, './src'),
+      // Fix reagraph import resolution for local development
+      'reagraph': resolve(__dirname, '../dist/main.mjs')
     }
+  },
+  optimizeDeps: {
+    // Exclude reagraph from pre-bundling since it's a local file dependency
+    exclude: ['reagraph'],
+    // Force include these dependencies that reagraph needs
+    include: ['react', 'react-dom', 'three', '@react-three/fiber']
   }
 });
