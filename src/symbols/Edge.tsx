@@ -19,6 +19,7 @@ import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { Euler, Vector3 } from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
+import { calculateSubLabelOffset } from '../utils/position';
 
 /**
  * Label positions relatively edge.
@@ -248,32 +249,11 @@ export const Edge: FC<EdgeProps> = ({
 
   // Calculate subLabel position based on edge orientation and subLabelPlacement
   const subLabelOffset = useMemo(() => {
-    // Calculate direction vector between nodes
-    const dx = to.position.x - from.position.x;
-    const dy = to.position.y - from.position.y;
-
-    // Get angle of the edge
-    const angle = Math.atan2(dy, dx);
-
-    // Calculate perpendicular angle based on edge direction and effectiveSubLabelPlacement
-    // If dx is negative (edge going right to left), add PI/2 and if positive, subtract PI/2
-    const perpAngle =
-      effectiveSubLabelPlacement === 'below'
-        ? dx >= 0
-          ? angle - Math.PI / 2
-          : angle + Math.PI / 2
-        : dx >= 0
-          ? angle + Math.PI / 2
-          : angle - Math.PI / 2;
-
-    // Offset distance for subLabel
-    const offsetDistance = 7;
-
-    // Calculate offset using perpendicular angle
-    const offsetX = Math.cos(perpAngle) * offsetDistance;
-    const offsetY = Math.sin(perpAngle) * offsetDistance;
-
-    return [offsetX, offsetY, 0];
+    return calculateSubLabelOffset(
+      from.position,
+      to.position,
+      effectiveSubLabelPlacement
+    );
   }, [from.position, to.position, effectiveSubLabelPlacement]);
 
   const [{ labelPosition, subLabelPosition }] = useSpring(
@@ -281,18 +261,14 @@ export const Edge: FC<EdgeProps> = ({
       from: {
         labelPosition: center ? [center.x, center.y, center.z] : [0, 0, 0],
         subLabelPosition: center
-          ? [
-            center.x + subLabelOffset[0],
-            center.y + subLabelOffset[1],
-            center.z
-          ]
+          ? [center.x + subLabelOffset.x, center.y + subLabelOffset.y, center.z]
           : [0, 0, 0]
       },
       to: {
         labelPosition: [midPoint.x, midPoint.y, midPoint.z],
         subLabelPosition: [
-          midPoint.x + subLabelOffset[0],
-          midPoint.y + subLabelOffset[1],
+          midPoint.x + subLabelOffset.x,
+          midPoint.y + subLabelOffset.y,
           midPoint.z
         ]
       },

@@ -72,7 +72,8 @@ export const EdgeSubLabels = () => (
         target: '2',
         id: '1-2',
         label: 'Edge 1-2',
-        subLabel: 'Sub Label 1-2'
+        subLabel: 'Sub Label 1-2',
+        subLabelPlacement: 'below'
       },
       {
         source: '1',
