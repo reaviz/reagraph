@@ -256,28 +256,20 @@ export const Edge: FC<EdgeProps> = ({
     );
   }, [from.position, to.position, effectiveSubLabelPlacement]);
 
-  const [{ labelPosition, subLabelPosition }] = useSpring(
+  const [{ labelPosition }] = useSpring(
     () => ({
       from: {
-        labelPosition: center ? [center.x, center.y, center.z] : [0, 0, 0],
-        subLabelPosition: center
-          ? [center.x + subLabelOffset.x, center.y + subLabelOffset.y, center.z]
-          : [0, 0, 0]
+        labelPosition: center ? [center.x, center.y, center.z] : [0, 0, 0]
       },
       to: {
-        labelPosition: [midPoint.x, midPoint.y, midPoint.z],
-        subLabelPosition: [
-          midPoint.x + subLabelOffset.x,
-          midPoint.y + subLabelOffset.y,
-          midPoint.z
-        ]
+        labelPosition: [midPoint.x, midPoint.y, midPoint.z]
       },
       config: {
         ...animationConfig,
         duration: animated && !isDragging ? undefined : 0
       }
     }),
-    [midPoint, animated, isDragging, subLabelOffset]
+    [midPoint, animated, isDragging]
   );
 
   const labelRotation = useMemo(
@@ -363,45 +355,34 @@ export const Edge: FC<EdgeProps> = ({
     () =>
       labelVisible &&
       label && (
-        <>
-          <a.group
-            position={labelPosition as any}
-            onContextMenu={() => {
-              if (!disabled) {
-                setMenuVisible(true);
-                onContextMenu?.(edge);
-              }
-            }}
-            onPointerOver={pointerOver}
-            onPointerOut={pointerOut}
-          >
-            <Label
-              text={label}
-              ellipsis={15}
-              fontUrl={labelFontUrl}
-              stroke={theme.edge.label.stroke}
-              color={
-                isSelected || active || isActive
-                  ? theme.edge.label.activeColor
-                  : theme.edge.label.color
-              }
-              opacity={selectionOpacity}
-              fontSize={theme.edge.label.fontSize}
-              rotation={labelRotation}
-            />
-          </a.group>
+        <a.group
+          position={labelPosition as any}
+          onContextMenu={() => {
+            if (!disabled) {
+              setMenuVisible(true);
+              onContextMenu?.(edge);
+            }
+          }}
+          onPointerOver={pointerOver}
+          onPointerOut={pointerOut}
+        >
+          <Label
+            text={label}
+            ellipsis={15}
+            fontUrl={labelFontUrl}
+            stroke={theme.edge.label.stroke}
+            color={
+              isSelected || active || isActive
+                ? theme.edge.label.activeColor
+                : theme.edge.label.color
+            }
+            opacity={selectionOpacity}
+            fontSize={theme.edge.label.fontSize}
+            rotation={labelRotation}
+          />
+
           {subLabel && (
-            <a.group
-              position={subLabelPosition as any}
-              onContextMenu={() => {
-                if (!disabled) {
-                  setMenuVisible(true);
-                  onContextMenu?.(edge);
-                }
-              }}
-              onPointerOver={pointerOver}
-              onPointerOut={pointerOut}
-            >
+            <group position={[subLabelOffset.x, subLabelOffset.y, 0]}>
               <Label
                 text={subLabel}
                 ellipsis={15}
@@ -420,9 +401,9 @@ export const Edge: FC<EdgeProps> = ({
                 }
                 rotation={labelRotation}
               />
-            </a.group>
+            </group>
           )}
-        </>
+        </a.group>
       ),
     [
       active,
@@ -434,7 +415,7 @@ export const Edge: FC<EdgeProps> = ({
       subLabel,
       labelFontUrl,
       labelPosition,
-      subLabelPosition,
+      subLabelOffset,
       labelRotation,
       labelVisible,
       onContextMenu,

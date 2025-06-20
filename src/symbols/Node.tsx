@@ -193,12 +193,11 @@ export const Node: FC<NodeProps> = ({
     }
   }, [canCollapse, collapsedNodeIds, id, isCollapsed, setCollapsedNodeIds]);
 
-  const [{ nodePosition, labelPosition, subLabelPosition }] = useSpring(
+  const [{ nodePosition, labelPosition }] = useSpring(
     () => ({
       from: {
         nodePosition: center ? [center.x, center.y, 0] : [0, 0, 0],
-        labelPosition: [0, -(nodeSize + 7), 2],
-        subLabelPosition: [0, -(nodeSize + 14), 2]
+        labelPosition: [0, -(nodeSize + 7), 2]
       },
       to: {
         nodePosition: position
@@ -208,8 +207,7 @@ export const Node: FC<NodeProps> = ({
             shouldHighlight ? position.z + 1 : position.z
           ]
           : [0, 0, 0],
-        labelPosition: [0, -(nodeSize + 7), 2],
-        subLabelPosition: [0, -(nodeSize + 14), 2]
+        labelPosition: [0, -(nodeSize + 7), 2]
       },
       config: {
         ...animationConfig,
@@ -323,23 +321,21 @@ export const Node: FC<NodeProps> = ({
       labelVisible &&
       (labelVisible || isSelected || active) &&
       label && (
-        <>
-          <a.group position={labelPosition as any}>
-            <Label
-              text={label}
-              fontUrl={labelFontUrl}
-              opacity={selectionOpacity}
-              stroke={theme.node.label.stroke}
-              active={isSelected || active || isDraggingCurrent || isActive}
-              color={
-                isSelected || active || isDraggingCurrent || isActive
-                  ? theme.node.label.activeColor
-                  : theme.node.label.color
-              }
-            />
-          </a.group>
+        <a.group position={labelPosition as any}>
+          <Label
+            text={label}
+            fontUrl={labelFontUrl}
+            opacity={selectionOpacity}
+            stroke={theme.node.label.stroke}
+            active={isSelected || active || isDraggingCurrent || isActive}
+            color={
+              isSelected || active || isDraggingCurrent || isActive
+                ? theme.node.label.activeColor
+                : theme.node.label.color
+            }
+          />
           {subLabel && (
-            <a.group position={subLabelPosition as any}>
+            <group position={[0, -(nodeSize - 3), 0]}>
               <Label
                 text={subLabel}
                 fontUrl={labelFontUrl}
@@ -353,9 +349,9 @@ export const Node: FC<NodeProps> = ({
                     : theme.node.subLabel?.color
                 }
               />
-            </a.group>
+            </group>
           )}
-        </>
+        </a.group>
       ),
     [
       active,
@@ -366,9 +362,9 @@ export const Node: FC<NodeProps> = ({
       labelFontUrl,
       labelPosition,
       labelVisible,
+      nodeSize,
       selectionOpacity,
       subLabel,
-      subLabelPosition,
       theme.node.label.activeColor,
       theme.node.label.color,
       theme.node.label.stroke,
