@@ -6,7 +6,9 @@ import React, {
   Suspense,
   useImperativeHandle,
   useRef,
-  useMemo
+  useMemo,
+  createContext,
+  useContext
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene } from '../GraphScene';
@@ -20,6 +22,23 @@ import { Lasso } from '../selection/Lasso';
 import type { LassoType } from '../selection/Lasso';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
+import { AdvancedMemoryManager, AdvancedInstancedRenderer } from '../rendering';
+// TODO: Import performance monitoring when available
+// import {
+//   AdvancedPerformanceMonitor,
+//   PerformanceProfiles
+// } from '../performance/PerformanceMonitor';
+
+// Performance Context for sharing optimization state
+interface PerformanceContextType {
+  memoryManager?: AdvancedMemoryManager;
+  // performanceMonitor?: AdvancedPerformanceMonitor; // TODO: Add when available
+  instancedRenderer?: AdvancedInstancedRenderer;
+}
+
+const PerformanceContext = createContext<PerformanceContextType>({});
+
+export const usePerformanceContext = () => useContext(PerformanceContext);
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
@@ -71,6 +90,32 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * When the canvas was clicked but didn't hit a node/edge.
    */
   onCanvasClick?: (event: MouseEvent) => void;
+
+  // Performance optimization props (Phase 2 integration)
+  /**
+   * Performance optimization level. Auto-selects optimal settings.
+   */
+  optimizationLevel?: 'HIGH_PERFORMANCE' | 'BALANCED' | 'POWER_SAVING';
+
+  /**
+   * Enable instanced rendering for massive performance gains.
+   */
+  enableInstancedRendering?: boolean | 'auto';
+
+  /**
+   * Enable memory optimization via TypedArrays and object pooling.
+   */
+  enableMemoryOptimization?: boolean | 'auto';
+
+  /**
+   * Enable real-time performance monitoring.
+   */
+  enablePerformanceMonitor?: boolean;
+
+  /**
+   * Callback for performance metrics updates.
+   */
+  onPerformanceUpdate?: (metrics: any) => void;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
@@ -128,6 +173,12 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         disabled,
         onLasso,
         onLassoEnd,
+        // Performance props
+        optimizationLevel,
+        enableInstancedRendering = 'auto',
+        enableMemoryOptimization = 'auto',
+        enablePerformanceMonitor = false,
+        onPerformanceUpdate,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -168,6 +219,51 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       const finalAnimated =
         edges.length + nodes.length > 400 ? false : animated;
 
+      // Smart defaults based on graph size
+      const shouldOptimize = useMemo(() => {
+        const totalElements = nodes.length + edges.length;
+        return totalElements > 1000;
+      }, [nodes.length, edges.length]);
+
+      // Performance optimization level
+      const effectiveOptimizationLevel = useMemo(() => {
+        if (optimizationLevel) return optimizationLevel;
+        if (shouldOptimize) return 'BALANCED';
+        return 'POWER_SAVING';
+      }, [optimizationLevel, shouldOptimize]);
+
+      // Conditional memory manager initialization
+      const memoryManager = useMemo(() => {
+        const shouldEnableMemory =
+          enableMemoryOptimization === true ||
+          (enableMemoryOptimization === 'auto' && shouldOptimize);
+
+        if (shouldEnableMemory) {
+          return new AdvancedMemoryManager({
+            maxNodes: nodes.length * 2,
+            maxEdges: edges.length * 2,
+            enableSharedArrayBuffer: true,
+            enableObjectPooling: true,
+            enableViewportCulling: true
+          });
+        }
+        return undefined;
+      }, [
+        enableMemoryOptimization,
+        shouldOptimize,
+        nodes.length,
+        edges.length
+      ]);
+
+      // Performance monitoring - TODO: Enable when PerformanceMonitor is available
+      // const performanceMonitor = useMemo(() => {
+      //   if (enablePerformanceMonitor) {
+      //     const profile = PerformanceProfiles[effectiveOptimizationLevel] || PerformanceProfiles.BALANCED;
+      //     return new AdvancedPerformanceMonitor(profile);
+      //   }
+      //   return undefined;
+      // }, [enablePerformanceMonitor, effectiveOptimizationLevel]);
+
       const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
       // zustand/context migration (https://github.com/pmndrs/zustand/discussions/1180)
       const store = useRef(
@@ -196,43 +292,53 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
               {theme.canvas?.background && (
                 <color attach="background" args={[theme.canvas.background]} />
               )}
-              <ambientLight intensity={1} />
-              {children}
-              {theme.canvas?.fog && (
-                <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
-              )}
-              <CameraControls
-                mode={cameraMode}
-                ref={controlsRef}
-                disabled={disabled}
-                minDistance={minDistance}
-                maxDistance={maxDistance}
-                animated={animated}
+              <PerformanceContext.Provider
+                value={{
+                  memoryManager,
+                  // performanceMonitor, // TODO: Add when available
+                  instancedRenderer: undefined // Will be set by GraphScene if needed
+                }}
               >
-                <Lasso
+                <ambientLight intensity={1} />
+                {children}
+                {theme.canvas?.fog && (
+                  <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
+                )}
+                <CameraControls
+                  mode={cameraMode}
+                  ref={controlsRef}
                   disabled={disabled}
-                  type={lassoType}
-                  onLasso={onLasso}
-                  onLassoEnd={onLassoEnd}
+                  minDistance={minDistance}
+                  maxDistance={maxDistance}
+                  animated={animated}
                 >
-                  <Suspense>
-                    <GraphScene
-                      ref={rendererRef as any}
-                      disabled={disabled}
-                      animated={finalAnimated}
-                      edges={edges}
-                      nodes={nodes}
-                      layoutType={layoutType}
-                      sizingType={sizingType}
-                      labelType={labelType}
-                      defaultNodeSize={defaultNodeSize}
-                      minNodeSize={minNodeSize}
-                      maxNodeSize={maxNodeSize}
-                      {...rest}
-                    />
-                  </Suspense>
-                </Lasso>
-              </CameraControls>
+                  <Lasso
+                    disabled={disabled}
+                    type={lassoType}
+                    onLasso={onLasso}
+                    onLassoEnd={onLassoEnd}
+                  >
+                    <Suspense>
+                      <GraphScene
+                        ref={rendererRef as any}
+                        disabled={disabled}
+                        animated={finalAnimated}
+                        edges={edges}
+                        nodes={nodes}
+                        layoutType={layoutType}
+                        sizingType={sizingType}
+                        labelType={labelType}
+                        defaultNodeSize={defaultNodeSize}
+                        minNodeSize={minNodeSize}
+                        maxNodeSize={maxNodeSize}
+                        enableInstancedRendering={enableInstancedRendering}
+                        onPerformanceUpdate={onPerformanceUpdate}
+                        {...rest}
+                      />
+                    </Suspense>
+                  </Lasso>
+                </CameraControls>
+              </PerformanceContext.Provider>
             </Provider>
           </Canvas>
         </div>

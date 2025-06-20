@@ -21,14 +21,15 @@ import * as THREE from 'three';
 import {
   AdvancedMemoryManager,
   AdvancedInstancedRenderer,
-  WebGLComputePipeline,
-  AdvancedPerformanceMonitor,
-  PerformanceProfiles,
   MemoryConfig,
-  RenderConfig,
-  ComputeConfig
+  RenderConfig
 } from '../rendering';
-import { SharedWorkerPool, WorkerType } from '../workers';
+import {
+  AdvancedPerformanceMonitor,
+  PerformanceProfiles
+} from '../performance/PerformanceMonitor';
+import { SharedWorkerPool, WorkerType, WebGLComputePipeline } from '../workers';
+import type { ComputeConfig } from '../workers';
 import { InternalGraphNode, InternalGraphEdge } from '../types';
 
 export interface GraphCanvasV2Props {
@@ -572,7 +573,7 @@ export const GraphCanvasV2: React.FC<GraphCanvasV2Props> = ({
             ? PerformanceProfiles.HIGH_PERFORMANCE
             : PerformanceProfiles.BALANCED;
         const monitor = new AdvancedPerformanceMonitor(perfProfile);
-        monitor.enableAutoOptimize(
+        monitor.setAutoOptimize(
           activeProfile.performance.enableAutoOptimization
         );
         setPerformanceMonitor(monitor);

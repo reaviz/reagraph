@@ -1,4 +1,7 @@
 export * from './GraphCanvas';
+// GraphCanvasV2 with high-performance rendering
+export { GraphCanvasV2, usePerformanceContext } from './GraphCanvas';
+export type { GraphCanvasV2Props, OptimizationProfile } from './GraphCanvas';
 export * from './GraphScene';
 export * from './types';
 export * from './utils';

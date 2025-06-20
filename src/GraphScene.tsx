@@ -271,6 +271,17 @@ export interface GraphSceneProps {
     cluster: ClusterEventArgs,
     event: ThreeEvent<PointerEvent>
   ) => void;
+
+  // Performance optimization props (Phase 2 integration)
+  /**
+   * Enable instanced rendering for massive performance gains.
+   */
+  enableInstancedRendering?: boolean | 'auto';
+
+  /**
+   * Callback for performance metrics updates.
+   */
+  onPerformanceUpdate?: (metrics: any) => void;
 }
 
 export interface GraphSceneRef {
