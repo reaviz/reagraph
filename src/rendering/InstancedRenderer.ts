@@ -746,6 +746,10 @@ export class AdvancedInstancedRenderer {
     nodeStats: ReturnType<NodeInstancedRenderer['getStats']>;
     edgeStats: ReturnType<EdgeInstancedRenderer['getStats']>;
     memoryStats: ReturnType<AdvancedMemoryManager['getMemoryStats']>;
+    sharedMemoryStats: {
+      isUsingSharedMemory: boolean;
+      hasSharedPositionBuffer: boolean;
+    };
     performanceMetrics: {
       drawCallReduction: number;
       memoryEfficiency: number;
@@ -755,6 +759,12 @@ export class AdvancedInstancedRenderer {
     const nodeStats = this.nodeRenderer.getStats();
     const edgeStats = this.edgeRenderer.getStats();
     const memoryStats = this.memoryManager.getMemoryStats();
+
+    // Get SharedArrayBuffer usage info
+    const sharedMemoryStats = {
+      isUsingSharedMemory: this.memoryManager.isUsingSharedMemory(),
+      hasSharedPositionBuffer: !!this.memoryManager.getSharedPositionBuffer()
+    };
 
     // Calculate performance metrics
     const totalElements =
@@ -777,6 +787,7 @@ export class AdvancedInstancedRenderer {
       nodeStats,
       edgeStats,
       memoryStats,
+      sharedMemoryStats,
       performanceMetrics: {
         drawCallReduction,
         memoryEfficiency,

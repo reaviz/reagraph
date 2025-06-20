@@ -218,17 +218,35 @@ class FeatureDetector {
     return supported;
   }
 
-  static detectSharedArrayBuffer(): boolean {
+  static detectSharedArrayBuffer(): { supported: boolean; reasons: string[] } {
     if (this.cache.has('sharedArrayBuffer'))
       return this.cache.get('sharedArrayBuffer')!;
 
-    const supported =
-      typeof SharedArrayBuffer !== 'undefined' &&
-      typeof Atomics !== 'undefined' &&
-      (globalThis as any).crossOriginIsolated === true;
+    const reasons: string[] = [];
+    let supported = true;
 
-    this.cache.set('sharedArrayBuffer', supported);
-    return supported;
+    if (typeof SharedArrayBuffer === 'undefined') {
+      supported = false;
+      reasons.push('SharedArrayBuffer is not available in this browser');
+    }
+
+    if (typeof Atomics === 'undefined') {
+      supported = false;
+      reasons.push('Atomics is not available in this browser');
+    }
+
+    if (!(globalThis as any).crossOriginIsolated) {
+      supported = false;
+      reasons.push(
+        'Cross-origin isolation is not enabled. Add COOP/COEP headers: ' +
+          'Cross-Origin-Opener-Policy: same-origin, ' +
+          'Cross-Origin-Embedder-Policy: require-corp'
+      );
+    }
+
+    const result = { supported, reasons };
+    this.cache.set('sharedArrayBuffer', result);
+    return result;
   }
 
   static detectWorkerSupport(): boolean {
@@ -255,9 +273,11 @@ class FeatureDetector {
   }
 
   static getSystemCapabilities() {
+    const sharedArrayBufferResult = this.detectSharedArrayBuffer();
     return {
       webgl2: this.detectWebGL2(),
-      sharedArrayBuffer: this.detectSharedArrayBuffer(),
+      sharedArrayBuffer: sharedArrayBufferResult.supported,
+      sharedArrayBufferReasons: sharedArrayBufferResult.reasons,
       worker: this.detectWorkerSupport(),
       gpuCompute: this.detectGPUComputeCapability(),
       hardwareConcurrency: navigator.hardwareConcurrency || 2,
@@ -279,6 +299,9 @@ class FeatureDetector {
 
     if (!capabilities.sharedArrayBuffer) {
       resolved.workers.enableSharedArrayBuffer = false;
+      resolved.memory.enableSharedArrayBuffer = false;
+    } else {
+      resolved.memory.enableSharedArrayBuffer = true;
     }
 
     if (!capabilities.worker) {
@@ -509,6 +532,21 @@ export const GraphCanvasV2: React.FC<GraphCanvasV2Props> = ({
       if (activeProfile.workers.maxWorkers > 0) {
         try {
           console.log('Initializing SharedWorkerPool...');
+
+          // Add SharedArrayBuffer diagnostics
+          if (activeProfile.workers.enableSharedArrayBuffer) {
+            const sabResult = FeatureDetector.detectSharedArrayBuffer();
+            if (!sabResult.supported) {
+              console.warn(
+                'SharedArrayBuffer not supported:',
+                sabResult.reasons
+              );
+              errors.push(
+                `SharedArrayBuffer disabled: ${sabResult.reasons.join(', ')}`
+              );
+            }
+          }
+
           const pool = new SharedWorkerPool(
             activeProfile.workers.maxWorkers,
             activeProfile.memory.maxNodes,

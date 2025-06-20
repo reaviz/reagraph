@@ -82,6 +82,12 @@ export default defineConfig(({ mode }) =>
       test: {
         globals: true,
         environment: 'jsdom'
+      },
+      server: {
+        headers: {
+          'Cross-Origin-Opener-Policy': 'same-origin',
+          'Cross-Origin-Embedder-Policy': 'require-corp'
+        }
       }
     }
 );

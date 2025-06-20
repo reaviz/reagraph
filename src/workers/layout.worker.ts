@@ -7,6 +7,7 @@ import {
   forceCollide,
   Simulation
 } from 'd3-force-3d';
+import { SharedPositionBuffer, SharedPositionConfig } from './shared-memory';
 
 export interface WorkerNode {
   id: string;
@@ -59,8 +60,35 @@ class LayoutWorker {
   private tickCount = 0;
   private maxTicks = 300;
 
-  async initialize(nodeCount: number): Promise<void> {
+  // SharedArrayBuffer support
+  private sharedPositionBuffer?: SharedPositionBuffer;
+  private nodeIdToIndex = new Map<string, number>();
+  private useSharedMemory = false;
+
+  async initialize(
+    nodeCount: number,
+    sharedBuffer?: SharedArrayBuffer,
+    sharedConfig?: SharedPositionConfig
+  ): Promise<void> {
     console.log(`[LayoutWorker] Initializing for ${nodeCount} nodes`);
+
+    // Initialize SharedArrayBuffer if provided
+    if (sharedBuffer && sharedConfig) {
+      try {
+        this.sharedPositionBuffer = SharedPositionBuffer.fromSharedBuffer(
+          sharedBuffer,
+          sharedConfig
+        );
+        this.useSharedMemory = true;
+        console.log('[LayoutWorker] SharedArrayBuffer initialized');
+      } catch (error) {
+        console.warn(
+          '[LayoutWorker] Failed to initialize SharedArrayBuffer:',
+          error
+        );
+        this.useSharedMemory = false;
+      }
+    }
 
     // Create simulation with default forces
     this.simulation = forceSimulation<WorkerNode, WorkerEdge>()
@@ -81,13 +109,16 @@ class LayoutWorker {
       })
       .stop();
 
-    console.log('[LayoutWorker] Simulation initialized');
+    console.log(
+      `[LayoutWorker] Simulation initialized (SharedMemory: ${this.useSharedMemory})`
+    );
   }
 
   async simulate(
     nodes: WorkerNode[],
     edges: WorkerEdge[],
-    params: SimulationParams = {}
+    params: SimulationParams = {},
+    nodeIdIndexMap?: Map<string, number>
   ): Promise<void> {
     if (!this.simulation) {
       throw new Error('Worker not initialized');
@@ -103,6 +134,17 @@ class LayoutWorker {
     this.isRunning = true;
     this.tickCount = 0;
 
+    // Set up node ID to index mapping for SharedArrayBuffer
+    if (nodeIdIndexMap) {
+      this.nodeIdToIndex = nodeIdIndexMap;
+    } else {
+      // Fallback: create mapping based on node order
+      this.nodeIdToIndex.clear();
+      nodes.forEach((node, index) => {
+        this.nodeIdToIndex.set(node.id, index);
+      });
+    }
+
     // Apply simulation parameters
     this.applySimulationParams(params);
 
@@ -117,7 +159,9 @@ class LayoutWorker {
     // Start simulation
     this.simulation.alpha(params.alpha || 1).restart();
 
-    console.log('[LayoutWorker] Simulation started');
+    console.log(
+      `[LayoutWorker] Simulation started (SharedMemory: ${this.useSharedMemory})`
+    );
   }
 
   private applySimulationParams(params: SimulationParams): void {
@@ -184,24 +228,65 @@ class LayoutWorker {
   private handleTick(): void {
     this.tickCount++;
 
-    // Send position updates via postMessage
-    const positions: PositionUpdate[] = this.nodes.map(node => ({
-      nodeId: node.id,
-      x: node.x || 0,
-      y: node.y || 0,
-      z: node.z || 0
-    }));
+    if (this.useSharedMemory && this.sharedPositionBuffer) {
+      // Use SharedArrayBuffer for zero-copy updates
+      this.updateSharedPositions();
+    } else {
+      // Fallback to postMessage
+      const positions: PositionUpdate[] = this.nodes.map(node => ({
+        nodeId: node.id,
+        x: node.x || 0,
+        y: node.y || 0,
+        z: node.z || 0
+      }));
 
-    // Use postMessage to communicate with main thread
-    self.postMessage({
-      type: 'positionUpdate',
-      data: positions
-    });
+      self.postMessage({
+        type: 'positionUpdate',
+        data: positions
+      });
+    }
 
     // Check stopping conditions
     const alpha = this.simulation?.alpha() || 0;
     if (this.tickCount >= this.maxTicks || alpha < 0.01) {
       this.stop();
+    }
+  }
+
+  private updateSharedPositions(): void {
+    if (!this.sharedPositionBuffer) return;
+
+    // Update positions directly in shared memory
+    for (const node of this.nodes) {
+      const nodeIndex = this.nodeIdToIndex.get(node.id);
+      if (nodeIndex !== undefined) {
+        this.sharedPositionBuffer.updatePosition(
+          nodeIndex,
+          node.x || 0,
+          node.y || 0,
+          node.z || 0
+        );
+
+        // Also update velocities if available
+        this.sharedPositionBuffer.updateVelocity(
+          nodeIndex,
+          node.vx || 0,
+          node.vy || 0,
+          node.vz || 0
+        );
+      }
+    }
+
+    // Only send minimal notification via postMessage
+    if (this.tickCount % 10 === 0) {
+      // Every 10 ticks
+      self.postMessage({
+        type: 'sharedPositionUpdate',
+        data: {
+          tickCount: this.tickCount,
+          alpha: this.simulation?.alpha() || 0
+        }
+      });
     }
   }
 

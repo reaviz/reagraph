@@ -7,12 +7,21 @@
 
 import * as THREE from 'three';
 import { InternalGraphNode, InternalGraphEdge } from '../types';
+import {
+  SharedPositionBuffer,
+  SharedPositionConfig
+} from '../workers/shared-memory';
+import {
+  SharedEdgeBuffer,
+  SharedEdgeConfig
+} from '../workers/shared-edge-memory';
 
 export interface MemoryConfig {
   maxNodes: number;
   maxEdges: number;
   enableViewportCulling?: boolean;
   enableObjectPooling?: boolean;
+  enableSharedArrayBuffer?: boolean;
   cullingDistance?: number;
   poolGrowthFactor?: number;
 }
@@ -70,11 +79,34 @@ export class NodeDataBuffer {
   public readonly indexToId = new Map<number, string>();
   public nextIndex = 0;
 
-  constructor(maxNodes: number) {
-    // Allocate all arrays at once to ensure memory locality
-    this.positions = new Float32Array(maxNodes * 3); // x, y, z
-    this.velocities = new Float32Array(maxNodes * 3); // vx, vy, vz
-    this.forces = new Float32Array(maxNodes * 3); // fx, fy, fz
+  // SharedArrayBuffer support
+  private sharedPositionBuffer?: SharedPositionBuffer;
+  private useSharedMemory: boolean;
+
+  constructor(maxNodes: number, enableSharedArrayBuffer: boolean = false) {
+    this.useSharedMemory =
+      enableSharedArrayBuffer && SharedPositionBuffer.isSupported();
+
+    if (this.useSharedMemory) {
+      // Use SharedArrayBuffer for position data
+      const sharedConfig: SharedPositionConfig = {
+        nodeCount: maxNodes,
+        enableVelocity: true,
+        enableForces: true
+      };
+
+      this.sharedPositionBuffer = new SharedPositionBuffer(sharedConfig);
+      this.positions = this.sharedPositionBuffer.getPositions();
+      this.velocities = this.sharedPositionBuffer.getVelocities()!;
+      this.forces = this.sharedPositionBuffer.getForcesArray()!;
+    } else {
+      // Fallback to regular TypedArrays
+      this.positions = new Float32Array(maxNodes * 3); // x, y, z
+      this.velocities = new Float32Array(maxNodes * 3); // vx, vy, vz
+      this.forces = new Float32Array(maxNodes * 3); // fx, fy, fz
+    }
+
+    // Visual data always uses regular arrays (not needed in workers)
     this.sizes = new Float32Array(maxNodes);
     this.colors = new Uint32Array(maxNodes);
     this.opacities = new Float32Array(maxNodes);
@@ -319,6 +351,7 @@ export class NodeDataBuffer {
     nodesCount: number;
     maxNodes: number;
     utilizationPercent: number;
+    useSharedMemory: boolean;
     } {
     const totalBytes =
       this.positions.byteLength +
@@ -334,8 +367,23 @@ export class NodeDataBuffer {
       totalBytes,
       nodesCount: this.nextIndex,
       maxNodes: this.positions.length / 3,
-      utilizationPercent: (this.nextIndex / (this.positions.length / 3)) * 100
+      utilizationPercent: (this.nextIndex / (this.positions.length / 3)) * 100,
+      useSharedMemory: this.useSharedMemory
     };
+  }
+
+  /**
+   * Get the SharedPositionBuffer for worker access
+   */
+  getSharedPositionBuffer(): SharedPositionBuffer | undefined {
+    return this.sharedPositionBuffer;
+  }
+
+  /**
+   * Check if using shared memory
+   */
+  isUsingSharedMemory(): boolean {
+    return this.useSharedMemory;
   }
 }
 
@@ -619,7 +667,10 @@ export class AdvancedMemoryManager {
 
   constructor(config: MemoryConfig) {
     this.config = config;
-    this.nodeBuffer = new NodeDataBuffer(config.maxNodes);
+    this.nodeBuffer = new NodeDataBuffer(
+      config.maxNodes,
+      config.enableSharedArrayBuffer
+    );
     this.edgeBuffer = new EdgeDataBuffer(config.maxEdges);
     this.viewportCuller = new ViewportCuller(config.cullingDistance);
 
@@ -829,6 +880,20 @@ export class AdvancedMemoryManager {
     this.instancedMeshPool.clear();
     this.frameCounter = 0;
     this.lastGCTime = 0;
+  }
+
+  /**
+   * Get shared position buffer for worker access
+   */
+  getSharedPositionBuffer(): SharedPositionBuffer | undefined {
+    return this.nodeBuffer.getSharedPositionBuffer();
+  }
+
+  /**
+   * Check if using shared memory
+   */
+  isUsingSharedMemory(): boolean {
+    return this.nodeBuffer.isUsingSharedMemory();
   }
 
   /**

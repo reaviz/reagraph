@@ -17,16 +17,22 @@ import type {
   SimulationParams,
   PositionUpdate
 } from './layout.worker';
+import { SharedPositionBuffer, SharedPositionConfig } from './shared-memory';
 
 // Re-export types for convenience
 export type { WorkerNode, WorkerEdge, SimulationParams, PositionUpdate };
 
 interface LayoutWorker {
-  initialize(nodeCount: number): Promise<void>;
+  initialize(
+    nodeCount: number,
+    sharedBuffer?: SharedArrayBuffer,
+    sharedConfig?: SharedPositionConfig
+  ): Promise<void>;
   simulate(
     nodes: WorkerNode[],
     edges: WorkerEdge[],
-    params: SimulationParams
+    params: SimulationParams,
+    nodeIdIndexMap?: Map<string, number>
   ): Promise<void>;
   updateNodePositions(
     nodeUpdates: {
@@ -70,14 +76,23 @@ export class LayoutManager {
   private onPositionUpdate: ((positions: PositionUpdate[]) => void) | null =
     null;
 
+  // SharedArrayBuffer support
+  private sharedPositionBuffer?: SharedPositionBuffer;
+  private useSharedMemory = false;
+  private nodeIdToIndex = new Map<string, number>();
+
   async initialize(
     nodeCount: number,
-    onPositionUpdate: (positions: PositionUpdate[]) => void
+    onPositionUpdate: (positions: PositionUpdate[]) => void,
+    sharedPositionBuffer?: SharedPositionBuffer
   ): Promise<void> {
     const bundlerEnv = detectBundlerEnvironment();
     console.log(`[LayoutManager] Detected bundler environment: ${bundlerEnv}`);
 
     this.onPositionUpdate = onPositionUpdate;
+    this.sharedPositionBuffer = sharedPositionBuffer;
+    this.useSharedMemory =
+      !!sharedPositionBuffer && SharedPositionBuffer.isSupported();
 
     try {
       // Attempt to load worker using robust loading strategy
@@ -95,11 +110,27 @@ export class LayoutManager {
         // Set up worker message handling
         this.setupWorkerMessageHandling();
 
-        await this.layoutWorker.initialize(nodeCount);
+        // Initialize worker with SharedArrayBuffer if available
+        if (this.useSharedMemory && this.sharedPositionBuffer) {
+          const sharedConfig: SharedPositionConfig = {
+            nodeCount,
+            enableVelocity: true,
+            enableForces: true
+          };
+
+          await this.layoutWorker.initialize(
+            nodeCount,
+            this.sharedPositionBuffer.getSharedBuffer(),
+            sharedConfig
+          );
+        } else {
+          await this.layoutWorker.initialize(nodeCount);
+        }
+
         this.initialized = true;
 
         console.log(
-          `[LayoutManager] Worker initialized successfully using ${this.workerLoadResult.method}`
+          `[LayoutManager] Worker initialized successfully using ${this.workerLoadResult.method} (SharedMemory: ${this.useSharedMemory})`
         );
       } else {
         throw new Error(
@@ -123,6 +154,12 @@ export class LayoutManager {
   ): Promise<void> {
     this.isSimulationRunning = true;
 
+    // Build node ID to index mapping for SharedArrayBuffer
+    this.nodeIdToIndex.clear();
+    nodes.forEach((node, index) => {
+      this.nodeIdToIndex.set(node.id, index);
+    });
+
     try {
       if (this.layoutWorker) {
         console.log(
@@ -130,7 +167,18 @@ export class LayoutManager {
           nodes.length,
           'nodes'
         );
-        await this.layoutWorker.simulate(nodes, edges, params);
+
+        if (this.useSharedMemory) {
+          await this.layoutWorker.simulate(
+            nodes,
+            edges,
+            params,
+            this.nodeIdToIndex
+          );
+        } else {
+          await this.layoutWorker.simulate(nodes, edges, params);
+        }
+
         console.log('[LayoutManager] Worker simulate completed');
       } else {
         console.log('[LayoutManager] Using main thread fallback');
@@ -265,6 +313,13 @@ export class LayoutManager {
         this.onPositionUpdate(data as PositionUpdate[]);
       }
       break;
+    case 'sharedPositionUpdate':
+      // Handle SharedArrayBuffer updates - positions are already updated in shared memory
+      // We just need to notify that an update occurred
+      if (this.useSharedMemory && this.sharedPositionBuffer) {
+        this.handleSharedMemoryUpdate(data);
+      }
+      break;
     case 'simulationStopped':
       console.log('[LayoutManager] Worker simulation stopped', data);
       this.isSimulationRunning = false;
@@ -274,6 +329,33 @@ export class LayoutManager {
       break;
     }
   };
+
+  private handleSharedMemoryUpdate(data: {
+    tickCount: number;
+    alpha: number;
+  }): void {
+    // With SharedArrayBuffer, positions are already updated in shared memory
+    // No need to copy data, just trigger a re-render by calling the callback
+    // Convert shared buffer positions to PositionUpdate format if needed
+    if (this.onPositionUpdate && this.sharedPositionBuffer) {
+      const positions: PositionUpdate[] = [];
+
+      // Convert shared memory positions to callback format
+      this.nodeIdToIndex.forEach((index, nodeId) => {
+        const pos = this.sharedPositionBuffer!.getPosition(index);
+        if (pos) {
+          positions.push({
+            nodeId,
+            x: pos.x,
+            y: pos.y,
+            z: pos.z
+          });
+        }
+      });
+
+      this.onPositionUpdate(positions);
+    }
+  }
 
   private initializeMainThreadFallback(nodeCount: number): void {
     console.log('[LayoutManager] Initializing main thread fallback layout');
