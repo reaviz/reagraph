@@ -16,18 +16,18 @@
   },
   "type": "module",
   "types": "dist/index.d.ts",
-  "main": "./dist/index.umd.cjs",
-  "module": "./dist/index.js",
+  "main": "./dist/main.js",
+  "module": "./dist/main.mjs",
   "source": "src/index.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.umd.cjs"
+      "import": "./dist/main.mjs",
+      "require": "./dist/main.js"
     },
     "./workers/*": "./dist/*"
   },
-  "browser": "dist/index.js",
+  "browser": "dist/main.mjs",
   "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
