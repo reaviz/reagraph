@@ -8,7 +8,9 @@ interface GraphRendererProps {
   workerEnabled: boolean;
   onNodeCountChange?: (count: number) => void;
   onEdgeCountChange?: (count: number) => void;
-  onWorkerStatusChange?: (status: 'enabled' | 'disabled' | 'failed' | 'initializing') => void;
+  onWorkerStatusChange?: (
+    status: 'enabled' | 'disabled' | 'failed' | 'initializing'
+  ) => void;
   className?: string;
 }
 
@@ -21,8 +23,12 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
   className = ''
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [workerManager, setWorkerManager] = useState<WorkerManager | null>(null);
-  const [realWorkerStatus, setRealWorkerStatus] = useState<'enabled' | 'disabled' | 'failed' | 'initializing'>('disabled');
+  const [workerManager, setWorkerManager] = useState<WorkerManager | null>(
+    null
+  );
+  const [realWorkerStatus, setRealWorkerStatus] = useState<
+    'enabled' | 'disabled' | 'failed' | 'initializing'
+  >('disabled');
   const [positionUpdates, setPositionUpdates] = useState<PositionUpdate[]>([]);
 
   // Convert our data format to ReaGraph format
@@ -50,42 +56,54 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
   useEffect(() => {
     onNodeCountChange?.(data.nodes.length);
     onEdgeCountChange?.(data.edges.length);
-  }, [data.nodes.length, data.edges.length, onNodeCountChange, onEdgeCountChange]);
+  }, [
+    data.nodes.length,
+    data.edges.length,
+    onNodeCountChange,
+    onEdgeCountChange
+  ]);
 
   // Real worker initialization and management
   useEffect(() => {
     let manager: WorkerManager | null = null;
-    
+
     const initializeWorker = async () => {
       if (workerEnabled) {
         console.log('[GraphRenderer] Initializing real WorkerManager...');
         setRealWorkerStatus('initializing');
         onWorkerStatusChange?.('initializing');
-        
+
         try {
           manager = new WorkerManager({
             nodeCount: data.nodes.length,
-            onPositionUpdate: (positions) => {
+            onPositionUpdate: positions => {
               // Log only occasionally to avoid console spam
-              if (Math.random() < 0.1) { // Log ~10% of updates
-                console.log(`[GraphRenderer] Received position update for ${positions.length} nodes from worker`);
+              if (Math.random() < 0.1) {
+                // Log ~10% of updates
+                console.log(
+                  `[GraphRenderer] Received position update for ${positions.length} nodes from worker`
+                );
               }
               setPositionUpdates(positions);
             },
-            onStatusChange: (status) => {
-              console.log(`[GraphRenderer] Worker status changed to: ${status}`);
+            onStatusChange: status => {
+              console.log(
+                `[GraphRenderer] Worker status changed to: ${status}`
+              );
               setRealWorkerStatus(status);
               onWorkerStatusChange?.(status);
             }
           });
-          
+
           await manager.initialize();
           setWorkerManager(manager);
-          
+
           console.log('[GraphRenderer] WorkerManager initialized successfully');
-          
         } catch (error) {
-          console.error('[GraphRenderer] Failed to initialize WorkerManager:', error);
+          console.error(
+            '[GraphRenderer] Failed to initialize WorkerManager:',
+            error
+          );
           setRealWorkerStatus('failed');
           onWorkerStatusChange?.('failed');
         }
@@ -100,9 +118,9 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
         onWorkerStatusChange?.('disabled');
       }
     };
-    
+
     initializeWorker();
-    
+
     // Cleanup on unmount
     return () => {
       if (manager) {
@@ -127,25 +145,26 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
     };
   }, [workerEnabled]);
 
-  const cameraConfig = useMemo(() => ({
-    mode: 'orbit' as const,
-    defaultPosition: {
-      x: 0,
-      y: 0,
-      z: 100
-    }
-  }), []);
+  const cameraConfig = useMemo(
+    () => ({
+      mode: 'orbit' as const,
+      defaultPosition: {
+        x: 0,
+        y: 0,
+        z: 100
+      }
+    }),
+    []
+  );
 
   return (
-    <div 
+    <div
       ref={containerRef}
       className={`graph-renderer ${className}`}
       style={styles.container}
     >
       <div style={styles.header}>
-        <h3 style={styles.title}>
-          Graph Visualization
-        </h3>
+        <h3 style={styles.title}>Graph Visualization</h3>
         <div style={styles.stats}>
           <span style={styles.stat}>
             {data.nodes.length.toLocaleString()} nodes
@@ -158,7 +177,7 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
           </span>
         </div>
       </div>
-      
+
       <div style={styles.graphContainer}>
         <GraphCanvas
           nodes={graphData.nodes}
@@ -173,34 +192,50 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
           onCanvasClick={() => {}}
         />
       </div>
-      
+
       {/* Performance overlay */}
       <div style={styles.overlay}>
         <div style={styles.overlayContent}>
           {workerEnabled ? (
-            <div style={{
-              ...styles.indicator, 
-              background: realWorkerStatus === 'enabled' ? '#00ff88' : 
-                         realWorkerStatus === 'initializing' ? '#ffaa00' : 
-                         realWorkerStatus === 'failed' ? '#ff0000' : '#666666'
-            }}>
-              {realWorkerStatus === 'enabled' ? '✓ Web Worker Active' :
-               realWorkerStatus === 'initializing' ? '⟳ Initializing Worker...' :
-               realWorkerStatus === 'failed' ? '✗ Worker Failed' : 'Worker Disabled'}
+            <div
+              style={{
+                ...styles.indicator,
+                background:
+                  realWorkerStatus === 'enabled'
+                    ? '#00ff88'
+                    : realWorkerStatus === 'initializing'
+                      ? '#ffaa00'
+                      : realWorkerStatus === 'failed'
+                        ? '#ff0000'
+                        : '#666666'
+              }}
+            >
+              {realWorkerStatus === 'enabled'
+                ? '✓ Web Worker Active'
+                : realWorkerStatus === 'initializing'
+                  ? '⟳ Initializing Worker...'
+                  : realWorkerStatus === 'failed'
+                    ? '✗ Worker Failed'
+                    : 'Worker Disabled'}
             </div>
           ) : (
-            <div style={{...styles.indicator, background: '#ff6600'}}>
+            <div style={{ ...styles.indicator, background: '#ff6600' }}>
               Main Thread Only
             </div>
           )}
-          
+
           {/* Worker debug info */}
           {workerManager && realWorkerStatus === 'enabled' && (
-            <div style={{...styles.indicator, background: '#333333', fontSize: '0.7rem'}}>
-              {positionUpdates.length > 0 ? 
-                `${positionUpdates.length} positions received` : 
-                'WorkerManager Ready'
-              }
+            <div
+              style={{
+                ...styles.indicator,
+                background: '#333333',
+                fontSize: '0.7rem'
+              }}
+            >
+              {positionUpdates.length > 0
+                ? `${positionUpdates.length} positions received`
+                : 'WorkerManager Ready'}
             </div>
           )}
         </div>
