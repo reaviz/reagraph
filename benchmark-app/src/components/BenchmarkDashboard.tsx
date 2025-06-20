@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { GraphRenderer } from './GraphRenderer';
+import { GraphRendererV2 } from './GraphRendererV2';
 import { usePerformanceTracker } from '../hooks/usePerformanceTracker';
 import { createBenchmarkTests } from '../utils/datasetGenerators';
 import { createStorybookBenchmarkTests } from '../data/storybookDatasets';
 import { BenchmarkTest } from '../types/benchmark.types';
 import { getBrowserInfo, detectWorkerSupport } from '../utils/performanceUtils';
 import { DiagnosticRunner } from '../utils/diagnosticRunner';
+import { PerformanceValidationPanel } from './PerformanceValidationPanel';
 
 export const BenchmarkDashboard: React.FC = () => {
   const [selectedTest, setSelectedTest] = useState<BenchmarkTest | null>(null);
@@ -14,6 +16,15 @@ export const BenchmarkDashboard: React.FC = () => {
   const [autoStart, setAutoStart] = useState(false);
   const [diagnosticRunning, setDiagnosticRunning] = useState(false);
   const [diagnosticResults, setDiagnosticResults] = useState<any>(null);
+  const [usePhase2, setUsePhase2] = useState(false);
+  const [showValidationPanel, setShowValidationPanel] = useState(false);
+  const [phase2Config, setPhase2Config] = useState({
+    optimizationLevel: 'BALANCED' as 'HIGH_PERFORMANCE' | 'BALANCED' | 'POWER_SAVING',
+    enableGPUAcceleration: 'auto' as boolean | 'auto',
+    enableInstancedRendering: 'auto' as boolean | 'auto',
+    enableSharedWorkers: 'auto' as boolean | 'auto',
+    enableMemoryOptimization: 'auto' as boolean | 'auto'
+  });
   
   // Combine generated tests and Storybook tests
   const [benchmarkTests] = useState(() => {
@@ -193,7 +204,61 @@ export const BenchmarkDashboard: React.FC = () => {
             {diagnosticRunning ? 'Running Phase 2 Diagnostic...' : 'Run Phase 2 Diagnostic'}
           </button>
         </div>
+
+        <div style={styles.controlGroup}>
+          <button
+            style={showValidationPanel ? styles.validationActiveButton : styles.validationButton}
+            onClick={() => setShowValidationPanel(!showValidationPanel)}
+          >
+            {showValidationPanel ? 'Hide Performance Validation' : 'Phase 2C Performance Validation'}
+          </button>
+        </div>
+
+        <div style={styles.controlGroup}>
+          <label style={styles.label}>
+            <input
+              type="checkbox"
+              checked={usePhase2}
+              onChange={(e) => setUsePhase2(e.target.checked)}
+              style={styles.checkbox}
+            />
+            Enable Phase 2 (GraphCanvasV2)
+          </label>
+        </div>
+
+        {usePhase2 && (
+          <div style={styles.controlGroup}>
+            <label style={styles.label}>Optimization Level:</label>
+            <select 
+              style={styles.select}
+              value={phase2Config.optimizationLevel}
+              onChange={(e) => setPhase2Config(prev => ({
+                ...prev, 
+                optimizationLevel: e.target.value as any
+              }))}
+            >
+              <option value="HIGH_PERFORMANCE">High Performance</option>
+              <option value="BALANCED">Balanced</option>
+              <option value="POWER_SAVING">Power Saving</option>
+            </select>
+          </div>
+        )}
       </div>
+
+      {/* Performance Validation Panel */}
+      {showValidationPanel && (
+        <div style={styles.validationSection}>
+          <PerformanceValidationPanel
+            datasets={benchmarkTests.map(test => ({
+              name: test.name,
+              data: test.dataset
+            }))}
+            onTestComplete={(results) => {
+              console.log('Phase 2C Validation completed:', results);
+            }}
+          />
+        </div>
+      )}
 
       {/* Main Content */}
       <div style={styles.mainContent}>
@@ -338,13 +403,32 @@ export const BenchmarkDashboard: React.FC = () => {
         {/* Graph Visualization */}
         <div style={styles.graphPanel}>
           {selectedTest ? (
-            <GraphRenderer
-              data={selectedTest.dataset}
-              workerEnabled={workerEnabled}
-              onNodeCountChange={updateNodeCount}
-              onEdgeCountChange={updateEdgeCount}
-              onWorkerStatusChange={updateWorkerStatus}
-            />
+            usePhase2 ? (
+              <GraphRendererV2
+                data={selectedTest.dataset}
+                optimizationLevel={phase2Config.optimizationLevel}
+                enableGPUAcceleration={phase2Config.enableGPUAcceleration}
+                enableInstancedRendering={phase2Config.enableInstancedRendering}
+                enableSharedWorkers={phase2Config.enableSharedWorkers}
+                enableMemoryOptimization={phase2Config.enableMemoryOptimization}
+                onNodeCountChange={updateNodeCount}
+                onEdgeCountChange={updateEdgeCount}
+                onPerformanceUpdate={(metrics) => {
+                  // Update performance tracker with Phase 2 metrics
+                  console.log('Phase 2 Performance Update:', metrics);
+                }}
+                showControls={true}
+                showPerformanceOverlay={true}
+              />
+            ) : (
+              <GraphRenderer
+                data={selectedTest.dataset}
+                workerEnabled={workerEnabled}
+                onNodeCountChange={updateNodeCount}
+                onEdgeCountChange={updateEdgeCount}
+                onWorkerStatusChange={updateWorkerStatus}
+              />
+            )
           ) : (
             <div style={styles.placeholder}>
               Select a benchmark test to begin
@@ -356,8 +440,16 @@ export const BenchmarkDashboard: React.FC = () => {
       {/* Status Bar */}
       <div style={styles.statusBar}>
         <div style={styles.statusItem}>
+          Renderer: {usePhase2 ? 'GraphCanvasV2 (Phase 2)' : 'GraphCanvas (Legacy)'}
+        </div>
+        <div style={styles.statusItem}>
           Status: {isTracking ? 'Monitoring Active' : 'Monitoring Stopped'}
         </div>
+        {usePhase2 && (
+          <div style={styles.statusItem}>
+            Optimization: {phase2Config.optimizationLevel}
+          </div>
+        )}
         {metrics && (
           <>
             <div style={styles.statusItem}>
@@ -366,9 +458,11 @@ export const BenchmarkDashboard: React.FC = () => {
             <div style={styles.statusItem}>
               Memory: {(metrics.memoryUsage).toFixed(1)}MB
             </div>
-            <div style={styles.statusItem}>
-              Worker: {metrics.workerStatus}
-            </div>
+            {!usePhase2 && (
+              <div style={styles.statusItem}>
+                Worker: {metrics.workerStatus}
+              </div>
+            )}
           </>
         )}
       </div>
@@ -620,5 +714,29 @@ const styles = {
     borderTop: '1px solid #9945ff',
     paddingTop: '1rem',
     marginTop: '1rem'
+  },
+  validationButton: {
+    padding: '0.5rem 1rem',
+    background: '#00d4ff',
+    color: '#000000',
+    border: 'none',
+    borderRadius: '4px',
+    fontWeight: 'bold' as const,
+    cursor: 'pointer' as const,
+    fontSize: '0.9rem'
+  },
+  validationActiveButton: {
+    padding: '0.5rem 1rem',
+    background: '#0099cc',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '4px',
+    fontWeight: 'bold' as const,
+    cursor: 'pointer' as const,
+    fontSize: '0.9rem'
+  },
+  validationSection: {
+    margin: '1rem',
+    marginTop: 0
   }
 };
