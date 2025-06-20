@@ -9,6 +9,9 @@ import { BenchmarkTest } from '../types/benchmark.types';
 import { getBrowserInfo, detectWorkerSupport } from '../utils/performanceUtils';
 import { DiagnosticRunner } from '../utils/diagnosticRunner';
 import { PerformanceValidationPanel } from './PerformanceValidationPanel';
+import { SelectiveTestingInterface, TestConfiguration } from './SelectiveTestingInterface';
+import { SelectiveTestRunner, TestResult, TestProgress } from './SelectiveTestRunner';
+import { SelectiveTestResults } from './SelectiveTestResults';
 
 export const BenchmarkDashboard: React.FC = () => {
   const [selectedTest, setSelectedTest] = useState<BenchmarkTest | null>(null);
@@ -18,6 +21,14 @@ export const BenchmarkDashboard: React.FC = () => {
   const [diagnosticResults, setDiagnosticResults] = useState<any>(null);
   const [usePhase2, setUsePhase2] = useState(false);
   const [showValidationPanel, setShowValidationPanel] = useState(false);
+  
+  // Selective testing state
+  const [showSelectiveTesting, setShowSelectiveTesting] = useState(false);
+  const [selectedConfigurations, setSelectedConfigurations] = useState<TestConfiguration[]>([]);
+  const [selectiveTestResults, setSelectiveTestResults] = useState<TestResult[]>([]);
+  const [isSelectiveTestRunning, setIsSelectiveTestRunning] = useState(false);
+  const [isSelectiveTestPaused, setIsSelectiveTestPaused] = useState(false);
+  const [selectiveTestProgress, setSelectiveTestProgress] = useState<TestProgress | null>(null);
   const [phase2Config, setPhase2Config] = useState({
     optimizationLevel: 'BALANCED' as 'HIGH_PERFORMANCE' | 'BALANCED' | 'POWER_SAVING',
     enableGPUAcceleration: 'auto' as boolean | 'auto',
@@ -91,6 +102,50 @@ export const BenchmarkDashboard: React.FC = () => {
       reset();
       start();
     }
+  };
+
+  // Selective testing handlers
+  const handleSelectiveTestConfigurationChange = (configs: TestConfiguration[]) => {
+    setSelectedConfigurations(configs);
+  };
+
+  const handleStartSelectiveTests = (configs: TestConfiguration[]) => {
+    console.log('[BenchmarkDashboard] Starting selective tests:', configs);
+    setSelectedConfigurations(configs);
+    setSelectiveTestResults([]);
+    setSelectiveTestProgress(null);
+    setIsSelectiveTestRunning(true);
+    setIsSelectiveTestPaused(false);
+  };
+
+  const handleSelectiveTestProgress = (progress: TestProgress) => {
+    setSelectiveTestProgress(progress);
+  };
+
+  const handleSelectiveTestComplete = (result: TestResult) => {
+    console.log('[BenchmarkDashboard] Selective test completed:', result);
+    setSelectiveTestResults(prev => [...prev, result]);
+  };
+
+  const handleAllSelectiveTestsComplete = (results: TestResult[]) => {
+    console.log('[BenchmarkDashboard] All selective tests completed:', results);
+    setIsSelectiveTestRunning(false);
+    setIsSelectiveTestPaused(false);
+    setSelectiveTestProgress(null);
+  };
+
+  const handlePauseSelectiveTests = () => {
+    setIsSelectiveTestPaused(true);
+  };
+
+  const handleResumeSelectiveTests = () => {
+    setIsSelectiveTestPaused(false);
+  };
+
+  const handleStopSelectiveTests = () => {
+    setIsSelectiveTestRunning(false);
+    setIsSelectiveTestPaused(false);
+    setSelectiveTestProgress(null);
   };
 
   const runPhase2Diagnostic = async () => {
@@ -215,6 +270,15 @@ export const BenchmarkDashboard: React.FC = () => {
         </div>
 
         <div style={styles.controlGroup}>
+          <button
+            style={showSelectiveTesting ? styles.selectiveTestingActiveButton : styles.selectiveTestingButton}
+            onClick={() => setShowSelectiveTesting(!showSelectiveTesting)}
+          >
+            {showSelectiveTesting ? 'Hide Selective Testing' : 'Selective Testing UI'}
+          </button>
+        </div>
+
+        <div style={styles.controlGroup}>
           <label style={styles.label}>
             <input
               type="checkbox"
@@ -255,6 +319,57 @@ export const BenchmarkDashboard: React.FC = () => {
             }))}
             onTestComplete={(results) => {
               console.log('Phase 2C Validation completed:', results);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Selective Testing Interface */}
+      {showSelectiveTesting && (
+        <div style={styles.selectiveTestingSection}>
+          <SelectiveTestingInterface
+            availableTests={benchmarkTests}
+            onSelectionChange={handleSelectiveTestConfigurationChange}
+            onStartTests={handleStartSelectiveTests}
+            isRunning={isSelectiveTestRunning}
+          />
+
+          {isSelectiveTestRunning && (
+            <SelectiveTestRunner
+              configurations={selectedConfigurations}
+              availableTests={benchmarkTests}
+              onProgress={handleSelectiveTestProgress}
+              onTestComplete={handleSelectiveTestComplete}
+              onAllTestsComplete={handleAllSelectiveTestsComplete}
+              isRunning={isSelectiveTestRunning}
+              isPaused={isSelectiveTestPaused}
+              onPause={handlePauseSelectiveTests}
+              onResume={handleResumeSelectiveTests}
+              onStop={handleStopSelectiveTests}
+            />
+          )}
+
+          <SelectiveTestResults
+            results={selectiveTestResults}
+            progress={selectiveTestProgress || undefined}
+            isRunning={isSelectiveTestRunning}
+            onExportResults={() => {
+              const data = JSON.stringify(selectiveTestResults, null, 2);
+              const blob = new Blob([data], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `selective-test-results-${Date.now()}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }}
+            onRetestFailed={() => {
+              const failedConfigs = selectiveTestResults
+                .filter(r => !r.success)
+                .map(r => r.configuration);
+              if (failedConfigs.length > 0) {
+                handleStartSelectiveTests(failedConfigs);
+              }
             }}
           />
         </div>
@@ -736,6 +851,30 @@ const styles = {
     fontSize: '0.9rem'
   },
   validationSection: {
+    margin: '1rem',
+    marginTop: 0
+  },
+  selectiveTestingButton: {
+    padding: '0.5rem 1rem',
+    background: '#ff6b35',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '4px',
+    fontWeight: 'bold' as const,
+    cursor: 'pointer' as const,
+    fontSize: '0.9rem'
+  },
+  selectiveTestingActiveButton: {
+    padding: '0.5rem 1rem',
+    background: '#cc5529',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '4px',
+    fontWeight: 'bold' as const,
+    cursor: 'pointer' as const,
+    fontSize: '0.9rem'
+  },
+  selectiveTestingSection: {
     margin: '1rem',
     marginTop: 0
   }
