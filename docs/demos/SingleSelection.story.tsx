@@ -1,13 +1,15 @@
 import React, { useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Selection/Single',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Defaults = () => {
+const DefaultsTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
@@ -19,6 +21,7 @@ export const Defaults = () => {
 
   return (
     <GraphCanvas
+      {...args}
       ref={graphRef}
       nodes={complexNodes}
       edges={complexEdges}
@@ -29,7 +32,12 @@ export const Defaults = () => {
   );
 };
 
-export const Simple = () => {
+export const Defaults = DefaultsTemplate.bind({});
+Defaults.args = {
+  ...commonArgs
+};
+
+const SimpleTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
@@ -40,6 +48,7 @@ export const Simple = () => {
 
   return (
     <GraphCanvas
+      {...args}
       ref={graphRef}
       nodes={simpleNodes}
       edges={simpleEdges}
@@ -50,7 +59,12 @@ export const Simple = () => {
   );
 };
 
-export const Dragging = () => {
+export const Simple = SimpleTemplate.bind({});
+Simple.args = {
+  ...commonArgs
+};
+
+const DraggingTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
@@ -61,8 +75,8 @@ export const Dragging = () => {
 
   return (
     <GraphCanvas
+      {...args}
       ref={graphRef}
-      draggable
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
@@ -70,4 +84,10 @@ export const Dragging = () => {
       onNodeClick={onNodeClick}
     />
   );
+};
+
+export const Dragging = DraggingTemplate.bind({});
+Dragging.args = {
+  ...commonArgs,
+  draggable: true
 };

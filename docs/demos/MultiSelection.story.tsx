@@ -1,13 +1,15 @@
 import React, { Fragment, useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Selection/Multi',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Defaults = () => {
+const DefaultsTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
@@ -19,6 +21,7 @@ export const Defaults = () => {
 
   return (
     <GraphCanvas
+      {...args}
       ref={graphRef}
       nodes={complexNodes}
       edges={complexEdges}
@@ -29,7 +32,12 @@ export const Defaults = () => {
   );
 };
 
-export const Dragging = () => {
+export const Defaults = DefaultsTemplate.bind({});
+Defaults.args = {
+  ...commonArgs
+};
+
+const DraggingTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
@@ -40,7 +48,7 @@ export const Dragging = () => {
 
   return (
     <GraphCanvas
-      draggable
+      {...args}
       ref={graphRef}
       nodes={complexNodes}
       edges={complexEdges}
@@ -51,7 +59,13 @@ export const Dragging = () => {
   );
 };
 
-export const ModifierKey = () => {
+export const Dragging = DraggingTemplate.bind({});
+Dragging.args = {
+  ...commonArgs,
+  draggable: true
+};
+
+const ModifierKeyTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
@@ -78,6 +92,7 @@ export const ModifierKey = () => {
         </h3>
       </div>
       <GraphCanvas
+        {...args}
         ref={graphRef}
         nodes={complexNodes}
         edges={complexEdges}
@@ -89,7 +104,12 @@ export const ModifierKey = () => {
   );
 };
 
-export const PathFinding = () => {
+export const ModifierKey = ModifierKeyTemplate.bind({});
+ModifierKey.args = {
+  ...commonArgs
+};
+
+const PathFindingTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, actives, selectNodePaths, onNodeClick, onCanvasClick } =
     useSelection({
@@ -124,6 +144,7 @@ export const PathFinding = () => {
         </button>
       </div>
       <GraphCanvas
+        {...args}
         ref={graphRef}
         actives={actives}
         nodes={complexNodes}
@@ -134,4 +155,9 @@ export const PathFinding = () => {
       />
     </Fragment>
   );
+};
+
+export const PathFinding = PathFindingTemplate.bind({});
+PathFinding.args = {
+  ...commonArgs
 };

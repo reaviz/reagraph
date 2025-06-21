@@ -1,16 +1,17 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
 import { parentEdges, parentNodes, simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Context Menu',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Node = () => (
+const NodeStory = args => (
   <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
+    {...args}
     contextMenu={({ data, onClose }) => (
       <div
         style={{
@@ -28,6 +29,13 @@ export const Node = () => (
     )}
   />
 );
+
+export const Node = NodeStory.bind({});
+Node.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
 
 export const Collapsible = () => (
   <GraphCanvas

@@ -8,20 +8,31 @@ import {
   simpleNodes,
   simpleNodesColors
 } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Nodes',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const NoEdges = () => <GraphCanvas nodes={manyNodes} edges={[]} />;
+const NoEdgesStory = args => <GraphCanvas {...args} />;
 
-export const Icons = () => (
-  <GraphCanvas
-    nodes={iconNodes}
-    edges={simpleEdges}
-  />
-);
+export const NoEdges = NoEdgesStory.bind({});
+NoEdges.args = {
+  ...commonArgs,
+  nodes: manyNodes,
+  edges: []
+};
+
+const IconsStory = args => <GraphCanvas {...args} />;
+
+export const Icons = IconsStory.bind({});
+Icons.args = {
+  ...commonArgs,
+  nodes: iconNodes,
+  edges: simpleEdges
+};
 
 export const DragOverrides = () => {
   const nodeRef = useRef(new Map());
@@ -59,11 +70,9 @@ export const DragOverrides = () => {
   );
 };
 
-export const Custom3DNode = () => (
+const Custom3DNodeStory = args => (
   <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
-    cameraMode="rotate"
+    {...args}
     renderNode={({ size, color, opacity }) => (
       <group>
         <mesh>
@@ -80,11 +89,17 @@ export const Custom3DNode = () => (
   />
 );
 
-export const SphereWithIconNode = () => (
+export const Custom3DNode = Custom3DNodeStory.bind({});
+Custom3DNode.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges,
+  cameraMode: 'rotate'
+};
+
+const SphereWithIconNodeStory = args => (
   <GraphCanvas
-    nodes={iconNodes}
-    edges={simpleEdges}
-    cameraMode="rotate"
+    {...args}
     renderNode={({  node, ...rest }) => (
       <SphereWithIcon
         {...rest}
@@ -95,11 +110,17 @@ export const SphereWithIconNode = () => (
   />
 );
 
-export const SphereSvgIconNode = () => (
+export const SphereWithIconNode = SphereWithIconNodeStory.bind({});
+SphereWithIconNode.args = {
+  ...commonArgs,
+  nodes: iconNodes,
+  edges: simpleEdges,
+  cameraMode: 'rotate'
+};
+
+const SphereSvgIconNodeStory = args => (
   <GraphCanvas
-    nodes={iconNodes}
-    edges={simpleEdges}
-    cameraMode="rotate"
+    {...args}
     renderNode={({  node, ...rest }) => (
       <SphereWithSvg
         {...rest}
@@ -110,11 +131,17 @@ export const SphereSvgIconNode = () => (
   />
 );
 
-export const SvgIconNode = () => (
+export const SphereSvgIconNode = SphereSvgIconNodeStory.bind({});
+SphereSvgIconNode.args = {
+  ...commonArgs,
+  nodes: iconNodes,
+  edges: simpleEdges,
+  cameraMode: 'rotate'
+};
+
+const SvgIconNodeStory = args => (
   <GraphCanvas
-    nodes={iconNodes}
-    edges={simpleEdges}
-    cameraMode="rotate"
+    {...args}
     renderNode={({  node, ...rest }) => (
       <Svg
         {...rest}
@@ -125,9 +152,22 @@ export const SvgIconNode = () => (
   />
 );
 
-export const Colors = () => (
-  <GraphCanvas nodes={simpleNodesColors} edges={simpleEdges} />
-);
+export const SvgIconNode = SvgIconNodeStory.bind({});
+SvgIconNode.args = {
+  ...commonArgs,
+  nodes: iconNodes,
+  edges: simpleEdges,
+  cameraMode: 'rotate'
+};
+
+const ColorsStory = args => <GraphCanvas {...args} />;
+
+export const Colors = ColorsStory.bind({});
+Colors.args = {
+  ...commonArgs,
+  nodes: simpleNodesColors,
+  edges: simpleEdges
+};
 
 export const Draggable = () => {
   const [layout, setLayout] = useState<LayoutTypes>('forceDirected2d');

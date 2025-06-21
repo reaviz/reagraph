@@ -1,13 +1,15 @@
 import React, { useRef, useState } from 'react';
 import { CameraMode, GraphCanvas, GraphCanvasRef, LayoutTypes } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Controls',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const All = () => {
+const AllTemplate = (args) => {
   const ref = useRef<GraphCanvasRef | null>(null);
 
   return (
@@ -27,16 +29,27 @@ export const All = () => {
         <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.panLeft()}>Pan Left</button>
         <button style={{ display: 'block', width: '100%' }} onClick={() => ref.current?.panRight()}>Pan Right</button>
       </div>
-      <GraphCanvas ref={ref} nodes={simpleNodes} edges={simpleEdges} />
+      <GraphCanvas {...args} ref={ref} nodes={simpleNodes} edges={simpleEdges} />
     </div>
   );
 };
 
-export const Rotate = () => (
-  <GraphCanvas cameraMode="rotate" nodes={simpleNodes} edges={simpleEdges} />
+export const All = AllTemplate.bind({});
+All.args = {
+  ...commonArgs
+};
+
+const RotateTemplate = (args) => (
+  <GraphCanvas {...args} nodes={simpleNodes} edges={simpleEdges} />
 );
 
-export const Orbit = () => {
+export const Rotate = RotateTemplate.bind({});
+Rotate.args = {
+  ...commonArgs,
+  cameraMode: 'rotate'
+};
+
+const OrbitTemplate = (args) => {
   const [mode, setMode] = useState<CameraMode>('orbit');
 
   return (
@@ -44,7 +57,13 @@ export const Orbit = () => {
       <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 1, color: 'white' }}>
         <button style={{ display: 'block', width: '100%' }} onClick={() => setMode(mode === 'orbit' ? 'rotate' : 'orbit')}>Enable/Disable Orbit</button>
       </div>
-      <GraphCanvas cameraMode={mode} nodes={simpleNodes} edges={simpleEdges} />
+      <GraphCanvas {...args} cameraMode={mode} nodes={simpleNodes} edges={simpleEdges} />
     </div>
   );
+};
+
+export const Orbit = OrbitTemplate.bind({});
+Orbit.args = {
+  ...commonArgs,
+  cameraMode: 'orbit'
 };

@@ -1,15 +1,16 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Edges/Labels',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Above = () => (
+const AboveStory = args => (
   <GraphCanvas
-    edgeLabelPosition="above"
-    labelType="edges"
+    {...args}
     nodes={[
       {
         id: '1',
@@ -42,10 +43,16 @@ export const Above = () => (
   />
 );
 
-export const Below = () => (
+export const Above = AboveStory.bind({});
+Above.args = {
+  ...commonArgs,
+  edgeLabelPosition: 'above',
+  labelType: 'edges'
+};
+
+const BelowStory = args => (
   <GraphCanvas
-    edgeLabelPosition="below"
-    labelType="edges"
+    {...args}
     nodes={[
       {
         id: '1',
@@ -78,10 +85,16 @@ export const Below = () => (
   />
 );
 
-export const Inline = () => (
+export const Below = BelowStory.bind({});
+Below.args = {
+  ...commonArgs,
+  edgeLabelPosition: 'below',
+  labelType: 'edges'
+};
+
+const InlineStory = args => (
   <GraphCanvas
-    edgeLabelPosition="inline"
-    labelType="edges"
+    {...args}
     nodes={[
       {
         id: '1',
@@ -114,10 +127,16 @@ export const Inline = () => (
   />
 );
 
-export const Natural = () => (
+export const Inline = InlineStory.bind({});
+Inline.args = {
+  ...commonArgs,
+  edgeLabelPosition: 'inline',
+  labelType: 'edges'
+};
+
+const NaturalStory = args => (
   <GraphCanvas
-    edgeLabelPosition="natural"
-    labelType="edges"
+    {...args}
     nodes={[
       {
         id: '1',
@@ -149,3 +168,10 @@ export const Natural = () => (
     ]}
   />
 );
+
+export const Natural = NaturalStory.bind({});
+Natural.args = {
+  ...commonArgs,
+  edgeLabelPosition: 'natural',
+  labelType: 'edges'
+};

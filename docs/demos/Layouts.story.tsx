@@ -1,39 +1,53 @@
 import React from 'react';
 import { CustomLayoutInputs, GraphCanvas, NodePositionArgs, recommendLayout } from '../../src';
 import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Layouts',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Recommender = () => {
+const RecommenderStory = args => {
   const layout = recommendLayout(complexNodes, complexEdges);
 
   return (
     <GraphCanvas
+      {...args}
       layoutType={layout}
-      nodes={complexNodes}
-      edges={complexEdges}
     />
   );
 };
 
-export const Overrides = () => (
+export const Recommender = RecommenderStory.bind({});
+Recommender.args = {
+  ...commonArgs,
+  nodes: complexNodes,
+  edges: complexEdges
+};
+
+const OverridesStory = args => (
   <GraphCanvas
-    layoutType="forceDirected2d"
+    {...args}
     layoutOverrides={{
       nodeStrength: -50,
       linkDistance: 500
     }}
-    nodes={complexNodes}
-    edges={complexEdges}
   />
 );
 
-export const Custom = () => (
+export const Overrides = OverridesStory.bind({});
+Overrides.args = {
+  ...commonArgs,
+  layoutType: 'forceDirected2d',
+  nodes: complexNodes,
+  edges: complexEdges
+};
+
+const CustomStory = args => (
   <GraphCanvas
-    layoutType="custom"
+    {...args}
     layoutOverrides={{
       getNodePosition: (id: string, { nodes }: NodePositionArgs) => {
         const idx = nodes.findIndex(n => n.id === id);
@@ -45,7 +59,13 @@ export const Custom = () => (
         };
       }
     } as CustomLayoutInputs}
-    nodes={simpleNodes}
-    edges={simpleEdges}
   />
 );
+
+export const Custom = CustomStory.bind({});
+Custom.args = {
+  ...commonArgs,
+  layoutType: 'custom',
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
