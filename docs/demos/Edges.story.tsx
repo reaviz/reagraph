@@ -1,15 +1,17 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Edges',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Sizes = () => (
+const SizesTemplate = (args) => (
   <GraphCanvas
-    labelType="all"
+    {...args}
     nodes={[
       {
         id: '1',
@@ -64,10 +66,22 @@ export const Sizes = () => (
   />
 );
 
-export const Events = () => (
+export const Sizes = SizesTemplate.bind({});
+Sizes.args = {
+  ...commonArgs,
+  labelType: 'all'
+};
+
+const EventsTemplate = (args) => (
   <GraphCanvas
+    {...args}
     nodes={simpleNodes}
     edges={simpleEdges}
     onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
   />
 );
+
+export const Events = EventsTemplate.bind({});
+Events.args = {
+  ...commonArgs
+};

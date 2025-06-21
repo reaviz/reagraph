@@ -1,16 +1,17 @@
 import React from 'react';
 import { GraphCanvas, RadialMenu } from '../../src';
 import { parentEdges, parentNodes, simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Context Menu/Radial',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Simple = () => (
+const SimpleStory = args => (
   <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
+    {...args}
     contextMenu={({ data, onClose }) => (
       <RadialMenu
         onClose={onClose}
@@ -35,10 +36,16 @@ export const Simple = () => (
   />
 );
 
-export const Disabled = () => (
+export const Simple = SimpleStory.bind({});
+Simple.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
+
+const DisabledStory = args => (
   <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
+    {...args}
     contextMenu={({ data, onClose }) => (
       <RadialMenu
         onClose={onClose}
@@ -64,3 +71,10 @@ export const Disabled = () => (
     )}
   />
 );
+
+export const Disabled = DisabledStory.bind({});
+Disabled.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges
+};

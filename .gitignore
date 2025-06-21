@@ -69,3 +69,6 @@ src/**/*.css.d.ts
 
 # IDE
 .idea
+
+# Working Memory
+WORKING_MEMORY/

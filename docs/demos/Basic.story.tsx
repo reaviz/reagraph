@@ -8,27 +8,26 @@ import {
   random
 } from '../assets/demo';
 import { range } from 'd3-array';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Basic',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
 const SimpleStory = args => <GraphCanvas {...args} />;
 
 export const Simple = SimpleStory.bind({});
 Simple.args = {
+  ...commonArgs,
   nodes: simpleNodes,
-  edges: simpleEdges,
-  cameraMode: 'pan',
-  theme: lightTheme,
-  layoutType: 'forceDirected2d',
-  sizingType: 'none',
-  labelType: 'auto'
+  edges: simpleEdges
 };
 
-export const TwoWayLink = () => (
+const TwoWayLinkStory = args => (
   <GraphCanvas
+    {...args}
     nodes={[
       {
         id: '1',
@@ -56,10 +55,14 @@ export const TwoWayLink = () => (
   />
 );
 
-export const SpecialCharacters = () => (
+export const TwoWayLink = TwoWayLinkStory.bind({});
+TwoWayLink.args = {
+  ...commonArgs
+};
+
+const SpecialCharactersStory = args => (
   <GraphCanvas
-    labelType="all"
-    labelFontUrl="https://ey2pz3.csb.app/NotoSansSC-Regular.ttf"
+    {...args}
     nodes={[
       {
         id: '1',
@@ -87,19 +90,36 @@ export const SpecialCharacters = () => (
   />
 );
 
-export const Disabled = () => (
-  <GraphCanvas nodes={simpleNodes} edges={simpleEdges} disabled />
-);
+export const SpecialCharacters = SpecialCharactersStory.bind({});
+SpecialCharacters.args = {
+  ...commonArgs,
+  labelType: 'all',
+  labelFontUrl: 'https://ey2pz3.csb.app/NotoSansSC-Regular.ttf'
+};
 
-export const CustomLighting = () => (
-  <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
-    layoutType="forceDirected3d"
-  >
+const DisabledStory = args => <GraphCanvas {...args} />;
+
+export const Disabled = DisabledStory.bind({});
+Disabled.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges,
+  disabled: true
+};
+
+const CustomLightingStory = args => (
+  <GraphCanvas {...args}>
     <directionalLight position={[0, 5, -4]} intensity={1} />
   </GraphCanvas>
 );
+
+export const CustomLighting = CustomLightingStory.bind({});
+CustomLighting.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges,
+  layoutType: 'forceDirected3d'
+};
 
 export const Many = () => (
   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -215,9 +235,15 @@ export const SaveAsImage = () => {
   );
 };
 
-export const NoAnimation = () => (
-  <GraphCanvas animated={false} nodes={simpleNodes} edges={simpleEdges} />
-);
+const NoAnimationStory = args => <GraphCanvas {...args} />;
+
+export const NoAnimation = NoAnimationStory.bind({});
+NoAnimation.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges,
+  animated: false
+};
 
 export const ExtraGlOptions = () => (
   <GraphCanvas

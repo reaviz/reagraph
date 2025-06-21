@@ -1,26 +1,28 @@
 import React from 'react';
 import { darkTheme, GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Themes',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const DarkTheme = () => (
-  <GraphCanvas
-    theme={darkTheme}
-    nodes={simpleNodes}
-    edges={simpleEdges}
-    labelType="all"
-  />
-);
+const DarkThemeStory = args => <GraphCanvas {...args} />;
+
+export const DarkTheme = DarkThemeStory.bind({});
+DarkTheme.args = {
+  ...commonArgs,
+  theme: darkTheme,
+  nodes: simpleNodes,
+  edges: simpleEdges,
+  labelType: 'all'
+};
 
 const CustomThemeStory = (args) => (
   <GraphCanvas
     {...args}
-    nodes={simpleNodes}
-    edges={simpleEdges}
     contextMenuItems={[
       {
         label: 'Add Node',
@@ -36,6 +38,9 @@ const CustomThemeStory = (args) => (
 
 export const CustomTheme = CustomThemeStory.bind({});
 CustomTheme.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges,
   theme: {
     canvas: {
       background: '#1E2026',

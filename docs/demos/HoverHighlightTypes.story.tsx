@@ -1,13 +1,15 @@
 import React, { useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Highlight/Hover',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Direct = () => {
+const DirectStory = args => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
     ref: graphRef,
@@ -18,6 +20,7 @@ export const Direct = () => {
 
   return (
     <GraphCanvas
+      {...args}
       ref={graphRef}
       nodes={complexNodes}
       edges={complexEdges}
@@ -28,6 +31,11 @@ export const Direct = () => {
       onCanvasClick={onCanvasClick}
     />
   );
+};
+
+export const Direct = DirectStory.bind({});
+Direct.args = {
+  ...commonArgs
 };
 
 export const Inwards = () => {

@@ -1,13 +1,15 @@
 import React, { Fragment, useRef } from 'react';
 import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Selection/Lasso',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const NodesAndEdges = () => {
+const NodesAndEdgesTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
     ref: graphRef,
@@ -22,6 +24,7 @@ export const NodesAndEdges = () => {
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
+        {...args}
         ref={graphRef}
         nodes={complexNodes}
         edges={complexEdges}
@@ -29,7 +32,6 @@ export const NodesAndEdges = () => {
         actives={actives}
         onNodeClick={onNodeClick}
         onCanvasClick={onCanvasClick}
-        lassoType="all"
         onLasso={onLasso}
         onLassoEnd={onLassoEnd}
       />
@@ -37,7 +39,13 @@ export const NodesAndEdges = () => {
   );
 };
 
-export const NodesOnly = () => {
+export const NodesAndEdges = NodesAndEdgesTemplate.bind({});
+NodesAndEdges.args = {
+  ...commonArgs,
+  lassoType: 'all'
+};
+
+const NodesOnlyTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
     ref: graphRef,
@@ -52,6 +60,7 @@ export const NodesOnly = () => {
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
+        {...args}
         ref={graphRef}
         nodes={complexNodes}
         edges={complexEdges}
@@ -59,7 +68,6 @@ export const NodesOnly = () => {
         actives={actives}
         onNodeClick={onNodeClick}
         onCanvasClick={onCanvasClick}
-        lassoType="node"
         onLasso={onLasso}
         onLassoEnd={onLassoEnd}
       />
@@ -67,7 +75,13 @@ export const NodesOnly = () => {
   );
 };
 
-export const Dragging = () => {
+export const NodesOnly = NodesOnlyTemplate.bind({});
+NodesOnly.args = {
+  ...commonArgs,
+  lassoType: 'node'
+};
+
+const DraggingTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
     ref: graphRef,
@@ -82,15 +96,14 @@ export const Dragging = () => {
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
+        {...args}
         ref={graphRef}
         nodes={complexNodes}
-        draggable
         edges={complexEdges}
         selections={selections}
         actives={actives}
         onNodeClick={onNodeClick}
         onCanvasClick={onCanvasClick}
-        lassoType="node"
         onLasso={onLasso}
         onLassoEnd={onLassoEnd}
       />
@@ -98,7 +111,14 @@ export const Dragging = () => {
   );
 };
 
-export const EdgesOnly = () => {
+export const Dragging = DraggingTemplate.bind({});
+Dragging.args = {
+  ...commonArgs,
+  draggable: true,
+  lassoType: 'node'
+};
+
+const EdgesOnlyTemplate = (args) => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
     ref: graphRef,
@@ -113,6 +133,7 @@ export const EdgesOnly = () => {
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
+        {...args}
         ref={graphRef}
         nodes={complexNodes}
         edges={complexEdges}
@@ -120,10 +141,15 @@ export const EdgesOnly = () => {
         actives={actives}
         onNodeClick={onNodeClick}
         onCanvasClick={onCanvasClick}
-        lassoType="edge"
         onLasso={onLasso}
         onLassoEnd={onLassoEnd}
       />
     </>
   );
+};
+
+export const EdgesOnly = EdgesOnlyTemplate.bind({});
+EdgesOnly.args = {
+  ...commonArgs,
+  lassoType: 'edge'
 };

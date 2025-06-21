@@ -1,44 +1,55 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Edges/Curved',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Curved = () => (
+const CurvedStory = args => (
   <GraphCanvas
-    nodes={simpleNodes}
-    edges={simpleEdges}
-    edgeArrowPosition="none"
-    edgeInterpolation="curved"
+    {...args}
     onEdgeClick={edge => alert(`Edge ${edge.id} clicked`)}
   />
 );
 
-export const CurvedArrowsEnd = () => (
-  <GraphCanvas
-    edgeArrowPosition="end"
-    edgeInterpolation="curved"
-    nodes={simpleNodes}
-    edges={simpleEdges}
-  />
-);
+export const Curved = CurvedStory.bind({});
+Curved.args = {
+  ...commonArgs,
+  nodes: simpleNodes,
+  edges: simpleEdges,
+  edgeArrowPosition: 'none',
+  edgeInterpolation: 'curved'
+};
 
-export const CurvedArrowsMid = () => (
-  <GraphCanvas
-    edgeArrowPosition="mid"
-    edgeInterpolation="curved"
-    nodes={simpleNodes}
-    edges={simpleEdges}
-  />
-);
+const CurvedArrowsEndStory = args => <GraphCanvas {...args} />;
 
-export const CurvedSizes = () => (
+export const CurvedArrowsEnd = CurvedArrowsEndStory.bind({});
+CurvedArrowsEnd.args = {
+  ...commonArgs,
+  edgeArrowPosition: 'end',
+  edgeInterpolation: 'curved',
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
+
+const CurvedArrowsMidStory = args => <GraphCanvas {...args} />;
+
+export const CurvedArrowsMid = CurvedArrowsMidStory.bind({});
+CurvedArrowsMid.args = {
+  ...commonArgs,
+  edgeArrowPosition: 'mid',
+  edgeInterpolation: 'curved',
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
+
+const CurvedSizesStory = args => (
   <GraphCanvas
-    edgeInterpolation="curved"
-    labelType="all"
+    {...args}
     nodes={[
       {
         id: '1',
@@ -92,3 +103,10 @@ export const CurvedSizes = () => (
     ]}
   />
 );
+
+export const CurvedSizes = CurvedSizesStory.bind({});
+CurvedSizes.args = {
+  ...commonArgs,
+  edgeInterpolation: 'curved',
+  labelType: 'all'
+};

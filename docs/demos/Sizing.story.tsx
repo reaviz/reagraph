@@ -1,41 +1,67 @@
 import React from 'react';
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 export default {
   title: 'Demos/Sizing',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const None = () => (
-  <GraphCanvas sizingType="none" nodes={simpleNodes} edges={simpleEdges} />
-);
+const NoneStory = args => <GraphCanvas {...args} />;
 
-export const Centrality = () => (
-  <GraphCanvas sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
-);
+export const None = NoneStory.bind({});
+None.args = {
+  ...commonArgs,
+  sizingType: 'none',
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
+
+const CentralityStory = args => <GraphCanvas {...args} />;
+
+export const Centrality = CentralityStory.bind({});
+Centrality.args = {
+  ...commonArgs,
+  sizingType: 'centrality',
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
 
 const MinMaxSizesStory = (props) => (
-  <GraphCanvas {...props} sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas {...props} />
 );
 
 export const MinMaxSizes = MinMaxSizesStory.bind({});
 MinMaxSizes.args = {
+  ...commonArgs,
+  sizingType: 'centrality',
+  nodes: simpleNodes,
+  edges: simpleEdges,
   minNodeSize: 10,
   maxNodeSize: 25
 };
 
-export const PageRank = () => (
-  <GraphCanvas sizingType="pagerank" nodes={simpleNodes} edges={simpleEdges} />
-);
+const PageRankStory = args => <GraphCanvas {...args} />;
 
-export const Attribute = () => (
-  <GraphCanvas
-    sizingType="attribute"
-    sizingAttribute="priority"
-    minNodeSize={2}
-    maxNodeSize={25}
-    nodes={simpleNodes}
-    edges={simpleEdges}
-  />
-);
+export const PageRank = PageRankStory.bind({});
+PageRank.args = {
+  ...commonArgs,
+  sizingType: 'pageRank',
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
+
+const AttributeStory = args => <GraphCanvas {...args} />;
+
+export const Attribute = AttributeStory.bind({});
+Attribute.args = {
+  ...commonArgs,
+  sizingType: 'attribute',
+  sizingAttribute: 'priority',
+  minNodeSize: 2,
+  maxNodeSize: 25,
+  nodes: simpleNodes,
+  edges: simpleEdges
+};
