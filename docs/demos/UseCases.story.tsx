@@ -7,6 +7,7 @@ import {
   GraphNode,
   useSelection
 } from '../../src';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 import cyberJson from '../assets/cyber.json';
 import mitreTools from '../assets/mitre-tools.json';
@@ -25,7 +26,8 @@ import missleSvg from '../assets/missle.svg';
 
 export default {
   title: 'Demos/Use Cases',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
 const iconMap = {
@@ -44,7 +46,7 @@ const iconMap = {
   Product: productSvg
 };
 
-export const CyberInvestigation = () => {
+const CyberInvestigationStory = args => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
 
   const [nodes, edges] = useMemo(() => {
@@ -105,14 +107,12 @@ export const CyberInvestigation = () => {
 
   return (
     <GraphCanvas
+      {...args}
       selections={selections}
       actives={actives}
       ref={graphRef}
       nodes={nodes}
       edges={edges}
-      theme={darkTheme}
-      draggable
-      edgeInterpolation="curved"
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
       onNodePointerOver={onNodePointerOver}
@@ -121,7 +121,15 @@ export const CyberInvestigation = () => {
   );
 };
 
-export const MitreTools = () => {
+export const CyberInvestigation = CyberInvestigationStory.bind({});
+CyberInvestigation.args = {
+  ...commonArgs,
+  theme: darkTheme,
+  draggable: true,
+  edgeInterpolation: 'curved'
+};
+
+const MitreToolsStory = args => {
   const [nodes, edges] = useMemo(() => {
     const n = [];
     const e = [];
@@ -166,15 +174,12 @@ export const MitreTools = () => {
 
   return (
     <GraphCanvas
+      {...args}
       selections={selections}
       actives={actives}
       ref={graphRef}
       nodes={nodes}
       edges={edges}
-      theme={darkTheme}
-      draggable
-      labelType="nodes"
-      edgeInterpolation="curved"
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
       onNodePointerOver={onNodePointerOver}
@@ -183,7 +188,16 @@ export const MitreTools = () => {
   );
 };
 
-export const MitreTechniques = () => {
+export const MitreTools = MitreToolsStory.bind({});
+MitreTools.args = {
+  ...commonArgs,
+  theme: darkTheme,
+  draggable: true,
+  labelType: 'nodes',
+  edgeInterpolation: 'curved'
+};
+
+const MitreTechniquesStory = args => {
   const [nodes, edges] = useMemo(() => {
     const n = [];
     const e = [];
@@ -228,15 +242,12 @@ export const MitreTechniques = () => {
 
   return (
     <GraphCanvas
+      {...args}
       selections={selections}
       actives={actives}
       ref={graphRef}
       nodes={nodes}
       edges={edges}
-      theme={darkTheme}
-      labelType="nodes"
-      draggable
-      edgeInterpolation="curved"
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
       onNodePointerOver={onNodePointerOver}
@@ -245,7 +256,16 @@ export const MitreTechniques = () => {
   );
 };
 
-export const MitreAllTechniques = () => {
+export const MitreTechniques = MitreTechniquesStory.bind({});
+MitreTechniques.args = {
+  ...commonArgs,
+  theme: darkTheme,
+  labelType: 'nodes',
+  draggable: true,
+  edgeInterpolation: 'curved'
+};
+
+const MitreAllTechniquesStory = args => {
   const [nodes, edges] = useMemo(() => {
     const n = [];
     const e = [];
@@ -290,19 +310,25 @@ export const MitreAllTechniques = () => {
 
   return (
     <GraphCanvas
+      {...args}
       selections={selections}
       actives={actives}
       ref={graphRef}
       nodes={nodes}
       edges={edges}
-      theme={darkTheme}
-      labelType="nodes"
-      draggable
-      edgeInterpolation="curved"
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
       onNodePointerOver={onNodePointerOver}
       onNodePointerOut={onNodePointerOut}
     />
   );
+};
+
+export const MitreAllTechniques = MitreAllTechniquesStory.bind({});
+MitreAllTechniques.args = {
+  ...commonArgs,
+  theme: darkTheme,
+  labelType: 'nodes',
+  draggable: true,
+  edgeInterpolation: 'curved'
 };

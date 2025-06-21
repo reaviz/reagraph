@@ -11,231 +11,235 @@ import {
   imbalancedClusterNodes,
   manyClusterNodes
 } from '../assets/demo';
+import { commonArgTypes, commonArgs } from '../shared/storybook-args';
 
 import demonSvg from '../../docs/assets/twitter.svg';
 import { Icon, Sphere, Ring } from '../../src/symbols';
 
 export default {
   title: 'Demos/Cluster',
-  component: GraphCanvas
+  component: GraphCanvas,
+  argTypes: commonArgTypes
 };
 
-export const Simple = () => {
-  const [nodes, setNodes] = useState([
-    {
-      id: 'n-0',
-      label: 'MD5 0',
-      fill: '#075985',
-      data: {
-        type: 'MD5',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-1',
-      label: 'Email 1',
-      fill: '#166534',
-      data: {
-        type: 'Email'
-      }
-    },
-    {
-      id: 'n-2',
-      label: 'MD5 2',
-      fill: '#075985',
-      data: {
-        type: 'MD5',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-3',
-      label: 'URL 3',
-      fill: '#c2410c',
-      data: {
-        type: 'URL'
-      }
-    },
-    {
-      id: 'n-4',
-      label: 'MD5 4',
-      fill: '#075985',
-      data: {
-        type: 'MD5',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-5',
-      label: 'MD5 5',
-      fill: '#075985',
-      data: {
-        type: 'MD5'
-      }
-    },
-    {
-      id: 'n-6',
-      label: 'IP 6',
-      fill: '#3730a3',
-      data: {
-        type: 'IP',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-7',
-      label: 'IP 7',
-      fill: '#3730a3',
-      data: {
-        type: 'IP'
-      }
-    },
-    {
-      id: 'n-8',
-      label: 'URL 8',
-      fill: '#c2410c',
-      data: {
-        type: 'URL',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-9',
-      label: 'MD5 9',
-      fill: '#075985',
-      data: {
-        type: 'MD5'
-      }
-    },
-    {
-      id: 'n-10',
-      label: 'URL 10',
-      fill: '#c2410c',
-      data: {
-        type: 'URL',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-11',
-      label: 'URL 11',
-      fill: '#c2410c',
-      data: {
-        type: 'URL'
-      }
-    },
-    {
-      id: 'n-12',
-      label: 'URL 12',
-      fill: '#c2410c',
-      data: {
-        type: 'URL',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-13',
-      label: 'Email 13',
-      fill: '#166534',
-      data: {
-        type: 'Email'
-      }
-    },
-    {
-      id: 'n-14',
-      label: 'URL 14',
-      fill: '#c2410c',
-      data: {
-        type: 'URL',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-15',
-      label: 'IP 15',
-      fill: '#3730a3',
-      data: {
-        type: 'IP'
-      }
-    },
-    {
-      id: 'n-16',
-      label: 'Email 16',
-      fill: '#166534',
-      data: {
-        type: 'Email',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-17',
-      label: 'Email 17',
-      fill: '#166534',
-      data: {
-        type: 'Email'
-      }
-    },
-    {
-      id: 'n-18',
-      label: 'URL 18',
-      fill: '#c2410c',
-      data: {
-        type: 'URL',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-19',
-      label: 'Email 19',
-      fill: '#166534',
-      data: {
-        type: 'Email'
-      }
-    },
-    {
-      id: 'n-20',
-      label: 'Email 20',
-      fill: '#166534',
-      data: {
-        type: 'Email',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-21',
-      label: 'Email 21',
-      fill: '#166534',
-      data: {
-        type: 'Email'
-      }
-    },
-    {
-      id: 'n-22',
-      label: 'Email 22',
-      fill: '#166534',
-      data: {
-        type: 'Email',
-        segment: 'A'
-      }
-    },
-    {
-      id: 'n-23',
-      label: 'URL 23',
-      fill: '#c2410c',
-      data: {
-        type: 'URL'
-      }
-    },
-    {
-      id: 'n-24',
-      label: 'Email 24',
-      fill: '#166534',
-      data: {
-        type: 'Email',
-        segment: 'A'
-      }
+const simpleNodes = [
+  {
+    id: 'n-0',
+    label: 'MD5 0',
+    fill: '#075985',
+    data: {
+      type: 'MD5',
+      segment: 'A'
     }
-  ] as any);
+  },
+  {
+    id: 'n-1',
+    label: 'Email 1',
+    fill: '#166534',
+    data: {
+      type: 'Email'
+    }
+  },
+  {
+    id: 'n-2',
+    label: 'MD5 2',
+    fill: '#075985',
+    data: {
+      type: 'MD5',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-3',
+    label: 'URL 3',
+    fill: '#c2410c',
+    data: {
+      type: 'URL'
+    }
+  },
+  {
+    id: 'n-4',
+    label: 'MD5 4',
+    fill: '#075985',
+    data: {
+      type: 'MD5',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-5',
+    label: 'MD5 5',
+    fill: '#075985',
+    data: {
+      type: 'MD5'
+    }
+  },
+  {
+    id: 'n-6',
+    label: 'IP 6',
+    fill: '#3730a3',
+    data: {
+      type: 'IP',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-7',
+    label: 'IP 7',
+    fill: '#3730a3',
+    data: {
+      type: 'IP'
+    }
+  },
+  {
+    id: 'n-8',
+    label: 'URL 8',
+    fill: '#c2410c',
+    data: {
+      type: 'URL',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-9',
+    label: 'MD5 9',
+    fill: '#075985',
+    data: {
+      type: 'MD5'
+    }
+  },
+  {
+    id: 'n-10',
+    label: 'URL 10',
+    fill: '#c2410c',
+    data: {
+      type: 'URL',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-11',
+    label: 'URL 11',
+    fill: '#c2410c',
+    data: {
+      type: 'URL'
+    }
+  },
+  {
+    id: 'n-12',
+    label: 'URL 12',
+    fill: '#c2410c',
+    data: {
+      type: 'URL',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-13',
+    label: 'Email 13',
+    fill: '#166534',
+    data: {
+      type: 'Email'
+    }
+  },
+  {
+    id: 'n-14',
+    label: 'URL 14',
+    fill: '#c2410c',
+    data: {
+      type: 'URL',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-15',
+    label: 'IP 15',
+    fill: '#3730a3',
+    data: {
+      type: 'IP'
+    }
+  },
+  {
+    id: 'n-16',
+    label: 'Email 16',
+    fill: '#166534',
+    data: {
+      type: 'Email',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-17',
+    label: 'Email 17',
+    fill: '#166534',
+    data: {
+      type: 'Email'
+    }
+  },
+  {
+    id: 'n-18',
+    label: 'URL 18',
+    fill: '#c2410c',
+    data: {
+      type: 'URL',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-19',
+    label: 'Email 19',
+    fill: '#166534',
+    data: {
+      type: 'Email'
+    }
+  },
+  {
+    id: 'n-20',
+    label: 'Email 20',
+    fill: '#166534',
+    data: {
+      type: 'Email',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-21',
+    label: 'Email 21',
+    fill: '#166534',
+    data: {
+      type: 'Email'
+    }
+  },
+  {
+    id: 'n-22',
+    label: 'Email 22',
+    fill: '#166534',
+    data: {
+      type: 'Email',
+      segment: 'A'
+    }
+  },
+  {
+    id: 'n-23',
+    label: 'URL 23',
+    fill: '#c2410c',
+    data: {
+      type: 'URL'
+    }
+  },
+  {
+    id: 'n-24',
+    label: 'Email 24',
+    fill: '#166534',
+    data: {
+      type: 'Email',
+      segment: 'A'
+    }
+  }
+] as any;
+
+const SimpleStory = args => {
+  const [nodes, setNodes] = useState(simpleNodes);
 
   const addNode = useCallback(() => {
     const next = nodes.length + 2;
@@ -256,8 +260,8 @@ export const Simple = () => {
   return (
     <>
       <GraphCanvas
+        {...args}
         nodes={nodes}
-        draggable
         edges={[
           {
             source: 'n-6',
@@ -266,8 +270,6 @@ export const Simple = () => {
             label: 'n-6-n-1'
           }
         ]}
-        clusterAttribute="type"
-        constrainDragging={false}
       />
       <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15 }}>
         <button type="button" onClick={addNode}>
@@ -278,7 +280,15 @@ export const Simple = () => {
   );
 };
 
-export const SimpleRenderNode = () => {
+export const Simple = SimpleStory.bind({});
+Simple.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type',
+  constrainDragging: false
+};
+
+const SimpleRenderNodeStory = args => {
   const [nodes, setNodes] = useState(
     clusterNodes.map(n => ({ ...n, icon: demonSvg }))
   );
@@ -303,11 +313,9 @@ export const SimpleRenderNode = () => {
   return (
     <>
       <GraphCanvas
+        {...args}
         nodes={nodes}
-        draggable
         edges={[]}
-        clusterAttribute="type"
-        constrainDragging={false}
         renderNode={node => (
           <group>
             <Sphere
@@ -343,71 +351,114 @@ export const SimpleRenderNode = () => {
   );
 };
 
+export const SimpleRenderNode = SimpleRenderNodeStory.bind({});
+SimpleRenderNode.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type',
+  constrainDragging: false
+};
+
 const clusterNodesWithSizes = clusterNodes.map(node => ({
   ...node,
   size: random(0, 50)
 }));
 
-export const Sizes = () => (
+const SizesStory = args => (
   <GraphCanvas
+    {...args}
     nodes={clusterNodesWithSizes}
-    draggable
     edges={[]}
-    clusterAttribute="type"
   />
 );
 
-export const SingleNodeClusters = () => (
+export const Sizes = SizesStory.bind({});
+Sizes.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const SingleNodeClustersStory = args => (
   <GraphCanvas
+    {...args}
     nodes={singleNodeClusterNodes}
-    draggable
     edges={[]}
-    clusterAttribute="type"
   />
 );
 
-export const ImbalancedClusters = () => (
+export const SingleNodeClusters = SingleNodeClustersStory.bind({});
+SingleNodeClusters.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const ImbalancedClustersStory = args => (
   <GraphCanvas
+    {...args}
     nodes={imbalancedClusterNodes}
-    draggable
     edges={[]}
-    clusterAttribute="type"
   />
 );
 
-export const LargeDataset = () => (
+export const ImbalancedClusters = ImbalancedClustersStory.bind({});
+ImbalancedClusters.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const LargeDatasetStory = args => (
   <GraphCanvas
+    {...args}
     nodes={manyClusterNodes}
-    draggable
     edges={[]}
-    clusterAttribute="type"
   />
 );
 
-export const Edges = () => (
+export const LargeDataset = LargeDatasetStory.bind({});
+LargeDataset.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const EdgesStory = args => (
   <GraphCanvas
+    {...args}
     nodes={clusterNodes}
-    draggable
     edges={clusterEdges}
-    clusterAttribute="type"
   />
 );
 
-export const Selections = () => (
+export const Edges = EdgesStory.bind({});
+Edges.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const SelectionsStory = args => (
   <GraphCanvas
+    {...args}
     nodes={clusterNodes}
-    selections={[clusterNodes[0].id]}
     edges={clusterEdges}
-    clusterAttribute="type"
   />
 );
 
-export const Events = () => (
+export const Selections = SelectionsStory.bind({});
+Selections.args = {
+  ...commonArgs,
+  selections: [clusterNodes[0].id],
+  clusterAttribute: 'type'
+};
+
+const EventsStory = args => (
   <GraphCanvas
+    {...args}
     nodes={clusterNodes}
-    draggable
     edges={clusterEdges}
-    clusterAttribute="type"
     onClusterPointerOut={cluster => console.log('cluster pointer out', cluster)}
     onClusterPointerOver={cluster =>
       console.log('cluster pointer over', cluster)
@@ -416,21 +467,35 @@ export const Events = () => (
   />
 );
 
-export const NoBoundary = () => (
+export const Events = EventsStory.bind({});
+Events.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const NoBoundaryStory = args => (
   <GraphCanvas
+    {...args}
     theme={{
       ...lightTheme,
       cluster: null
     }}
     nodes={clusterNodes}
-    draggable
     edges={clusterEdges}
-    clusterAttribute="type"
   />
 );
 
-export const NoLabels = () => (
+export const NoBoundary = NoBoundaryStory.bind({});
+NoBoundary.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const NoLabelsStory = args => (
   <GraphCanvas
+    {...args}
     theme={{
       ...lightTheme,
       cluster: {
@@ -439,14 +504,20 @@ export const NoLabels = () => (
       }
     }}
     nodes={clusterNodes}
-    draggable
     edges={clusterEdges}
-    clusterAttribute="type"
   />
 );
 
-export const LabelsOnly = () => (
+export const NoLabels = NoLabelsStory.bind({});
+NoLabels.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const LabelsOnlyStory = args => (
   <GraphCanvas
+    {...args}
     theme={{
       ...lightTheme,
       cluster: {
@@ -455,19 +526,23 @@ export const LabelsOnly = () => (
       }
     }}
     nodes={clusterNodes}
-    draggable
     edges={clusterEdges}
-    clusterAttribute="type"
   />
 );
 
-export const Custom = () => (
+export const LabelsOnly = LabelsOnlyStory.bind({});
+LabelsOnly.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const CustomStory = args => (
   <GraphCanvas
+    {...args}
     theme={lightTheme}
     nodes={clusterNodes}
-    draggable
     edges={clusterEdges}
-    clusterAttribute="type"
     onRenderCluster={({ label, opacity, outerRadius, innerRadius, theme }) => (
       <>
         <Ring
@@ -508,23 +583,42 @@ export const Custom = () => (
   />
 );
 
-export const ThreeDimensions = () => (
+export const Custom = CustomStory.bind({});
+Custom.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'type'
+};
+
+const ThreeDimensionsStory = args => (
   <GraphCanvas
+    {...args}
     nodes={clusterNodesWithSizes}
-    draggable
     edges={[]}
-    layoutType="forceDirected3d"
-    clusterAttribute="type"
   >
     <directionalLight position={[0, 5, -4]} intensity={1} />
   </GraphCanvas>
 );
 
-export const Partial = () => (
+export const ThreeDimensions = ThreeDimensionsStory.bind({});
+ThreeDimensions.args = {
+  ...commonArgs,
+  draggable: true,
+  layoutType: 'forceDirected3d',
+  clusterAttribute: 'type'
+};
+
+const PartialStory = args => (
   <GraphCanvas
+    {...args}
     nodes={clusterNodes}
-    draggable
     edges={[]}
-    clusterAttribute="segment"
   />
 );
+
+export const Partial = PartialStory.bind({});
+Partial.args = {
+  ...commonArgs,
+  draggable: true,
+  clusterAttribute: 'segment'
+};
