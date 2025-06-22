@@ -69,3 +69,9 @@ src/**/*.css.d.ts
 
 # IDE
 .idea
+
+# Vercel
+.vercel
+
+# Working Memory
+WORKING_MEMORY

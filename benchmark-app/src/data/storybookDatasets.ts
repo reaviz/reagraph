@@ -5,6 +5,8 @@
 
 import { GraphData, BenchmarkTest } from '../types/benchmark.types';
 import { generateNetworkTopology, generateNetworkScenarios } from '../utils/networkTopologyGenerator';
+import { createMigBenchmarkTests } from '../utils/migBenchmarkGenerator';
+import { createBenchmarkTests } from '../utils/datasetGenerators';
 
 // Utility functions
 const range = (n: number) => Array.from({ length: n }, (_, i) => i);
@@ -445,5 +447,16 @@ export function createStorybookBenchmarkTests(): BenchmarkTest[] {
         };
       })()
     }
+  ];
+}
+
+/**
+ * Export all benchmark tests including Mig scenarios
+ */
+export function getAllBenchmarkTests(): BenchmarkTest[] {
+  return [
+    ...createStorybookBenchmarkTests(),
+    ...createBenchmarkTests(),
+    ...createMigBenchmarkTests()
   ];
 }

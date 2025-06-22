@@ -6,7 +6,7 @@ import { CollapsibleGraphRenderer } from './CollapsibleGraphRenderer';
 import { NetworkTopologyRenderer } from './NetworkTopologyRenderer';
 import { usePerformanceTracker } from '../hooks/usePerformanceTracker';
 import { createBenchmarkTests } from '../utils/datasetGenerators';
-import { createStorybookBenchmarkTests } from '../data/storybookDatasets';
+import { createStorybookBenchmarkTests, getAllBenchmarkTests } from '../data/storybookDatasets';
 import { BenchmarkTest } from '../types/benchmark.types';
 import { getBrowserInfo, detectWorkerSupport } from '../utils/performanceUtils';
 import { DiagnosticRunner } from '../utils/diagnosticRunner';
@@ -42,11 +42,9 @@ export const BenchmarkDashboard: React.FC = () => {
   // Camera control state
   const [cameraMode, setCameraMode] = useState<'pan' | 'rotate' | 'orbit'>('rotate');
   
-  // Combine generated tests and Storybook tests
+  // Combine all benchmark tests including Mig scenarios
   const [benchmarkTests] = useState(() => {
-    const generatedTests = createBenchmarkTests();
-    const storybookTests = createStorybookBenchmarkTests();
-    return [...storybookTests, ...generatedTests];
+    return getAllBenchmarkTests();
   });
 
   const {
@@ -203,11 +201,38 @@ export const BenchmarkDashboard: React.FC = () => {
             value={selectedTest?.id || ''}
             onChange={(e) => handleTestChange(e.target.value)}
           >
-            {benchmarkTests.map(test => (
-              <option key={test.id} value={test.id}>
-                {test.name} ({test.nodeCount.toLocaleString()} nodes)
-              </option>
-            ))}
+            <optgroup label="Mig Benchmarks">
+              {benchmarkTests.filter(test => test.id.startsWith('mig-')).map(test => (
+                <option key={test.id} value={test.id}>
+                  {test.name} ({test.nodeCount.toLocaleString()} nodes)
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Storybook Datasets">
+              {benchmarkTests.filter(test => test.id.startsWith('storybook-')).map(test => (
+                <option key={test.id} value={test.id}>
+                  {test.name} ({test.nodeCount.toLocaleString()} nodes)
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Network Topology">
+              {benchmarkTests.filter(test => test.id.startsWith('network-')).map(test => (
+                <option key={test.id} value={test.id}>
+                  {test.name} ({test.nodeCount.toLocaleString()} nodes)
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="Performance Tests">
+              {benchmarkTests.filter(test => 
+                !test.id.startsWith('mig-') && 
+                !test.id.startsWith('storybook-') && 
+                !test.id.startsWith('network-')
+              ).map(test => (
+                <option key={test.id} value={test.id}>
+                  {test.name} ({test.nodeCount.toLocaleString()} nodes)
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 
