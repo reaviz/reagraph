@@ -383,7 +383,7 @@ export function createStorybookBenchmarkTests(): BenchmarkTest[] {
           animated: true,
           interactive: true,
           edgeInterpolation: 'curved' as const,
-          layoutType: 'hierarchical',
+          layoutType: 'hierarchicalTd',
           initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
         };
       })()
@@ -402,7 +402,7 @@ export function createStorybookBenchmarkTests(): BenchmarkTest[] {
           animated: true,
           interactive: true,
           edgeInterpolation: 'curved' as const,
-          layoutType: 'hierarchical',
+          layoutType: 'hierarchicalTd',
           initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
         };
       })()
@@ -421,7 +421,7 @@ export function createStorybookBenchmarkTests(): BenchmarkTest[] {
           animated: true,
           interactive: true,
           edgeInterpolation: 'curved' as const,
-          layoutType: 'hierarchical',
+          layoutType: 'hierarchicalTd',
           initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
         };
       })()
@@ -440,7 +440,7 @@ export function createStorybookBenchmarkTests(): BenchmarkTest[] {
           animated: true,
           interactive: true,
           edgeInterpolation: 'curved' as const,
-          layoutType: 'hierarchical',
+          layoutType: 'hierarchicalTd',
           initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
         };
       })()

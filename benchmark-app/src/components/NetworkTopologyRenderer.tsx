@@ -26,6 +26,7 @@ interface NetworkTopologyRendererProps {
   edgeInterpolation?: 'linear' | 'curved';
   initialCollapsedIds?: string[];
   layoutType?: string;
+  cameraMode?: 'pan' | 'rotate' | 'orbit';
   onNodeCountChange?: (count: number) => void;
   onEdgeCountChange?: (count: number) => void;
   onCollapseChange?: (collapsedIds: string[]) => void;
@@ -41,6 +42,7 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
   edgeInterpolation = 'curved',
   initialCollapsedIds,
   layoutType = 'hierarchical',
+  cameraMode = 'rotate',
   onNodeCountChange,
   onEdgeCountChange,
   onCollapseChange,
@@ -50,7 +52,9 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
   className = ''
 }) => {
   // Use provided collapsed IDs or default from metadata
-  const defaultCollapsed = initialCollapsedIds || data.metadata?.defaultCollapsedIds || [];
+  // Temporarily disable default collapsed nodes to debug rendering issue
+  const defaultCollapsed = []; // initialCollapsedIds || data.metadata?.defaultCollapsedIds || [];
+  console.log('NetworkTopologyRenderer - Default collapsed nodes:', defaultCollapsed.length);
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<string[]>(defaultCollapsed);
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
@@ -63,11 +67,20 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
 
   // Convert data format
   const graphData = useMemo(() => {
+    console.log('NetworkTopologyRenderer - Input data:', {
+      nodeCount: data.nodes.length,
+      edgeCount: data.edges.length,
+      metadata: data.metadata,
+      firstNode: data.nodes[0],
+      sampleNodes: data.nodes.slice(0, 3)
+    });
+    
     const nodes = data.nodes.map(node => ({
       id: node.id,
       label: node.label || node.id,
       fill: node.color || '#4ecdc4',
-      size: node.size || 30
+      size: node.size || 30,
+      data: node.data // Keep the original data for level information
     }));
 
     const edges = data.edges.map(edge => ({
@@ -99,6 +112,15 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
       edges: graphData.edges
     });
     setRenderTime(performance.now() - startTime);
+    
+    console.log('NetworkTopologyRenderer - getVisibleEntities result:', {
+      inputNodes: graphData.nodes.length,
+      inputEdges: graphData.edges.length,
+      collapsedIds: collapsedNodeIds.length,
+      visibleNodes: entities.visibleNodes.length,
+      visibleEdges: entities.visibleEdges.length
+    });
+    
     return entities;
   }, [collapsedNodeIds, graphData.nodes, graphData.edges]);
 
@@ -111,6 +133,17 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
     setVisibleCounts(counts);
     onNodeCountChange?.(counts.nodes);
     onEdgeCountChange?.(counts.edges);
+    
+    // Debug logging
+    console.log('NetworkTopologyRenderer - Visible entities:', {
+      nodes: visibleEntities.visibleNodes.length,
+      edges: visibleEntities.visibleEdges.length,
+      firstNode: visibleEntities.visibleNodes[0],
+      firstEdge: visibleEntities.visibleEdges[0],
+      totalNodes: data.nodes.length,
+      totalEdges: data.edges.length,
+      collapsedCount: collapsedNodeIds.length
+    });
   }, [visibleEntities, onNodeCountChange, onEdgeCountChange]);
 
   // Notify parent of collapse changes
@@ -282,11 +315,12 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
       {/* Graph Container */}
       <div style={styles.graphContainer}>
         <GraphCanvas
+          key={`graph-${data.nodes.length}-${collapsedNodeIds.length}`}
           nodes={visibleEntities.visibleNodes}
           edges={visibleEntities.visibleEdges}
           collapsedNodeIds={collapsedNodeIds}
-          layoutType={layoutType}
-          cameraMode="orbit"
+          layoutType="forceDirected2d"
+          cameraMode={cameraMode}
           animated={animated}
           edgeInterpolation={edgeInterpolation}
           selections={selectedNode ? [selectedNode.id] : []}

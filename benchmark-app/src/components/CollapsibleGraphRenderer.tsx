@@ -18,6 +18,7 @@ interface CollapsibleGraphRendererProps {
   edgeInterpolation?: 'linear' | 'curved';
   initialCollapsedIds?: string[];
   workerEnabled?: boolean;
+  cameraMode?: 'pan' | 'rotate' | 'orbit';
   onNodeCountChange?: (count: number) => void;
   onEdgeCountChange?: (count: number) => void;
   onCollapseChange?: (collapsedIds: string[]) => void;
@@ -32,6 +33,7 @@ export const CollapsibleGraphRenderer: React.FC<CollapsibleGraphRendererProps> =
   edgeInterpolation = 'linear',
   initialCollapsedIds = [],
   workerEnabled = false,
+  cameraMode = 'rotate',
   onNodeCountChange,
   onEdgeCountChange,
   onCollapseChange,
@@ -224,7 +226,7 @@ export const CollapsibleGraphRenderer: React.FC<CollapsibleGraphRendererProps> =
           edges={visibleEntities.visibleEdges}
           collapsedNodeIds={collapsedNodeIds}
           layoutType="forceDirected2d"
-          cameraMode="orbit"
+          cameraMode={cameraMode}
           animated={animated}
           edgeInterpolation={edgeInterpolation}
           selections={selectedNode ? [selectedNode.id] : []}

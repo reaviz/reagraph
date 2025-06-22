@@ -39,6 +39,9 @@ export const BenchmarkDashboard: React.FC = () => {
     enableMemoryOptimization: 'auto' as boolean | 'auto'
   });
   
+  // Camera control state
+  const [cameraMode, setCameraMode] = useState<'pan' | 'rotate' | 'orbit'>('rotate');
+  
   // Combine generated tests and Storybook tests
   const [benchmarkTests] = useState(() => {
     const generatedTests = createBenchmarkTests();
@@ -292,6 +295,48 @@ export const BenchmarkDashboard: React.FC = () => {
           </label>
         </div>
 
+        <div style={styles.controlGroup}>
+          <label style={styles.label}>Camera Mode:</label>
+          <div style={styles.cameraControls}>
+            <label style={styles.radioLabel}>
+              <input
+                type="radio"
+                name="cameraMode"
+                value="pan"
+                checked={cameraMode === 'pan'}
+                onChange={() => setCameraMode('pan')}
+                style={styles.radio}
+              />
+              Pan
+              <span style={styles.tooltip} title="Move the graph without rotation">ⓘ</span>
+            </label>
+            <label style={styles.radioLabel}>
+              <input
+                type="radio"
+                name="cameraMode"
+                value="rotate"
+                checked={cameraMode === 'rotate'}
+                onChange={() => setCameraMode('rotate')}
+                style={styles.radio}
+              />
+              Rotate
+              <span style={styles.tooltip} title="Manually rotate with mouse drag (default)">ⓘ</span>
+            </label>
+            <label style={styles.radioLabel}>
+              <input
+                type="radio"
+                name="cameraMode"
+                value="orbit"
+                checked={cameraMode === 'orbit'}
+                onChange={() => setCameraMode('orbit')}
+                style={styles.radio}
+              />
+              Orbit
+              <span style={styles.tooltip} title="Automatic continuous rotation">ⓘ</span>
+            </label>
+          </div>
+        </div>
+
         {usePhase2 && (
           <div style={styles.controlGroup}>
             <label style={styles.label}>Optimization Level:</label>
@@ -539,6 +584,7 @@ export const BenchmarkDashboard: React.FC = () => {
                 edgeInterpolation={selectedTest.edgeInterpolation || 'curved'}
                 initialCollapsedIds={selectedTest.initialCollapsedNodeIds}
                 layoutType={selectedTest.layoutType || 'hierarchical'}
+                cameraMode={cameraMode}
                 onNodeCountChange={updateNodeCount}
                 onEdgeCountChange={updateEdgeCount}
                 onCollapseChange={(collapsedIds) => {
@@ -555,6 +601,7 @@ export const BenchmarkDashboard: React.FC = () => {
                 edgeInterpolation={selectedTest.edgeInterpolation || 'linear'}
                 initialCollapsedIds={selectedTest.initialCollapsedNodeIds}
                 workerEnabled={workerEnabled}
+                cameraMode={cameraMode}
                 onNodeCountChange={updateNodeCount}
                 onEdgeCountChange={updateEdgeCount}
                 onCollapseChange={(collapsedIds) => {
@@ -568,6 +615,7 @@ export const BenchmarkDashboard: React.FC = () => {
               <GraphRendererV2
                 data={selectedTest.dataset}
                 animated={selectedTest.animated || false}
+                cameraMode={cameraMode}
                 optimizationLevel={phase2Config.optimizationLevel}
                 enableGPUAcceleration={phase2Config.enableGPUAcceleration}
                 enableInstancedRendering={phase2Config.enableInstancedRendering}
@@ -587,6 +635,7 @@ export const BenchmarkDashboard: React.FC = () => {
                 data={selectedTest.dataset}
                 animated={selectedTest.animated || false}
                 workerEnabled={workerEnabled}
+                cameraMode={cameraMode}
                 onNodeCountChange={updateNodeCount}
                 onEdgeCountChange={updateEdgeCount}
                 onWorkerStatusChange={updateWorkerStatus}
@@ -935,5 +984,28 @@ const styles = {
   selectiveTestingSection: {
     margin: '1rem',
     marginTop: 0
+  },
+  cameraControls: {
+    display: 'flex',
+    gap: '1rem',
+    marginTop: '0.5rem'
+  },
+  radioLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.25rem',
+    fontSize: '0.9rem',
+    color: '#cccccc',
+    cursor: 'pointer' as const
+  },
+  radio: {
+    accentColor: '#00d4ff',
+    cursor: 'pointer' as const
+  },
+  tooltip: {
+    color: '#666666',
+    fontSize: '0.8rem',
+    marginLeft: '0.25rem',
+    cursor: 'help' as const
   }
 };

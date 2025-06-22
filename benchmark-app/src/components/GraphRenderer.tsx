@@ -7,6 +7,7 @@ interface GraphRendererProps {
   data: GraphData;
   workerEnabled: boolean;
   animated?: boolean;
+  cameraMode?: 'pan' | 'rotate' | 'orbit';
   onNodeCountChange?: (count: number) => void;
   onEdgeCountChange?: (count: number) => void;
   onWorkerStatusChange?: (
@@ -19,6 +20,7 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
   data,
   workerEnabled,
   animated = false,
+  cameraMode = 'rotate',
   onNodeCountChange,
   onEdgeCountChange,
   onWorkerStatusChange,
@@ -149,14 +151,14 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
 
   const cameraConfig = useMemo(
     () => ({
-      mode: 'orbit' as const,
+      mode: cameraMode,
       defaultPosition: {
         x: 0,
         y: 0,
         z: 100
       }
     }),
-    []
+    [cameraMode]
   );
 
   return (

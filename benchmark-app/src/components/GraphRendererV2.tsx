@@ -28,6 +28,7 @@ interface GraphRendererV2Props {
   
   // Animation control
   animated?: boolean;
+  cameraMode?: 'pan' | 'rotate' | 'orbit';
   
   // Benchmark integration
   onNodeCountChange?: (count: number) => void;
@@ -50,6 +51,7 @@ export const GraphRendererV2: React.FC<GraphRendererV2Props> = ({
   enableSharedWorkers = 'auto',
   enableMemoryOptimization = 'auto',
   animated = false,
+  cameraMode = 'rotate',
   onNodeCountChange,
   onEdgeCountChange,
   onPerformanceUpdate,
@@ -281,7 +283,7 @@ export const GraphRendererV2: React.FC<GraphRendererV2Props> = ({
           nodes={graphData.nodes}
           edges={graphData.edges}
           layoutType="forceDirected2d"
-          cameraMode="orbit"
+          cameraMode={cameraMode}
           animated={animationsEnabled}
           selections={[]}
           onNodeClick={() => {}}
