@@ -10,7 +10,7 @@
  */
 
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { GraphCanvas } from 'reagraph';
+import { GraphCanvas } from '../../../src';
 import { GraphData } from '../types/benchmark.types';
 
 // For now, we'll use the legacy GraphCanvas and simulate Phase 2 behavior
@@ -25,6 +25,9 @@ interface GraphRendererV2Props {
   enableInstancedRendering?: boolean | 'auto';
   enableSharedWorkers?: boolean | 'auto';
   enableMemoryOptimization?: boolean | 'auto';
+  
+  // Animation control
+  animated?: boolean;
   
   // Benchmark integration
   onNodeCountChange?: (count: number) => void;
@@ -46,6 +49,7 @@ export const GraphRendererV2: React.FC<GraphRendererV2Props> = ({
   enableInstancedRendering = 'auto',
   enableSharedWorkers = 'auto',
   enableMemoryOptimization = 'auto',
+  animated = false,
   onNodeCountChange,
   onEdgeCountChange,
   onPerformanceUpdate,
@@ -60,6 +64,7 @@ export const GraphRendererV2: React.FC<GraphRendererV2Props> = ({
   const [instancedRendering, setInstancedRendering] = useState(enableInstancedRendering);
   const [sharedWorkers, setSharedWorkers] = useState(enableSharedWorkers);
   const [memoryOptimization, setMemoryOptimization] = useState(enableMemoryOptimization);
+  const [animationsEnabled, setAnimationsEnabled] = useState(animated);
   
   // Performance and capability tracking
   const [performanceMetrics, setPerformanceMetrics] = useState<any>(null);
@@ -162,6 +167,10 @@ export const GraphRendererV2: React.FC<GraphRendererV2Props> = ({
     setMemoryOptimization(prev => prev === false ? 'auto' : false);
   };
 
+  const toggleAnimations = () => {
+    setAnimationsEnabled(prev => !prev);
+  };
+
   return (
     <div 
       className={`graph-renderer-v2 ${className}`}
@@ -251,6 +260,16 @@ export const GraphRendererV2: React.FC<GraphRendererV2Props> = ({
               >
                 Memory Optimization
               </button>
+              
+              <button 
+                onClick={toggleAnimations}
+                style={{
+                  ...styles.toggleButton,
+                  backgroundColor: animationsEnabled ? '#00ff88' : '#ff6b6b'
+                }}
+              >
+                Animations {animationsEnabled ? 'ON' : 'OFF'}
+              </button>
             </div>
           </div>
         </div>
@@ -263,7 +282,7 @@ export const GraphRendererV2: React.FC<GraphRendererV2Props> = ({
           edges={graphData.edges}
           layoutType="forceDirected2d"
           cameraMode="orbit"
-          animated={false}
+          animated={animationsEnabled}
           selections={[]}
           onNodeClick={() => {}}
           onCanvasClick={() => {}}

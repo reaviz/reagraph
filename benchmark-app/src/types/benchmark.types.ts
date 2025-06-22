@@ -18,11 +18,22 @@ export interface BenchmarkTest {
   edgeCount: number;
   dataset: GraphData;
   category: 'small' | 'medium' | 'large' | 'massive' | 'stress' | 'extreme';
+  // Animation and interaction features
+  animated?: boolean;
+  interactive?: boolean;
+  initialCollapsedNodeIds?: string[];
+  edgeInterpolation?: 'linear' | 'curved';
+  layoutType?: string;
 }
 
 export interface GraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
+  metadata?: {
+    totalLevels?: number;
+    nodeCountByLevel?: number[];
+    defaultCollapsedIds?: string[];
+  };
 }
 
 export interface GraphNode {
@@ -33,6 +44,7 @@ export interface GraphNode {
   z?: number;
   color?: string;
   size?: number;
+  data?: any; // Generic data field for node-specific information
 }
 
 export interface GraphEdge {
@@ -42,6 +54,8 @@ export interface GraphEdge {
   label?: string;
   color?: string;
   size?: number;
+  curved?: boolean;
+  animated?: boolean;
 }
 
 export interface BenchmarkResult {

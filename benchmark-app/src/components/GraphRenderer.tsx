@@ -6,6 +6,7 @@ import { WorkerManager, PositionUpdate } from '../utils/WorkerManager';
 interface GraphRendererProps {
   data: GraphData;
   workerEnabled: boolean;
+  animated?: boolean;
   onNodeCountChange?: (count: number) => void;
   onEdgeCountChange?: (count: number) => void;
   onWorkerStatusChange?: (
@@ -17,6 +18,7 @@ interface GraphRendererProps {
 export const GraphRenderer: React.FC<GraphRendererProps> = ({
   data,
   workerEnabled,
+  animated = false,
   onNodeCountChange,
   onEdgeCountChange,
   onWorkerStatusChange,
@@ -175,6 +177,9 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
           <span style={styles.stat}>
             Worker: {workerEnabled ? 'ON' : 'OFF'}
           </span>
+          <span style={styles.stat}>
+            Animated: {animated ? 'ON' : 'OFF'}
+          </span>
         </div>
       </div>
 
@@ -184,8 +189,8 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
           edges={graphData.edges}
           layoutType={layoutConfig.type}
           cameraMode={cameraConfig.mode}
-          // Disable animations for performance testing
-          animated={false}
+          // Animation prop now configurable
+          animated={animated}
           // Selection disabled for performance
           selections={[]}
           onNodeClick={() => {}} // Disable interactions for pure performance testing

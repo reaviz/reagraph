@@ -4,6 +4,7 @@
  */
 
 import { GraphData, BenchmarkTest } from '../types/benchmark.types';
+import { generateNetworkTopology, generateNetworkScenarios } from '../utils/networkTopologyGenerator';
 
 // Utility functions
 const range = (n: number) => Array.from({ length: n }, (_, i) => i);
@@ -304,6 +305,145 @@ export function createStorybookBenchmarkTests(): BenchmarkTest[] {
       edgeCount: manyClusterEdges.length,
       category: 'massive',
       dataset: { nodes: manyClusterNodes, edges: manyClusterEdges }
+    },
+
+    // Interactive tests with animations
+    {
+      id: 'storybook-animated-simple',
+      name: 'Animated Simple Graph',
+      description: 'Basic 5-node graph with animations enabled',
+      nodeCount: simpleNodes.length,
+      edgeCount: simpleEdges.length,
+      category: 'small',
+      dataset: { nodes: simpleNodes, edges: simpleEdges },
+      animated: true
+    },
+    {
+      id: 'storybook-animated-complex',
+      name: 'Animated Complex Network',
+      description: '25 nodes with animations - tests animation performance',
+      nodeCount: complexNodes.length,
+      edgeCount: complexEdges.length,
+      category: 'medium',
+      dataset: { nodes: complexNodes, edges: complexEdges },
+      animated: true
+    },
+
+    // Collapsible hierarchy tests
+    {
+      id: 'storybook-collapsible',
+      name: 'Collapsible Hierarchy',
+      description: 'Two-level nested nodes with collapse functionality',
+      nodeCount: parentNodes.length,
+      edgeCount: parentEdges.length,
+      category: 'small',
+      dataset: { nodes: parentNodes, edges: parentEdges },
+      interactive: true,
+      initialCollapsedNodeIds: ['n-2']
+    },
+    {
+      id: 'storybook-animated-collapsible',
+      name: 'Animated Collapsible Hierarchy',
+      description: 'Two-level nested nodes with animations and collapse',
+      nodeCount: parentNodes.length,
+      edgeCount: parentEdges.length,
+      category: 'small',
+      dataset: { nodes: parentNodes, edges: parentEdges },
+      animated: true,
+      interactive: true,
+      initialCollapsedNodeIds: ['n-2']
+    },
+
+    // Large collapsible test
+    {
+      id: 'storybook-large-collapsible',
+      name: 'Large Collapsible Network',
+      description: 'Complex network with collapsible clusters',
+      nodeCount: complexNodes.length,
+      edgeCount: complexEdges.length,
+      category: 'medium',
+      dataset: { nodes: complexNodes, edges: complexEdges },
+      interactive: true,
+      animated: true,
+      initialCollapsedNodeIds: ['5', '10', '15']
+    },
+
+    // Network Topology Tests - 8 Level Deep Hierarchy
+    {
+      id: 'network-topology-small',
+      name: 'Network Topology - Small (8 Levels)',
+      description: '8-level network hierarchy with curved animated edges - Small scale',
+      ...(() => {
+        const topology = generateNetworkScenarios().small;
+        return {
+          nodeCount: topology.nodes.length,
+          edgeCount: topology.edges.length,
+          category: 'medium' as const,
+          dataset: topology,
+          animated: true,
+          interactive: true,
+          edgeInterpolation: 'curved' as const,
+          layoutType: 'hierarchical',
+          initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
+        };
+      })()
+    },
+    {
+      id: 'network-topology-medium',
+      name: 'Network Topology - Medium (8 Levels)',
+      description: '8-level network infrastructure with cross-connections - Medium scale',
+      ...(() => {
+        const topology = generateNetworkScenarios().medium;
+        return {
+          nodeCount: topology.nodes.length,
+          edgeCount: topology.edges.length,
+          category: 'large' as const,
+          dataset: topology,
+          animated: true,
+          interactive: true,
+          edgeInterpolation: 'curved' as const,
+          layoutType: 'hierarchical',
+          initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
+        };
+      })()
+    },
+    {
+      id: 'network-topology-large',
+      name: 'Network Topology - Large (8 Levels)',
+      description: 'Enterprise network with 8 hierarchy levels - Performance test',
+      ...(() => {
+        const topology = generateNetworkScenarios().large;
+        return {
+          nodeCount: topology.nodes.length,
+          edgeCount: topology.edges.length,
+          category: 'massive' as const,
+          dataset: topology,
+          animated: true,
+          interactive: true,
+          edgeInterpolation: 'curved' as const,
+          layoutType: 'hierarchical',
+          initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
+        };
+      })()
+    },
+    {
+      id: 'network-topology-enterprise',
+      name: 'Network Topology - Enterprise (8 Levels)',
+      description: 'Massive enterprise network - Extreme performance test',
+      ...(() => {
+        const topology = generateNetworkScenarios().enterprise;
+        return {
+          nodeCount: topology.nodes.length,
+          edgeCount: topology.edges.length,
+          category: 'extreme' as const,
+          dataset: topology,
+          animated: true,
+          interactive: true,
+          edgeInterpolation: 'curved' as const,
+          layoutType: 'hierarchical',
+          initialCollapsedNodeIds: topology.metadata.defaultCollapsedIds
+        };
+      })()
     }
   ];
 }

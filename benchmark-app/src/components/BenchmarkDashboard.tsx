@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { PerformanceMonitor } from './PerformanceMonitor';
 import { GraphRenderer } from './GraphRenderer';
 import { GraphRendererV2 } from './GraphRendererV2';
+import { CollapsibleGraphRenderer } from './CollapsibleGraphRenderer';
+import { NetworkTopologyRenderer } from './NetworkTopologyRenderer';
 import { usePerformanceTracker } from '../hooks/usePerformanceTracker';
 import { createBenchmarkTests } from '../utils/datasetGenerators';
 import { createStorybookBenchmarkTests } from '../data/storybookDatasets';
@@ -392,6 +394,18 @@ export const BenchmarkDashboard: React.FC = () => {
                 <span>Category: {selectedTest.category}</span>
                 <span>Nodes: {selectedTest.nodeCount.toLocaleString()}</span>
                 <span>Edges: {selectedTest.edgeCount.toLocaleString()}</span>
+                {selectedTest.animated && (
+                  <span style={styles.featureBadge}>🎥 Animated</span>
+                )}
+                {selectedTest.interactive && (
+                  <span style={styles.featureBadge}>🔄 Interactive</span>
+                )}
+                {selectedTest.edgeInterpolation === 'curved' && (
+                  <span style={styles.featureBadge}>〰️ Curved</span>
+                )}
+                {selectedTest.id.includes('network-topology') && (
+                  <span style={styles.featureBadge}>🌐 8-Level</span>
+                )}
               </div>
             </div>
           )}
@@ -518,9 +532,42 @@ export const BenchmarkDashboard: React.FC = () => {
         {/* Graph Visualization */}
         <div style={styles.graphPanel}>
           {selectedTest ? (
-            usePhase2 ? (
+            selectedTest.id.includes('network-topology') ? (
+              <NetworkTopologyRenderer
+                data={selectedTest.dataset}
+                animated={selectedTest.animated || false}
+                edgeInterpolation={selectedTest.edgeInterpolation || 'curved'}
+                initialCollapsedIds={selectedTest.initialCollapsedNodeIds}
+                layoutType={selectedTest.layoutType || 'hierarchical'}
+                onNodeCountChange={updateNodeCount}
+                onEdgeCountChange={updateEdgeCount}
+                onCollapseChange={(collapsedIds) => {
+                  console.log('Network topology collapsed nodes:', collapsedIds);
+                }}
+                onPerformanceUpdate={(metrics) => {
+                  console.log('Network topology performance:', metrics);
+                }}
+              />
+            ) : selectedTest.interactive ? (
+              <CollapsibleGraphRenderer
+                data={selectedTest.dataset}
+                animated={selectedTest.animated || false}
+                edgeInterpolation={selectedTest.edgeInterpolation || 'linear'}
+                initialCollapsedIds={selectedTest.initialCollapsedNodeIds}
+                workerEnabled={workerEnabled}
+                onNodeCountChange={updateNodeCount}
+                onEdgeCountChange={updateEdgeCount}
+                onCollapseChange={(collapsedIds) => {
+                  console.log('Collapsed nodes changed:', collapsedIds);
+                }}
+                onPerformanceUpdate={(metrics) => {
+                  console.log('Collapsible graph performance:', metrics);
+                }}
+              />
+            ) : usePhase2 ? (
               <GraphRendererV2
                 data={selectedTest.dataset}
+                animated={selectedTest.animated || false}
                 optimizationLevel={phase2Config.optimizationLevel}
                 enableGPUAcceleration={phase2Config.enableGPUAcceleration}
                 enableInstancedRendering={phase2Config.enableInstancedRendering}
@@ -538,6 +585,7 @@ export const BenchmarkDashboard: React.FC = () => {
             ) : (
               <GraphRenderer
                 data={selectedTest.dataset}
+                animated={selectedTest.animated || false}
                 workerEnabled={workerEnabled}
                 onNodeCountChange={updateNodeCount}
                 onEdgeCountChange={updateEdgeCount}
@@ -740,6 +788,16 @@ const styles = {
     gap: '0.25rem',
     fontSize: '0.8rem',
     color: '#888888'
+  },
+  featureBadge: {
+    display: 'inline-block',
+    padding: '0.2rem 0.5rem',
+    background: 'rgba(78, 205, 196, 0.2)',
+    color: '#4ecdc4',
+    borderRadius: '4px',
+    fontSize: '0.75rem',
+    fontWeight: 'bold' as const,
+    marginLeft: '0.5rem'
   },
   placeholder: {
     display: 'flex',
