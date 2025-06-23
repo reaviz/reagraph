@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { GraphCanvas, GraphCanvasV2, useCollapse, getVisibleEntities, darkTheme } from '../../../src';
+import { GraphCanvas, useCollapse, getVisibleEntities, darkTheme } from '../../../src';
 import { GraphData } from '../types/benchmark.types';
 import { NetworkNode } from '../utils/networkTopologyGenerator';
 
@@ -314,28 +314,38 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
 
       {/* Graph Container */}
       <div style={styles.graphContainer}>
-        <GraphCanvasV2
+        {console.log('[NetworkTopologyRenderer] Rendering GraphCanvas with:', {
+          visibleNodesCount: visibleEntities.visibleNodes.length,
+          visibleEdgesCount: visibleEntities.visibleEdges.length,
+          firstNode: visibleEntities.visibleNodes[0],
+          firstEdge: visibleEntities.visibleEdges[0],
+          sampleNodes: visibleEntities.visibleNodes.slice(0, 5).map(n => ({
+            id: n.id,
+            label: n.label,
+            fill: n.fill,
+            size: n.size
+          }))
+        })}
+        <GraphCanvas
           key={`graph-${data.nodes.length}-${collapsedNodeIds.length}`}
           nodes={visibleEntities.visibleNodes}
           edges={visibleEntities.visibleEdges}
-          // Phase 2 optimizations
-          optimizationLevel="HIGH_PERFORMANCE"
-          enableGPUAcceleration="auto"
-          enableInstancedRendering="auto"
-          enableSharedWorkers="auto"
-          enableMemoryOptimization="auto"
-          enablePerformanceMonitor={true}
-          onPerformanceUpdate={(metrics) => {
-            if (onPerformanceUpdate && metrics) {
-              onPerformanceUpdate(metrics);
-            }
+          layoutType="forceDirected2d"
+          layoutOverrides={{
+            iterations: 300,
+            repulsion: -100,
+            attraction: 0.1,
+            gravity: 0.1
           }}
-          layoutType="hierarchical"
           cameraMode={cameraMode}
           animated={animated}
-          onNodeClick={() => {
-            // TODO: Re-enable when node click handling is fixed for V2
-            console.log('Node click disabled in V2 for now');
+          edgeInterpolation={edgeInterpolation}
+          collapsedNodeIds={collapsedNodeIds}
+          minDistance={1}
+          maxDistance={5000}
+          onNodeClick={(node) => {
+            console.log('Node clicked:', node.id);
+            handleNodeClick(node);
           }}
           onCanvasClick={() => {
             setSelectedNode(null);
@@ -367,10 +377,6 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
               inactiveOpacity: 0.1
             }
           }}
-          // Dimensions
-          width={800}
-          height={600}
-          backgroundColor="#0a0a0a"
         />
       </div>
 

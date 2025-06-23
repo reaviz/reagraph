@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
-import { GraphCanvas, GraphCanvasV2 } from 'reagraph';
+import { GraphCanvas, darkTheme } from 'reagraph';
 import { GraphData } from '../types/benchmark.types';
 import { WorkerManager, PositionUpdate } from '../utils/WorkerManager';
 import { AdaptivePerformanceManager } from '../../../src/performance/AdaptivePerformanceManager';
@@ -63,6 +63,13 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
       fill: edge.color || '#666666',
       size: edge.size || 1
     }));
+
+    console.log('[GraphRenderer] Graph data prepared:', {
+      nodeCount: nodes.length,
+      edgeCount: edges.length,
+      nodes: nodes.slice(0, 3),
+      edges: edges.slice(0, 3)
+    });
 
     return { nodes, edges };
   }, [data]);
@@ -197,40 +204,26 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
       </div>
 
       <div style={styles.graphContainer}>
-        <GraphCanvasV2
+        <GraphCanvas
           ref={graphCanvasRef}
           nodes={graphData.nodes}
           edges={graphData.edges}
           layoutType={layoutConfig.type}
+          layoutOverrides={layoutConfig.settings}
           cameraMode={cameraConfig.mode}
           // Animation prop now configurable
           animated={animated}
-          // Phase 2 performance optimizations
-          optimizationLevel="HIGH_PERFORMANCE"
-          enableGPUAcceleration="auto"
-          enableInstancedRendering="auto"
-          enableSharedWorkers={workerEnabled ? "auto" : false}
-          enableMemoryOptimization="auto"
-          enablePerformanceMonitor={true}
-          onPerformanceUpdate={(metrics) => {
-            // Update performance manager with metrics
-            if (performanceManager && metrics) {
-              const fps = metrics.recentStats?.averageFps || 60;
-              performanceManager.updateMetrics({
-                fps: fps,
-                frameTime: 1000 / fps,
-                nodeCount: data.nodes.length,
-                edgeCount: data.edges.length
-              });
-            }
-          }}
           // Disable interactions for pure performance testing
           onNodeClick={() => {}}
           onCanvasClick={() => {}}
-          // Dimensions
-          width={800}
-          height={600}
-          backgroundColor="#000000"
+          // Use the complete darkTheme with background override
+          theme={{
+            ...darkTheme,
+            canvas: {
+              ...darkTheme.canvas,
+              background: '#000000'
+            }
+          }}
         />
         
         {/* Performance HUD overlay */}
