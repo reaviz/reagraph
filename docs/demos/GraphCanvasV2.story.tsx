@@ -18,12 +18,16 @@ const generateDataset = (nodeCount: number, edgeRatio = 0.5, withClusters = fals
     return {
       id: `n-${i}`,
       label: `Node ${i}`,
-      size: Math.random() * 20 + 5,
-      // Add initial position to prevent undefined errors
+      size: Math.random() * 10 + 5,
+      fill: clusterInfo.clusterColor || '#4ECDC4',
+      // Add initial position in InternalGraphNode format
       position: {
         x: (Math.random() - 0.5) * 1000,
         y: (Math.random() - 0.5) * 1000,
-        z: (Math.random() - 0.5) * 1000
+        z: (Math.random() - 0.5) * 200,
+        vx: 0,
+        vy: 0,
+        vz: 0
       },
       data: {
         priority: Math.floor(Math.random() * 10) + 1,
