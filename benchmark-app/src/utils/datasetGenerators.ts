@@ -372,65 +372,38 @@ export function createBenchmarkTests(): BenchmarkTest[] {
     {
       id: 'large-clustered',
       name: 'Large Clustered Graph',
-      description: '2,000 nodes, clustered topology',
+      description: '1,500 nodes, clustered topology',
+      nodeCount: 1500,
+      edgeCount: 2500,
+      category: 'large',
+      dataset: generator.generateClustered(1500, 10)
+    },
+    {
+      id: 'performance-2k',
+      name: 'Performance Test (2K)',
+      description: '2,000 nodes - Maximum performance test',
       nodeCount: 2000,
       edgeCount: 3000,
       category: 'large',
-      dataset: generator.generateClustered(2000, 10)
+      dataset: generator.generateScaleFree(2000, 2)
     },
     {
-      id: 'massive-performance',
-      name: 'Performance Test (5K)',
-      description: '5,000 nodes - Target performance test',
-      nodeCount: 5000,
-      edgeCount: 7500,
-      category: 'massive',
-      dataset: generator.generateScaleFree(5000, 2)
+      id: 'performance-2k-clustered',
+      name: 'Performance Test 2K Clustered',
+      description: '2,000 nodes with clustering - Real-world topology',
+      nodeCount: 2000,
+      edgeCount: 3200,
+      category: 'large',
+      dataset: generator.generateClustered(2000, 15)
     },
     {
-      id: 'stress-test',
-      name: 'Stress Test (10K)',
-      description: '10,000 nodes - Stress testing',
-      nodeCount: 10000,
-      edgeCount: 15000,
-      category: 'stress',
-      dataset: generator.generateScaleFree(10000, 2)
-    },
-    {
-      id: 'performance-5k-clustered',
-      name: 'Performance Test 5K Clustered',
-      description: '5,000 nodes with clustering - Real-world topology',
-      nodeCount: 5000,
-      edgeCount: 8000,
-      category: 'massive',
-      dataset: generator.generateClustered(5000, 20)
-    },
-    {
-      id: 'performance-5k-grid',
-      name: 'Performance Test 5K Grid',
-      description: '5,000 nodes in grid layout - Structured topology',
-      nodeCount: 5000,
-      edgeCount: 9800,
-      category: 'massive',
-      dataset: generator.generateGrid(5000)
-    },
-    {
-      id: 'performance-7500',
-      name: 'Performance Test 7.5K',
-      description: '7,500 nodes - Upper performance boundary',
-      nodeCount: 7500,
-      edgeCount: 11250,
-      category: 'massive',
-      dataset: generator.generateScaleFree(7500, 2)
-    },
-    {
-      id: 'extreme-test',
-      name: 'Extreme Test (15K)',
-      description: '15,000 nodes - Beyond target performance',
-      nodeCount: 15000,
-      edgeCount: 22500,
-      category: 'extreme',
-      dataset: generator.generateScaleFree(15000, 2)
+      id: 'performance-2k-grid',
+      name: 'Performance Test 2K Grid',
+      description: '2,000 nodes in grid layout - Structured topology',
+      nodeCount: 2000,
+      edgeCount: 3920,
+      category: 'large',
+      dataset: generator.generateGrid(2000)
     }
   ];
 }

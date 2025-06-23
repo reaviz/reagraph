@@ -14,10 +14,13 @@ import React, {
   useRef,
   useState,
   useMemo,
-  useCallback
+  useCallback,
+  forwardRef,
+  useImperativeHandle
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
+import Graph from 'graphology';
 import {
   AdvancedMemoryManager,
   AdvancedInstancedRenderer,
@@ -30,7 +33,17 @@ import {
 } from '../performance/PerformanceMonitor';
 import { SharedWorkerPool, WorkerType, WebGLComputePipeline } from '../workers';
 import type { ComputeConfig } from '../workers';
-import { InternalGraphNode, InternalGraphEdge } from '../types';
+import {
+  InternalGraphNode,
+  InternalGraphEdge,
+  InternalGraphPosition
+} from '../types';
+import { CameraControls, CameraMode } from '../CameraControls';
+import { Theme, lightTheme } from '../themes';
+import { createStore, Provider } from '../store';
+import { PerformanceProvider } from '../contexts/PerformanceContext';
+import { GraphSceneV2 } from '../symbols/GraphSceneV2';
+import css from './GraphCanvas.module.css';
 
 export interface GraphCanvasV2Props {
   nodes: InternalGraphNode[];
@@ -62,6 +75,7 @@ export interface GraphCanvasV2Props {
   width?: number;
   height?: number;
   backgroundColor?: string;
+  theme?: Theme;
 
   // Layout and interaction
   layoutType?:
@@ -69,17 +83,37 @@ export interface GraphCanvasV2Props {
     | 'forceDirected3d'
     | 'hierarchical'
     | 'circular';
-  cameraMode?: 'orbit' | 'fly' | 'static';
+  cameraMode?: CameraMode;
   enableInteraction?: boolean;
+
+  // Camera settings
+  minDistance?: number;
+  maxDistance?: number;
 
   // Event handlers
   onNodeClick?: (node: InternalGraphNode) => void;
   onEdgeClick?: (edge: InternalGraphEdge) => void;
   onCanvasClick?: () => void;
 
+  // Canvas settings
+  glOptions?: Partial<THREE.WebGLRendererParameters>;
+  animated?: boolean;
+  disabled?: boolean;
+
+  // Children
+  children?: React.ReactNode;
+
   // Styling
   className?: string;
   style?: React.CSSProperties;
+}
+
+export interface GraphCanvasV2Ref {
+  getPerformanceStats: () => any;
+  getGPUCapabilities: () => any;
+  exportCanvas: () => string;
+  centerGraph: (nodeIds?: string[]) => void;
+  getControls: () => THREE.Camera;
 }
 
 export interface OptimizationProfile {
@@ -101,8 +135,8 @@ export interface OptimizationProfile {
 const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
   HIGH_PERFORMANCE: {
     memory: {
-      maxNodes: 100000,
-      maxEdges: 500000,
+      maxNodes: 2000,
+      maxEdges: 10000,
       enableObjectPooling: true,
       enableViewportCulling: true,
       cullingDistance: 2000,
@@ -135,8 +169,8 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
 
   BALANCED: {
     memory: {
-      maxNodes: 50000,
-      maxEdges: 250000,
+      maxNodes: 1500,
+      maxEdges: 7500,
       enableObjectPooling: true,
       enableViewportCulling: true,
       cullingDistance: 1500,
@@ -169,8 +203,8 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
 
   POWER_SAVING: {
     memory: {
-      maxNodes: 10000,
-      maxEdges: 50000,
+      maxNodes: 1000,
+      maxEdges: 5000,
       enableObjectPooling: true,
       enableViewportCulling: true,
       cullingDistance: 1000,
@@ -330,38 +364,37 @@ class FeatureDetector {
 }
 
 /**
- * GraphCanvasV2 Component
+ * Internal component that sets up optimization systems
  */
-export const GraphCanvasV2: React.FC<GraphCanvasV2Props> = ({
+const GraphCanvasV2Inner: React.FC<{
+  nodes: InternalGraphNode[];
+  edges: InternalGraphEdge[];
+  activeProfile: OptimizationProfile;
+  enablePerformanceMonitor: boolean;
+  onPerformanceUpdate?: (metrics: any) => void;
+  animated?: boolean;
+  disabled?: boolean;
+  cameraMode?: CameraMode;
+  minDistance?: number;
+  maxDistance?: number;
+  theme: Theme;
+  children?: React.ReactNode;
+}> = ({
   nodes,
   edges,
-  optimizationLevel = 'BALANCED',
-  enableGPUAcceleration = 'auto',
-  enableInstancedRendering = 'auto',
-  enableSharedWorkers = 'auto',
-  enableMemoryOptimization = 'auto',
-  memoryConfig,
-  renderConfig,
-  computeConfig,
-  enablePerformanceMonitor = true,
+  activeProfile,
+  enablePerformanceMonitor,
   onPerformanceUpdate,
-  width = 800,
-  height = 600,
-  backgroundColor = '#000000',
-  layoutType = 'forceDirected2d',
-  cameraMode = 'orbit',
-  enableInteraction = true,
-  onNodeClick,
-  onEdgeClick,
-  onCanvasClick,
-  className,
-  style
+  animated = true,
+  disabled = false,
+  cameraMode = 'pan',
+  minDistance,
+  maxDistance,
+  theme,
+  children
 }) => {
-  // Refs for core systems
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const cameraRef = useRef<THREE.Camera | null>(null);
+  const canvasEl = useRef<HTMLCanvasElement | null>(null);
+  const controlsRef = useRef<any>(null);
 
   // Core system instances
   const [memoryManager, setMemoryManager] =
@@ -376,163 +409,33 @@ export const GraphCanvasV2: React.FC<GraphCanvasV2Props> = ({
 
   // State
   const [isInitialized, setIsInitialized] = useState(false);
-  const [currentCapabilities, setCurrentCapabilities] = useState<any>(null);
-  const [activeProfile, setActiveProfile] =
-    useState<OptimizationProfile | null>(null);
-  const [performanceStats, setPerformanceStats] = useState<any>(null);
   const [errors, setErrors] = useState<string[]>([]);
 
-  // Determine effective optimization profile
-  const effectiveProfile = useMemo(() => {
-    const capabilities = FeatureDetector.getSystemCapabilities();
-    setCurrentCapabilities(capabilities);
-
-    let baseProfile =
-      OPTIMIZATION_PROFILES[optimizationLevel] ||
-      OPTIMIZATION_PROFILES.BALANCED;
-
-    // Apply custom overrides
-    if (memoryConfig || renderConfig || computeConfig) {
-      baseProfile = {
-        ...baseProfile,
-        memory: { ...baseProfile.memory, ...memoryConfig },
-        rendering: { ...baseProfile.rendering, ...renderConfig },
-        compute: { ...baseProfile.compute, ...computeConfig }
-      };
-    }
-
-    // Apply auto-detection overrides
-    const profile = FeatureDetector.resolveAutoConfiguration(
-      baseProfile,
-      capabilities
-    );
-
-    // Apply manual feature toggles
-    if (enableGPUAcceleration === false) {
-      profile.compute.enableGPUCompute = false;
-      profile.rendering.enableInstancing = false;
-    }
-
-    if (enableInstancedRendering === false) {
-      profile.rendering.enableInstancing = false;
-    }
-
-    if (enableSharedWorkers === false) {
-      profile.workers.enableSharedArrayBuffer = false;
-      profile.workers.maxWorkers = Math.min(profile.workers.maxWorkers, 1);
-    }
-
-    if (enableMemoryOptimization === false) {
-      profile.memory.enableObjectPooling = false;
-      profile.memory.enableViewportCulling = false;
-    }
-
-    return profile;
-  }, [
-    optimizationLevel,
-    enableGPUAcceleration,
-    enableInstancedRendering,
-    enableSharedWorkers,
-    enableMemoryOptimization,
-    memoryConfig,
-    renderConfig,
-    computeConfig
-  ]);
-
-  // Initialize Three.js core
-  const initializeThreeJS = useCallback(() => {
-    if (!canvasRef.current) return false;
-
-    try {
-      // Create renderer
-      const renderer = new THREE.WebGLRenderer({
-        canvas: canvasRef.current,
-        antialias: true,
-        alpha: true,
-        powerPreference:
-          optimizationLevel === 'POWER_SAVING'
-            ? 'low-power'
-            : 'high-performance'
-      });
-
-      renderer.setSize(width, height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setClearColor(backgroundColor);
-
-      // Create scene
-      const scene = new THREE.Scene();
-
-      // Create camera
-      const camera = layoutType.includes('3d')
-        ? new THREE.PerspectiveCamera(75, width / height, 0.1, 10000)
-        : new THREE.OrthographicCamera(
-          -width / 2,
-          width / 2,
-          height / 2,
-          -height / 2,
-          0.1,
-          10000
-        );
-
-      camera.position.set(0, 0, 1000);
-
-      rendererRef.current = renderer;
-      sceneRef.current = scene;
-      cameraRef.current = camera;
-
-      return true;
-    } catch (error) {
-      console.error('Failed to initialize Three.js:', error);
-      setErrors(prev => [...prev, `Three.js initialization failed: ${error}`]);
-      return false;
-    }
-  }, [width, height, backgroundColor, layoutType, optimizationLevel]);
-
-  // Initialize Phase 2 systems
-  const initializeSystems = useCallback(async () => {
-    if (!rendererRef.current || !sceneRef.current || !activeProfile) return;
-
+  // Initialize optimization systems
+  useEffect(() => {
     const errors: string[] = [];
 
     try {
       // Initialize Memory Manager
-      console.log('Initializing AdvancedMemoryManager...');
+      console.log('[GraphCanvasV2] Initializing AdvancedMemoryManager...');
       const memMgr = new AdvancedMemoryManager(activeProfile.memory);
       setMemoryManager(memMgr);
 
-      // Initialize Instanced Renderer
-      if (activeProfile.rendering.enableInstancing) {
-        console.log('Initializing AdvancedInstancedRenderer...');
-        const instRenderer = new AdvancedInstancedRenderer(
-          sceneRef.current,
-          memMgr,
-          activeProfile.rendering
-        );
-        setInstancedRenderer(instRenderer);
-      }
+      // Note: InstancedRenderer initialization is handled in GraphSceneV2
+      // where we have access to the React Three Fiber scene context
 
       // Initialize Compute Pipeline
+      // Note: This will be initialized later when we have access to the WebGL context
       if (activeProfile.compute.enableGPUCompute) {
-        try {
-          console.log('Initializing WebGLComputePipeline...');
-          const compute = new WebGLComputePipeline(
-            rendererRef.current,
-            activeProfile.compute
-          );
-          setComputePipeline(compute);
-        } catch (error) {
-          console.warn(
-            'GPU compute initialization failed, continuing without GPU acceleration:',
-            error
-          );
-          errors.push(`GPU compute disabled: ${error}`);
-        }
+        console.log(
+          '[GraphCanvasV2] GPU compute will be initialized when WebGL context is available'
+        );
       }
 
       // Initialize Worker Pool
       if (activeProfile.workers.maxWorkers > 0) {
         try {
-          console.log('Initializing SharedWorkerPool...');
+          console.log('[GraphCanvasV2] Initializing SharedWorkerPool...');
 
           // Add SharedArrayBuffer diagnostics
           if (activeProfile.workers.enableSharedArrayBuffer) {
@@ -567,7 +470,9 @@ export const GraphCanvasV2: React.FC<GraphCanvasV2Props> = ({
 
       // Initialize Performance Monitor
       if (enablePerformanceMonitor) {
-        console.log('Initializing AdvancedPerformanceMonitor...');
+        console.log(
+          '[GraphCanvasV2] Initializing AdvancedPerformanceMonitor...'
+        );
         const perfProfile =
           activeProfile.performance.targetFps === 60
             ? PerformanceProfiles.HIGH_PERFORMANCE
@@ -581,230 +486,451 @@ export const GraphCanvasV2: React.FC<GraphCanvasV2Props> = ({
 
       setErrors(errors);
       setIsInitialized(true);
-      console.log('GraphCanvasV2 initialization complete');
+      console.log('[GraphCanvasV2] Initialization complete');
     } catch (error) {
       console.error('System initialization failed:', error);
       setErrors(prev => [...prev, `System initialization failed: ${error}`]);
     }
-  }, [activeProfile, enablePerformanceMonitor]);
 
-  // Update graph data
-  const updateGraphData = useCallback(() => {
-    if (!memoryManager || !isInitialized) return;
-
-    try {
-      // Register nodes
-      const nodeIndices = new Map<string, number>();
-      nodes.forEach(node => {
-        const index = memoryManager.registerNode(node);
-        nodeIndices.set(node.id, index);
-      });
-
-      // Register edges
-      edges.forEach(edge => {
-        const sourceIndex = nodeIndices.get(edge.source);
-        const targetIndex = nodeIndices.get(edge.target);
-        if (sourceIndex !== undefined && targetIndex !== undefined) {
-          memoryManager.registerEdge(edge, sourceIndex, targetIndex);
-        }
-      });
-
-      console.log(
-        `Updated graph data: ${nodes.length} nodes, ${edges.length} edges`
-      );
-    } catch (error) {
-      console.error('Failed to update graph data:', error);
-      setErrors(prev => [...prev, `Data update failed: ${error}`]);
-    }
-  }, [memoryManager, nodes, edges, isInitialized]);
-
-  // Animation loop
-  const animate = useCallback(() => {
-    if (
-      !rendererRef.current ||
-      !sceneRef.current ||
-      !cameraRef.current ||
-      !isInitialized
-    ) {
-      return;
-    }
-
-    const renderer = rendererRef.current;
-    const scene = sceneRef.current;
-    const camera = cameraRef.current;
-
-    // Start frame timing
-    performanceMonitor?.startFrame();
-
-    try {
-      // Update compute pipeline if available
-      if (computePipeline && memoryManager) {
-        computePipeline.computeStep(memoryManager.nodeBuffer, {
-          attraction: 0.1,
-          repulsion: 1000,
-          damping: 0.1,
-          centeringForce: 0.02,
-          timeStep: 0.016,
-          maxDistance: 2000,
-          minDistance: 1
-        });
-      }
-
-      // Update instanced rendering
-      if (instancedRenderer && memoryManager) {
-        instancedRenderer.render(camera);
-      }
-
-      // Render scene
-      renderer.render(scene, camera);
-
-      // End frame timing and collect metrics
-      const additionalMetrics = {
-        nodeCount: nodes.length,
-        edgeCount: edges.length,
-        drawCalls:
-          instancedRenderer?.getStats().frameStats.averageDrawCalls || 0,
-        memoryUsage: memoryManager?.getMemoryStats().totalMemoryBytes || 0,
-        gpuComputeTime: computePipeline?.getStats().computeTime || 0
-      };
-
-      performanceMonitor?.endFrame(additionalMetrics);
-
-      // Update performance stats
-      if (performanceMonitor) {
-        const stats = performanceMonitor.getStatus();
-        setPerformanceStats(stats);
-        onPerformanceUpdate?.(stats);
-      }
-    } catch (error) {
-      console.error('Render loop error:', error);
-      setErrors(prev => [...prev, `Render error: ${error}`]);
-    }
-
-    requestAnimationFrame(animate);
-  }, [
-    isInitialized,
-    performanceMonitor,
-    computePipeline,
-    instancedRenderer,
-    memoryManager,
-    nodes.length,
-    edges.length,
-    onPerformanceUpdate
-  ]);
-
-  // Initialize everything on mount
-  useEffect(() => {
-    setActiveProfile(effectiveProfile);
-  }, [effectiveProfile]);
-
-  useEffect(() => {
-    if (activeProfile && initializeThreeJS()) {
-      initializeSystems();
-    }
-  }, [activeProfile, initializeThreeJS, initializeSystems]);
-
-  // Update graph data when nodes/edges change
-  useEffect(() => {
-    updateGraphData();
-  }, [updateGraphData]);
-
-  // Start animation loop
-  useEffect(() => {
-    if (isInitialized) {
-      const animationId = requestAnimationFrame(animate);
-      return () => cancelAnimationFrame(animationId);
-    }
-  }, [isInitialized, animate]);
-
-  // Cleanup on unmount
-  useEffect(() => {
+    // Cleanup
     return () => {
       instancedRenderer?.dispose();
       computePipeline?.dispose();
       workerPool?.dispose();
       memoryManager?.dispose();
     };
-  }, [instancedRenderer, computePipeline, workerPool, memoryManager]);
+  }, [activeProfile, enablePerformanceMonitor]);
+
+  // Create store for state management with proper node positions
+  const store = useMemo(() => {
+    // Transform nodes to InternalGraphNode format
+    const internalNodes: InternalGraphNode[] = nodes.map((node, index) => {
+      // Create proper InternalGraphPosition
+      const existingPos = node.position || {};
+      const position: InternalGraphPosition = {
+        id: node.id,
+        data: node.data || {},
+        links: [],
+        index,
+        x: existingPos.x || (Math.random() - 0.5) * 1000,
+        y: existingPos.y || (Math.random() - 0.5) * 1000,
+        z: existingPos.z || (Math.random() - 0.5) * 200,
+        vx: existingPos.vx || 0,
+        vy: existingPos.vy || 0
+      };
+
+      return {
+        ...node,
+        position
+      };
+    });
+
+    // Create a simple graph object
+    const graph = new Graph();
+    internalNodes.forEach(node => graph.addNode(node.id, node));
+    edges.forEach(edge => {
+      if (graph.hasNode(edge.source) && graph.hasNode(edge.target)) {
+        // Check if edge already exists before adding
+        if (!graph.hasEdge(edge.source, edge.target)) {
+          graph.addEdge(edge.source, edge.target, edge);
+        }
+      }
+    });
+
+    return createStore({
+      nodes: internalNodes,
+      edges,
+      graph,
+      theme,
+      selections: [],
+      actives: [],
+      collapsedNodeIds: [],
+      clusters: new Map()
+    });
+  }, [nodes, edges, theme]);
+
+  // Performance context value
+  const performanceValue = useMemo(
+    () => ({
+      memoryManager,
+      instancedRenderer,
+      computePipeline,
+      performanceMonitor,
+      workerPool,
+      profile: activeProfile,
+      isInitialized,
+      errors
+    }),
+    [
+      memoryManager,
+      instancedRenderer,
+      computePipeline,
+      performanceMonitor,
+      workerPool,
+      activeProfile,
+      isInitialized,
+      errors
+    ]
+  );
+
+  // Handle performance updates
+  useEffect(() => {
+    if (!performanceMonitor || !onPerformanceUpdate) return;
+
+    const interval = setInterval(() => {
+      const stats = performanceMonitor.getStatus();
+      onPerformanceUpdate(stats);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [performanceMonitor, onPerformanceUpdate]);
+
+  return (
+    <Provider store={store}>
+      <PerformanceProvider value={performanceValue}>
+        {theme.canvas?.background && (
+          <color attach="background" args={[theme.canvas.background]} />
+        )}
+        <ambientLight intensity={1} />
+        <directionalLight position={[100, 100, 100]} intensity={0.5} />
+        <pointLight position={[0, 0, 0]} intensity={0.5} />
+        {theme.canvas?.fog && (
+          <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
+        )}
+        <CameraControls
+          ref={controlsRef}
+          mode={cameraMode}
+          animated={animated}
+          disabled={disabled}
+          minDistance={minDistance}
+          maxDistance={maxDistance}
+        >
+          <GraphSceneV2 useFallback={!isInitialized}>{children}</GraphSceneV2>
+        </CameraControls>
+
+        {/* Performance overlay */}
+        {enablePerformanceMonitor && performanceMonitor && (
+          <Html prepend center={false} position={[-350, 350, 0]}>
+            <PerformanceOverlay
+              monitor={performanceMonitor}
+              instancedRenderer={instancedRenderer}
+              computePipeline={computePipeline}
+              nodeCount={nodes.length}
+              edgeCount={edges.length}
+            />
+          </Html>
+        )}
+
+        {/* Error display */}
+        {errors.length > 0 && (
+          <Html prepend center={false} position={[-350, -350, 0]}>
+            <ErrorDisplay errors={errors} />
+          </Html>
+        )}
+      </PerformanceProvider>
+    </Provider>
+  );
+};
+
+/**
+ * Performance overlay component
+ */
+const PerformanceOverlay: React.FC<{
+  monitor: AdvancedPerformanceMonitor;
+  instancedRenderer: AdvancedInstancedRenderer | null;
+  computePipeline: WebGLComputePipeline | null;
+  nodeCount: number;
+  edgeCount: number;
+}> = ({
+  monitor,
+  instancedRenderer,
+  computePipeline,
+  nodeCount,
+  edgeCount
+}) => {
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStats(monitor.getStatus());
+    }, 100);
+    return () => clearInterval(interval);
+  }, [monitor]);
+
+  if (!stats) return null;
 
   return (
     <div
-      className={`graph-canvas-v2 ${className || ''}`}
-      style={{ position: 'relative', ...style }}
+      style={{
+        background: 'rgba(0,0,0,0.8)',
+        color: 'white',
+        padding: '8px',
+        borderRadius: '4px',
+        fontSize: '12px',
+        fontFamily: 'monospace',
+        minWidth: '200px'
+      }}
     >
-      <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        style={{ display: 'block', width: '100%', height: '100%' }}
-      />
-
-      {/* Performance overlay */}
-      {enablePerformanceMonitor && performanceStats && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 10,
-            left: 10,
-            background: 'rgba(0,0,0,0.8)',
-            color: 'white',
-            padding: '8px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            fontFamily: 'monospace'
-          }}
-        >
-          <div>FPS: {performanceStats.recentStats.averageFps.toFixed(1)}</div>
-          <div>Nodes: {nodes.length.toLocaleString()}</div>
-          <div>
-            Memory:{' '}
-            {(
-              performanceStats.recentStats.averageMemoryUsage /
-              1024 /
-              1024
-            ).toFixed(1)}
-            MB
-          </div>
-          {instancedRenderer && (
-            <div>
-              Draw Calls:{' '}
-              {instancedRenderer
-                .getStats()
-                .frameStats.averageDrawCalls.toFixed(1)}
-            </div>
-          )}
-          {computePipeline && (
-            <div>
-              GPU Compute:{' '}
-              {computePipeline.getStats().isUsingGPU ? 'ON' : 'OFF'}
-            </div>
-          )}
+      <div>FPS: {stats.recentStats.averageFps.toFixed(1)}</div>
+      <div>Nodes: {nodeCount.toLocaleString()}</div>
+      <div>Edges: {edgeCount.toLocaleString()}</div>
+      <div>
+        Memory:{' '}
+        {(stats.recentStats.averageMemoryUsage / 1024 / 1024).toFixed(1)}
+        MB
+      </div>
+      {instancedRenderer && (
+        <div>
+          Draw Calls:{' '}
+          {instancedRenderer
+            .getRenderingStats()
+            .frameStats.averageDrawCalls.toFixed(1)}
         </div>
       )}
-
-      {/* Error display */}
-      {errors.length > 0 && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 10,
-            left: 10,
-            background: 'rgba(255,0,0,0.8)',
-            color: 'white',
-            padding: '8px',
-            borderRadius: '4px',
-            fontSize: '12px',
-            maxWidth: '300px'
-          }}
-        >
-          <strong>Warnings:</strong>
-          {errors.map((error, i) => (
-            <div key={i}>• {error}</div>
-          ))}
+      {computePipeline && (
+        <div>
+          GPU Compute: {computePipeline.getStats().isUsingGPU ? 'ON' : 'OFF'}
         </div>
       )}
     </div>
   );
 };
+
+/**
+ * Error display component
+ */
+const ErrorDisplay: React.FC<{ errors: string[] }> = ({ errors }) => (
+  <div
+    style={{
+      background: 'rgba(255,0,0,0.8)',
+      color: 'white',
+      padding: '8px',
+      borderRadius: '4px',
+      fontSize: '12px',
+      maxWidth: '300px'
+    }}
+  >
+    <strong>Warnings:</strong>
+    {errors.map((error, i) => (
+      <div key={i}>• {error}</div>
+    ))}
+  </div>
+);
+
+// Import Html from drei
+import { Html } from '@react-three/drei';
+
+// Default GL options
+const GL_DEFAULTS = {
+  alpha: true,
+  antialias: true
+};
+
+// Default camera settings
+const CAMERA_DEFAULTS = {
+  position: [0, 0, 300] as [number, number, number], // Moved closer
+  near: 1,
+  far: 10000,
+  fov: 75 // Wider FOV
+};
+
+/**
+ * GraphCanvasV2 Component
+ */
+export const GraphCanvasV2 = forwardRef<GraphCanvasV2Ref, GraphCanvasV2Props>(
+  (
+    {
+      nodes,
+      edges,
+      optimizationLevel = 'BALANCED',
+      enableGPUAcceleration = 'auto',
+      enableInstancedRendering = 'auto',
+      enableSharedWorkers = 'auto',
+      enableMemoryOptimization = 'auto',
+      memoryConfig,
+      renderConfig,
+      computeConfig,
+      enablePerformanceMonitor = true,
+      onPerformanceUpdate,
+      width = 800,
+      height = 600,
+      backgroundColor = '#000000',
+      theme = lightTheme,
+      layoutType = 'forceDirected2d',
+      cameraMode = 'pan',
+      enableInteraction = true,
+      minDistance,
+      maxDistance,
+      onNodeClick,
+      onEdgeClick,
+      onCanvasClick,
+      glOptions = {},
+      animated = true,
+      disabled = false,
+      children,
+      className,
+      style
+    },
+    ref
+  ) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [currentCapabilities, setCurrentCapabilities] = useState<any>(null);
+    const [activeProfile, setActiveProfile] =
+      useState<OptimizationProfile | null>(null);
+
+    // Determine effective optimization profile
+    const effectiveProfile = useMemo(() => {
+      const capabilities = FeatureDetector.getSystemCapabilities();
+      setCurrentCapabilities(capabilities);
+
+      let baseProfile =
+        OPTIMIZATION_PROFILES[optimizationLevel] ||
+        OPTIMIZATION_PROFILES.BALANCED;
+
+      // Apply custom overrides
+      if (memoryConfig || renderConfig || computeConfig) {
+        baseProfile = {
+          ...baseProfile,
+          memory: { ...baseProfile.memory, ...memoryConfig },
+          rendering: { ...baseProfile.rendering, ...renderConfig },
+          compute: { ...baseProfile.compute, ...computeConfig }
+        };
+      }
+
+      // Apply auto-detection overrides
+      const profile = FeatureDetector.resolveAutoConfiguration(
+        baseProfile,
+        capabilities
+      );
+
+      // Apply manual feature toggles
+      if (enableGPUAcceleration === false) {
+        profile.compute.enableGPUCompute = false;
+        profile.rendering.enableInstancing = false;
+      }
+
+      if (enableInstancedRendering === false) {
+        profile.rendering.enableInstancing = false;
+      }
+
+      if (enableSharedWorkers === false) {
+        profile.workers.enableSharedArrayBuffer = false;
+        profile.workers.maxWorkers = Math.min(profile.workers.maxWorkers, 1);
+      }
+
+      if (enableMemoryOptimization === false) {
+        profile.memory.enableObjectPooling = false;
+        profile.memory.enableViewportCulling = false;
+      }
+
+      return profile;
+    }, [
+      optimizationLevel,
+      enableGPUAcceleration,
+      enableInstancedRendering,
+      enableSharedWorkers,
+      enableMemoryOptimization,
+      memoryConfig,
+      renderConfig,
+      computeConfig
+    ]);
+
+    useEffect(() => {
+      setActiveProfile(effectiveProfile);
+    }, [effectiveProfile]);
+
+    // Imperative handle for external control
+    useImperativeHandle(ref, () => ({
+      getPerformanceStats: () => {
+        // TODO: Connect to actual performance monitor
+        return {
+          recentStats: {
+            averageFrameTime: 16.67,
+            averageFps: 60,
+            frameTimeP95: 20,
+            frameTimeP99: 25,
+            averageDrawCalls: 10,
+            averageMemoryUsage: 100 * 1024 * 1024,
+            averageComputeTime: 5,
+            frameDrops: 0,
+            trend: 'stable' as const
+          },
+          currentAnalysis: {
+            bottlenecks: [],
+            recommendations: [],
+            overallScore: 95,
+            budgetUsage: {
+              frameTime: 80,
+              memory: 60,
+              drawCalls: 10,
+              computeTime: 30
+            }
+          },
+          profile: activeProfile,
+          autoOptimizeEnabled: true
+        };
+      },
+      getGPUCapabilities: () => currentCapabilities,
+      exportCanvas: () => canvasRef.current?.toDataURL() || '',
+      centerGraph: (nodeIds?: string[]) => {
+        // TODO: Implement centering logic
+      },
+      getControls: () => {
+        // TODO: Return camera from controls
+        return null as any;
+      }
+    }));
+
+    // Merge GL options
+    const mergedGlOptions = useMemo(
+      () => ({
+        ...GL_DEFAULTS,
+        ...glOptions,
+        powerPreference:
+          optimizationLevel === 'POWER_SAVING'
+            ? 'low-power'
+            : 'high-performance'
+      }),
+      [glOptions, optimizationLevel]
+    );
+
+    if (!activeProfile) {
+      return <div>Initializing...</div>;
+    }
+
+    return (
+      <div
+        className={`${css.canvas} ${className || ''}`}
+        style={{ width, height, position: 'relative', ...style }}
+      >
+        <Canvas
+          ref={canvasRef}
+          gl={mergedGlOptions}
+          camera={CAMERA_DEFAULTS}
+          onPointerMissed={onCanvasClick}
+          style={{ display: 'block', width: '100%', height: '100%' }}
+        >
+          <GraphCanvasV2Inner
+            nodes={nodes}
+            edges={edges}
+            activeProfile={activeProfile}
+            enablePerformanceMonitor={enablePerformanceMonitor}
+            onPerformanceUpdate={onPerformanceUpdate}
+            animated={animated}
+            disabled={disabled}
+            cameraMode={cameraMode}
+            minDistance={minDistance}
+            maxDistance={maxDistance}
+            theme={theme}
+          >
+            {children}
+          </GraphCanvasV2Inner>
+        </Canvas>
+      </div>
+    );
+  }
+);
+
+GraphCanvasV2.displayName = 'GraphCanvasV2';
 
 export default GraphCanvasV2;

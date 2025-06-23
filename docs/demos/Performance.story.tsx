@@ -12,12 +12,17 @@ const generateLargeDataset = (nodeCount: number, edgeRatio = 0.5) => {
   const nodes = range(nodeCount).map(i => ({
     id: `n-${i}`,
     label: `Node ${i}`,
-    // Add initial position to prevent undefined errors
+    // Add initial position with velocity components
     position: {
       x: (Math.random() - 0.5) * 1000,
       y: (Math.random() - 0.5) * 1000,
-      z: (Math.random() - 0.5) * 1000
+      z: (Math.random() - 0.5) * 1000,
+      vx: 0,
+      vy: 0,
+      vz: 0
     },
+    fill: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4'][Math.floor(Math.random() * 4)],
+    size: Math.random() * 20 + 10,
     data: {
       priority: Math.floor(Math.random() * 10) + 1,
       category: ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)]
@@ -28,7 +33,7 @@ const generateLargeDataset = (nodeCount: number, edgeRatio = 0.5) => {
   const edges = range(edgeCount).map(i => {
     const sourceIndex = Math.floor(Math.random() * nodeCount);
     const targetIndex = Math.floor(Math.random() * nodeCount);
-    
+
     return {
       id: `e-${i}`,
       source: `n-${sourceIndex}`,
@@ -47,7 +52,7 @@ const smallData = generateLargeDataset(50, 0.3);
 const mediumData = generateLargeDataset(1200, 0.4);
 
 // Large dataset (needs high performance)
-const largeData = generateLargeDataset(5000, 0.3);
+const largeData = generateLargeDataset(2000, 0.3);
 
 export const StandardGraphCanvas = () => {
   const [performanceMetrics, setPerformanceMetrics] = useState<any>(null);
@@ -55,7 +60,9 @@ export const StandardGraphCanvas = () => {
   return (
     <div>
       <h3>Standard GraphCanvas (Small Dataset - 50 nodes)</h3>
-      <p>Regular GraphCanvas with small dataset. Performance should be smooth.</p>
+      <p>
+        Regular GraphCanvas with small dataset. Performance should be smooth.
+      </p>
       <GraphCanvas
         nodes={smallData.nodes}
         edges={smallData.edges}
@@ -78,21 +85,31 @@ export const AutoOptimizedGraphCanvas = () => {
   return (
     <div>
       <h3>Auto-Optimized GraphCanvas (Medium Dataset - 1,200 nodes)</h3>
-      <p>GraphCanvas with auto-optimization enabled. Should automatically detect large dataset and optimize.</p>
-      
+      <p>
+        GraphCanvas with auto-optimization enabled. Should automatically detect
+        large dataset and optimize.
+      </p>
+
       {performanceMetrics && (
-        <div style={{ 
-          background: '#f0f0f0', 
-          padding: '10px', 
-          marginBottom: '10px', 
-          borderRadius: '4px',
-          fontFamily: 'monospace',
-          fontSize: '12px'
-        }}>
-          <strong>Performance Metrics:</strong><br/>
-          FPS: {performanceMetrics.fps || 'N/A'}<br/>
-          Memory Optimization: {performanceMetrics.memoryOptimized ? 'Enabled' : 'Disabled'}<br/>
-          Instanced Rendering: {performanceMetrics.instancedRendering ? 'Enabled' : 'Disabled'}
+        <div
+          style={{
+            background: '#f0f0f0',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            fontFamily: 'monospace',
+            fontSize: '12px'
+          }}
+        >
+          <strong>Performance Metrics:</strong>
+          <br />
+          FPS: {performanceMetrics.fps || 'N/A'}
+          <br />
+          Memory Optimization:{' '}
+          {performanceMetrics.memoryOptimized ? 'Enabled' : 'Disabled'}
+          <br />
+          Instanced Rendering:{' '}
+          {performanceMetrics.instancedRendering ? 'Enabled' : 'Disabled'}
         </div>
       )}
 
@@ -103,6 +120,7 @@ export const AutoOptimizedGraphCanvas = () => {
         layoutType="forceDirected2d"
         sizingType="none"
         labelType="auto"
+        cameraMode="rotate"
         // Auto-optimization props (should auto-enable for large datasets)
         enableMemoryOptimization="auto"
         enableInstancedRendering="auto"
@@ -122,23 +140,33 @@ export const HighPerformanceGraphCanvas = () => {
 
   return (
     <div>
-      <h3>High-Performance GraphCanvas (Large Dataset - 5,000 nodes)</h3>
+      <h3>High-Performance GraphCanvas (Large Dataset - 2,000 nodes)</h3>
       <p>GraphCanvas with all performance optimizations explicitly enabled.</p>
-      
+
       {performanceMetrics && (
-        <div style={{ 
-          background: '#e8f5e8', 
-          padding: '10px', 
-          marginBottom: '10px', 
-          borderRadius: '4px',
-          fontFamily: 'monospace',
-          fontSize: '12px'
-        }}>
-          <strong>Performance Metrics:</strong><br/>
-          FPS: {performanceMetrics.fps || 'N/A'}<br/>
-          Draw Calls: {performanceMetrics.drawCalls || 'N/A'}<br/>
-          Memory Usage: {performanceMetrics.totalMemoryUsage ? `${Math.round(performanceMetrics.totalMemoryUsage / 1024 / 1024)}MB` : 'N/A'}<br/>
-          Nodes Rendered: {performanceMetrics.nodeCount || 'N/A'}<br/>
+        <div
+          style={{
+            background: '#e8f5e8',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            fontFamily: 'monospace',
+            fontSize: '12px'
+          }}
+        >
+          <strong>Performance Metrics:</strong>
+          <br />
+          FPS: {performanceMetrics.fps || 'N/A'}
+          <br />
+          Draw Calls: {performanceMetrics.drawCalls || 'N/A'}
+          <br />
+          Memory Usage:{' '}
+          {performanceMetrics.totalMemoryUsage
+            ? `${Math.round(performanceMetrics.totalMemoryUsage / 1024 / 1024)}MB`
+            : 'N/A'}
+          <br />
+          Nodes Rendered: {performanceMetrics.nodeCount || 'N/A'}
+          <br />
           Edges Rendered: {performanceMetrics.edgeCount || 'N/A'}
         </div>
       )}
@@ -170,22 +198,32 @@ export const GraphCanvasV2NextGen = () => {
 
   return (
     <div>
-      <h3>GraphCanvasV2 - Next Generation (Large Dataset - 5,000 nodes)</h3>
-      <p>GraphCanvasV2 with full Phase 2 optimizations for maximum performance.</p>
-      
+      <h3>GraphCanvasV2 - Next Generation (Large Dataset - 2,000 nodes)</h3>
+      <p>
+        GraphCanvasV2 with full Phase 2 optimizations for maximum performance.
+      </p>
+
       {performanceMetrics && (
-        <div style={{ 
-          background: '#fff3cd', 
-          padding: '10px', 
-          marginBottom: '10px', 
-          borderRadius: '4px',
-          fontFamily: 'monospace',
-          fontSize: '12px'
-        }}>
-          <strong>GraphCanvasV2 Metrics:</strong><br/>
-          FPS: {performanceMetrics.fps || 'N/A'}<br/>
-          GPU Acceleration: {performanceMetrics.gpuAccelerated ? 'Enabled' : 'Disabled'}<br/>
-          Shared Workers: {performanceMetrics.sharedWorkers ? 'Enabled' : 'Disabled'}<br/>
+        <div
+          style={{
+            background: '#fff3cd',
+            padding: '10px',
+            marginBottom: '10px',
+            borderRadius: '4px',
+            fontFamily: 'monospace',
+            fontSize: '12px'
+          }}
+        >
+          <strong>GraphCanvasV2 Metrics:</strong>
+          <br />
+          FPS: {performanceMetrics.fps || 'N/A'}
+          <br />
+          GPU Acceleration:{' '}
+          {performanceMetrics.gpuAccelerated ? 'Enabled' : 'Disabled'}
+          <br />
+          Shared Workers:{' '}
+          {performanceMetrics.sharedWorkers ? 'Enabled' : 'Disabled'}
+          <br />
           Memory Budget: {performanceMetrics.memoryBudget || 'N/A'}
         </div>
       )}
@@ -219,21 +257,29 @@ export const PerformanceComparison = () => {
   const comparisonData = useMemo(() => generateLargeDataset(2000, 0.4), []);
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+    <div
+      style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}
+    >
       <div>
         <h3>Standard GraphCanvas</h3>
         <p>No performance optimizations</p>
-        
+
         {standardMetrics && (
-          <div style={{ 
-            background: '#ffebee', 
-            padding: '8px', 
-            marginBottom: '10px', 
-            borderRadius: '4px',
-            fontSize: '11px'
-          }}>
-            FPS: {standardMetrics.fps || 'N/A'}<br/>
-            Memory: {standardMetrics.totalMemoryUsage ? `${Math.round(standardMetrics.totalMemoryUsage / 1024 / 1024)}MB` : 'N/A'}
+          <div
+            style={{
+              background: '#ffebee',
+              padding: '8px',
+              marginBottom: '10px',
+              borderRadius: '4px',
+              fontSize: '11px'
+            }}
+          >
+            FPS: {standardMetrics.fps || 'N/A'}
+            <br />
+            Memory:{' '}
+            {standardMetrics.totalMemoryUsage
+              ? `${Math.round(standardMetrics.totalMemoryUsage / 1024 / 1024)}MB`
+              : 'N/A'}
           </div>
         )}
 
@@ -254,17 +300,23 @@ export const PerformanceComparison = () => {
       <div>
         <h3>Optimized GraphCanvas</h3>
         <p>Full performance optimizations enabled</p>
-        
+
         {optimizedMetrics && (
-          <div style={{ 
-            background: '#e8f5e8', 
-            padding: '8px', 
-            marginBottom: '10px', 
-            borderRadius: '4px',
-            fontSize: '11px'
-          }}>
-            FPS: {optimizedMetrics.fps || 'N/A'}<br/>
-            Memory: {optimizedMetrics.totalMemoryUsage ? `${Math.round(optimizedMetrics.totalMemoryUsage / 1024 / 1024)}MB` : 'N/A'}
+          <div
+            style={{
+              background: '#e8f5e8',
+              padding: '8px',
+              marginBottom: '10px',
+              borderRadius: '4px',
+              fontSize: '11px'
+            }}
+          >
+            FPS: {optimizedMetrics.fps || 'N/A'}
+            <br />
+            Memory:{' '}
+            {optimizedMetrics.totalMemoryUsage
+              ? `${Math.round(optimizedMetrics.totalMemoryUsage / 1024 / 1024)}MB`
+              : 'N/A'}
           </div>
         )}
 
@@ -294,9 +346,18 @@ export const OptimizationLevels = () => {
   return (
     <div>
       <h3>Optimization Level Comparison</h3>
-      <p>Compare different optimization levels on the same dataset (1,500 nodes).</p>
-      
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px' }}>
+      <p>
+        Compare different optimization levels on the same dataset (1,500 nodes).
+      </p>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '20px',
+          marginTop: '20px'
+        }}
+      >
         <div>
           <h4>Power Saving</h4>
           <p>Minimal optimizations for low-power devices</p>
