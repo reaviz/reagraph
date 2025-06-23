@@ -75,3 +75,5 @@ src/**/*.css.d.ts
 
 # Working Memory
 WORKING_MEMORY
+
+benchmark-app/reference-code
