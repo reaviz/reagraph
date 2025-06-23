@@ -19,6 +19,7 @@ import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { Euler, Vector3 } from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
+import { calculateSubLabelOffset } from '../utils/position';
 
 /**
  * Label positions relatively edge.
@@ -29,6 +30,14 @@ import type { ThreeEvent } from '@react-three/fiber';
  * - natural: normal text positions
  */
 export type EdgeLabelPosition = 'below' | 'above' | 'inline' | 'natural';
+
+/**
+ * SubLabel positions relatively to the main label.
+ *
+ * - below: show subLabel below the main label
+ * - above: show subLabel above the main label
+ */
+export type EdgeSubLabelPosition = 'below' | 'above';
 
 /**
  * Type of edge interpolation.
@@ -63,6 +72,11 @@ export interface EdgeProps {
    * The placement of the edge label.
    */
   labelPlacement?: EdgeLabelPosition;
+
+  /**
+   * The placement of the edge subLabel relative to the main label.
+   */
+  subLabelPlacement?: EdgeSubLabelPosition;
 
   /**
    * The placement of the edge arrow.
@@ -120,7 +134,8 @@ export const Edge: FC<EdgeProps> = ({
   onContextMenu,
   onClick,
   onPointerOver,
-  onPointerOut
+  onPointerOut,
+  subLabelPlacement = 'below'
 }) => {
   const theme = useStore(state => state.theme);
   const isDragging = useStore(state => state.draggingIds.length > 0);
@@ -132,7 +147,20 @@ export const Edge: FC<EdgeProps> = ({
   // Edge data
   const edges = useStore(state => state.edges);
   const edge = edges.find(e => e.id === id);
-  const { target, source, label, labelVisible = false, size = 1, fill } = edge;
+  const {
+    target,
+    source,
+    label,
+    subLabel,
+    labelVisible = false,
+    size = 1,
+    fill
+  } = edge;
+
+  // Use subLabelPlacement from edge data if available, otherwise use the prop value
+  const effectiveSubLabelPlacement =
+    edge.subLabelPlacement || subLabelPlacement;
+
   const from = useStore(store => store.nodes.find(node => node.id === source));
   const to = useStore(store => store.nodes.find(node => node.id === target));
 
@@ -218,6 +246,15 @@ export const Edge: FC<EdgeProps> = ({
       ? theme.edge.selectedOpacity
       : theme.edge.inactiveOpacity
     : theme.edge.opacity;
+
+  // Calculate subLabel position based on edge orientation and subLabelPlacement
+  const subLabelOffset = useMemo(() => {
+    return calculateSubLabelOffset(
+      from.position,
+      to.position,
+      effectiveSubLabelPlacement
+    );
+  }, [from.position, to.position, effectiveSubLabelPlacement]);
 
   const [{ labelPosition }] = useSpring(
     () => ({
@@ -343,6 +380,29 @@ export const Edge: FC<EdgeProps> = ({
             fontSize={theme.edge.label.fontSize}
             rotation={labelRotation}
           />
+
+          {subLabel && (
+            <group position={[subLabelOffset.x, subLabelOffset.y, 0]}>
+              <Label
+                text={subLabel}
+                ellipsis={15}
+                fontUrl={labelFontUrl}
+                stroke={theme.edge.subLabel?.stroke || theme.edge.label.stroke}
+                color={
+                  isSelected || active || isActive
+                    ? theme.edge.subLabel?.activeColor ||
+                      theme.edge.label.activeColor
+                    : theme.edge.subLabel?.color || theme.edge.label.color
+                }
+                opacity={selectionOpacity}
+                fontSize={
+                  theme.edge.subLabel?.fontSize ||
+                  theme.edge.label.fontSize * 0.8
+                }
+                rotation={labelRotation}
+              />
+            </group>
+          )}
         </a.group>
       ),
     [
@@ -352,8 +412,10 @@ export const Edge: FC<EdgeProps> = ({
       isActive,
       isSelected,
       label,
+      subLabel,
       labelFontUrl,
       labelPosition,
+      subLabelOffset,
       labelRotation,
       labelVisible,
       onContextMenu,
@@ -363,7 +425,11 @@ export const Edge: FC<EdgeProps> = ({
       theme.edge.label.activeColor,
       theme.edge.label.color,
       theme.edge.label.fontSize,
-      theme.edge.label.stroke
+      theme.edge.label.stroke,
+      theme.edge.subLabel?.stroke,
+      theme.edge.subLabel?.activeColor,
+      theme.edge.subLabel?.color,
+      theme.edge.subLabel?.fontSize
     ]
   );
 

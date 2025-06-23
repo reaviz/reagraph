@@ -22,10 +22,7 @@ export interface Theme {
       activeColor: ColorRepresentation;
     };
   };
-  ring: {
-    fill: ColorRepresentation;
-    activeFill: ColorRepresentation;
-  };
+  ring: { fill: ColorRepresentation; activeFill: ColorRepresentation };
   edge: {
     fill: ColorRepresentation;
     activeFill: ColorRepresentation;
@@ -38,15 +35,15 @@ export interface Theme {
       activeColor: ColorRepresentation;
       fontSize?: number;
     };
+    subLabel?: {
+      color: ColorRepresentation;
+      stroke?: ColorRepresentation;
+      activeColor: ColorRepresentation;
+      fontSize?: number;
+    };
   };
-  arrow: {
-    fill: ColorRepresentation;
-    activeFill: ColorRepresentation;
-  };
-  lasso: {
-    background: string;
-    border: string;
-  };
+  arrow: { fill: ColorRepresentation; activeFill: ColorRepresentation };
+  lasso: { background: string; border: string };
   cluster?: {
     stroke?: ColorRepresentation;
     fill?: ColorRepresentation;
