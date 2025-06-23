@@ -18,6 +18,8 @@ import type {
   PositionUpdate
 } from './layout.worker';
 import { SharedPositionBuffer, SharedPositionConfig } from './shared-memory';
+import { forceBarnesHut, selectOptimalMode } from '../layout/forces/barnesHutForce';
+import { AdaptivePerformanceManager, PerformanceMetrics } from '../performance/AdaptivePerformanceManager';
 
 // Re-export types for convenience
 export type { WorkerNode, WorkerEdge, SimulationParams, PositionUpdate };
@@ -80,11 +82,17 @@ export class LayoutManager {
   private sharedPositionBuffer?: SharedPositionBuffer;
   private useSharedMemory = false;
   private nodeIdToIndex = new Map<string, number>();
+  
+  // Adaptive performance management
+  private performanceManager?: AdaptivePerformanceManager;
+  private lastFrameTime = 0;
+  private frameCount = 0;
 
   async initialize(
     nodeCount: number,
     onPositionUpdate: (positions: PositionUpdate[]) => void,
-    sharedPositionBuffer?: SharedPositionBuffer
+    sharedPositionBuffer?: SharedPositionBuffer,
+    performanceManager?: AdaptivePerformanceManager
   ): Promise<void> {
     const bundlerEnv = detectBundlerEnvironment();
     console.log(`[LayoutManager] Detected bundler environment: ${bundlerEnv}`);
@@ -93,6 +101,7 @@ export class LayoutManager {
     this.sharedPositionBuffer = sharedPositionBuffer;
     this.useSharedMemory =
       !!sharedPositionBuffer && SharedPositionBuffer.isSupported();
+    this.performanceManager = performanceManager;
 
     try {
       // Attempt to load worker using robust loading strategy
@@ -360,10 +369,24 @@ export class LayoutManager {
   private initializeMainThreadFallback(nodeCount: number): void {
     console.log('[LayoutManager] Initializing main thread fallback layout');
 
+    // Determine optimal force based on node count
+    const optimalMode = selectOptimalMode(nodeCount);
+    const useBarnesHut = optimalMode.mode === 'barnesHut' && optimalMode.location === 'mainThread';
+    
+    // Get adaptive performance settings if available
+    const performanceSettings = this.performanceManager?.getPerformanceSettings();
+    const adaptiveTheta = performanceSettings?.barnesHutTheta || optimalMode.theta || 0.5;
+    
+    console.log(
+      `[LayoutManager] Using ${useBarnesHut ? 'Barnes-Hut' : 'standard'} force for ${nodeCount} nodes (${optimalMode.reason}), theta: ${adaptiveTheta}`
+    );
+
     // Create a basic D3 simulation for fallback
     this.fallbackSimulation = forceSimulation()
       .force('center', forceCenter(0, 0))
-      .force('charge', forceManyBody().strength(-250))
+      .force('charge', useBarnesHut 
+        ? forceBarnesHut(adaptiveTheta).strength(-250)
+        : forceManyBody().strength(-250))
       .force(
         'link',
         forceLink().id((d: any) => d.id)
@@ -384,6 +407,31 @@ export class LayoutManager {
 
   private handleFallbackTick(): void {
     if (!this.onPositionUpdate) return;
+    
+    // Track performance metrics
+    const currentTime = performance.now();
+    const frameTime = currentTime - this.lastFrameTime;
+    this.lastFrameTime = currentTime;
+    this.frameCount++;
+    
+    // Update performance manager every 10 frames
+    if (this.performanceManager && this.frameCount % 10 === 0) {
+      const fps = frameTime > 0 ? 1000 / frameTime : 60;
+      const metrics: PerformanceMetrics = {
+        fps,
+        frameTime,
+        nodeCount: this.fallbackNodes.length,
+        edgeCount: this.fallbackEdges.length
+      };
+      this.performanceManager.updateMetrics(metrics);
+      
+      // Apply adaptive theta if using Barnes-Hut
+      const chargeForce = this.fallbackSimulation?.force('charge');
+      if (chargeForce && 'theta' in chargeForce) {
+        const settings = this.performanceManager.getPerformanceSettings();
+        (chargeForce as any).theta(settings.barnesHutTheta);
+      }
+    }
 
     const positions: PositionUpdate[] = this.fallbackNodes.map(node => ({
       nodeId: node.id,

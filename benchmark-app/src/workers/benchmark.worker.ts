@@ -18,6 +18,7 @@ let nodeCount = 0;
 // Listen for messages from main thread
 self.addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
   const { type, payload } = event.data;
+  console.log(`[BenchmarkWorker] Received message: ${type}`, payload);
   
   try {
     switch (type) {
@@ -34,6 +35,7 @@ self.addEventListener('message', (event: MessageEvent<WorkerMessage>) => {
         console.warn('[BenchmarkWorker] Unknown message type:', type);
     }
   } catch (error) {
+    console.error('[BenchmarkWorker] Error handling message:', error);
     const response: WorkerResponse = {
       type: 'error',
       payload: { error: error instanceof Error ? error.message : 'Unknown error' }

@@ -15,6 +15,8 @@ import {
   SharedEdgeBuffer,
   SharedEdgeConfig
 } from '../workers/shared-edge-memory';
+import { ObjectPool, PoolFactory } from '../utils/ObjectPool';
+import { OctreeNodePool, getGlobalOctreePool } from '../layout/forces/OctreeNodePool';
 
 export interface MemoryConfig {
   maxNodes: number;
@@ -459,86 +461,7 @@ export class EdgeDataBuffer {
   }
 }
 
-/**
- * Three.js object pool for reusing geometries and materials
- */
-export class ObjectPool<T> {
-  private available: T[] = [];
-  private createFn: () => T;
-  private resetFn: (item: T) => void;
-  private maxSize: number;
-
-  constructor(
-    createFn: () => T,
-    resetFn: (item: T) => void,
-    initialSize: number = 100,
-    maxSize: number = 1000
-  ) {
-    this.createFn = createFn;
-    this.resetFn = resetFn;
-    this.maxSize = maxSize;
-
-    // Pre-allocate initial items
-    for (let i = 0; i < initialSize; i++) {
-      this.available.push(createFn());
-    }
-  }
-
-  /**
-   * Get an object from the pool
-   */
-  get(): T {
-    if (this.available.length > 0) {
-      return this.available.pop()!;
-    }
-
-    // Create new if none available
-    return this.createFn();
-  }
-
-  /**
-   * Return an object to the pool
-   */
-  release(item: T): void {
-    if (this.available.length < this.maxSize) {
-      this.resetFn(item);
-      this.available.push(item);
-    } else {
-      // Pool is full, let it be garbage collected
-      if (item && typeof (item as any).dispose === 'function') {
-        (item as any).dispose();
-      }
-    }
-  }
-
-  /**
-   * Get pool statistics
-   */
-  getStats(): {
-    available: number;
-    maxSize: number;
-    utilizationPercent: number;
-    } {
-    return {
-      available: this.available.length,
-      maxSize: this.maxSize,
-      utilizationPercent:
-        ((this.maxSize - this.available.length) / this.maxSize) * 100
-    };
-  }
-
-  /**
-   * Clear the pool
-   */
-  clear(): void {
-    this.available.forEach(item => {
-      if (item && typeof (item as any).dispose === 'function') {
-        (item as any).dispose();
-      }
-    });
-    this.available.length = 0;
-  }
-}
+// Remove duplicate ObjectPool class since we're importing it from utils/ObjectPool.ts
 
 /**
  * Viewport-based culling for rendering only visible nodes/edges
@@ -660,6 +583,9 @@ export class AdvancedMemoryManager {
   public readonly meshBasicMaterialPool: ObjectPool<THREE.MeshBasicMaterial>;
   public readonly meshPool: ObjectPool<THREE.Mesh>;
   public readonly instancedMeshPool: ObjectPool<THREE.InstancedMesh>;
+  
+  // Octree node pool for Barnes-Hut algorithm
+  public readonly octreeNodePool: OctreeNodePool;
 
   private config: MemoryConfig;
   private frameCounter = 0;
@@ -675,49 +601,57 @@ export class AdvancedMemoryManager {
     this.viewportCuller = new ViewportCuller(config.cullingDistance);
 
     // Initialize object pools
-    this.sphereGeometryPool = new ObjectPool(
-      () => new THREE.SphereGeometry(1, 8, 6),
-      geometry => geometry.scale(1, 1, 1),
-      50,
-      200
-    );
+    this.sphereGeometryPool = new ObjectPool({
+      factory: () => new THREE.SphereGeometry(1, 8, 6),
+      reset: geometry => geometry.scale(1, 1, 1),
+      initialSize: 50,
+      maxSize: 200
+    });
 
-    this.meshBasicMaterialPool = new ObjectPool(
-      () => new THREE.MeshBasicMaterial(),
-      material => {
+    this.meshBasicMaterialPool = new ObjectPool({
+      factory: () => new THREE.MeshBasicMaterial(),
+      reset: material => {
         material.color.setHex(0xffffff);
         material.opacity = 1;
         material.transparent = false;
       },
-      50,
-      200
-    );
+      initialSize: 50,
+      maxSize: 200
+    });
 
-    this.meshPool = new ObjectPool(
-      () => new THREE.Mesh(),
-      mesh => {
+    this.meshPool = new ObjectPool({
+      factory: () => new THREE.Mesh(),
+      reset: mesh => {
         mesh.position.set(0, 0, 0);
         mesh.scale.set(1, 1, 1);
         mesh.visible = true;
       },
-      100,
-      500
-    );
+      initialSize: 100,
+      maxSize: 500
+    });
 
-    this.instancedMeshPool = new ObjectPool(
-      () =>
+    this.instancedMeshPool = new ObjectPool({
+      factory: () =>
         new THREE.InstancedMesh(
           new THREE.SphereGeometry(1, 8, 6),
           new THREE.MeshBasicMaterial(),
           1000
         ),
-      mesh => {
+      reset: mesh => {
         mesh.count = 0;
         mesh.visible = true;
       },
-      10,
-      50
-    );
+      initialSize: 10,
+      maxSize: 50
+    });
+    
+    // Initialize octree node pool
+    this.octreeNodePool = getGlobalOctreePool();
+    
+    // Pre-warm octree pool based on expected graph size
+    if (config.maxNodes > 0) {
+      this.octreeNodePool.prewarmForGraphSize(config.maxNodes);
+    }
   }
 
   /**
@@ -737,6 +671,18 @@ export class AdvancedMemoryManager {
 
     if (node.size !== undefined) {
       this.nodeBuffer.sizes[index] = node.size;
+    }
+
+    // Set color from fill property
+    if (node.fill) {
+      // Convert string color to hex number
+      let colorHex = 0xffffff;
+      if (typeof node.fill === 'string') {
+        // Remove # if present and parse as hex
+        const colorStr = node.fill.replace('#', '');
+        colorHex = parseInt(colorStr, 16);
+      }
+      this.nodeBuffer.colors[index] = colorHex;
     }
 
     return index;
@@ -834,6 +780,7 @@ export class AdvancedMemoryManager {
       >;
       mesh: ReturnType<ObjectPool<THREE.Mesh>['getStats']>;
       instancedMesh: ReturnType<ObjectPool<THREE.InstancedMesh>['getStats']>;
+      octreeNodes: ReturnType<OctreeNodePool['getStats']>;
     };
     totalMemoryBytes: number;
     } {
@@ -862,7 +809,8 @@ export class AdvancedMemoryManager {
         sphereGeometry: this.sphereGeometryPool.getStats(),
         meshBasicMaterial: this.meshBasicMaterialPool.getStats(),
         mesh: this.meshPool.getStats(),
-        instancedMesh: this.instancedMeshPool.getStats()
+        instancedMesh: this.instancedMeshPool.getStats(),
+        octreeNodes: this.octreeNodePool.getStats()
       },
       totalMemoryBytes
     };
@@ -878,6 +826,7 @@ export class AdvancedMemoryManager {
     this.meshBasicMaterialPool.clear();
     this.meshPool.clear();
     this.instancedMeshPool.clear();
+    this.octreeNodePool.clear();
     this.frameCounter = 0;
     this.lastGCTime = 0;
   }

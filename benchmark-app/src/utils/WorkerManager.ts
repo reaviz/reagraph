@@ -27,33 +27,58 @@ export class WorkerManager {
     try {
       this.updateStatus('initializing');
       
-      // Create the worker
-      this.worker = new Worker(
-        new URL('../workers/benchmark.worker.ts', import.meta.url),
-        { type: 'module' }
-      );
-      
-      // Set up message handling
-      this.worker.onmessage = (event) => {
-        this.handleWorkerMessage(event.data);
-      };
-      
-      this.worker.onerror = (error) => {
-        console.error('[WorkerManager] Worker error:', error);
-        this.updateStatus('failed');
-      };
-      
-      // Initialize the worker
-      this.worker.postMessage({
-        type: 'initialize',
-        payload: { nodeCount: this.options.nodeCount }
+      // Create promise for initialization before creating worker
+      const initPromise = new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Worker initialization timeout after 5 seconds'));
+        }, 5000);
+
+        // Create the worker
+        this.worker = new Worker(
+          new URL('../workers/benchmark.worker.ts', import.meta.url),
+          { type: 'module' }
+        );
+        
+        // Set up message handling with initialization check
+        this.worker.onmessage = (event) => {
+          if (event.data.type === 'initialized') {
+            clearTimeout(timeout);
+            this.updateStatus('enabled');
+            console.log('[WorkerManager] Worker initialized successfully');
+            resolve();
+            
+            // Set up regular message handling after initialization
+            this.worker!.onmessage = (event) => {
+              this.handleWorkerMessage(event.data);
+            };
+          } else if (event.data.type === 'error') {
+            clearTimeout(timeout);
+            this.updateStatus('failed');
+            reject(new Error(event.data.payload?.error || 'Worker initialization failed'));
+          }
+        };
+        
+        this.worker.onerror = (error) => {
+          clearTimeout(timeout);
+          console.error('[WorkerManager] Worker error:', error);
+          this.updateStatus('failed');
+          reject(error);
+        };
+        
+        // Initialize the worker
+        console.log('[WorkerManager] Sending initialize message to worker...');
+        this.worker.postMessage({
+          type: 'initialize',
+          payload: { nodeCount: this.options.nodeCount }
+        });
       });
       
-      // Wait for initialization confirmation
-      await this.waitForInitialization();
+      // Wait for initialization
+      await initPromise;
       
       // Start computation
-      this.worker.postMessage({
+      console.log('[WorkerManager] Starting worker computation...');
+      this.worker!.postMessage({
         type: 'compute'
       });
       
@@ -64,34 +89,6 @@ export class WorkerManager {
     }
   }
 
-  private waitForInitialization(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error('Worker initialization timeout'));
-      }, 5000);
-
-      const originalOnMessage = this.worker?.onmessage;
-      
-      if (this.worker) {
-        this.worker.onmessage = (event) => {
-          if (event.data.type === 'initialized') {
-            clearTimeout(timeout);
-            this.updateStatus('enabled');
-            console.log('[WorkerManager] Worker initialized successfully');
-            
-            // Restore original message handler
-            if (this.worker && originalOnMessage) {
-              this.worker.onmessage = originalOnMessage;
-            }
-            resolve();
-          } else if (event.data.type === 'error') {
-            clearTimeout(timeout);
-            reject(new Error(event.data.payload?.error || 'Worker initialization failed'));
-          }
-        };
-      }
-    });
-  }
 
   private handleWorkerMessage(data: any) {
     switch (data.type) {
