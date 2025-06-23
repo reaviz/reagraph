@@ -21,21 +21,21 @@ export interface OctreeNode {
 export class OctreeNodePool {
   private pool: ObjectPool<OctreeNode>;
   private childArrayPool: ObjectPool<OctreeNode[]>;
-  
+
   constructor(initialSize = 1000, maxSize = 50000) {
     // Main node pool
     this.pool = new ObjectPool<OctreeNode>({
       factory: () => this.createNode(),
-      reset: (node) => this.resetNode(node),
-      validator: (node) => this.validateNode(node),
+      reset: node => this.resetNode(node),
+      validator: node => this.validateNode(node),
       initialSize,
       maxSize
     });
-    
+
     // Pool for children arrays (8 children per octree node)
     this.childArrayPool = new ObjectPool<OctreeNode[]>({
       factory: () => new Array(8),
-      reset: (arr) => {
+      reset: arr => {
         for (let i = 0; i < 8; i++) {
           arr[i] = undefined as any;
         }
@@ -44,7 +44,7 @@ export class OctreeNodePool {
       maxSize: maxSize / 4
     });
   }
-  
+
   private createNode(): OctreeNode {
     return {
       x: 0,
@@ -60,7 +60,7 @@ export class OctreeNodePool {
       next: undefined
     };
   }
-  
+
   private resetNode(node: OctreeNode): void {
     node.x = 0;
     node.y = 0;
@@ -70,18 +70,18 @@ export class OctreeNodePool {
     node.centerY = 0;
     node.centerZ = 0;
     node.size = 0;
-    
+
     // Clear children references but don't recursively release them
     // The caller (releaseTree) handles the recursive release properly
     if (node.children) {
       this.childArrayPool.release(node.children);
       node.children = undefined;
     }
-    
+
     node.body = undefined;
     node.next = undefined;
   }
-  
+
   private validateNode(node: OctreeNode): boolean {
     // Basic validation to ensure node hasn't been corrupted
     return (
@@ -95,40 +95,40 @@ export class OctreeNodePool {
       !isNaN(node.mass)
     );
   }
-  
+
   /**
    * Acquire a new octree node from the pool
    */
   acquire(): OctreeNode {
     return this.pool.acquire();
   }
-  
+
   /**
    * Acquire an array for octree children
    */
   acquireChildArray(): OctreeNode[] {
     return this.childArrayPool.acquire();
   }
-  
+
   /**
    * Release an octree node back to the pool
    */
   release(node: OctreeNode): void {
     this.pool.release(node);
   }
-  
+
   /**
    * Release an entire octree structure
    */
   releaseTree(root: OctreeNode): void {
     if (!root) return;
-    
+
     // Depth-first traversal to release all nodes
     const stack: OctreeNode[] = [root];
-    
+
     while (stack.length > 0) {
       const node = stack.pop()!;
-      
+
       if (node.children) {
         for (let i = 0; i < 8; i++) {
           if (node.children[i]) {
@@ -136,7 +136,7 @@ export class OctreeNodePool {
           }
         }
       }
-      
+
       // Release linked list nodes
       let current = node.next;
       while (current) {
@@ -144,11 +144,11 @@ export class OctreeNodePool {
         this.release(current);
         current = next;
       }
-      
+
       this.release(node);
     }
   }
-  
+
   /**
    * Pre-warm the pool based on expected graph size
    */
@@ -156,20 +156,20 @@ export class OctreeNodePool {
     // Estimate octree nodes needed (roughly 1.5x the number of graph nodes)
     const estimatedOctreeNodes = Math.floor(nodeCount * 1.5);
     const currentSize = this.getStats().nodes.total;
-    
+
     if (estimatedOctreeNodes > currentSize) {
       this.pool.prewarm(estimatedOctreeNodes - currentSize);
-      
+
       // Pre-warm child arrays (about 1/4 of octree nodes will have children)
       const estimatedChildArrays = Math.floor(estimatedOctreeNodes / 4);
       const currentChildArrays = this.childArrayPool.getStats().total;
-      
+
       if (estimatedChildArrays > currentChildArrays) {
         this.childArrayPool.prewarm(estimatedChildArrays - currentChildArrays);
       }
     }
   }
-  
+
   /**
    * Get pool statistics
    */
@@ -179,7 +179,7 @@ export class OctreeNodePool {
       childArrays: this.childArrayPool.getStats()
     };
   }
-  
+
   /**
    * Clear all pooled objects
    */

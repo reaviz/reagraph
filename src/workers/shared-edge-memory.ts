@@ -51,7 +51,7 @@ export class SharedEdgeBuffer {
   private positions: Float32Array;
   private states: Uint32Array;
   private metrics: Uint32Array;
-  
+
   // Int32 views for atomic operations (Float32 values as Int32 bits)
   private positionsInt32: Int32Array;
   private edgeCount: number;
@@ -67,14 +67,14 @@ export class SharedEdgeBuffer {
     this.edgeCount = config.edgeCount;
 
     // Calculate buffer size
-    const positionBytes = config.enablePositionSharing 
-      ? this.edgeCount * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE * 4 
+    const positionBytes = config.enablePositionSharing
+      ? this.edgeCount * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE * 4
       : 0;
-    const stateBytes = config.enableStateSharing 
-      ? this.edgeCount * SharedEdgeBuffer.STATE_INTS_PER_EDGE * 4 
+    const stateBytes = config.enableStateSharing
+      ? this.edgeCount * SharedEdgeBuffer.STATE_INTS_PER_EDGE * 4
       : 0;
-    const metricsBytes = config.enableMetrics 
-      ? SharedEdgeBuffer.METRICS_SIZE * 4 
+    const metricsBytes = config.enableMetrics
+      ? SharedEdgeBuffer.METRICS_SIZE * 4
       : 0;
 
     const totalBytes = positionBytes + stateBytes + metricsBytes;
@@ -86,19 +86,23 @@ export class SharedEdgeBuffer {
   /**
    * Initialize typed array views on the shared buffer
    */
-  private initializeViews(positionBytes: number, stateBytes: number, metricsBytes: number): void {
+  private initializeViews(
+    positionBytes: number,
+    stateBytes: number,
+    metricsBytes: number
+  ): void {
     let offset = 0;
 
     // Position data
     if (this.config.enablePositionSharing) {
       this.positions = new Float32Array(
-        this.buffer, 
-        offset, 
+        this.buffer,
+        offset,
         this.edgeCount * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE
       );
       this.positionsInt32 = new Int32Array(
-        this.buffer, 
-        offset, 
+        this.buffer,
+        offset,
         this.edgeCount * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE
       );
       offset += positionBytes;
@@ -107,8 +111,8 @@ export class SharedEdgeBuffer {
     // State data
     if (this.config.enableStateSharing) {
       this.states = new Uint32Array(
-        this.buffer, 
-        offset, 
+        this.buffer,
+        offset,
         this.edgeCount * SharedEdgeBuffer.STATE_INTS_PER_EDGE
       );
       offset += stateBytes;
@@ -117,8 +121,8 @@ export class SharedEdgeBuffer {
     // Metrics data
     if (this.config.enableMetrics) {
       this.metrics = new Uint32Array(
-        this.buffer, 
-        offset, 
+        this.buffer,
+        offset,
         SharedEdgeBuffer.METRICS_SIZE
       );
     }
@@ -149,11 +153,15 @@ export class SharedEdgeBuffer {
   /**
    * Atomically update edge position
    */
-  updateEdgePosition(edgeIndex: number, start: { x: number; y: number; z: number }, end: { x: number; y: number; z: number }): void {
+  updateEdgePosition(
+    edgeIndex: number,
+    start: { x: number; y: number; z: number },
+    end: { x: number; y: number; z: number }
+  ): void {
     if (!this.positions || edgeIndex >= this.edgeCount) return;
 
     const offset = edgeIndex * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE;
-    
+
     Atomics.store(this.positionsInt32, offset, this.floatToInt32(start.x));
     Atomics.store(this.positionsInt32, offset + 1, this.floatToInt32(start.y));
     Atomics.store(this.positionsInt32, offset + 2, this.floatToInt32(start.z));
@@ -169,7 +177,7 @@ export class SharedEdgeBuffer {
     if (!this.positions || edgeIndex >= this.edgeCount) return null;
 
     const offset = edgeIndex * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE;
-    
+
     return {
       startX: this.int32ToFloat(Atomics.load(this.positionsInt32, offset)),
       startY: this.int32ToFloat(Atomics.load(this.positionsInt32, offset + 1)),
@@ -209,11 +217,11 @@ export class SharedEdgeBuffer {
     if (state.animated) flags |= 8;
 
     // Pack color and opacity into first integer (remaining bits)
-    const colorR = (state.color >> 16) & 0xFF;
-    const colorG = (state.color >> 8) & 0xFF;
-    const colorB = state.color & 0xFF;
+    const colorR = (state.color >> 16) & 0xff;
+    const colorG = (state.color >> 8) & 0xff;
+    const colorB = state.color & 0xff;
     const opacity = Math.floor(state.opacity * 255);
-    
+
     const packed1 = flags | (colorR << 8) | (colorG << 16) | (colorB << 24);
 
     // Pack thickness and opacity into second integer
@@ -227,12 +235,12 @@ export class SharedEdgeBuffer {
    * Unpack edge state data from integers
    */
   private unpackEdgeState(packed1: number, packed2: number): EdgeStateData {
-    const flags = packed1 & 0xFF;
-    const colorR = (packed1 >> 8) & 0xFF;
-    const colorG = (packed1 >> 16) & 0xFF;
-    const colorB = (packed1 >> 24) & 0xFF;
-    
-    const opacity = packed2 & 0xFF;
+    const flags = packed1 & 0xff;
+    const colorR = (packed1 >> 8) & 0xff;
+    const colorG = (packed1 >> 16) & 0xff;
+    const colorB = (packed1 >> 24) & 0xff;
+
+    const opacity = packed2 & 0xff;
     const thickness = (packed2 >> 8) / 1000; // Convert back from fixed point
 
     return {
@@ -254,7 +262,7 @@ export class SharedEdgeBuffer {
 
     const [packed1, packed2] = this.packEdgeState(state);
     const offset = edgeIndex * SharedEdgeBuffer.STATE_INTS_PER_EDGE;
-    
+
     Atomics.store(this.states, offset, packed1);
     Atomics.store(this.states, offset + 1, packed2);
   }
@@ -268,7 +276,7 @@ export class SharedEdgeBuffer {
     const offset = edgeIndex * SharedEdgeBuffer.STATE_INTS_PER_EDGE;
     const packed1 = Atomics.load(this.states, offset);
     const packed2 = Atomics.load(this.states, offset + 1);
-    
+
     return this.unpackEdgeState(packed1, packed2);
   }
 
@@ -309,13 +317,12 @@ export class SharedEdgeBuffer {
   copyPositionsToArray(targetArray: Float32Array, offset: number = 0): void {
     if (!this.positions) return;
 
-    const length = Math.min(
-      this.positions.length,
-      targetArray.length - offset
-    );
+    const length = Math.min(this.positions.length, targetArray.length - offset);
 
     for (let i = 0; i < length; i++) {
-      targetArray[offset + i] = this.int32ToFloat(Atomics.load(this.positionsInt32, i));
+      targetArray[offset + i] = this.int32ToFloat(
+        Atomics.load(this.positionsInt32, i)
+      );
     }
   }
 
@@ -389,8 +396,10 @@ export class SharedEdgeBuffer {
    */
   static isSupported(): boolean {
     try {
-      return typeof SharedArrayBuffer !== 'undefined' && 
-             typeof Atomics !== 'undefined';
+      return (
+        typeof SharedArrayBuffer !== 'undefined' &&
+        typeof Atomics !== 'undefined'
+      );
     } catch {
       return false;
     }
@@ -409,14 +418,14 @@ export class SharedEdgeBuffer {
     instance.edgeCount = config.edgeCount;
 
     // Calculate offsets
-    const positionBytes = config.enablePositionSharing 
-      ? config.edgeCount * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE * 4 
+    const positionBytes = config.enablePositionSharing
+      ? config.edgeCount * SharedEdgeBuffer.POSITION_FLOATS_PER_EDGE * 4
       : 0;
-    const stateBytes = config.enableStateSharing 
-      ? config.edgeCount * SharedEdgeBuffer.STATE_INTS_PER_EDGE * 4 
+    const stateBytes = config.enableStateSharing
+      ? config.edgeCount * SharedEdgeBuffer.STATE_INTS_PER_EDGE * 4
       : 0;
-    const metricsBytes = config.enableMetrics 
-      ? SharedEdgeBuffer.METRICS_SIZE * 4 
+    const metricsBytes = config.enableMetrics
+      ? SharedEdgeBuffer.METRICS_SIZE * 4
       : 0;
 
     instance.initializeViews(positionBytes, stateBytes, metricsBytes);
@@ -448,7 +457,7 @@ export class SharedEdgeManager {
     const index = this.nextIndex++;
     this.edgeIdToIndex.set(edgeId, index);
     this.indexToEdgeId.set(index, edgeId);
-    
+
     return index;
   }
 
@@ -501,11 +510,16 @@ export class SharedEdgeManager {
   /**
    * Batch update edges by ID
    */
-  batchUpdateByIds(updates: Array<{
-    edgeId: string;
-    position?: { start: { x: number; y: number; z: number }; end: { x: number; y: number; z: number } };
-    state?: EdgeStateData;
-  }>): void {
+  batchUpdateByIds(
+    updates: Array<{
+      edgeId: string;
+      position?: {
+        start: { x: number; y: number; z: number };
+        end: { x: number; y: number; z: number };
+      };
+      state?: EdgeStateData;
+    }>
+  ): void {
     const positionUpdates: EdgePositionUpdate[] = [];
     const stateUpdates: EdgeStateUpdate[] = [];
 
@@ -554,7 +568,7 @@ export class SharedEdgeManager {
     registeredEdges: number;
     maxIndex: number;
     memoryUsage: number;
-  } {
+    } {
     return {
       registeredEdges: this.edgeIdToIndex.size,
       maxIndex: this.nextIndex - 1,

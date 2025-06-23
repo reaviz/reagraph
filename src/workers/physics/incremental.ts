@@ -5,10 +5,16 @@
 
 // Worker type declarations
 declare const importScripts: (...urls: string[]) => void;
-declare const self: DedicatedWorkerGlobalScope & {
-  addEventListener: (type: string, listener: (event: MessageEvent) => void) => void;
-  removeEventListener: (type: string, listener: (event: MessageEvent) => void) => void;
-  postMessage: (message: any, options?: { transfer?: Transferable[] }) => void;
+declare const self: Worker & {
+  addEventListener: (
+    type: string,
+    listener: (event: MessageEvent) => void
+  ) => void;
+  removeEventListener: (
+    type: string,
+    listener: (event: MessageEvent) => void
+  ) => void;
+  postMessage: (message: any, options?: { transfer?: ArrayBuffer[] }) => void;
 };
 
 export interface SimulationConfig {
@@ -49,11 +55,11 @@ export class IncrementalSimulation {
   private isPaused = false;
   private startTime = 0;
   private frameStartTime = 0;
-  
+
   // Callbacks
   private onProgress?: ProgressCallback;
   private onComplete?: CompletionCallback;
-  
+
   // Animation frame scheduling
   private animationFrameId?: number;
   private timeoutId?: ReturnType<typeof setTimeout>;
@@ -80,7 +86,7 @@ export class IncrementalSimulation {
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       this.onProgress = onProgress;
-      this.onComplete = (positions) => {
+      this.onComplete = positions => {
         onComplete?.(positions);
         resolve();
       };
@@ -153,12 +159,13 @@ export class IncrementalSimulation {
    * Calculate simulation progress
    */
   private calculateProgress(): { normalized: number; isComplete: boolean } {
-    const iterationProgress = this.currentIteration / this.config.targetIterations;
+    const iterationProgress =
+      this.currentIteration / this.config.targetIterations;
     const alphaProgress = (1.0 - this.alpha) / (1.0 - this.config.targetAlpha);
-    
+
     // Use the more conservative progress indicator
     const progress = Math.min(iterationProgress, alphaProgress);
-    const isComplete = 
+    const isComplete =
       this.currentIteration >= this.config.targetIterations ||
       this.alpha <= this.config.targetAlpha;
 
@@ -178,13 +185,15 @@ export class IncrementalSimulation {
 
     if (frameTime > targetFrameTime) {
       // If we're taking too long, reduce iterations per frame
-      this.config.maxIterationsPerFrame = Math.max(1, 
+      this.config.maxIterationsPerFrame = Math.max(
+        1,
         Math.floor(this.config.maxIterationsPerFrame * 0.8)
       );
       delay = Math.min(frameTime, 32); // Max 32ms delay
     } else if (frameTime < targetFrameTime * 0.5) {
       // If we have time to spare, increase iterations per frame
-      this.config.maxIterationsPerFrame = Math.min(50,
+      this.config.maxIterationsPerFrame = Math.min(
+        50,
         Math.ceil(this.config.maxIterationsPerFrame * 1.1)
       );
     }
@@ -207,11 +216,11 @@ export class IncrementalSimulation {
    */
   private complete(simulation: any) {
     this.isRunning = false;
-    
+
     // Extract final positions
     const nodes = simulation.nodes();
     const positions = new Float32Array(nodes.length * 3);
-    
+
     for (let i = 0; i < nodes.length; i++) {
       positions[i * 3] = nodes[i].x || 0;
       positions[i * 3 + 1] = nodes[i].y || 0;
@@ -258,7 +267,7 @@ export class IncrementalSimulation {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = undefined;
     }
-    
+
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
       this.timeoutId = undefined;
@@ -275,7 +284,7 @@ export class IncrementalSimulation {
     currentIteration: number;
     alpha: number;
     elapsedTime: number;
-  } {
+    } {
     return {
       isRunning: this.isRunning,
       isPaused: this.isPaused,
@@ -313,20 +322,20 @@ export class WorkerIncrementalSimulation extends IncrementalSimulation {
       // We're in a worker context
       this.messageHandler = (event: MessageEvent) => {
         const { type, data } = event.data;
-        
+
         switch (type) {
-          case 'pause':
-            this.pause();
-            break;
-          case 'resume':
-            this.resume(data.simulation);
-            break;
-          case 'stop':
-            this.stop();
-            break;
-          case 'updateConfig':
-            this.updateConfig(data.config);
-            break;
+        case 'pause':
+          this.pause();
+          break;
+        case 'resume':
+          this.resume(data.simulation);
+          break;
+        case 'stop':
+          this.stop();
+          break;
+        case 'updateConfig':
+          this.updateConfig(data.config);
+          break;
         }
       };
 
@@ -351,10 +360,13 @@ export class WorkerIncrementalSimulation extends IncrementalSimulation {
    */
   protected sendCompletion(positions: Float32Array) {
     if (typeof importScripts !== 'undefined') {
-      self.postMessage({
-        type: 'complete',
-        data: { positions: positions.buffer }
-      }, { transfer: [positions.buffer] });
+      self.postMessage(
+        {
+          type: 'complete',
+          data: { positions: positions.buffer }
+        },
+        { transfer: [positions.buffer] }
+      );
     }
   }
 
@@ -385,7 +397,7 @@ export class WorkerIncrementalSimulation extends IncrementalSimulation {
    */
   destroy() {
     this.stop();
-    
+
     if (this.messageHandler && typeof importScripts !== 'undefined') {
       self.removeEventListener('message', this.messageHandler);
     }
@@ -405,10 +417,10 @@ export class AdaptiveIncrementalSimulation extends IncrementalSimulation {
    */
   protected runChunk(simulation: any) {
     const frameStart = performance.now();
-    
+
     // Run the normal chunk
     super['runChunk'].call(this, simulation);
-    
+
     const frameTime = performance.now() - frameStart;
     this.recordPerformance(frameTime);
     this.adaptConfiguration();
@@ -419,7 +431,7 @@ export class AdaptiveIncrementalSimulation extends IncrementalSimulation {
    */
   private recordPerformance(frameTime: number) {
     this.performanceHistory.push(frameTime);
-    
+
     if (this.performanceHistory.length > this.maxHistorySize) {
       this.performanceHistory.shift();
     }
@@ -431,16 +443,20 @@ export class AdaptiveIncrementalSimulation extends IncrementalSimulation {
   private adaptConfiguration() {
     if (this.performanceHistory.length < 3) return;
 
-    const avgFrameTime = this.performanceHistory.reduce((a, b) => a + b) / this.performanceHistory.length;
-    
+    const avgFrameTime =
+      this.performanceHistory.reduce((a, b) => a + b) /
+      this.performanceHistory.length;
+
     if (avgFrameTime > this.targetFrameTime * 1.5) {
       // Performance is poor - reduce iterations per frame
-      this.config.maxIterationsPerFrame = Math.max(1, 
+      this.config.maxIterationsPerFrame = Math.max(
+        1,
         Math.floor(this.config.maxIterationsPerFrame * 0.8)
       );
     } else if (avgFrameTime < this.targetFrameTime * 0.7) {
       // Performance is good - increase iterations per frame
-      this.config.maxIterationsPerFrame = Math.min(50,
+      this.config.maxIterationsPerFrame = Math.min(
+        50,
         Math.ceil(this.config.maxIterationsPerFrame * 1.1)
       );
     }
@@ -454,7 +470,7 @@ export class AdaptiveIncrementalSimulation extends IncrementalSimulation {
     worstFrameTime: number;
     bestFrameTime: number;
     currentIterationsPerFrame: number;
-  } {
+    } {
     if (this.performanceHistory.length === 0) {
       return {
         averageFrameTime: 0,
@@ -465,7 +481,9 @@ export class AdaptiveIncrementalSimulation extends IncrementalSimulation {
     }
 
     return {
-      averageFrameTime: this.performanceHistory.reduce((a, b) => a + b) / this.performanceHistory.length,
+      averageFrameTime:
+        this.performanceHistory.reduce((a, b) => a + b) /
+        this.performanceHistory.length,
       worstFrameTime: Math.max(...this.performanceHistory),
       bestFrameTime: Math.min(...this.performanceHistory),
       currentIterationsPerFrame: this.config.maxIterationsPerFrame

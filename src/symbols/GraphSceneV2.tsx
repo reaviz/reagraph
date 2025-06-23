@@ -1,6 +1,6 @@
 /**
  * GraphSceneV2 - High-performance graph scene using Phase 2 optimizations
- * 
+ *
  * This component integrates with the optimization systems provided by PerformanceContext
  * to render graphs using GPU instancing, shared memory, and adaptive performance.
  */
@@ -50,41 +50,52 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
   children
 }) => {
   const { camera, scene } = useThree();
-  const { 
-    memoryManager, 
-    instancedRenderer: contextInstancedRenderer, 
+  const {
+    memoryManager,
+    instancedRenderer: contextInstancedRenderer,
     computePipeline,
     performanceMonitor,
     isInitialized,
     profile
   } = usePerformanceContext();
-  
+
   const nodes = useStore(state => state.nodes);
   const edges = useStore(state => state.edges);
   const clusters = useStore(state => state.clusters);
-  
+
   const nodeIndexMapRef = useRef<Map<string, number>>(new Map());
-  const [localInstancedRenderer, setLocalInstancedRenderer] = useState<AdvancedInstancedRenderer | null>(null);
-  
+  const [localInstancedRenderer, setLocalInstancedRenderer] =
+    useState<AdvancedInstancedRenderer | null>(null);
+
   // Use either context renderer or create local one
   const instancedRenderer = contextInstancedRenderer || localInstancedRenderer;
 
   // Initialize instanced renderer if needed
   useEffect(() => {
-    if (!contextInstancedRenderer && memoryManager && profile?.rendering?.enableInstancing && scene) {
-      console.log('[GraphSceneV2] Creating local AdvancedInstancedRenderer...', {
-        scene,
-        memoryManager,
-        renderConfig: profile.rendering
-      });
+    if (
+      !contextInstancedRenderer &&
+      memoryManager &&
+      profile?.rendering?.enableInstancing &&
+      scene
+    ) {
+      console.log(
+        '[GraphSceneV2] Creating local AdvancedInstancedRenderer...',
+        {
+          scene,
+          memoryManager,
+          renderConfig: profile.rendering
+        }
+      );
       const renderer = new AdvancedInstancedRenderer(
         scene,
         memoryManager,
         profile.rendering
       );
       setLocalInstancedRenderer(renderer);
-      console.log('[GraphSceneV2] AdvancedInstancedRenderer created successfully');
-      
+      console.log(
+        '[GraphSceneV2] AdvancedInstancedRenderer created successfully'
+      );
+
       return () => {
         renderer.dispose();
       };
@@ -107,8 +118,8 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
   const updateGraphData = useCallback(() => {
     if (!memoryManager || !isInitialized) return;
 
-    console.log('[GraphSceneV2] Updating graph data:', { 
-      nodes: nodes.length, 
+    console.log('[GraphSceneV2] Updating graph data:', {
+      nodes: nodes.length,
       edges: edges.length,
       memoryManager: !!memoryManager,
       isInitialized
@@ -117,7 +128,7 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
     // Clear previous data
     memoryManager.clear();
     nodeIndexMapRef.current.clear();
-    
+
     // Register nodes
     nodes.forEach(node => {
       const index = memoryManager.registerNode(node);
@@ -148,7 +159,7 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
   // Debug: Log renderer state periodically
   useEffect(() => {
     if (!instancedRenderer) return;
-    
+
     const interval = setInterval(() => {
       const stats = instancedRenderer.getRenderingStats();
       console.log('[GraphSceneV2] Renderer stats:', {
@@ -157,7 +168,7 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
         memoryStats: stats.memoryStats
       });
     }, 2000);
-    
+
     return () => clearInterval(interval);
   }, [instancedRenderer]);
 
@@ -184,7 +195,10 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
     try {
       // GPU compute step for physics
       if (computePipeline && profile.compute.enableGPUCompute) {
-        computePipeline.computeStep(memoryManager.nodeBuffer, defaultForceParams);
+        computePipeline.computeStep(
+          memoryManager.nodeBuffer,
+          defaultForceParams
+        );
       }
 
       // Update instanced rendering
@@ -200,7 +214,13 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
         drawCalls: stats.frameStats.averageDrawCalls,
         instancesRendered: stats.nodeStats.totalInstances,
         memoryUsage: memoryManager.getMemoryStats().totalMemoryBytes,
-        gpuComputeTime: computePipeline?.getStats()?.computeTime || 0
+        gpuComputeTime: (() => {
+          if (!computePipeline) return 0;
+          const stats = computePipeline.getStats();
+          return (
+            stats.gpuStats?.computeTime || stats.cpuStats?.computeTime || 0
+          );
+        })()
       };
 
       performanceMonitor?.endFrame(metrics);
@@ -218,7 +238,7 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
       nodeCount: nodes.length,
       edgeCount: edges.length
     });
-    
+
     return (
       <>
         {/* Render clusters */}
@@ -238,11 +258,7 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
 
         {/* Render nodes */}
         {nodes.map(node => (
-          <NodeComponent
-            key={node.id}
-            id={node.id}
-            animated={false}
-          />
+          <NodeComponent key={node.id} id={node.id} animated={false} />
         ))}
 
         {children}
