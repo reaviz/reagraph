@@ -2,15 +2,29 @@ import React from 'react';
 import { PerformanceMetrics } from '../types/benchmark.types';
 import { formatMemorySize, getPerformanceGrade } from '../utils/performanceUtils';
 
+export interface MemoryPoolStats {
+  name: string;
+  available: number;
+  inUse: number;
+  total: number;
+  hitRate: number;
+  totalCreated: number;
+  peakUsage: number;
+}
+
 interface PerformanceMonitorProps {
   metrics: PerformanceMetrics | null;
   averageMetrics: PerformanceMetrics | null;
+  memoryPools?: MemoryPoolStats[];
+  totalMemoryUsage?: number;
   className?: string;
 }
 
 export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   metrics,
   averageMetrics,
+  memoryPools,
+  totalMemoryUsage,
   className = ''
 }) => {
   if (!metrics) {
@@ -108,6 +122,60 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
               <div style={styles.metricSubtext}>nodes</div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Memory Pools Panel */}
+      {memoryPools && memoryPools.length > 0 && (
+        <div style={styles.panel}>
+          <h3 style={styles.title}>Memory Pools</h3>
+          <div style={styles.poolsGrid}>
+            {memoryPools.map((pool) => (
+              <div key={pool.name} style={styles.poolCard}>
+                <div style={styles.poolName}>{pool.name}</div>
+                <div style={styles.poolMetrics}>
+                  <div style={styles.poolMetric}>
+                    <span style={styles.poolLabel}>In Use:</span>
+                    <span style={styles.poolValue}>{pool.inUse}/{pool.total}</span>
+                  </div>
+                  <div style={styles.poolMetric}>
+                    <span style={styles.poolLabel}>Hit Rate:</span>
+                    <span style={{
+                      ...styles.poolValue,
+                      color: pool.hitRate > 0.8 ? '#00ff88' : pool.hitRate > 0.6 ? '#ffaa00' : '#ff6600'
+                    }}>
+                      {(pool.hitRate * 100).toFixed(1)}%
+                    </span>
+                  </div>
+                  <div style={styles.poolMetric}>
+                    <span style={styles.poolLabel}>Peak:</span>
+                    <span style={styles.poolValue}>{pool.peakUsage}</span>
+                  </div>
+                  <div style={styles.poolMetric}>
+                    <span style={styles.poolLabel}>Created:</span>
+                    <span style={styles.poolValue}>{pool.totalCreated}</span>
+                  </div>
+                </div>
+                <div style={styles.poolBar}>
+                  <div 
+                    style={{
+                      ...styles.poolFill,
+                      width: `${(pool.inUse / pool.total) * 100}%`
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {totalMemoryUsage && (
+            <div style={styles.totalMemory}>
+              <span style={styles.totalMemoryLabel}>Total Pool Memory:</span>
+              <span style={styles.totalMemoryValue}>
+                {formatMemorySize(totalMemoryUsage)}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -210,5 +278,70 @@ const styles = {
     gap: '1rem',
     flexWrap: 'wrap' as const,
     fontSize: '0.75rem'
+  },
+  poolsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '0.75rem'
+  },
+  poolCard: {
+    background: '#1a1a1a',
+    borderRadius: '4px',
+    padding: '0.75rem',
+    border: '1px solid #333'
+  },
+  poolName: {
+    color: '#4ecdc4',
+    fontSize: '0.9rem',
+    fontWeight: 'bold' as const,
+    marginBottom: '0.5rem'
+  },
+  poolMetrics: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '0.25rem',
+    marginBottom: '0.5rem'
+  },
+  poolMetric: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '0.8rem'
+  },
+  poolLabel: {
+    color: '#aaaaaa'
+  },
+  poolValue: {
+    color: '#ffffff',
+    fontWeight: 'bold' as const
+  },
+  poolBar: {
+    height: '4px',
+    background: '#333',
+    borderRadius: '2px',
+    overflow: 'hidden' as const
+  },
+  poolFill: {
+    height: '100%',
+    background: 'linear-gradient(to right, #4ecdc4, #44a08d)',
+    transition: 'width 0.3s ease'
+  },
+  totalMemory: {
+    marginTop: '1rem',
+    padding: '0.75rem',
+    background: '#0a0a0a',
+    borderRadius: '4px',
+    border: '1px solid #222',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  totalMemoryLabel: {
+    color: '#aaaaaa',
+    fontSize: '0.9rem'
+  },
+  totalMemoryValue: {
+    color: '#4ecdc4',
+    fontSize: '1.1rem',
+    fontWeight: 'bold' as const
   }
 };
