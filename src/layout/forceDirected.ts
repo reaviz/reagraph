@@ -14,6 +14,7 @@ import { buildNodeEdges } from './layoutUtils';
 import { forceInABox } from './forceInABox';
 import { FORCE_LAYOUTS } from './layoutProvider';
 import { ClusterGroup } from '../utils/cluster';
+import { forceBarnesHut, selectOptimalMode } from './forces/barnesHutForce';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**
@@ -90,6 +91,18 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
    * Used to determine the simulation forceX and forceY values
    */
   forceLayout: (typeof FORCE_LAYOUTS)[number];
+  
+  /**
+   * Whether to use Barnes-Hut optimization for force calculations.
+   * Can be: 'auto' (default), 'always', or 'never'
+   */
+  useBarnesHut?: 'auto' | 'always' | 'never';
+  
+  /**
+   * Barnes-Hut theta parameter (default: 0.5).
+   * Lower values are more accurate but slower.
+   */
+  barnesHutTheta?: number;
 }
 
 export function forceDirected({
@@ -110,7 +123,9 @@ export function forceDirected({
   drags,
   clusters,
   clusterAttribute,
-  forceLayout
+  forceLayout,
+  useBarnesHut = 'auto',
+  barnesHutTheta = 0.5
 }: ForceDirectedLayoutInputs): LayoutStrategy {
   const { nodes, edges } = buildNodeEdges(graph);
 
@@ -118,6 +133,17 @@ export function forceDirected({
   const is2d = dimensions === 2;
   const nodeStrengthAdjustment =
     is2d && edges.length > 25 ? nodeStrength * 2 : nodeStrength;
+
+  // Determine whether to use Barnes-Hut
+  const shouldUseBarnesHut = 
+    useBarnesHut === 'always' || 
+    (useBarnesHut === 'auto' && nodes.length > 100);
+
+  if (shouldUseBarnesHut) {
+    console.log(
+      `[forceDirected] Using Barnes-Hut optimization for ${nodes.length} nodes (theta: ${barnesHutTheta})`
+    );
+  }
 
   let forceX;
   let forceY;
@@ -129,11 +155,15 @@ export function forceDirected({
     forceY = d3ForceY(600).strength(0.05);
   }
 
-  // Create the simulation
+  // Create the simulation with appropriate force
+  const chargeForce = shouldUseBarnesHut
+    ? forceBarnesHut(barnesHutTheta).strength(nodeStrengthAdjustment)
+    : d3ForceManyBody().strength(nodeStrengthAdjustment);
+
   const sim = d3ForceSimulation()
     .force('center', d3ForceCenter(0, 0))
     .force('link', d3ForceLink())
-    .force('charge', d3ForceManyBody().strength(nodeStrengthAdjustment))
+    .force('charge', chargeForce)
     .force('x', forceX)
     .force('y', forceY)
     .force('z', d3ForceZ())

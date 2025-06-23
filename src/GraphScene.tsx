@@ -39,6 +39,7 @@ import { useStore } from './store';
 import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';
+import { getConnectedElements } from './utils/graphConnections';
 
 export interface GraphSceneProps {
   /**
@@ -360,7 +361,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref
     ) => {
-      const { layoutType, clusterAttribute } = rest;
+      const { layoutType, clusterAttribute, selections = [] } = rest;
 
       // Get the gl/scene/camera for render shortcuts
       const gl = useThree(state => state.gl);
@@ -384,6 +385,9 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const nodes = useStore(state => state.nodes);
       const edges = useStore(state => state.edges);
       const clusters = useStore(state => [...state.clusters.values()]);
+      const setConnectedNodes = useStore(state => state.setConnectedNodes);
+      const setConnectedEdges = useStore(state => state.setConnectedEdges);
+      const setSelections = useStore(state => state.setSelections);
 
       // Center the graph on the nodes
       const { centerNodesById, fitNodesInViewById, isCentered } =
@@ -403,6 +407,36 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           renderScene: () => gl.render(scene, camera)
         }),
         [centerNodesById, fitNodesInViewById, graph, gl, scene, camera]
+      );
+
+      const onNodeClickHandler = useCallback(
+        (
+          node: InternalGraphNode,
+          props?: CollapseProps,
+          event?: ThreeEvent<MouseEvent>
+        ) => {
+          // Update selections
+          const newSelections = event?.shiftKey 
+            ? [...selections, node.id].filter((v, i, a) => a.indexOf(v) === i) // Remove duplicates
+            : [node.id];
+          
+          setSelections(newSelections);
+          
+          // Find and highlight connected elements
+          if (newSelections.length > 0) {
+            const connections = getConnectedElements(graph, newSelections, 1);
+            setConnectedNodes(connections.connectedNodes);
+            setConnectedEdges(connections.connectedEdges);
+          } else {
+            // Clear connected highlights when no selections
+            setConnectedNodes(new Set());
+            setConnectedEdges(new Set());
+          }
+          
+          // Call original handler
+          onNodeClick?.(node, props, event);
+        },
+        [graph, selections, setSelections, setConnectedNodes, setConnectedEdges, onNodeClick]
       );
 
       const onNodeDraggedHandler = useCallback(
@@ -430,7 +464,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               animated={animated}
               contextMenu={contextMenu}
               renderNode={renderNode}
-              onClick={onNodeClick}
+              onClick={onNodeClickHandler}
               onDoubleClick={onNodeDoubleClick}
               onContextMenu={onNodeContextMenu}
               onPointerOver={onNodePointerOver}
@@ -446,7 +480,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           draggable,
           labelFontUrl,
           nodes,
-          onNodeClick,
+          onNodeClickHandler,
           onNodeContextMenu,
           onNodeDoubleClick,
           onNodeDraggedHandler,
