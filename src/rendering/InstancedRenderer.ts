@@ -61,22 +61,22 @@ export class LODManager {
   private createDefaultLODLevels(): LODLevel[] {
     return [
       {
-        distance: 50,
+        distance: 500,
         geometry: new THREE.SphereGeometry(1, 32, 24), // High detail
         complexity: 1.0
       },
       {
-        distance: 100,
+        distance: 1000,
         geometry: new THREE.SphereGeometry(1, 16, 12), // Medium detail
         complexity: 0.7
       },
       {
-        distance: 200,
+        distance: 2000,
         geometry: new THREE.SphereGeometry(1, 8, 6), // Low detail
         complexity: 0.5
       },
       {
-        distance: 500,
+        distance: 5000,
         geometry: new THREE.SphereGeometry(1, 4, 3), // Very low detail
         complexity: 0.3
       },
@@ -146,6 +146,17 @@ export class LODManager {
       }
       lodGroups.get(lodInfo.level)!.push(nodeIndex);
     }
+
+    // Debug logging
+    console.log('[LODManager] Grouped nodes by LOD:', {
+      cameraPos: cameraPosition,
+      totalNodes: visibleNodes.length,
+      lodDistribution: Array.from(lodGroups.entries()).map(([level, nodes]) => ({
+        level,
+        count: nodes.length,
+        distance: this.lodLevels[level].distance
+      }))
+    });
 
     return lodGroups;
   }
@@ -308,27 +319,46 @@ export class NodeInstancedRenderer {
   private initializeInstancedMeshes(): void {
     this.lodManager['lodLevels'].forEach((lodLevel, index) => {
       // Create material for this LOD level
-      const material = new THREE.MeshBasicMaterial({
-        map: this.textureAtlas.getTexture(),
-        transparent: true,
-        alphaTest: 0.1
+      const material = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        vertexColors: true, // Enable vertex colors for per-instance coloring
+        emissive: 0x111111, // Add some emissive light
+        shininess: 30,
+        transparent: false, // Disable transparency for debugging
+        // map: this.textureAtlas.getTexture(), // Disable texture atlas for now
       });
 
-      // Create instanced mesh
+      // Create instanced mesh with a fresh geometry that has all required attributes
+      const geometry = lodLevel.geometry.clone();
+      
+      // Ensure geometry has position attribute
+      if (!geometry.attributes.position) {
+        console.error('[NodeInstancedRenderer] Geometry missing position attribute!');
+      }
+      
       const instancedMesh = new THREE.InstancedMesh(
-        lodLevel.geometry.clone(),
+        geometry,
         material,
         this.config.maxInstancesPerBatch
       );
 
-      // Enable per-instance coloring
+      // Enable per-instance coloring - set this on the geometry
+      const colorArray = new Float32Array(this.config.maxInstancesPerBatch * 3);
       instancedMesh.instanceColor = new THREE.InstancedBufferAttribute(
-        new Float32Array(this.config.maxInstancesPerBatch * 3),
+        colorArray,
         3
       );
 
       instancedMesh.count = 0; // Start with no instances
+      instancedMesh.frustumCulled = false; // Disable frustum culling for debugging
+      instancedMesh.visible = true;
       this.scene.add(instancedMesh);
+      
+      console.log('[NodeInstancedRenderer] Added instanced mesh to scene:', {
+        lodLevel: index,
+        geometry: lodLevel.geometry,
+        material: material
+      });
 
       this.instancedMeshes.set(index, instancedMesh);
       this.materials.set(index, material);
@@ -344,6 +374,7 @@ export class NodeInstancedRenderer {
     cameraPosition: THREE.Vector3
   ): void {
     if (!this.config.enableInstancing) {
+      console.log('[NodeInstancedRenderer] Instancing disabled, skipping update');
       return;
     }
 
@@ -383,6 +414,8 @@ export class NodeInstancedRenderer {
       this.config.maxInstancesPerBatch
     );
     instancedMesh.count = instanceCount;
+    
+    console.log('[NodeInstancedRenderer] Updating LOD', lodLevel, 'with', instanceCount, 'instances');
 
     // Update instance matrices and colors
     for (let i = 0; i < instanceCount; i++) {
@@ -391,6 +424,17 @@ export class NodeInstancedRenderer {
       const size = nodeBuffer.sizes[nodeIndex];
       const colorHex = nodeBuffer.colors[nodeIndex];
       const opacity = nodeBuffer.opacities[nodeIndex];
+
+      // Debug first node
+      if (i === 0) {
+        console.log('[NodeInstancedRenderer] First node data:', {
+          nodeIndex,
+          pos,
+          size,
+          colorHex: colorHex.toString(16),
+          opacity
+        });
+      }
 
       // Set position and scale
       this.tempMatrix.makeScale(size, size, size);
@@ -686,6 +730,13 @@ export class AdvancedInstancedRenderer {
   render(camera: THREE.Camera): void {
     // Update visibility based on viewport culling
     const visibility = this.memoryManager.updateVisibility(camera);
+
+    console.log('[AdvancedInstancedRenderer] Rendering frame:', {
+      visibleNodes: visibility.visibleNodes.length,
+      visibleEdges: visibility.visibleEdges.length,
+      culledCount: visibility.culledCount,
+      cameraPosition: camera.position
+    });
 
     // Update node instances
     this.nodeRenderer.updateInstances(

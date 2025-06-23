@@ -211,10 +211,14 @@ export const Edge: FC<EdgeProps> = ({
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length);
   const isActive = useStore(state => state.actives?.includes(id));
+  const isHovered = useStore(state => state.hoveredEdgeId === id);
+  const isConnected = useStore(state => state.connectedEdgeIds?.has(id));
   const center = useStore(state => state.centerPosition);
 
+  const shouldHighlight = isSelected || isActive || isHovered || isConnected;
+  
   const selectionOpacity = hasSelections
-    ? isSelected || isActive
+    ? shouldHighlight
       ? theme.edge.selectedOpacity
       : theme.edge.inactiveOpacity
     : theme.edge.opacity;
@@ -257,6 +261,22 @@ export const Edge: FC<EdgeProps> = ({
   );
 
   useCursor(active && !isDragging && onClick !== undefined, 'pointer');
+  
+  // Determine color based on visual state priority
+  const edgeColor = useMemo(() => {
+    // Visual state priority: selected > active/hovered > connected > normal
+    if (isSelected) {
+      return theme.edge.selectedFill || theme.edge.activeFill;
+    }
+    if (active || isActive || isHovered) {
+      return theme.edge.activeFill;
+    }
+    if (isConnected) {
+      return theme.edge.connectedFill || theme.edge.activeFill;
+    }
+    
+    return fill || theme.edge.fill;
+  }, [isSelected, active, isActive, isHovered, isConnected, fill, theme]);
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled,
@@ -275,11 +295,7 @@ export const Edge: FC<EdgeProps> = ({
       arrowPlacement !== 'none' && (
         <Arrow
           animated={animated}
-          color={
-            isSelected || active || isActive
-              ? theme.arrow.activeFill
-              : fill || theme.arrow.fill
-          }
+          color={edgeColor}
           length={arrowLength}
           opacity={selectionOpacity}
           position={arrowPosition}
@@ -295,8 +311,7 @@ export const Edge: FC<EdgeProps> = ({
         />
       ),
     [
-      fill,
-      active,
+      edgeColor,
       animated,
       arrowLength,
       arrowPlacement,
@@ -305,12 +320,8 @@ export const Edge: FC<EdgeProps> = ({
       arrowSize,
       disabled,
       edge,
-      isActive,
-      isSelected,
       onContextMenu,
-      selectionOpacity,
-      theme.arrow.activeFill,
-      theme.arrow.fill
+      selectionOpacity
     ]
   );
 
@@ -335,7 +346,7 @@ export const Edge: FC<EdgeProps> = ({
             fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
-              isSelected || active || isActive
+              shouldHighlight
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }
@@ -383,11 +394,7 @@ export const Edge: FC<EdgeProps> = ({
       <Line
         curveOffset={curveOffset}
         animated={animated}
-        color={
-          isSelected || active || isActive
-            ? theme.edge.activeFill
-            : fill || theme.edge.fill
-        }
+        color={edgeColor}
         curve={curve}
         curved={curved}
         id={id}

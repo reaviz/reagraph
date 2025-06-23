@@ -7,6 +7,8 @@ export const darkTheme: Theme = {
   node: {
     fill: '#7A8C9E',
     activeFill: '#1DE9AC',
+    selectedFill: '#FF6B6B',
+    connectedFill: '#4ECDC4',
     opacity: 1,
     selectedOpacity: 1,
     inactiveOpacity: 0.2,
@@ -32,6 +34,8 @@ export const darkTheme: Theme = {
   edge: {
     fill: '#474B56',
     activeFill: '#1DE9AC',
+    selectedFill: '#FF6B6B',
+    connectedFill: '#4ECDC4',
     opacity: 1,
     selectedOpacity: 1,
     inactiveOpacity: 0.1,

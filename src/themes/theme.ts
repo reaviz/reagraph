@@ -8,6 +8,8 @@ export interface Theme {
   node: {
     fill: ColorRepresentation;
     activeFill: ColorRepresentation;
+    selectedFill?: ColorRepresentation;
+    connectedFill?: ColorRepresentation;
     opacity: number;
     selectedOpacity: number;
     inactiveOpacity: number;
@@ -29,6 +31,8 @@ export interface Theme {
   edge: {
     fill: ColorRepresentation;
     activeFill: ColorRepresentation;
+    selectedFill?: ColorRepresentation;
+    connectedFill?: ColorRepresentation;
     opacity: number;
     selectedOpacity: number;
     inactiveOpacity: number;

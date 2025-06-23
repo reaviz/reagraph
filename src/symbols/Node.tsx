@@ -149,6 +149,7 @@ export const Node: FC<NodeProps> = ({
   const isCollapsed = useStore(state => state.collapsedNodeIds.includes(id));
   const isActive = useStore(state => state.actives?.includes(id));
   const isSelected = useStore(state => state.selections?.includes(id));
+  const isConnected = useStore(state => state.connectedNodeIds?.has(id));
   const hasSelections = useStore(state => state.selections?.length > 0);
   const center = useStore(state => state.centerPosition);
   const cluster = useStore(state => state.clusters.get(node.cluster));
@@ -168,7 +169,7 @@ export const Node: FC<NodeProps> = ({
   const [active, setActive] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
-  const shouldHighlight = active || isSelected || isActive;
+  const shouldHighlight = active || isSelected || isActive || isConnected;
 
   const selectionOpacity = hasSelections
     ? shouldHighlight
@@ -244,9 +245,27 @@ export const Node: FC<NodeProps> = ({
   useCursor(isDraggingCurrent, 'grabbing');
 
   const combinedActiveState = shouldHighlight || isDraggingCurrent;
-  const color = combinedActiveState
-    ? theme.node.activeFill
-    : node.fill || theme.node.fill;
+  
+  // Determine color based on visual state priority
+  const color = useMemo(() => {
+    // Custom node fill takes priority if not in any special state
+    if (!combinedActiveState && node.fill) {
+      return node.fill;
+    }
+    
+    // Visual state priority: selected > active/dragging > connected > normal
+    if (isSelected) {
+      return theme.node.selectedFill || theme.node.activeFill;
+    }
+    if (active || isDraggingCurrent || isActive) {
+      return theme.node.activeFill;
+    }
+    if (isConnected) {
+      return theme.node.connectedFill || theme.node.activeFill;
+    }
+    
+    return node.fill || theme.node.fill;
+  }, [combinedActiveState, node.fill, isSelected, active, isDraggingCurrent, isActive, isConnected, theme]);
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDraggingCurrent,

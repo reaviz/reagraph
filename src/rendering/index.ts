@@ -19,10 +19,12 @@ export {
   AdvancedMemoryManager,
   NodeDataBuffer,
   EdgeDataBuffer,
-  ObjectPool,
   ViewportCuller
 } from './MemoryManager';
 export type { MemoryConfig, NodeData, EdgeData } from './MemoryManager';
+
+// Export ObjectPool from utils (used by MemoryManager)
+export { ObjectPool } from '../utils/ObjectPool';
 
 // Phase 2B: Instanced Rendering exports
 export {

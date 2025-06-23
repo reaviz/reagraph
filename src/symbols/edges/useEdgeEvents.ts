@@ -24,6 +24,8 @@ export function useEdgeEvents(
   const setEdgeContextMenus = useStore(
     useCallback(state => state.setEdgeContextMenus, [])
   );
+  const hoveredEdgeId = useStore(state => state.hoveredEdgeId);
+  const setHoveredEdgeId = useStore(state => state.setHoveredEdgeId);
 
   const clickRef = useRef(false);
   const handleClick = useCallback(() => {
@@ -42,6 +44,16 @@ export function useEdgeEvents(
     ) => {
       const { onClick, onContextMenu, onPointerOver, onPointerOut } =
         memoizedEvents.current;
+
+      // Handle hover state persistence
+      if (!disabled) {
+        const currentHovered = intersected.length > 0 ? intersected[0] : null;
+        const currentHoveredId = currentHovered?.id || null;
+        
+        if (currentHoveredId !== hoveredEdgeId) {
+          setHoveredEdgeId(currentHoveredId);
+        }
+      }
 
       if (onClick && clickRef.current && !disabled) {
         clickRef.current = false;
@@ -86,7 +98,7 @@ export function useEdgeEvents(
         });
       }
     },
-    [contextMenu, disabled, edgeContextMenus, setEdgeContextMenus]
+    [contextMenu, disabled, edgeContextMenus, setEdgeContextMenus, hoveredEdgeId, setHoveredEdgeId]
   );
 
   return {

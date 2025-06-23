@@ -7,6 +7,8 @@ export const lightTheme: Theme = {
   node: {
     fill: '#7CA0AB',
     activeFill: '#1DE9AC',
+    selectedFill: '#FF6B6B',
+    connectedFill: '#4ECDC4',
     opacity: 1,
     selectedOpacity: 1,
     inactiveOpacity: 0.2,
@@ -32,6 +34,8 @@ export const lightTheme: Theme = {
   edge: {
     fill: '#D8E6EA',
     activeFill: '#1DE9AC',
+    selectedFill: '#FF6B6B',
+    connectedFill: '#4ECDC4',
     opacity: 1,
     selectedOpacity: 1,
     inactiveOpacity: 0.1,
