@@ -23,6 +23,8 @@ export const BenchmarkDashboard: React.FC = () => {
   const [diagnosticResults, setDiagnosticResults] = useState<any>(null);
   const [usePhase2, setUsePhase2] = useState(false);
   const [showValidationPanel, setShowValidationPanel] = useState(false);
+  const [showPerformanceHUD, setShowPerformanceHUD] = useState(false);
+  const [targetFPS, setTargetFPS] = useState(60);
   
   // Selective testing state
   const [showSelectiveTesting, setShowSelectiveTesting] = useState(false);
@@ -50,6 +52,8 @@ export const BenchmarkDashboard: React.FC = () => {
   const {
     metrics,
     averageMetrics,
+    memoryPools,
+    totalMemoryUsage,
     isTracking,
     start,
     stop,
@@ -57,6 +61,7 @@ export const BenchmarkDashboard: React.FC = () => {
     updateNodeCount,
     updateEdgeCount,
     updateWorkerStatus,
+    updateMemoryPools,
     getPerformanceValidation
   } = usePerformanceTracker();
 
@@ -291,6 +296,30 @@ export const BenchmarkDashboard: React.FC = () => {
         </div>
 
         <div style={styles.controlGroup}>
+          <label style={styles.label}>
+            <input
+              type="checkbox"
+              checked={showPerformanceHUD}
+              onChange={(e) => setShowPerformanceHUD(e.target.checked)}
+              style={styles.checkbox}
+            />
+            Show Performance HUD
+          </label>
+        </div>
+
+        <div style={styles.controlGroup}>
+          <label style={styles.label}>Target FPS:</label>
+          <input
+            type="number"
+            value={targetFPS}
+            onChange={(e) => setTargetFPS(Number(e.target.value) || 60)}
+            min={30}
+            max={120}
+            style={{...styles.input, width: '80px'}}
+          />
+        </div>
+
+        <div style={styles.controlGroup}>
           <button
             style={showValidationPanel ? styles.validationActiveButton : styles.validationButton}
             onClick={() => setShowValidationPanel(!showValidationPanel)}
@@ -454,6 +483,8 @@ export const BenchmarkDashboard: React.FC = () => {
           <PerformanceMonitor 
             metrics={metrics}
             averageMetrics={averageMetrics}
+            memoryPools={memoryPools || undefined}
+            totalMemoryUsage={totalMemoryUsage || undefined}
           />
           
           {selectedTest && (
@@ -664,6 +695,8 @@ export const BenchmarkDashboard: React.FC = () => {
                 onNodeCountChange={updateNodeCount}
                 onEdgeCountChange={updateEdgeCount}
                 onWorkerStatusChange={updateWorkerStatus}
+                showPerformanceHUD={showPerformanceHUD}
+                targetFPS={targetFPS}
               />
             )
           ) : (
@@ -771,6 +804,14 @@ const styles = {
   },
   checkbox: {
     accentColor: '#00d4ff'
+  },
+  input: {
+    padding: '0.5rem',
+    background: '#1a1a1a',
+    color: '#ffffff',
+    border: '1px solid #333',
+    borderRadius: '4px',
+    fontSize: '0.9rem'
   },
   warning: {
     color: '#ff6b6b',

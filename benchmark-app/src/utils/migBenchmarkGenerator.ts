@@ -3,10 +3,23 @@
  * Generates comprehensive benchmark tests for Mig's three-phase requirements
  */
 
-import { GraphData, BenchmarkTest, GraphNode, GraphEdge } from '../types/benchmark.types';
+import {
+  GraphData,
+  BenchmarkTest,
+  GraphNode,
+  GraphEdge
+} from '../types/benchmark.types';
 
 // Entity types for Mig use cases
-export type MigEntityType = 'Edge' | 'Application' | 'Data' | 'User' | 'Service' | 'Database' | 'API' | 'Network';
+export type MigEntityType =
+  | 'Edge'
+  | 'Application'
+  | 'Data'
+  | 'User'
+  | 'Service'
+  | 'Database'
+  | 'API'
+  | 'Network';
 
 // Node colors and icons for different entity types
 const ENTITY_CONFIG = {
@@ -42,12 +55,15 @@ interface MigGraphData extends GraphData {
 /**
  * Generate Mig entity nodes with realistic properties
  */
-function generateMigNodes(count: number, config: {
-  typeDistribution?: Record<MigEntityType, number>;
-  enableClustering?: boolean;
-  enableHierarchy?: boolean;
-  levels?: number;
-}): (GraphNode & { data: MigNodeData })[] {
+function generateMigNodes(
+  count: number,
+  config: {
+    typeDistribution?: Record<MigEntityType, number>;
+    enableClustering?: boolean;
+    enableHierarchy?: boolean;
+    levels?: number;
+  }
+): (GraphNode & { data: MigNodeData })[] {
   const {
     typeDistribution = {
       Edge: 0.1,
@@ -66,7 +82,7 @@ function generateMigNodes(count: number, config: {
 
   const nodes: (GraphNode & { data: MigNodeData })[] = [];
   const typeCount: Record<MigEntityType, number> = {} as any;
-  
+
   // Initialize type counts
   Object.keys(ENTITY_CONFIG).forEach(type => {
     typeCount[type as MigEntityType] = 0;
@@ -78,7 +94,7 @@ function generateMigNodes(count: number, config: {
     let accumulated = 0;
     let nodeType: MigEntityType = 'Application';
     const rand = Math.random();
-    
+
     for (const [type, ratio] of Object.entries(typeDistribution)) {
       accumulated += ratio;
       if (rand < accumulated) {
@@ -89,11 +105,12 @@ function generateMigNodes(count: number, config: {
 
     typeCount[nodeType]++;
     const config = ENTITY_CONFIG[nodeType];
-    
+
     // Determine zone based on type
     let zone: 'edge' | 'application' | 'data' | undefined;
     if (['Edge', 'Network'].includes(nodeType)) zone = 'edge';
-    else if (['Application', 'Service', 'API'].includes(nodeType)) zone = 'application';
+    else if (['Application', 'Service', 'API'].includes(nodeType))
+      zone = 'application';
     else if (['Data', 'Database'].includes(nodeType)) zone = 'data';
 
     // Calculate importance (affects size)
@@ -118,7 +135,9 @@ function generateMigNodes(count: number, config: {
     }
 
     // Determine if this is a gateway node (connects zones)
-    const isGateway = Math.random() < 0.1 && ['Application', 'Service', 'API'].includes(nodeType);
+    const isGateway =
+      Math.random() < 0.1 &&
+      ['Application', 'Service', 'API'].includes(nodeType);
 
     nodes.push({
       id: `node-${i}`, // Use simple sequential IDs to avoid any mismatch issues
@@ -139,8 +158,12 @@ function generateMigNodes(count: number, config: {
         level,
         isGateway,
         metadata: {
-          created: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString(),
-          lastActive: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000).toISOString(),
+          created: new Date(
+            Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000
+          ).toISOString(),
+          lastActive: new Date(
+            Date.now() - Math.random() * 24 * 60 * 60 * 1000
+          ).toISOString(),
           version: `${Math.floor(Math.random() * 3 + 1)}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 20)}`
         }
       }
@@ -194,8 +217,8 @@ function generateMigEdges(
 
   // Create edges with realistic patterns
   for (let i = 0; i < edgeCount; i++) {
-    let source: typeof nodes[0];
-    let target: typeof nodes[0];
+    let source: (typeof nodes)[0];
+    let target: (typeof nodes)[0];
     let flowType: 'data' | 'control' | 'auth' = 'data';
     let style: 'solid' | 'dashed' | 'animated' = 'solid';
 
@@ -205,9 +228,12 @@ function generateMigEdges(
     if (isCrossZone && gatewayNodes.length > 0) {
       // Cross-zone connections through gateways
       source = gatewayNodes[Math.floor(Math.random() * gatewayNodes.length)];
-      const otherZones = Object.keys(nodesByZone).filter(z => z !== source.data.zone);
+      const otherZones = Object.keys(nodesByZone).filter(
+        z => z !== source.data.zone
+      );
       if (otherZones.length > 0) {
-        const targetZone = otherZones[Math.floor(Math.random() * otherZones.length)];
+        const targetZone =
+          otherZones[Math.floor(Math.random() * otherZones.length)];
         const targetNodes = nodesByZone[targetZone];
         target = targetNodes[Math.floor(Math.random() * targetNodes.length)];
         flowType = 'control';
@@ -218,12 +244,13 @@ function generateMigEdges(
     } else {
       // Same-zone connections or type-based connections
       source = nodes[Math.floor(Math.random() * nodes.length)];
-      
+
       // Prefer connections within same zone or between related types
       const sameZoneNodes = nodesByZone[source.data.zone || 'general'];
       const relatedTypes = getRelatedTypes(source.data.type);
-      const relatedNodes = nodes.filter(n => 
-        relatedTypes.includes(n.data.type) || n.data.zone === source.data.zone
+      const relatedNodes = nodes.filter(
+        n =>
+          relatedTypes.includes(n.data.type) || n.data.zone === source.data.zone
       );
 
       if (relatedNodes.length > 0 && Math.random() < 0.8) {
@@ -235,17 +262,23 @@ function generateMigEdges(
       // Determine flow type based on connection
       if (source.data.type === 'User' || target.data.type === 'User') {
         flowType = 'auth';
-      } else if (source.data.type === 'Data' || target.data.type === 'Data' || 
-                 source.data.type === 'Database' || target.data.type === 'Database') {
+      } else if (
+        source.data.type === 'Data' ||
+        target.data.type === 'Data' ||
+        source.data.type === 'Database' ||
+        target.data.type === 'Database'
+      ) {
         flowType = 'data';
       } else {
         flowType = 'control';
       }
 
       // Animated flows for important connections
-      if (enableAnimatedFlows && 
-          (source.data.importance > 0.7 || target.data.importance > 0.7) &&
-          Math.random() < 0.3) {
+      if (
+        enableAnimatedFlows &&
+        (source.data.importance > 0.7 || target.data.importance > 0.7) &&
+        Math.random() < 0.3
+      ) {
         style = 'animated';
       }
     }
@@ -274,7 +307,12 @@ function generateMigEdges(
       size: flowType === 'data' ? 3 : 2,
       curved: true,
       animated: style === 'animated',
-      color: flowType === 'data' ? '#3b82f6' : flowType === 'auth' ? '#f59e0b' : '#10b981',
+      color:
+        flowType === 'data'
+          ? '#3b82f6'
+          : flowType === 'auth'
+            ? '#f59e0b'
+            : '#10b981',
       // Extended properties stored in the edge object but not used by GraphEdge interface
       style,
       bundleId,
@@ -338,7 +376,7 @@ export function generateMigBenchmarkScenarios(): Record<string, MigGraphData> {
     // Phase 2: Advanced features - medium scale
     phase2Medium: generateMigScenario({
       nodeCount: 1000,
-      edgeDensity: 1.8,
+      edgeDensity: 1,
       enableClustering: true,
       enableHierarchy: true,
       enableBundling: true,
@@ -430,9 +468,15 @@ function generateMigScenario(config: {
   const defaultCollapsedIds: string[] = [];
   if (config.enableClustering && clusterIds.size > 5) {
     // Collapse some cluster representatives
-    const clusterReps = Array.from(clusterIds).slice(0, Math.floor(clusterIds.size / 3));
+    const clusterReps = Array.from(clusterIds).slice(
+      0,
+      Math.floor(clusterIds.size / 3)
+    );
     nodes.forEach(node => {
-      if (clusterReps.includes(node.data.clusterId || '') && Math.random() < 0.3) {
+      if (
+        clusterReps.includes(node.data.clusterId || '') &&
+        Math.random() < 0.3
+      ) {
         defaultCollapsedIds.push(node.id);
       }
     });
@@ -467,7 +511,8 @@ export function createMigBenchmarkTests(): BenchmarkTest[] {
     {
       id: 'mig-phase1-small',
       name: 'Mig Phase 1 - Small (100 nodes)',
-      description: 'Baseline features: selection, node types, borders, transitions, sizing, clustering',
+      description:
+        'Baseline features: selection, node types, borders, transitions, sizing, clustering',
       nodeCount: scenarios.phase1Small.nodes.length,
       edgeCount: scenarios.phase1Small.edges.length,
       category: 'small',
@@ -492,7 +537,8 @@ export function createMigBenchmarkTests(): BenchmarkTest[] {
     {
       id: 'mig-phase2-medium',
       name: 'Mig Phase 2 - Medium (1,000 nodes)',
-      description: 'Advanced features: custom edges, aggregation, contextual boundaries',
+      description:
+        'Advanced features: custom edges, aggregation, contextual boundaries',
       nodeCount: scenarios.phase2Medium.nodes.length,
       edgeCount: scenarios.phase2Medium.edges.length,
       category: 'large',
@@ -520,7 +566,8 @@ export function createMigBenchmarkTests(): BenchmarkTest[] {
     {
       id: 'mig-phase3-large',
       name: 'Mig Phase 3 - Large (5,000 nodes)',
-      description: 'Complex features: perimeters, hierarchical grouping, orphan management, dynamic visibility',
+      description:
+        'Complex features: perimeters, hierarchical grouping, orphan management, dynamic visibility',
       nodeCount: scenarios.phase3Large.nodes.length,
       edgeCount: scenarios.phase3Large.edges.length,
       category: 'massive',
@@ -529,7 +576,8 @@ export function createMigBenchmarkTests(): BenchmarkTest[] {
       edgeInterpolation: 'curved',
       animated: true,
       interactive: true,
-      initialCollapsedNodeIds: scenarios.phase3Large.metadata?.defaultCollapsedIds
+      initialCollapsedNodeIds:
+        scenarios.phase3Large.metadata?.defaultCollapsedIds
     },
     {
       id: 'mig-phase3-extreme',
@@ -542,7 +590,8 @@ export function createMigBenchmarkTests(): BenchmarkTest[] {
       layoutType: 'hierarchicalTd',
       edgeInterpolation: 'curved',
       interactive: true,
-      initialCollapsedNodeIds: scenarios.phase3Extreme.metadata?.defaultCollapsedIds
+      initialCollapsedNodeIds:
+        scenarios.phase3Extreme.metadata?.defaultCollapsedIds
     }
   ];
 }

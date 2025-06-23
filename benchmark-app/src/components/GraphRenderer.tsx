@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
-import { GraphCanvas } from 'reagraph';
+import { GraphCanvas, GraphCanvasV2 } from 'reagraph';
 import { GraphData } from '../types/benchmark.types';
 import { WorkerManager, PositionUpdate } from '../utils/WorkerManager';
+import { AdaptivePerformanceManager } from '../../../src/performance/AdaptivePerformanceManager';
+import { AdvancedMemoryManager } from '../../../src/rendering/MemoryManager';
+import { PerformanceHUD } from './PerformanceHUD';
 
 interface GraphRendererProps {
   data: GraphData;
@@ -14,6 +17,8 @@ interface GraphRendererProps {
     status: 'enabled' | 'disabled' | 'failed' | 'initializing'
   ) => void;
   className?: string;
+  showPerformanceHUD?: boolean;
+  targetFPS?: number;
 }
 
 export const GraphRenderer: React.FC<GraphRendererProps> = ({
@@ -24,7 +29,9 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
   onNodeCountChange,
   onEdgeCountChange,
   onWorkerStatusChange,
-  className = ''
+  className = '',
+  showPerformanceHUD = false,
+  targetFPS = 60
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [workerManager, setWorkerManager] = useState<WorkerManager | null>(
@@ -34,6 +41,10 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
     'enabled' | 'disabled' | 'failed' | 'initializing'
   >('disabled');
   const [positionUpdates, setPositionUpdates] = useState<PositionUpdate[]>([]);
+  
+  // Phase 3 optimization managers
+  const [performanceManager] = useState(() => new AdaptivePerformanceManager(targetFPS));
+  const graphCanvasRef = useRef<any>(null);
 
   // Convert our data format to ReaGraph format
   const graphData = useMemo(() => {
@@ -186,18 +197,49 @@ export const GraphRenderer: React.FC<GraphRendererProps> = ({
       </div>
 
       <div style={styles.graphContainer}>
-        <GraphCanvas
+        <GraphCanvasV2
+          ref={graphCanvasRef}
           nodes={graphData.nodes}
           edges={graphData.edges}
           layoutType={layoutConfig.type}
           cameraMode={cameraConfig.mode}
           // Animation prop now configurable
           animated={animated}
-          // Selection disabled for performance
-          selections={[]}
-          onNodeClick={() => {}} // Disable interactions for pure performance testing
+          // Phase 2 performance optimizations
+          optimizationLevel="HIGH_PERFORMANCE"
+          enableGPUAcceleration="auto"
+          enableInstancedRendering="auto"
+          enableSharedWorkers={workerEnabled ? "auto" : false}
+          enableMemoryOptimization="auto"
+          enablePerformanceMonitor={true}
+          onPerformanceUpdate={(metrics) => {
+            // Update performance manager with metrics
+            if (performanceManager && metrics) {
+              const fps = metrics.recentStats?.averageFps || 60;
+              performanceManager.updateMetrics({
+                fps: fps,
+                frameTime: 1000 / fps,
+                nodeCount: data.nodes.length,
+                edgeCount: data.edges.length
+              });
+            }
+          }}
+          // Disable interactions for pure performance testing
+          onNodeClick={() => {}}
           onCanvasClick={() => {}}
+          // Dimensions
+          width={800}
+          height={600}
+          backgroundColor="#000000"
         />
+        
+        {/* Performance HUD overlay */}
+        {showPerformanceHUD && (
+          <PerformanceHUD
+            performanceManager={performanceManager}
+            position="top-right"
+          />
+        )}
       </div>
 
       {/* Performance overlay */}

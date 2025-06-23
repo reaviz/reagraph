@@ -10,7 +10,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { GraphCanvas, useCollapse, getVisibleEntities, darkTheme } from '../../../src';
+import { GraphCanvas, GraphCanvasV2, useCollapse, getVisibleEntities, darkTheme } from '../../../src';
 import { GraphData } from '../types/benchmark.types';
 import { NetworkNode } from '../utils/networkTopologyGenerator';
 
@@ -314,23 +314,33 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
 
       {/* Graph Container */}
       <div style={styles.graphContainer}>
-        <GraphCanvas
+        <GraphCanvasV2
           key={`graph-${data.nodes.length}-${collapsedNodeIds.length}`}
           nodes={visibleEntities.visibleNodes}
           edges={visibleEntities.visibleEdges}
-          collapsedNodeIds={collapsedNodeIds}
-          layoutType="forceDirected2d"
+          // Phase 2 optimizations
+          optimizationLevel="HIGH_PERFORMANCE"
+          enableGPUAcceleration="auto"
+          enableInstancedRendering="auto"
+          enableSharedWorkers="auto"
+          enableMemoryOptimization="auto"
+          enablePerformanceMonitor={true}
+          onPerformanceUpdate={(metrics) => {
+            if (onPerformanceUpdate && metrics) {
+              onPerformanceUpdate(metrics);
+            }
+          }}
+          layoutType="hierarchical"
           cameraMode={cameraMode}
           animated={animated}
-          edgeInterpolation={edgeInterpolation}
-          selections={selectedNode ? [selectedNode.id] : []}
-          onNodeClick={handleNodeClick}
+          onNodeClick={() => {
+            // TODO: Re-enable when node click handling is fixed for V2
+            console.log('Node click disabled in V2 for now');
+          }}
           onCanvasClick={() => {
             setSelectedNode(null);
             setSelectedLevel(null);
           }}
-          sizingType="attribute"
-          edgeArrowPosition="end"
           theme={{
             ...darkTheme,
             canvas: { background: '#0a0a0a' },
@@ -357,6 +367,10 @@ export const NetworkTopologyRenderer: React.FC<NetworkTopologyRendererProps> = (
               inactiveOpacity: 0.1
             }
           }}
+          // Dimensions
+          width={800}
+          height={600}
+          backgroundColor="#0a0a0a"
         />
       </div>
 
