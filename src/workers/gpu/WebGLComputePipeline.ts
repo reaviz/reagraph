@@ -93,8 +93,6 @@ export class ForceShaders {
    */
   static getForceCalculationShader(): string {
     return `
-      precision highp float;
-      
       uniform sampler2D positionTexture;
       uniform sampler2D velocityTexture;
       uniform float attraction;
@@ -104,11 +102,9 @@ export class ForceShaders {
       uniform float timeStep;
       uniform float maxDistance;
       uniform float minDistance;
-      uniform float theta; // Barnes-Hut approximation
+      uniform float theta;
       uniform float nodeCount;
       uniform vec2 resolution;
-      
-      varying vec2 vUv;
       
       // Convert UV to node index
       float getNodeIndex(vec2 uv) {
@@ -180,16 +176,12 @@ export class ForceShaders {
    */
   static getPositionUpdateShader(): string {
     return `
-      precision highp float;
-      
       uniform sampler2D positionTexture;
       uniform sampler2D velocityTexture;
       uniform sampler2D forceTexture;
       uniform float timeStep;
       uniform float nodeCount;
       uniform vec2 resolution;
-      
-      varying vec2 vUv;
       
       float getNodeIndex(vec2 uv) {
         return floor(uv.x * resolution.x) + floor(uv.y * resolution.y) * resolution.x;
@@ -221,15 +213,11 @@ export class ForceShaders {
    */
   static getVelocityUpdateShader(): string {
     return `
-      precision highp float;
-      
       uniform sampler2D velocityTexture;
       uniform sampler2D forceTexture;
       uniform float timeStep;
       uniform float nodeCount;
       uniform vec2 resolution;
-      
-      varying vec2 vUv;
       
       float getNodeIndex(vec2 uv) {
         return floor(uv.x * resolution.x) + floor(uv.y * resolution.y) * resolution.x;
