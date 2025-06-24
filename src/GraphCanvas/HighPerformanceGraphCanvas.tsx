@@ -301,12 +301,15 @@ const HighPerformanceRenderer: FC<{
       const internalNode: InternalGraphNode = {
         id: node.id,
         position: {
+          id: node.id,
+          data: node,
+          links: [],
+          index: 0, // Will be set by memoryManager
           x: node.x || (Math.random() - 0.5) * 200,
           y: node.y || (Math.random() - 0.5) * 200,
           z: node.z || (Math.random() - 0.5) * 200,
           vx: 0,
-          vy: 0,
-          vz: 0
+          vy: 0
         },
         size: node.size || 1,
         fill: node.fill || '#4ecdc4',
@@ -551,7 +554,7 @@ export const HighPerformanceGraphCanvas: FC<
       centerGraph: () => {
         // Implementation would center camera on nodes
       },
-      getControls: () => controlsRef.current?.controls
+      getControls: () => controlsRef.current?.controls?.camera as THREE.Camera
     }));
 
     const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);

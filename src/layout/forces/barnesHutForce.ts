@@ -3,8 +3,15 @@
  * Provides O(n log n) force calculations for large graphs
  */
 
-import { BarnesHutForce, Node3D, ForceResult } from '../../workers/physics/barnes-hut';
-import { PooledBarnesHutForce, createPooledBarnesHutForce } from '../../workers/physics/barnes-hut-pooled';
+import {
+  BarnesHutForce,
+  Node3D,
+  ForceResult
+} from '../../workers/physics/barnes-hut';
+import {
+  PooledBarnesHutForce,
+  createPooledBarnesHutForce
+} from '../../workers/physics/barnes-hut-pooled';
 import { getGlobalOctreePool } from './OctreeNodePool';
 
 export interface D3Node {
@@ -33,16 +40,16 @@ export function forceBarnesHut(theta = 0.5, usePooling = true) {
   let strength = -250;
   let distanceMin2 = 1;
   let distanceMax2 = Infinity;
-  
+
   // Use pooled version for better memory efficiency
-  const barnesHut = usePooling 
+  const barnesHut = usePooling
     ? createPooledBarnesHutForce(theta)
     : new BarnesHutForce(theta);
   const octreePool = getGlobalOctreePool();
 
   function force(alpha: number) {
     if (!nodes || nodes.length === 0) return;
-    
+
     // Pre-warm octree pool if needed
     octreePool.prewarmForGraphSize(nodes.length);
 
@@ -55,7 +62,7 @@ export function forceBarnesHut(theta = 0.5, usePooling = true) {
       vx: node.vx || 0,
       vy: node.vy || 0,
       vz: node.vz || 0,
-      charge: node.charge !== undefined ? node.charge : (strengths[i] || strength)
+      charge: node.charge !== undefined ? node.charge : strengths[i] || strength
     }));
 
     // Build octree and calculate forces
@@ -68,12 +75,12 @@ export function forceBarnesHut(theta = 0.5, usePooling = true) {
       if (!node.fx && node.fx !== 0) {
         const nodeStrength = strengths[i] || strength;
         const force = forces[i];
-        
+
         // Apply force with strength and alpha decay
         const fx = force.fx * nodeStrength * alpha;
         const fy = force.fy * nodeStrength * alpha;
         const fz = force.fz * nodeStrength * alpha;
-        
+
         // Update velocities
         node.vx = (node.vx || 0) + fx;
         node.vy = (node.vy || 0) + fy;
@@ -86,11 +93,11 @@ export function forceBarnesHut(theta = 0.5, usePooling = true) {
 
   function initialize() {
     if (!nodes) return;
-    
+
     // Initialize strengths array
     const n = nodes.length;
     strengths = new Array(n);
-    
+
     for (let i = 0; i < n; ++i) {
       const node = nodes[i];
       strengths[i] = node.charge !== undefined ? node.charge : strength;
@@ -98,37 +105,35 @@ export function forceBarnesHut(theta = 0.5, usePooling = true) {
   }
 
   // D3-compatible force API
-  force.initialize = function(_: D3Node[]) {
+  force.initialize = function (_: D3Node[]) {
     nodes = _;
     initialize();
   };
 
-  force.strength = function(_?: number | ((d: D3Node, i: number) => number)) {
-    return arguments.length 
-      ? (strength = typeof _ === 'function' ? _ : +_, initialize(), force) 
+  force.strength = function (_?: number | ((d: D3Node, i: number) => number)) {
+    return arguments.length
+      ? ((strength = _ as any), initialize(), force)
       : strength;
   };
 
-  force.theta = function(_?: number) {
-    return arguments.length 
-      ? (barnesHut.setTheta(+_), force) 
-      : theta;
+  force.theta = function (_?: number) {
+    return arguments.length ? (barnesHut.setTheta(+_), force) : theta;
   };
 
-  force.distanceMin = function(_?: number) {
-    return arguments.length 
-      ? (distanceMin2 = _ * _, force) 
+  force.distanceMin = function (_?: number) {
+    return arguments.length
+      ? ((distanceMin2 = _ * _), force)
       : Math.sqrt(distanceMin2);
   };
 
-  force.distanceMax = function(_?: number) {
-    return arguments.length 
-      ? (distanceMax2 = _ * _, force) 
+  force.distanceMax = function (_?: number) {
+    return arguments.length
+      ? ((distanceMax2 = _ * _), force)
       : Math.sqrt(distanceMax2);
   };
-  
+
   // Add dispose method for cleanup
-  force.dispose = function() {
+  force.dispose = function () {
     if ('dispose' in barnesHut) {
       (barnesHut as PooledBarnesHutForce).dispose();
     }
@@ -185,9 +190,8 @@ export class AdaptiveBarnesHutForce {
       theta: this.theta,
       lastFrameTime: this.lastFrameTime,
       targetFrameTime: this.targetFrameTime,
-      performance: this.lastFrameTime > 0 
-        ? this.targetFrameTime / this.lastFrameTime 
-        : 1
+      performance:
+        this.lastFrameTime > 0 ? this.targetFrameTime / this.lastFrameTime : 1
     };
   }
 }
@@ -196,8 +200,8 @@ export class AdaptiveBarnesHutForce {
  * Select optimal execution mode based on node count
  */
 export function selectOptimalMode(nodeCount: number, edgeCount: number = 0) {
-  const complexity = nodeCount + (edgeCount * 0.1);
-  
+  const complexity = nodeCount + edgeCount * 0.1;
+
   if (complexity < 100) {
     return {
       mode: 'standard',

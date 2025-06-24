@@ -24,7 +24,7 @@ import {
   Raycaster,
   MathUtils
 } from 'three';
-import ThreeCameraControls from 'camera-controls';
+import * as CameraControlsLib from 'camera-controls';
 import {
   CameraControlsContext,
   CameraControlsContextProps
@@ -33,29 +33,34 @@ import * as holdEvent from 'hold-event';
 import { useStore } from '../store';
 import { isServerRender } from '../utils/visibility';
 
-// Install the camera controls
-// Use a subset for better three shaking
-ThreeCameraControls.install({
-  THREE: {
-    MOUSE: MOUSE,
-    Vector2: Vector2,
-    Vector3: Vector3,
-    Vector4: Vector4,
-    Quaternion: Quaternion,
-    Matrix4: Matrix4,
-    Spherical: Spherical,
-    Box3: Box3,
-    Sphere: Sphere,
-    Raycaster: Raycaster,
-    MathUtils: {
-      DEG2RAD: MathUtils?.DEG2RAD,
-      clamp: MathUtils?.clamp
+// Get the CameraControls class
+const CameraControlsClass =
+  (CameraControlsLib as any).default || CameraControlsLib;
+
+// Only install if it's a function (avoid SSR issues)
+if (typeof CameraControlsClass?.install === 'function') {
+  CameraControlsClass.install({
+    THREE: {
+      MOUSE: MOUSE,
+      Vector2: Vector2,
+      Vector3: Vector3,
+      Vector4: Vector4,
+      Quaternion: Quaternion,
+      Matrix4: Matrix4,
+      Spherical: Spherical,
+      Box3: Box3,
+      Sphere: Sphere,
+      Raycaster: Raycaster,
+      MathUtils: {
+        DEG2RAD: MathUtils?.DEG2RAD,
+        clamp: MathUtils?.clamp
+      }
     }
-  }
-});
+  });
+}
 
 // Extend r3f with the new controls
-extend({ ThreeCameraControls });
+extend({ CameraControls: CameraControlsClass });
 
 const KEY_CODES = {
   ARROW_LEFT: 37,
@@ -114,7 +119,7 @@ export const CameraControls: FC<
     },
     ref: Ref<CameraControlsRef>
   ) => {
-    const cameraRef = useRef<ThreeCameraControls | null>(null);
+    const cameraRef = useRef<any>(null);
     const camera = useThree(state => state.camera);
     const gl = useThree(state => state.gl);
     const isOrbiting = mode === 'orbit';
@@ -198,10 +203,10 @@ export const CameraControls: FC<
         if (event.code === 'Space') {
           if (mode === 'rotate') {
             cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.TRUCK;
+              CameraControlsClass.ACTION.TRUCK;
           } else {
             cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.ROTATE;
+              CameraControlsClass.ACTION.ROTATE;
           }
         }
       },
@@ -213,10 +218,10 @@ export const CameraControls: FC<
         if (event.code === 'Space') {
           if (mode === 'rotate') {
             cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.ROTATE;
+              CameraControlsClass.ACTION.ROTATE;
           } else {
             cameraRef.current.mouseButtons.left =
-              ThreeCameraControls.ACTION.TRUCK;
+              CameraControlsClass.ACTION.TRUCK;
           }
         }
       },
@@ -277,14 +282,14 @@ export const CameraControls: FC<
 
     useEffect(() => {
       if (disabled) {
-        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
-        cameraRef.current.mouseButtons.middle = ThreeCameraControls.ACTION.NONE;
-        cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.mouseButtons.left = CameraControlsClass.ACTION.NONE;
+        cameraRef.current.mouseButtons.middle = CameraControlsClass.ACTION.NONE;
+        cameraRef.current.mouseButtons.wheel = CameraControlsClass.ACTION.NONE;
       } else {
-        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
+        cameraRef.current.mouseButtons.left = CameraControlsClass.ACTION.TRUCK;
         cameraRef.current.mouseButtons.middle =
-          ThreeCameraControls.ACTION.TRUCK;
-        cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.DOLLY;
+          CameraControlsClass.ACTION.TRUCK;
+        cameraRef.current.mouseButtons.wheel = CameraControlsClass.ACTION.DOLLY;
       }
     }, [disabled]);
 
@@ -309,19 +314,19 @@ export const CameraControls: FC<
     useEffect(() => {
       // If a node is being dragged, disable the camera controls
       if (isDragging) {
-        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
-        cameraRef.current.touches.one = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.mouseButtons.left = CameraControlsClass.ACTION.NONE;
+        cameraRef.current.touches.one = CameraControlsClass.ACTION.NONE;
       } else {
         if (mode === 'rotate') {
           cameraRef.current.mouseButtons.left =
-            ThreeCameraControls.ACTION.ROTATE;
+            CameraControlsClass.ACTION.ROTATE;
           cameraRef.current.touches.one =
-            ThreeCameraControls.ACTION.TOUCH_ROTATE;
+            CameraControlsClass.ACTION.TOUCH_ROTATE;
         } else {
           cameraRef.current.touches.one =
-            ThreeCameraControls.ACTION.TOUCH_TRUCK;
+            CameraControlsClass.ACTION.TOUCH_TRUCK;
           cameraRef.current.mouseButtons.left =
-            ThreeCameraControls.ACTION.TRUCK;
+            CameraControlsClass.ACTION.TRUCK;
         }
       }
     }, [isDragging, mode]);
@@ -356,7 +361,7 @@ export const CameraControls: FC<
 
     return (
       <CameraControlsContext.Provider value={values}>
-        <threeCameraControls
+        <cameraControls
           ref={controls => {
             cameraRef.current = controls;
             if (!controlMounted) {

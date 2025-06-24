@@ -1,11 +1,11 @@
-import CameraControls from 'camera-controls';
+import type CameraControlsLib from 'camera-controls';
 import { createContext, useContext } from 'react';
 
 export interface CameraControlsContextProps {
   /**
    * The camera controls object.
    */
-  controls: CameraControls | null;
+  controls: CameraControlsLib | null;
 
   /**
    * A function that resets the camera controls.

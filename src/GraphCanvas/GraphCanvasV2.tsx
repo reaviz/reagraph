@@ -139,8 +139,8 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
       maxEdges: 10000,
       enableObjectPooling: true,
       enableViewportCulling: true,
-      cullingDistance: 2000,
-      memoryBudgetMB: 2048
+      cullingDistance: 2000
+      // memoryBudgetMB: 2048
     },
     rendering: {
       maxInstancesPerBatch: 10000,
@@ -153,7 +153,7 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
       enableGPUCompute: true,
       textureSize: 512,
       fallbackToCPU: true,
-      iterations: 100,
+      maxIterations: 100,
       theta: 0.5
     },
     workers: {
@@ -173,8 +173,8 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
       maxEdges: 7500,
       enableObjectPooling: true,
       enableViewportCulling: true,
-      cullingDistance: 1500,
-      memoryBudgetMB: 1024
+      cullingDistance: 1500
+      // memoryBudgetMB: 1024
     },
     rendering: {
       maxInstancesPerBatch: 5000,
@@ -187,7 +187,7 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
       enableGPUCompute: true,
       textureSize: 256,
       fallbackToCPU: true,
-      iterations: 75,
+      maxIterations: 75,
       theta: 0.7
     },
     workers: {
@@ -207,8 +207,8 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
       maxEdges: 5000,
       enableObjectPooling: true,
       enableViewportCulling: true,
-      cullingDistance: 1000,
-      memoryBudgetMB: 512
+      cullingDistance: 1000
+      // memoryBudgetMB: 512
     },
     rendering: {
       maxInstancesPerBatch: 1000,
@@ -221,7 +221,7 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
       enableGPUCompute: false, // CPU only for power saving
       textureSize: 128,
       fallbackToCPU: true,
-      iterations: 50,
+      maxIterations: 50,
       theta: 0.9
     },
     workers: {
@@ -240,7 +240,7 @@ const OPTIMIZATION_PROFILES: Record<string, OptimizationProfile> = {
  * Feature detection utilities
  */
 class FeatureDetector {
-  private static cache = new Map<string, boolean>();
+  private static cache = new Map<string, any>();
 
   static detectWebGL2(): boolean {
     if (this.cache.has('webgl2')) return this.cache.get('webgl2')!;
@@ -254,8 +254,12 @@ class FeatureDetector {
   }
 
   static detectSharedArrayBuffer(): { supported: boolean; reasons: string[] } {
-    if (this.cache.has('sharedArrayBuffer'))
-      return this.cache.get('sharedArrayBuffer')!;
+    if (this.cache.has('sharedArrayBuffer')) {
+      return this.cache.get('sharedArrayBuffer') as {
+        supported: boolean;
+        reasons: string[];
+      };
+    }
 
     const reasons: string[] = [];
     let supported = true;
@@ -280,7 +284,7 @@ class FeatureDetector {
     }
 
     const result = { supported, reasons };
-    this.cache.set('sharedArrayBuffer', result);
+    this.cache.set('sharedArrayBuffer' as any, result as any);
     return result;
   }
 
@@ -347,9 +351,9 @@ class FeatureDetector {
     if (capabilities.deviceMemory < 4) {
       resolved.memory.maxNodes = Math.floor(resolved.memory.maxNodes * 0.5);
       resolved.memory.maxEdges = Math.floor(resolved.memory.maxEdges * 0.5);
-      resolved.memory.memoryBudgetMB = Math.floor(
-        resolved.memory.memoryBudgetMB * 0.5
-      );
+      // resolved.memory.memoryBudgetMB = Math.floor(
+      //   resolved.memory.memoryBudgetMB * 0.5
+      // );
     }
 
     if (capabilities.hardwareConcurrency < 4) {
@@ -452,14 +456,14 @@ const GraphCanvasV2Inner: React.FC<{
           }
 
           const pool = new SharedWorkerPool(
-            activeProfile.workers.maxWorkers,
-            activeProfile.memory.maxNodes,
             {
+              maxWorkers: activeProfile.workers.maxWorkers,
               enableSharedArrayBuffer:
                 activeProfile.workers.enableSharedArrayBuffer,
               workerTypes: activeProfile.workers.workerTypes,
               loadBalancingStrategy: 'least-loaded'
-            }
+            },
+            activeProfile.memory.maxNodes
           );
           setWorkerPool(pool);
         } catch (error) {
@@ -512,11 +516,11 @@ const GraphCanvasV2Inner: React.FC<{
         data: node.data || {},
         links: [],
         index,
-        x: existingPos.x || (Math.random() - 0.5) * 1000,
-        y: existingPos.y || (Math.random() - 0.5) * 1000,
-        z: existingPos.z || (Math.random() - 0.5) * 200,
-        vx: existingPos.vx || 0,
-        vy: existingPos.vy || 0
+        x: (existingPos as any).x || (Math.random() - 0.5) * 1000,
+        y: (existingPos as any).y || (Math.random() - 0.5) * 1000,
+        z: (existingPos as any).z || (Math.random() - 0.5) * 200,
+        vx: (existingPos as any).vx || 0,
+        vy: (existingPos as any).vy || 0
       };
 
       return {

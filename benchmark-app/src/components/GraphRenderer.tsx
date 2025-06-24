@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
-import { GraphCanvas, darkTheme } from 'reagraph';
+import { GraphCanvas } from 'reagraph';
+import { darkTheme } from 'reagraph';
 import { GraphData } from '../types/benchmark.types';
 import { WorkerManager, PositionUpdate } from '../utils/WorkerManager';
-import { AdaptivePerformanceManager } from '../../../src/performance/AdaptivePerformanceManager';
-import { AdvancedMemoryManager } from '../../../src/rendering/MemoryManager';
+import { AdaptivePerformanceManager } from 'reagraph';
+import { AdvancedMemoryManager } from 'reagraph';
 import { PerformanceHUD } from './PerformanceHUD';
 
 interface GraphRendererProps {

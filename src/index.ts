@@ -26,6 +26,7 @@ export {
   PerformanceAnalyzer,
   PerformanceProfiles
 } from './performance/PerformanceMonitor';
+export { AdaptivePerformanceManager } from './performance/AdaptivePerformanceManager';
 export type {
   PerformanceMetrics,
   PerformanceThresholds,

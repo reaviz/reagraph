@@ -31,14 +31,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
-      // Fix reagraph import resolution for local development
       'reagraph': resolve(__dirname, '../dist/main.mjs')
     }
   },
   optimizeDeps: {
-    // Exclude reagraph from pre-bundling since it's a local file dependency
-    exclude: ['reagraph'],
-    // Force include these dependencies that reagraph needs
-    include: ['react', 'react-dom', 'three', '@react-three/fiber']
+    // Force include dependencies
+    include: ['react', 'react-dom', 'three', '@react-three/fiber', 'camera-controls']
   }
 });

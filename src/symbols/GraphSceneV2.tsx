@@ -243,7 +243,7 @@ export const GraphSceneV2: React.FC<GraphSceneV2Props> = ({
       <>
         {/* Render clusters */}
         {Array.from(clusters.values()).map(cluster => (
-          <Cluster key={cluster.id} {...cluster} />
+          <Cluster key={cluster.label} {...cluster} />
         ))}
 
         {/* Render edges */}
