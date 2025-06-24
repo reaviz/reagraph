@@ -1,3 +1,6 @@
+# 4.24.2 - 6/24/25
+- [chore] Add docgen script #338
+
 # 4.24.1 - 6/6/25
 - [chore] Update dependencies including React, Three.js, and graphology packages #333
 
