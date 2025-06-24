@@ -3,7 +3,7 @@
   "version": "4.24.1",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
-    "build": "vite build --mode library",
+    "build": "vite build --mode library && npm run build:docs",
     "test": "vitest --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "prettier": "prettier --loglevel warn --write 'src/**/*.{ts,tsx,js,jsx}'",
@@ -11,6 +11,7 @@
     "lint:fix": "eslint --ext js,ts,tsx --fix src",
     "start": "storybook dev -p 9009",
     "build-storybook": "storybook build",
+    "build:docs": "node scripts/docs.js",
     "prepare": "husky install",
     "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes"
   },
@@ -24,7 +25,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.umd.cjs"
-    }
+    },
+    "./docs/*": "./dist/docs/*"
   },
   "browser": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -114,6 +116,7 @@
     "postcss-preset-env": "^9.4.0",
     "prettier": "^3.2.5",
     "react": "^19.1.0",
+    "react-docgen-typescript": "^2.4.0",
     "react-dom": "^19.1.0",
     "reakeys": "^2.0.6",
     "rollup-plugin-peer-deps-external": "2.2.4",
