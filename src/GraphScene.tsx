@@ -39,6 +39,7 @@ import { useStore } from './store';
 import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';
+import { aggregateEdges as aggregateEdgesUtil } from './utils/aggregateEdges';
 
 export interface GraphSceneProps {
   /**
@@ -167,6 +168,11 @@ export interface GraphSceneProps {
    * Advanced overrides for the layout.
    */
   layoutOverrides?: LayoutOverrides;
+
+  /**
+   * Whether to aggregate edges with the same source and target.
+   */
+  aggregateEdges?: boolean;
 
   /**
    * When a node was clicked.
@@ -345,6 +351,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         labelFontUrl,
         renderNode,
         onRenderCluster,
+        aggregateEdges,
         ...rest
       },
       ref
@@ -371,8 +378,17 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       // Get the graph and nodes via the store for memo
       const graph = useStore(state => state.graph);
       const nodes = useStore(state => state.nodes);
-      const edges = useStore(state => state.edges);
+      const edgesStore = useStore(state => state.edges);
       const clusters = useStore(state => [...state.clusters.values()]);
+
+      // Process edges based on aggregation setting
+      const edges = useMemo(() => {
+        const processedEdges = aggregateEdges
+          ? aggregateEdgesUtil(edgesStore)
+          : edgesStore;
+        // Filter out any undefined edges
+        return processedEdges.filter(edge => edge !== undefined);
+      }, [edgesStore, aggregateEdges]);
 
       // Center the graph on the nodes
       const { centerNodesById, fitNodesInViewById, isCentered } =
