@@ -44,47 +44,31 @@ export const aggregateEdges = (
   const aggregatedEdges: InternalGraphEdge[] = [];
 
   edgeGroups.forEach((group, key) => {
-    if (edgeGroups.size === 1) {
-      // If there's only one edge in the group, mark it as aggregated with 1 original edge
-      const singleEdge = group[0];
-      const aggregatedEdge: InternalGraphEdge = {
-        ...singleEdge,
-        // Store the original edge in the data property to mark it as having gone through aggregation
-        data: {
-          ...(singleEdge.data || {}),
-          originalEdges: group,
-          count: 1,
-          isAggregated: true
-        }
-      };
-      aggregatedEdges.push(aggregatedEdge);
-    } else {
-      // If there are multiple edges, create an aggregated edge
-      const [source, target] = key.split('-');
-      const firstEdge = group[0];
+    // If there are multiple edges, create an aggregated edge
+    const [source, target] = key.split('-');
+    const firstEdge = group[0];
 
-      if (!source || !target || !firstEdge) {
-        return; // Skip this group if we don't have valid source/target
-      }
-
-      // Create an aggregated edge that represents the group
-      const aggregatedEdge: InternalGraphEdge = {
-        ...firstEdge,
-        source,
-        target,
-        label: `${group.length} edges`,
-        labelVisible: true,
-        // Store the original edges in the data property
-        data: {
-          ...(firstEdge.data || {}),
-          originalEdges: group,
-          count: group.length,
-          isAggregated: true
-        }
-      };
-
-      aggregatedEdges.push(aggregatedEdge);
+    if (!source || !target || !firstEdge) {
+      return; // Skip this group if we don't have valid source/target
     }
+
+    // Create an aggregated edge that represents the group
+    const aggregatedEdge: InternalGraphEdge = {
+      ...firstEdge,
+      source,
+      target,
+      label: `${group.length} edges`,
+      labelVisible: true,
+      // Store the original edges in the data property
+      data: {
+        ...(firstEdge.data || {}),
+        originalEdges: group,
+        count: group.length,
+        isAggregated: true
+      }
+    };
+
+    aggregatedEdges.push(aggregatedEdge);
   });
 
   return aggregatedEdges;

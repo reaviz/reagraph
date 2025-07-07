@@ -145,6 +145,7 @@ export const Line: FC<LineProps> = ({
   return (
     <mesh
       userData={{ id, type: 'edge' }}
+      renderOrder={-1}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut}
       onClick={onClick}
