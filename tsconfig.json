@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
-    "rootDirs": ["src", "docs"],
+    "rootDirs": ["src", "stories"],
     "noImplicitAny": false,
     "noImplicitThis": false,
     "noUnusedLocals": false,
