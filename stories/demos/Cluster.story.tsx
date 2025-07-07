@@ -12,7 +12,7 @@ import {
   manyClusterNodes
 } from '../assets/demo';
 
-import demonSvg from '../../docs/assets/twitter.svg';
+import demonSvg from '../assets/twitter.svg';
 import { Icon, Sphere, Ring } from '../../src/symbols';
 
 export default {
