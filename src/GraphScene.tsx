@@ -6,7 +6,8 @@ import React, {
   Ref,
   useCallback,
   useImperativeHandle,
-  useMemo
+  useMemo,
+  useEffect
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutOverrides, LayoutTypes } from './layout';
@@ -392,10 +393,12 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         }
       }, [edgesStore, aggregateEdges]);
 
-      // Update the store if edges were aggregated
-      if (edgesStore.length !== edges.length) {
-        setEdges(edges);
-      }
+      // Update the store if edges were aggregated (moved to useEffect to avoid render cycle error)
+      useEffect(() => {
+        if (edgesStore.length !== edges.length) {
+          setEdges(edges);
+        }
+      }, [edges, edgesStore.length, setEdges]);
 
       // Center the graph on the nodes
       const { centerNodesById, fitNodesInViewById, isCentered } =
