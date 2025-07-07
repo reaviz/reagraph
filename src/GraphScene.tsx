@@ -379,13 +379,23 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const graph = useStore(state => state.graph);
       const nodes = useStore(state => state.nodes);
       const edgesStore = useStore(state => state.edges);
+      const setEdges = useStore(state => state.setEdges);
       const clusters = useStore(state => [...state.clusters.values()]);
 
-      // Process edges based on aggregation setting
-      const edges = useMemo(
-        () => (aggregateEdges ? aggregateEdgesUtil(edgesStore) : edgesStore),
-        [edgesStore, aggregateEdges]
-      );
+      // Process edges based on aggregation setting and update store
+      const edges = useMemo(() => {
+        if (aggregateEdges) {
+          const aggregatedEdges = aggregateEdgesUtil(edgesStore);
+          return aggregatedEdges;
+        } else {
+          return edgesStore;
+        }
+      }, [edgesStore, aggregateEdges]);
+
+      // Update the store if edges were aggregated
+      if (edgesStore.length !== edges.length) {
+        setEdges(edges);
+      }
 
       // Center the graph on the nodes
       const { centerNodesById, fitNodesInViewById, isCentered } =

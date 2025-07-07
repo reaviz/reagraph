@@ -44,9 +44,20 @@ export const aggregateEdges = (
   const aggregatedEdges: InternalGraphEdge[] = [];
 
   edgeGroups.forEach((group, key) => {
-    if (group.length === 1) {
-      // If there's only one edge in the group, just add it as is
-      aggregatedEdges.push(group[0]);
+    if (edgeGroups.size === 1) {
+      // If there's only one edge in the group, mark it as aggregated with 1 original edge
+      const singleEdge = group[0];
+      const aggregatedEdge: InternalGraphEdge = {
+        ...singleEdge,
+        // Store the original edge in the data property to mark it as having gone through aggregation
+        data: {
+          ...(singleEdge.data || {}),
+          originalEdges: group,
+          count: 1,
+          isAggregated: true
+        }
+      };
+      aggregatedEdges.push(aggregatedEdge);
     } else {
       // If there are multiple edges, create an aggregated edge
       const [source, target] = key.split('-');
@@ -67,7 +78,8 @@ export const aggregateEdges = (
         data: {
           ...(firstEdge.data || {}),
           originalEdges: group,
-          count: group.length
+          count: group.length,
+          isAggregated: true
         }
       };
 
