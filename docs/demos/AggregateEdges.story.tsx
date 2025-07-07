@@ -103,6 +103,11 @@ export const AggregateEdges = () => {
         ]}
         edges={edges}
         aggregateEdges={aggregateEdges}
+        layoutType="forceDirected2d"
+        layoutOverrides={{
+          linkDistance: 200,
+          nodeStrength: -1000
+        }}
       />
     </div>
   );
@@ -247,6 +252,10 @@ export const ComplexExample = () => {
         edges={edges}
         aggregateEdges={aggregateEdges}
         layoutType="forceDirected2d"
+        layoutOverrides={{
+          linkDistance: 300,
+          nodeStrength: -2000
+        }}
       />
     </div>
   );

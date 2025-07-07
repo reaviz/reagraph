@@ -63,8 +63,6 @@ export const aggregateEdges = (
         target,
         label: `${group.length} edges`,
         labelVisible: true,
-        // Increase the size based on the number of edges in the group
-        // size: Math.min(5, 1 + Math.log(group.length)),
         // Store the original edges in the data property
         data: {
           ...(firstEdge.data || {}),
