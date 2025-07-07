@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="650" src="docs/assets/logo-light.png">
+  <img width="650" src="stories/assets/logo-light.png">
   <br />
   <br />
   WebGL Network Graphs for React
