@@ -1,5 +1,6 @@
 import { InternalGraphEdge } from '../types';
 import Graph from 'graphology';
+import { LabelVisibilityType } from './visibility';
 
 /**
  * Graphology-native approach using reduceEdges for optimal performance
@@ -44,9 +45,13 @@ export const groupEdgesBySourceTarget = (
 /**
  * Aggregates edges with the same source and target using Graphology's native functions
  * @param graph Graphology graph instance
+ * @param labelType Label visibility type to determine if edge labels should be visible
  * @returns Array of aggregated edges
  */
-export const aggregateEdges = (graph: Graph): InternalGraphEdge[] => {
+export const aggregateEdges = (
+  graph: Graph,
+  labelType?: LabelVisibilityType
+): InternalGraphEdge[] => {
   if (!graph || graph.size === 0) {
     return [];
   }
@@ -54,6 +59,8 @@ export const aggregateEdges = (graph: Graph): InternalGraphEdge[] => {
   // Use Graphology's native reduceEdges to group and aggregate in one pass
   const edgeGroups = groupEdgesBySourceTarget(graph);
   const aggregatedEdges: InternalGraphEdge[] = [];
+  // Determine if edge labels should be visible based on labelType
+  const shouldShowEdgeLabels = labelType === 'all' || labelType === 'edges';
 
   // Process groups efficiently
   for (const [key, group] of edgeGroups) {
@@ -70,7 +77,7 @@ export const aggregateEdges = (graph: Graph): InternalGraphEdge[] => {
       source,
       target,
       label: `${group.length} edges`,
-      labelVisible: true,
+      labelVisible: shouldShowEdgeLabels,
       // Store the original edges in the data property
       data: {
         ...(firstEdge.data || {}),

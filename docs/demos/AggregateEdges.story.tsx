@@ -278,6 +278,7 @@ export const ComplexExample = () => {
         edges={edges}
         aggregateEdges={aggregateEdges}
         layoutType="forceDirected2d"
+        labelType="all"
         layoutOverrides={{
           linkDistance: 300,
           nodeStrength: -2000

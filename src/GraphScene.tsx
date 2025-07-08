@@ -357,7 +357,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       },
       ref
     ) => {
-      const { layoutType, clusterAttribute } = rest;
+      const { layoutType, clusterAttribute, labelType } = rest;
 
       // Get the gl/scene/camera for render shortcuts
       const gl = useThree(state => state.gl);
@@ -386,12 +386,12 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       // Process edges based on aggregation setting and update store
       const edges = useMemo(() => {
         if (aggregateEdges) {
-          const aggregatedEdges = aggregateEdgesUtil(graph);
+          const aggregatedEdges = aggregateEdgesUtil(graph, labelType);
           return aggregatedEdges;
         } else {
           return edgesStore;
         }
-      }, [edgesStore, aggregateEdges, graph]);
+      }, [edgesStore, aggregateEdges, graph, labelType]);
 
       // Update the store if edges were aggregated (moved to useEffect to avoid render cycle error)
       useEffect(() => {
