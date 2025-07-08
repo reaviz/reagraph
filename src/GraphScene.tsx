@@ -386,19 +386,19 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       // Process edges based on aggregation setting and update store
       const edges = useMemo(() => {
         if (aggregateEdges) {
-          const aggregatedEdges = aggregateEdgesUtil(edgesStore);
+          const aggregatedEdges = aggregateEdgesUtil(graph);
           return aggregatedEdges;
         } else {
           return edgesStore;
         }
-      }, [edgesStore, aggregateEdges]);
+      }, [edgesStore, aggregateEdges, graph]);
 
       // Update the store if edges were aggregated (moved to useEffect to avoid render cycle error)
       useEffect(() => {
-        if (edgesStore.length !== edges.length) {
+        if (aggregateEdges && edgesStore.length !== edges.length) {
           setEdges(edges);
         }
-      }, [edges, edgesStore.length, setEdges]);
+      }, [edges, edgesStore.length, setEdges, aggregateEdges]);
 
       // Center the graph on the nodes
       const { centerNodesById, fitNodesInViewById, isCentered } =

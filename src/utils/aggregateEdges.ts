@@ -1,55 +1,67 @@
 import { InternalGraphEdge } from '../types';
+import Graph from 'graphology';
 
 /**
- * Groups edges by their source and target nodes.
- * @param edges Array of edges to group
+ * Graphology-native approach using reduceEdges for optimal performance
+ * @param graph Graphology graph instance
  * @returns Map with source-target pairs as keys and arrays of edges as values
  */
 export const groupEdgesBySourceTarget = (
-  edges: InternalGraphEdge[]
+  graph: Graph
 ): Map<string, InternalGraphEdge[]> => {
-  const edgeGroups = new Map<string, InternalGraphEdge[]>();
+  // Use Graphology's native reduceEdges
+  return graph.reduceEdges(
+    (
+      edgeGroups: Map<string, InternalGraphEdge[]>,
+      edgeKey,
+      attributes,
+      source,
+      target
+    ) => {
+      const key = `${source}-${target}`;
 
-  // Filter out undefined edges
-  const validEdges = edges.filter(edge => edge && edge.source && edge.target);
+      // Construct complete InternalGraphEdge object
+      const edge: InternalGraphEdge = {
+        id: edgeKey,
+        source,
+        target,
+        ...attributes
+      };
 
-  validEdges.forEach(edge => {
-    // Create a key that represents the source-target pair
-    // We sort the source and target to ensure that edges in both directions are grouped separately
-    const key = `${edge.source}-${edge.target}`;
+      const group = edgeGroups.get(key);
+      if (group) {
+        group.push(edge);
+      } else {
+        edgeGroups.set(key, [edge]);
+      }
 
-    if (!edgeGroups.has(key)) {
-      edgeGroups.set(key, []);
-    }
-
-    edgeGroups.get(key)!.push(edge);
-  });
-
-  return edgeGroups;
+      return edgeGroups;
+    },
+    new Map<string, InternalGraphEdge[]>()
+  );
 };
 
 /**
- * Aggregates edges with the same source and target.
- * @param edges Array of edges to aggregate
+ * Aggregates edges with the same source and target using Graphology's native functions
+ * @param graph Graphology graph instance
  * @returns Array of aggregated edges
  */
-export const aggregateEdges = (
-  edges: InternalGraphEdge[]
-): InternalGraphEdge[] => {
-  if (!edges || edges.length === 0) {
+export const aggregateEdges = (graph: Graph): InternalGraphEdge[] => {
+  if (!graph || graph.size === 0) {
     return [];
   }
 
-  const edgeGroups = groupEdgesBySourceTarget(edges);
+  // Use Graphology's native reduceEdges to group and aggregate in one pass
+  const edgeGroups = groupEdgesBySourceTarget(graph);
   const aggregatedEdges: InternalGraphEdge[] = [];
 
-  edgeGroups.forEach((group, key) => {
-    // If there are multiple edges, create an aggregated edge
+  // Process groups efficiently
+  for (const [key, group] of edgeGroups) {
     const [source, target] = key.split('-');
     const firstEdge = group[0];
 
     if (!source || !target || !firstEdge) {
-      return; // Skip this group if we don't have valid source/target
+      continue;
     }
 
     // Create an aggregated edge that represents the group
@@ -69,7 +81,7 @@ export const aggregateEdges = (
     };
 
     aggregatedEdges.push(aggregatedEdge);
-  });
+  }
 
   return aggregatedEdges;
 };
