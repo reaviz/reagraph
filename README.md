@@ -57,6 +57,7 @@ Reagraph is a high-performance network graph visualization built in WebGL for Re
 - Advanced Label Placement
 - Edge Interpolation
 - Clustering
+- Edge Bundling
 
 with the following built in layouts:
 
