@@ -71,6 +71,11 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * When the canvas was clicked but didn't hit a node/edge.
    */
   onCanvasClick?: (event: MouseEvent) => void;
+
+  /**
+   * Whether to aggregate edges with the same source and target.
+   */
+  aggregateEdges?: boolean;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
@@ -128,6 +133,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         disabled,
         onLasso,
         onLassoEnd,
+        aggregateEdges,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -228,6 +234,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                       defaultNodeSize={defaultNodeSize}
                       minNodeSize={minNodeSize}
                       maxNodeSize={maxNodeSize}
+                      aggregateEdges={aggregateEdges}
                       {...rest}
                     />
                   </Suspense>

@@ -6,7 +6,8 @@ import React, {
   Ref,
   useCallback,
   useImperativeHandle,
-  useMemo
+  useMemo,
+  useEffect
 } from 'react';
 import { useGraph } from './useGraph';
 import { LayoutOverrides, LayoutTypes } from './layout';
@@ -39,6 +40,7 @@ import { useStore } from './store';
 import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';
+import { aggregateEdges as aggregateEdgesUtil } from './utils/aggregateEdges';
 
 export interface GraphSceneProps {
   /**
@@ -167,6 +169,11 @@ export interface GraphSceneProps {
    * Advanced overrides for the layout.
    */
   layoutOverrides?: LayoutOverrides;
+
+  /**
+   * Whether to aggregate edges with the same source and target.
+   */
+  aggregateEdges?: boolean;
 
   /**
    * When a node was clicked.
@@ -345,11 +352,12 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         labelFontUrl,
         renderNode,
         onRenderCluster,
+        aggregateEdges,
         ...rest
       },
       ref
     ) => {
-      const { layoutType, clusterAttribute } = rest;
+      const { layoutType, clusterAttribute, labelType } = rest;
 
       // Get the gl/scene/camera for render shortcuts
       const gl = useThree(state => state.gl);
@@ -371,8 +379,26 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       // Get the graph and nodes via the store for memo
       const graph = useStore(state => state.graph);
       const nodes = useStore(state => state.nodes);
-      const edges = useStore(state => state.edges);
+      const edgesStore = useStore(state => state.edges);
+      const setEdges = useStore(state => state.setEdges);
       const clusters = useStore(state => [...state.clusters.values()]);
+
+      // Process edges based on aggregation setting and update store
+      const edges = useMemo(() => {
+        if (aggregateEdges) {
+          const aggregatedEdges = aggregateEdgesUtil(graph, labelType);
+          return aggregatedEdges;
+        } else {
+          return edgesStore;
+        }
+      }, [edgesStore, aggregateEdges, graph, labelType]);
+
+      // Update the store if edges were aggregated (moved to useEffect to avoid render cycle error)
+      useEffect(() => {
+        if (aggregateEdges && edgesStore.length !== edges.length) {
+          setEdges(edges);
+        }
+      }, [edges, edgesStore.length, setEdges, aggregateEdges]);
 
       // Center the graph on the nodes
       const { centerNodesById, fitNodesInViewById, isCentered } =

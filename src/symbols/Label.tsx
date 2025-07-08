@@ -70,7 +70,7 @@ export const Label: FC<LabelProps> = ({
   );
 
   return (
-    <Billboard position={[0, 0, 1]}>
+    <Billboard position={[0, 0, 1]} renderOrder={1}>
       <Text
         font={fontUrl}
         fontSize={fontSize}

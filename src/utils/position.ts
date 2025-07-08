@@ -121,14 +121,21 @@ export function calculateEdgeCurveOffset({ edge, edges, curved }) {
     updatedCurved = true;
     const edgeIndex = parallelEdges.indexOf(edge.id);
 
-    if (parallelEdges.length === 2) {
-      curveOffset =
-        edgeIndex === 0 ? MULTI_EDGE_OFFSET_FACTOR : -MULTI_EDGE_OFFSET_FACTOR;
-    } else {
-      curveOffset =
-        (edgeIndex - Math.floor(parallelEdges.length / 2)) *
-        MULTI_EDGE_OFFSET_FACTOR;
-    }
+    // Progressive distribution with unique magnitude for each edge
+    // This prevents overlapping by ensuring each edge has sufficient separation
+    const offsetMultiplier = edgeIndex === 0 ? 1 : 1 + edgeIndex * 0.8;
+    const side = edgeIndex % 2 === 0 ? 1 : -1;
+    const magnitude = MULTI_EDGE_OFFSET_FACTOR * offsetMultiplier;
+    curveOffset = side * magnitude;
+  }
+
+  if (edge.data?.isAggregated && edges.length > 1) {
+    const edgeIndex = parallelEdges.indexOf(edge.id);
+    return {
+      curved: true,
+      curveOffset:
+        edgeIndex === 0 ? MULTI_EDGE_OFFSET_FACTOR : -MULTI_EDGE_OFFSET_FACTOR
+    };
   }
 
   return { curved: updatedCurved, curveOffset };
