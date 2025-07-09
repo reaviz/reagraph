@@ -75,12 +75,16 @@ export const aggregateEdges = (
     const baseSize = firstEdge.size || 1; // Default to 1 if no size is specified
     const aggregatedSize = baseSize + group.length * baseSize * 0.5;
 
+    // Only show aggregation label when actually aggregating multiple edges
+    const aggregated = group.length > 1;
+    const label = aggregated ? `${group.length} edges` : firstEdge.label;
+
     // Create an aggregated edge that represents the group
     const aggregatedEdge: InternalGraphEdge = {
       ...firstEdge,
       source,
       target,
-      label: `${group.length} edges`,
+      label,
       labelVisible: shouldShowEdgeLabels,
       size: aggregatedSize,
       // Store the original edges in the data property
@@ -88,7 +92,7 @@ export const aggregateEdges = (
         ...(firstEdge.data || {}),
         originalEdges: group,
         count: group.length,
-        isAggregated: true,
+        isAggregated: aggregated,
         originalSize: baseSize
       }
     };
