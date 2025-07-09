@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="650" src="docs/assets/logo-light.png">
+  <img width="650" src="stories/assets/logo-light.png">
   <br />
   <br />
   WebGL Network Graphs for React
@@ -33,6 +33,8 @@ Reagraph is a high-performance network graph visualization built in WebGL for Re
 - Checkout the [**docs and demos**](https://reagraph.dev)
 - Checkout a basic demo on [CodeSandbox](https://codesandbox.io/s/reagraph-example-mwh96q)
 - Learn about updates from the [changelog](CHANGELOG.md)
+- Grab the design file for the docs in [Figma](https://www.figma.com/community/file/1524029217670772128/reagraph-landing-page)
+- Improve the docs on [Github](https://github.com/reaviz/reagraph-website)
 
 ## 💎 Other Projects
 
@@ -55,6 +57,7 @@ Reagraph is a high-performance network graph visualization built in WebGL for Re
 - Advanced Label Placement
 - Edge Interpolation
 - Clustering
+- Edge Bundling
 
 with the following built in layouts:
 

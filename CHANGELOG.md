@@ -1,3 +1,6 @@
+# 4.25.0 - 7/8/25
+- [feature] Add Aggregate Edges Functionality #342
+
 # 4.24.2 - 6/24/25
 - [chore] Add docgen script #338
 
