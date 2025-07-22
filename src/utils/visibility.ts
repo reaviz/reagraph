@@ -11,13 +11,18 @@ interface CalcLabelVisibilityArgs {
 }
 
 export function calcLabelVisibility({
-  nodeCount,
   nodePosition,
   labelType,
   camera
 }: CalcLabelVisibilityArgs) {
   return (shape: 'node' | 'edge', size: number) => {
+    const isAlwaysVisible =
+      labelType === 'all' ||
+      (labelType === 'nodes' && shape === 'node') ||
+      (labelType === 'edges' && shape === 'edge');
+
     if (
+      !isAlwaysVisible &&
       camera &&
       nodePosition &&
       camera?.position?.z / camera?.zoom - nodePosition?.z > 6000
@@ -25,11 +30,7 @@ export function calcLabelVisibility({
       return false;
     }
 
-    if (labelType === 'all') {
-      return true;
-    } else if (labelType === 'nodes' && shape === 'node') {
-      return true;
-    } else if (labelType === 'edges' && shape === 'edge') {
+    if (isAlwaysVisible) {
       return true;
     } else if (labelType === 'auto' && shape === 'node') {
       if (size > 7) {
