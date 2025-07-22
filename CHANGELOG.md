@@ -1,3 +1,6 @@
+# 4.25.1 - 7/22/25
+- [fix] Display label always for next types: all, nodes, edges #344
+
 # 4.25.0 - 7/8/25
 - [feature] Add Aggregate Edges Functionality #342
 
