@@ -132,7 +132,7 @@ export const Badge: FC<BadgeProps> = ({
             args={[badgeDimensions.width, badgeDimensions.height, 0.01]} // dynamic width, height, depth
             radius={0.12} // corner radius
             smoothness={8}
-            material-color={backgroundColor}
+            material-color={normalizedBgColor}
             material-transparent={true}
           />
         </a.mesh>

@@ -42,7 +42,7 @@ export const CustomColors = () => (
           label="5"
           backgroundColor="#ff6b6b"
           textColor="#ffffff"
-          badgeSize={0.3}
+          position="center"
         />
       </group>
     )}
@@ -63,9 +63,9 @@ export const DifferentSizes = () => (
           label="99+"
           backgroundColor="#4ecdc4"
           textColor="#ffffff"
-          badgeSize={0.35}
-          position={[rest.size * 0.7, rest.size * 0.7, 0.1]}
-
+          padding={0.8}
+          badgeSize={1}
+          position="bottom-left"
         />
       </group>
     )}
