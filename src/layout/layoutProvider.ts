@@ -118,14 +118,22 @@ export function layoutProvider({
       radius: radius || 300
     } as CircularLayoutInputs);
   } else if (type === 'concentric2d') {
-    const { minRadius, maxRadius, center, useDegreeCentrality } =
-      rest as ConcentricLayoutInputs;
+    const {
+      minRadius,
+      maxRadius,
+      center,
+      useDegreeCentrality,
+      spacingFactor,
+      startAngle
+    } = rest as ConcentricLayoutInputs;
     return concentric2d({
       ...rest,
       minRadius: minRadius || 50,
       maxRadius: maxRadius || 300,
       center: center || [0, 0],
-      useDegreeCentrality: useDegreeCentrality !== false
+      useDegreeCentrality: useDegreeCentrality !== false,
+      spacingFactor: spacingFactor || 1.25,
+      startAngle: startAngle || 0
     } as ConcentricLayoutInputs);
   } else if (type === 'hierarchicalTd') {
     return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);

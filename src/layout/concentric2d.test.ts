@@ -29,6 +29,8 @@ describe('concentric2d', () => {
       maxRadius: 200,
       center: [0, 0],
       useDegreeCentrality: true,
+      spacingFactor: 1.25,
+      startAngle: 0,
       getNodePosition: () => undefined
     });
 
@@ -59,6 +61,8 @@ describe('concentric2d', () => {
     const layout = concentric2d({
       graph,
       type: 'concentric2d',
+      spacingFactor: 1.25,
+      startAngle: 0,
       getNodePosition: () => undefined
     });
 
@@ -73,6 +77,8 @@ describe('concentric2d', () => {
       graph,
       type: 'concentric2d',
       center: [100, 100],
+      spacingFactor: 1.25,
+      startAngle: 0,
       getNodePosition: () => undefined
     });
 

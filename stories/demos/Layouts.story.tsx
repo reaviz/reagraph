@@ -57,7 +57,9 @@ export const Concentric = () => (
       minRadius: 50,
       maxRadius: 300,
       center: [0, 0],
-      useDegreeCentrality: true
+      useDegreeCentrality: true,
+      spacingFactor: 1.25,
+      startAngle: 0
     }}
     nodes={complexNodes}
     edges={complexEdges}
