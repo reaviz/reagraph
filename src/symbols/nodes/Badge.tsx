@@ -3,7 +3,15 @@ import { a, useSpring } from '@react-spring/three';
 import { Billboard, RoundedBox, Text } from '@react-three/drei';
 import { animationConfig } from '../../utils';
 import { NodeRendererProps } from '../../types';
-import { Color, DoubleSide } from 'three';
+import { Color } from 'three';
+
+export type BadgePosition =
+  | 'top-right'
+  | 'top-left'
+  | 'bottom-right'
+  | 'bottom-left'
+  | 'center'
+  | 'custom';
 
 export interface BadgeProps extends NodeRendererProps {
   /**
@@ -27,9 +35,14 @@ export interface BadgeProps extends NodeRendererProps {
   badgeSize?: number;
 
   /**
-   * Position offset from the node center.
+   * Position offset from the node center or preset position.
    */
-  position?: [number, number, number];
+  position?: [number, number, number] | BadgePosition;
+
+  /**
+   * Padding around the badge text.
+   */
+  padding?: number;
 }
 
 export const Badge: FC<BadgeProps> = ({
@@ -40,7 +53,8 @@ export const Badge: FC<BadgeProps> = ({
   backgroundColor = '#ffffff',
   textColor = '#000000',
   badgeSize = 1.5,
-  position = [size * 0.65, size * 0.65, 0.1]
+  position = 'top-right',
+  padding = 0.3
 }) => {
   const normalizedBgColor = useMemo(
     () => new Color(backgroundColor),
@@ -48,13 +62,35 @@ export const Badge: FC<BadgeProps> = ({
   );
   const normalizedTextColor = useMemo(() => new Color(textColor), [textColor]);
 
+  // Calculate position based on preset or custom coordinates
+  const badgePosition = useMemo((): [number, number, number] => {
+    if (Array.isArray(position)) {
+      return position;
+    }
+
+    const offset = size * 0.65;
+    switch (position) {
+    case 'top-right':
+      return [offset, offset, 0.1];
+    case 'top-left':
+      return [-offset, offset, 0.1];
+    case 'bottom-right':
+      return [offset, -offset, 0.1];
+    case 'bottom-left':
+      return [-offset, -offset, 0.1];
+    case 'center':
+      return [0, 0, 0.1];
+    default:
+      return [offset, offset, 0.1];
+    }
+  }, [position, size]);
+
   // Calculate dynamic badge dimensions based on text length
   const badgeDimensions = useMemo(() => {
     const baseWidth = 0.5;
     const baseHeight = 0.5;
     const minWidth = baseWidth;
     const minHeight = baseHeight;
-    const padding = 0.3; // Increased padding
 
     // Estimate text width based on character count
     const charCount = label.length;
@@ -71,7 +107,7 @@ export const Badge: FC<BadgeProps> = ({
       width: estimatedWidth,
       height: estimatedHeight
     };
-  }, [label]);
+  }, [label, padding]);
 
   const { scale, badgeOpacity } = useSpring({
     from: {
@@ -89,7 +125,7 @@ export const Badge: FC<BadgeProps> = ({
   });
 
   return (
-    <Billboard position={position}>
+    <Billboard position={badgePosition}>
       <a.group scale={scale as any} renderOrder={2}>
         <a.mesh position={[0, 0, 1]}>
           <RoundedBox

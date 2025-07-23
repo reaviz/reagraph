@@ -15,10 +15,7 @@ export const Default = () => (
     cameraMode="rotate"
     renderNode={({ node, ...rest }) => (
       <group>
-        <Sphere
-          {...rest}
-          node={node}
-        />
+        <Sphere {...rest} node={node} />
         <Badge
           {...rest}
           node={node}
@@ -38,10 +35,7 @@ export const CustomColors = () => (
     cameraMode="rotate"
     renderNode={({ node, ...rest }) => (
       <group>
-        <Sphere
-          {...rest}
-          node={node}
-        />
+        <Sphere {...rest} node={node} />
         <Badge
           {...rest}
           node={node}
@@ -62,10 +56,7 @@ export const DifferentSizes = () => (
     cameraMode="rotate"
     renderNode={({ node, ...rest }) => (
       <group>
-        <Sphere
-          {...rest}
-          node={node}
-        />
+        <Sphere {...rest} node={node} />
         <Badge
           {...rest}
           node={node}
@@ -74,6 +65,7 @@ export const DifferentSizes = () => (
           textColor="#ffffff"
           badgeSize={0.35}
           position={[rest.size * 0.7, rest.size * 0.7, 0.1]}
+
         />
       </group>
     )}
