@@ -6,7 +6,8 @@ import {
   TubeGeometry,
   ColorRepresentation,
   Color,
-  Curve
+  Curve,
+  ShaderMaterial
 } from 'three';
 import { useStore } from '../store';
 import type { ThreeEvent } from '@react-three/fiber';
@@ -31,6 +32,11 @@ export interface LineProps {
    * The curve of the line in 3D space.
    */
   curve: Curve<Vector3>;
+
+  /**
+   * Whether the line should be dashed.
+   */
+  dashed?: boolean;
 
   /**
    * The unique identifier of the line.
@@ -73,12 +79,41 @@ export interface LineProps {
   curveOffset?: number;
 }
 
+// Dashed line shader for tube geometry
+const dashedVertexShader = `
+  varying vec2 vUv;
+  void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  }
+`;
+
+const dashedFragmentShader = `
+  uniform vec3 color;
+  uniform float opacity;
+  uniform float dashSize;
+  uniform float gapSize;
+  varying vec2 vUv;
+  
+  void main() {
+    float totalSize = dashSize + gapSize;
+    float position = mod(vUv.x * 10.0, totalSize);
+    
+    if (position > dashSize) {
+      discard;
+    }
+    
+    gl_FragColor = vec4(color, opacity);
+  }
+`;
+
 export const Line: FC<LineProps> = ({
   curveOffset,
   animated,
   color = '#000',
   curve,
   curved = false,
+  dashed = false,
   id,
   opacity = 1,
   size = 1,
@@ -92,6 +127,24 @@ export const Line: FC<LineProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const center = useStore(state => state.centerPosition);
   const mounted = useRef<boolean>(false);
+
+  // Create dashed material
+  const dashedMaterial = useMemo(() => {
+    if (!dashed) return null;
+
+    return new ShaderMaterial({
+      uniforms: {
+        color: { value: normalizedColor },
+        opacity: { value: opacity },
+        dashSize: { value: 0.5 },
+        gapSize: { value: 0.3 }
+      },
+      vertexShader: dashedVertexShader,
+      fragmentShader: dashedFragmentShader,
+      transparent: true,
+      depthTest: false
+    });
+  }, [dashed, normalizedColor, opacity]);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({
@@ -127,15 +180,29 @@ export const Line: FC<LineProps> = ({
         const fromVector = new Vector3(...fromVertices);
         const toVector = new Vector3(...toVertices);
 
-        const curve = getCurve(fromVector, 0, toVector, 0, curved, curveOffset);
-        tubeRef.current.copy(new TubeGeometry(curve, 20, size / 2, 5, false));
+        const newCurve = getCurve(
+          fromVector,
+          0,
+          toVector,
+          0,
+          curved,
+          curveOffset
+        );
+
+        if (tubeRef.current) {
+          // Use slightly smaller radius for dashed lines for visual distinction
+          const radius = dashed ? size * 0.4 : size / 2;
+          tubeRef.current.copy(
+            new TubeGeometry(newCurve, 20, radius, 5, false)
+          );
+        }
       },
       config: {
         ...animationConfig,
         duration: animated && !isDragging ? undefined : 0
       }
     };
-  }, [animated, isDragging, curve, size]);
+  }, [animated, isDragging, curve, size, dashed, curved, curveOffset]);
 
   useEffect(() => {
     // Handle mount operation for initial render
@@ -158,14 +225,18 @@ export const Line: FC<LineProps> = ({
       }}
     >
       <tubeGeometry attach="geometry" ref={tubeRef} />
-      <a.meshBasicMaterial
-        attach="material"
-        opacity={lineOpacity}
-        fog={true}
-        transparent={true}
-        depthTest={false}
-        color={normalizedColor}
-      />
+      {dashed ? (
+        <primitive attach="material" object={dashedMaterial} />
+      ) : (
+        <a.meshBasicMaterial
+          attach="material"
+          opacity={lineOpacity}
+          fog={true}
+          transparent={true}
+          depthTest={false}
+          color={normalizedColor}
+        />
+      )}
     </mesh>
   );
 };
