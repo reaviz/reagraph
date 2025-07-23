@@ -54,14 +54,18 @@ export const Badge: FC<BadgeProps> = ({
     const baseHeight = 0.5;
     const minWidth = baseWidth;
     const minHeight = baseHeight;
+    const padding = 0.3; // Increased padding
 
     // Estimate text width based on character count
     const charCount = label.length;
-    const estimatedWidth = Math.max(minWidth, Math.min(charCount * 0.15, 2.0)); // Cap at 2.0 to prevent excessive width
+    const estimatedWidth = Math.max(
+      minWidth,
+      Math.min(charCount * 0.15 + padding, 2.0 + padding)
+    ); // Add padding to width
     const estimatedHeight = Math.max(
       minHeight,
-      Math.min(charCount * 0.05, 0.8)
-    ); // Cap at 0.8 for height
+      Math.min(charCount * 0.05 + padding * 0.5, 0.8 + padding * 0.5)
+    ); // Add padding to height
 
     return {
       width: estimatedWidth,
@@ -102,7 +106,7 @@ export const Badge: FC<BadgeProps> = ({
           color={normalizedTextColor}
           anchorX="center"
           anchorY="middle"
-          maxWidth={badgeDimensions.width - 0.1} // Leave some padding
+          maxWidth={badgeDimensions.width - 0.2}
           textAlign="center"
           material-depthTest={false}
           material-depthWrite={false}
