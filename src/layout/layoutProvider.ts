@@ -1,8 +1,8 @@
-import { concentricLayout } from 'layout/concentric';
+import { concentricLayout } from 'layout/concentric2d';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
 import { circular2d, CircularLayoutInputs } from './circular2d';
-import { concentric2d, ConcentricLayoutInputs } from './concentric2d';
+import { ConcentricLayoutInputs } from './concentric2d';
 import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
 import { NoOverlapLayoutInputs, nooverlap } from './nooverlap';
 import { ForceAtlas2LayoutInputs, forceAtlas2 } from './forceatlas2';
@@ -119,23 +119,7 @@ export function layoutProvider({
       radius: radius || 300
     } as CircularLayoutInputs);
   } else if (type === 'concentric2d') {
-    const {
-      minRadius,
-      maxRadius,
-      center,
-      useDegreeCentrality,
-      spacingFactor,
-      startAngle
-    } = rest as ConcentricLayoutInputs;
-    return concentric2d({
-      ...rest,
-      minRadius: minRadius || 50,
-      maxRadius: maxRadius || 300,
-      center: center || [0, 0],
-      useDegreeCentrality: useDegreeCentrality !== false,
-      spacingFactor: spacingFactor || 1.25,
-      startAngle: startAngle || 0
-    } as ConcentricLayoutInputs);
+    return concentricLayout(rest as CircularLayoutInputs);
   } else if (type === 'hierarchicalTd') {
     return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);
   } else if (type === 'hierarchicalLr') {
@@ -170,8 +154,6 @@ export function layoutProvider({
       type: 'custom',
       ...rest
     } as LayoutFactoryProps);
-  } else if (type === 'concentric') {
-    return concentricLayout(rest as CircularLayoutInputs);
   }
 
   throw new Error(`Layout ${type} not found.`);

@@ -21,8 +21,7 @@ export type LayoutTypes =
   | 'hierarchicalLr'
   | 'nooverlap'
   | 'forceatlas2'
-  | 'custom'
-  | 'concentric';
+  | 'custom';
 
 export interface NodePositionArgs {
   /**

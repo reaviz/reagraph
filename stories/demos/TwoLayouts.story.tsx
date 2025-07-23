@@ -25,7 +25,7 @@ export const Circular = () => (
 );
 
 export const Concentric = () => (
-  <GraphCanvas layoutType="concentric" nodes={range(117).map(i => ({
+  <GraphCanvas layoutType="concentric2d" nodes={range(117).map(i => ({
     id: `${i}`,
     label: `Node ${i}`
   }))} edges={complexEdges} />
