@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomLayoutInputs, GraphCanvas, NodePositionArgs, recommendLayout } from '../../src';
+import { GraphCanvas, NodePositionArgs, recommendLayout, LayoutFactoryProps } from '../../src';
 import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
@@ -44,8 +44,22 @@ export const Custom = () => (
           z: 1
         };
       }
-    } as CustomLayoutInputs}
+    } as LayoutFactoryProps}
     nodes={simpleNodes}
     edges={simpleEdges}
+  />
+);
+
+export const Concentric = () => (
+  <GraphCanvas
+    layoutType="concentric2d"
+    layoutOverrides={{
+      minRadius: 50,
+      maxRadius: 300,
+      center: [0, 0],
+      useDegreeCentrality: true
+    }}
+    nodes={complexNodes}
+    edges={complexEdges}
   />
 );

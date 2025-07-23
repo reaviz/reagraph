@@ -10,6 +10,7 @@ export type LayoutTypes =
   | 'forceDirected2d'
   | 'forceDirected3d'
   | 'circular2d'
+  | 'concentric2d'
   | 'treeTd2d'
   | 'treeTd3d'
   | 'treeLr2d'
