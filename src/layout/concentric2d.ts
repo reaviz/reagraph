@@ -20,6 +20,14 @@ export interface ConcentricLayoutInputs extends LayoutFactoryProps {
    * Whether to use degree centrality for positioning.
    */
   useDegreeCentrality?: boolean;
+  /**
+   * Spacing between rings.
+   */
+  spacingFactor?: number;
+  /**
+   * Whether to start angle from the top (12 o'clock position).
+   */
+  startAngle?: number;
 }
 
 export function concentric2d({
@@ -29,13 +37,35 @@ export function concentric2d({
   maxRadius = 300,
   center = [0, 0],
   useDegreeCentrality = true,
+  spacingFactor = 1.25,
+  startAngle = 0,
   getNodePosition
 }: ConcentricLayoutInputs): LayoutStrategy {
   const { nodes, edges } = buildNodeEdges(graph);
 
+  if (nodes.length === 0) {
+    return {
+      step() {
+        return true;
+      },
+      getNodePosition() {
+        return {
+          x: 0,
+          y: 0,
+          z: 0,
+          id: '',
+          data: {},
+          links: [],
+          index: 0,
+          vx: 0,
+          vy: 0
+        };
+      }
+    };
+  }
+
   // Calculate degree centrality for each node
   const nodeDegrees = new Map<string, number>();
-
   nodes.forEach(node => {
     const degree = graph.degree(node.id);
     nodeDegrees.set(node.id, degree);
@@ -48,20 +78,23 @@ export function concentric2d({
     return degreeB - degreeA;
   });
 
-  // Group nodes by degree or create concentric rings
+  // Determine number of rings and assign nodes to rings
   const rings: InternalGraphNode[][] = [];
-  const maxDegree = Math.max(...nodeDegrees.values());
-  const minDegree = Math.min(...nodeDegrees.values());
+  const degreeValues = Array.from(nodeDegrees.values());
+  const maxDegree = Math.max(...degreeValues);
+  const minDegree = Math.min(...degreeValues);
 
   if (useDegreeCentrality && maxDegree > minDegree) {
     // Create rings based on degree centrality
     const degreeRange = maxDegree - minDegree;
-    const numRings = Math.min(5, degreeRange + 1); // Limit to 5 rings max
+    const numRings = Math.min(5, degreeRange + 1);
 
+    // Initialize rings
     for (let i = 0; i < numRings; i++) {
       rings[i] = [];
     }
 
+    // Assign nodes to rings based on degree
     sortedNodes.forEach(node => {
       const degree = nodeDegrees.get(node.id) || 0;
       const ringIndex = Math.floor(
@@ -79,19 +112,23 @@ export function concentric2d({
     }
   }
 
+  // Filter out empty rings
+  const nonEmptyRings = rings.filter(ring => ring.length > 0);
+
   // Calculate positions for each node
   const nodePositions = new Map<string, InternalGraphPosition>();
   const [centerX, centerY] = center;
 
-  rings.forEach((ringNodes, ringIndex) => {
-    if (ringNodes.length === 0) return;
-
+  nonEmptyRings.forEach((ringNodes, ringIndex) => {
+    // Calculate radius with spacing factor
     const radius =
-      minRadius + (ringIndex / (rings.length - 1)) * (maxRadius - minRadius);
-    const angleStep = (2 * Math.PI) / ringNodes.length;
+      minRadius +
+      (ringIndex * spacingFactor * (maxRadius - minRadius)) /
+        (nonEmptyRings.length - 1);
 
+    // Distribute nodes evenly around the circle
     ringNodes.forEach((node, nodeIndex) => {
-      const angle = nodeIndex * angleStep;
+      const angle = startAngle + (2 * Math.PI * nodeIndex) / ringNodes.length;
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
 

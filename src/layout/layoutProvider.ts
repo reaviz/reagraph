@@ -1,3 +1,4 @@
+import { concentricLayout } from 'layout/concentric';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
 import { circular2d, CircularLayoutInputs } from './circular2d';
@@ -118,14 +119,22 @@ export function layoutProvider({
       radius: radius || 300
     } as CircularLayoutInputs);
   } else if (type === 'concentric2d') {
-    const { minRadius, maxRadius, center, useDegreeCentrality } =
-      rest as ConcentricLayoutInputs;
+    const {
+      minRadius,
+      maxRadius,
+      center,
+      useDegreeCentrality,
+      spacingFactor,
+      startAngle
+    } = rest as ConcentricLayoutInputs;
     return concentric2d({
       ...rest,
       minRadius: minRadius || 50,
       maxRadius: maxRadius || 300,
       center: center || [0, 0],
-      useDegreeCentrality: useDegreeCentrality !== false
+      useDegreeCentrality: useDegreeCentrality !== false,
+      spacingFactor: spacingFactor || 1.25,
+      startAngle: startAngle || 0
     } as ConcentricLayoutInputs);
   } else if (type === 'hierarchicalTd') {
     return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);
@@ -161,6 +170,8 @@ export function layoutProvider({
       type: 'custom',
       ...rest
     } as LayoutFactoryProps);
+  } else if (type === 'concentric') {
+    return concentricLayout(rest as CircularLayoutInputs);
   }
 
   throw new Error(`Layout ${type} not found.`);
