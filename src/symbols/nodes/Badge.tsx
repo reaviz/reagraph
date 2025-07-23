@@ -86,13 +86,14 @@ export const Badge: FC<BadgeProps> = ({
 
   return (
     <Billboard position={position}>
-      <a.group scale={scale as any}>
+      <a.group scale={scale as any} renderOrder={2}>
         <a.mesh position={[0, 0, 1]}>
           <RoundedBox
             args={[badgeDimensions.width, badgeDimensions.height, 0.01]} // dynamic width, height, depth
             radius={0.12} // corner radius
             smoothness={8}
             material-color={backgroundColor}
+            material-transparent={true}
           />
         </a.mesh>
         <Text
@@ -103,6 +104,8 @@ export const Badge: FC<BadgeProps> = ({
           anchorY="middle"
           maxWidth={badgeDimensions.width - 0.1} // Leave some padding
           textAlign="center"
+          material-depthTest={false}
+          material-depthWrite={false}
         >
           {label}
         </Text>
