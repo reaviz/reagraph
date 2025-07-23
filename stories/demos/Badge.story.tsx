@@ -22,7 +22,7 @@ export const Default = () => (
         <Badge
           {...rest}
           node={node}
-          label="3"
+          label={node.data.count.toLocaleString()}
           backgroundColor="#000000"
           textColor="#ffffff"
         />

@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
-import { Billboard, Text } from '@react-three/drei';
+import { Billboard, RoundedBox, Text } from '@react-three/drei';
 import { animationConfig } from '../../utils';
 import { NodeRendererProps } from '../../types';
 import { Color, DoubleSide } from 'three';
@@ -34,13 +34,12 @@ export interface BadgeProps extends NodeRendererProps {
 
 export const Badge: FC<BadgeProps> = ({
   label,
-  id,
   size,
   opacity = 1,
   animated,
   backgroundColor = '#ffffff',
   textColor = '#000000',
-  badgeSize = 2,
+  badgeSize = 1.5,
   position = [size * 0.65, size * 0.65, 0.1]
 }) => {
   const normalizedBgColor = useMemo(
@@ -48,6 +47,27 @@ export const Badge: FC<BadgeProps> = ({
     [backgroundColor]
   );
   const normalizedTextColor = useMemo(() => new Color(textColor), [textColor]);
+
+  // Calculate dynamic badge dimensions based on text length
+  const badgeDimensions = useMemo(() => {
+    const baseWidth = 0.5;
+    const baseHeight = 0.5;
+    const minWidth = baseWidth;
+    const minHeight = baseHeight;
+
+    // Estimate text width based on character count
+    const charCount = label.length;
+    const estimatedWidth = Math.max(minWidth, Math.min(charCount * 0.15, 2.0)); // Cap at 2.0 to prevent excessive width
+    const estimatedHeight = Math.max(
+      minHeight,
+      Math.min(charCount * 0.05, 0.8)
+    ); // Cap at 0.8 for height
+
+    return {
+      width: estimatedWidth,
+      height: estimatedHeight
+    };
+  }, [label]);
 
   const { scale, badgeOpacity } = useSpring({
     from: {
@@ -67,23 +87,22 @@ export const Badge: FC<BadgeProps> = ({
   return (
     <Billboard position={position}>
       <a.group scale={scale as any}>
-        <a.mesh>
-          <planeGeometry attach="geometry" args={[0.5, 0.5]} />
-          <a.meshBasicMaterial
-            attach="material"
-            color={normalizedBgColor}
-            transparent={true}
-            opacity={badgeOpacity}
-            side={DoubleSide}
-            depthTest={false}
+        <a.mesh position={[0, 0, 1]}>
+          <RoundedBox
+            args={[badgeDimensions.width, badgeDimensions.height, 0.01]} // dynamic width, height, depth
+            radius={0.12} // corner radius
+            smoothness={8}
+            material-color={backgroundColor}
           />
         </a.mesh>
         <Text
-          position={[0, 0, 1]}
+          position={[0, 0, 1.1]}
           fontSize={0.3}
           color={normalizedTextColor}
           anchorX="center"
           anchorY="middle"
+          maxWidth={badgeDimensions.width - 0.1} // Leave some padding
+          textAlign="center"
         >
           {label}
         </Text>
