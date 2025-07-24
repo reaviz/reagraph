@@ -1,3 +1,4 @@
+import { range } from 'd3-array';
 import React from 'react';
 import { GraphCanvas } from '../../src';
 import { complexEdges, complexNodes, simpleEdges, simpleNodes, treeEdges } from '../assets/demo';
@@ -21,6 +22,13 @@ export const HierarchicalLeftRight = () => (
 
 export const Circular = () => (
   <GraphCanvas layoutType="circular2d" nodes={complexNodes} edges={complexEdges} />
+);
+
+export const Concentric = () => (
+  <GraphCanvas layoutType="concentric2d" nodes={range(117).map(i => ({
+    id: `${i}`,
+    label: `Node ${i}`
+  }))} edges={complexEdges} />
 );
 
 export const NoOverlap = () => (
