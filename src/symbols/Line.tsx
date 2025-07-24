@@ -180,21 +180,12 @@ export const Line: FC<LineProps> = ({
         const fromVector = new Vector3(...fromVertices);
         const toVector = new Vector3(...toVertices);
 
-        const newCurve = getCurve(
-          fromVector,
-          0,
-          toVector,
-          0,
-          curved,
-          curveOffset
-        );
+        const curve = getCurve(fromVector, 0, toVector, 0, curved, curveOffset);
 
         if (tubeRef.current) {
           // Use slightly smaller radius for dashed lines for visual distinction
           const radius = dashed ? size * 0.4 : size / 2;
-          tubeRef.current.copy(
-            new TubeGeometry(newCurve, 20, radius, 5, false)
-          );
+          tubeRef.current.copy(new TubeGeometry(curve, 20, radius, 5, false));
         }
       },
       config: {
