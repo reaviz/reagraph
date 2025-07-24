@@ -73,6 +73,13 @@ export interface GraphEdge extends GraphElementBaseAttributes {
   target: string;
 
   /**
+   * Whether the edge should be rendered with a dashed line pattern.
+   * When true, the edge will display with alternating dash and gap segments.
+   * Default is false (solid line).
+   */
+  dashed?: boolean;
+
+  /**
    * Placement of the subLabel relative to the main label.
    * - 'below': Show subLabel below the main label (default)
    * - 'above': Show subLabel above the main label
