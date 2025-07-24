@@ -1,3 +1,8 @@
+# 4.26.0 - 7/24/25
+- [feature] concentric layout
+- [feature] node badges
+- [feature] edge styling via dashing
+
 # 4.25.1 - 7/22/25
 - [fix] Display label always for next types: all, nodes, edges #344
 
