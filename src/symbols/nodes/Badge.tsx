@@ -30,6 +30,16 @@ export interface BadgeProps extends NodeRendererProps {
   textColor?: string;
 
   /**
+   * Stroke color of the badge border.
+   */
+  strokeColor?: string;
+
+  /**
+   * Size of the badge border stroke.
+   */
+  strokeSize?: number;
+
+  /**
    * Size multiplier for the badge relative to the node size.
    */
   badgeSize?: number;
@@ -52,6 +62,8 @@ export const Badge: FC<BadgeProps> = ({
   animated,
   backgroundColor = '#ffffff',
   textColor = '#000000',
+  strokeColor,
+  strokeSize = 0,
   badgeSize = 1.5,
   position = 'top-right',
   padding = 0.3
@@ -61,6 +73,10 @@ export const Badge: FC<BadgeProps> = ({
     [backgroundColor]
   );
   const normalizedTextColor = useMemo(() => new Color(textColor), [textColor]);
+  const normalizedStrokeColor = useMemo(
+    () => (strokeColor ? new Color(strokeColor) : null),
+    [strokeColor]
+  );
 
   // Calculate position based on preset or custom coordinates
   const badgePosition = useMemo((): [number, number, number] => {
@@ -127,6 +143,7 @@ export const Badge: FC<BadgeProps> = ({
   return (
     <Billboard position={badgePosition}>
       <a.group scale={scale as any} renderOrder={2}>
+        {/* Main background layer */}
         <a.mesh position={[0, 0, 1]}>
           <RoundedBox
             args={[badgeDimensions.width, badgeDimensions.height, 0.01]} // dynamic width, height, depth
@@ -136,6 +153,22 @@ export const Badge: FC<BadgeProps> = ({
             material-transparent={true}
           />
         </a.mesh>
+        {/* Stroke layer */}
+        {strokeSize > 0 && normalizedStrokeColor && (
+          <a.mesh position={[0, 0, 0.9]}>
+            <RoundedBox
+              args={[
+                badgeDimensions.width + strokeSize / 10,
+                badgeDimensions.height + strokeSize / 10,
+                0.01
+              ]}
+              radius={0.12}
+              smoothness={8}
+              material-color={normalizedStrokeColor}
+              material-transparent={true}
+            />
+          </a.mesh>
+        )}
         <Text
           position={[0, 0, 1.1]}
           fontSize={0.3}
