@@ -21,41 +21,73 @@ export function concentricLayout({
 }: ConcentricLayoutInputs) {
   const { nodes, edges } = buildNodeEdges(graph);
 
-  const metrics = nodes.map(node => ({
-    id: node.id,
-    metric: graph.degree(node.id)
-  }));
-
-  // Sort by importance (degree)
-  metrics.sort((a, b) => b.metric - a.metric);
-
   const layout: Record<string, { x: number; y: number }> = {};
-  let level = 0;
-  let indexInLevel = 0;
 
   const getNodesInLevel = (level: number) => {
     const circumference = 2 * Math.PI * (radius + level * concentricSpacing);
-    const minNodeSpacing = 40; // Minimum spacing between nodes in px
+    const minNodeSpacing = 40;
     return Math.floor(circumference / minNodeSpacing);
   };
 
-  for (let i = 0; i < metrics.length; i++) {
-    const nodesInCurrentLevel = getNodesInLevel(level);
+  const fixedLevelMap = new Map<number, string[]>();
+  const dynamicNodes: { id: string; metric: number }[] = [];
 
-    if (indexInLevel >= nodesInCurrentLevel) {
-      level++;
-      indexInLevel = 0;
+  // Split nodes: fixed-level and dynamic
+  for (const node of nodes) {
+    const data = graph.getNodeAttribute(node.id, 'data');
+    const level = data?.level;
+
+    if (typeof level === 'number' && level >= 0) {
+      if (!fixedLevelMap.has(level)) {
+        fixedLevelMap.set(level, []);
+      }
+      fixedLevelMap.get(level)!.push(node.id);
+    } else {
+      dynamicNodes.push({ id: node.id, metric: graph.degree(node.id) });
+    }
+  }
+
+  // Sort dynamic nodes by degree
+  dynamicNodes.sort((a, b) => b.metric - a.metric);
+
+  // Fill layout for fixed-level nodes
+  for (const [level, nodeIds] of fixedLevelMap.entries()) {
+    const count = nodeIds.length;
+    const r = radius + level * concentricSpacing;
+
+    for (let i = 0; i < count; i++) {
+      const angle = (2 * Math.PI * i) / count;
+      layout[nodeIds[i]] = {
+        x: r * Math.cos(angle),
+        y: r * Math.sin(angle)
+      };
+    }
+  }
+
+  // Determine which levels are partially used and which are available
+  const occupiedLevels = new Set(fixedLevelMap.keys());
+  let dynamicLevel = 0;
+
+  let i = 0;
+  while (i < dynamicNodes.length) {
+    // Skip occupied levels
+    while (occupiedLevels.has(dynamicLevel)) {
+      dynamicLevel++;
     }
 
-    const r = radius + level * concentricSpacing;
-    const angle = (2 * Math.PI * indexInLevel) / (nodesInCurrentLevel || 1);
+    const nodesInLevel = getNodesInLevel(dynamicLevel);
+    const r = radius + dynamicLevel * concentricSpacing;
 
-    layout[metrics[i].id] = {
-      x: r * Math.cos(angle),
-      y: r * Math.sin(angle)
-    };
+    for (let j = 0; j < nodesInLevel && i < dynamicNodes.length; j++) {
+      const angle = (2 * Math.PI * j) / nodesInLevel;
+      layout[dynamicNodes[i].id] = {
+        x: r * Math.cos(angle),
+        y: r * Math.sin(angle)
+      };
+      i++;
+    }
 
-    indexInLevel++;
+    dynamicLevel++;
   }
 
   return {
