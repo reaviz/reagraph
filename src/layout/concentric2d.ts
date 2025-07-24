@@ -48,7 +48,7 @@ export function concentricLayout({
     }
 
     const r = radius + level * concentricSpacing;
-    const angle = (2 * Math.PI * indexInLevel) / nodesInCurrentLevel;
+    const angle = (2 * Math.PI * indexInLevel) / (nodesInCurrentLevel || 1);
 
     layout[metrics[i].id] = {
       x: r * Math.cos(angle),

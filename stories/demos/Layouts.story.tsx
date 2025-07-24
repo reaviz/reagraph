@@ -37,7 +37,6 @@ export const Custom = () => (
     layoutOverrides={{
       getNodePosition: (id: string, { nodes }: NodePositionArgs) => {
         const idx = nodes.findIndex(n => n.id === id);
-        const node = nodes[idx];
         return {
           x: 25 * idx,
           y: idx % 2 === 0 ? 0 : 50,
@@ -47,21 +46,5 @@ export const Custom = () => (
     } as LayoutFactoryProps}
     nodes={simpleNodes}
     edges={simpleEdges}
-  />
-);
-
-export const Concentric = () => (
-  <GraphCanvas
-    layoutType="concentric2d"
-    layoutOverrides={{
-      minRadius: 50,
-      maxRadius: 300,
-      center: [0, 0],
-      useDegreeCentrality: true,
-      spacingFactor: 1.25,
-      startAngle: 0
-    }}
-    nodes={complexNodes}
-    edges={complexEdges}
   />
 );
