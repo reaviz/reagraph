@@ -55,9 +55,10 @@ Reagraph is a high-performance network graph visualization built in WebGL for Re
 - Expand/Collapse Nodes
 - Customizable Nodes
 - Advanced Label Placement
-- Edge Interpolation
+- Edge Interpolation and Styling
 - Clustering
 - Edge Bundling
+- Node Badges
 
 with the following built in layouts:
 
@@ -73,7 +74,8 @@ with the following built in layouts:
 - Hierarchical Top Down 2D
 - Hierarchical Left Right 2D
 - No Overlap 2D
-- Force Atlas 2 2D
+- Force Atlas2 2D
+- Concentric 2D
 
 ## 📦 Usage
 
