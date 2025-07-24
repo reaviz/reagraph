@@ -59,7 +59,8 @@ export const Special = () => (
       {
         id: '2',
         data: {
-          badge: 6
+          badge: 6,
+          secondBadge: 'NEW'
         }
       }
     ]}
@@ -82,6 +83,7 @@ export const Special = () => (
           image={createPersonIcon('#c02b2c')}
           size={rest.size}
         />
+        {/* First badge - top-right */}
         {node.data.badge && (
           <Badge
             {...rest}
@@ -89,6 +91,18 @@ export const Special = () => (
             label={node.data.badge.toLocaleString()}
             backgroundColor="#ffffff"
             textColor="#000000"
+            position="top-right"
+          />
+        )}
+        {/* Second badge - center bottom with icon */}
+        {node.data.secondBadge && (
+          <Badge
+            {...rest}
+            node={node}
+            label={'Exit'}
+            backgroundColor="#c02b2c"
+            textColor="#ffffff"
+            position={[0, -rest.size * 1, 0]}
           />
         )}
       </group>
