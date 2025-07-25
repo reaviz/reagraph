@@ -1,3 +1,7 @@
+# 4.27.0 - 7/25/25
+- [feature] Add `strokeWidth` and `strokeColor` props to Badge
+- [feature] Add `backgroundColor`, `backgroundOpacity`, `padding`, `strokeColor`, `strokeWidth`, and `radius` props to Label
+
 # 4.26.0 - 7/24/25
 - [feature] concentric layout
 - [feature] node badges
