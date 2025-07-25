@@ -15,6 +15,12 @@ export interface Theme {
       color: ColorRepresentation;
       stroke?: ColorRepresentation;
       activeColor: ColorRepresentation;
+      backgroundColor?: ColorRepresentation;
+      backgroundOpacity?: number;
+      padding?: number;
+      strokeColor?: ColorRepresentation;
+      strokeWidth?: number;
+      radius?: number;
     };
     subLabel?: {
       color: ColorRepresentation;
