@@ -15,11 +15,21 @@ export interface Theme {
       color: ColorRepresentation;
       stroke?: ColorRepresentation;
       activeColor: ColorRepresentation;
+      backgroundColor?: ColorRepresentation;
+      backgroundOpacity?: number;
+      backgroundPadding?: number;
+      strokeColor?: ColorRepresentation;
+      strokeSize?: number;
     };
     subLabel?: {
       color: ColorRepresentation;
       stroke?: ColorRepresentation;
       activeColor: ColorRepresentation;
+      backgroundColor?: ColorRepresentation;
+      backgroundOpacity?: number;
+      backgroundPadding?: number;
+      strokeColor?: ColorRepresentation;
+      strokeSize?: number;
     };
   };
   ring: { fill: ColorRepresentation; activeFill: ColorRepresentation };

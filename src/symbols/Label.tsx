@@ -1,5 +1,5 @@
 import React, { FC, useMemo } from 'react';
-import { Billboard, Text } from '@react-three/drei';
+import { Billboard, Text, RoundedBox } from '@react-three/drei';
 import { Color, ColorRepresentation, Euler } from 'three';
 import ellipsize from 'ellipsize';
 
@@ -31,6 +31,31 @@ export interface LabelProps {
   stroke?: ColorRepresentation;
 
   /**
+   * Background color of the label.
+   */
+  backgroundColor?: ColorRepresentation;
+
+  /**
+   * Opacity of the background.
+   */
+  backgroundOpacity?: number;
+
+  /**
+   * Padding around the text for background sizing.
+   */
+  backgroundPadding?: number;
+
+  /**
+   * Color of the background stroke/border.
+   */
+  strokeColor?: ColorRepresentation;
+
+  /**
+   * Size of the background stroke/border.
+   */
+  strokeSize?: number;
+
+  /**
    * Opacity for the label.
    */
   opacity?: number;
@@ -58,6 +83,11 @@ export const Label: FC<LabelProps> = ({
   color = '#2A6475',
   opacity = 1,
   stroke,
+  backgroundColor,
+  backgroundOpacity = 1,
+  backgroundPadding = 1,
+  strokeColor,
+  strokeSize = 0,
   active,
   ellipsis = 75,
   rotation
@@ -68,10 +98,65 @@ export const Label: FC<LabelProps> = ({
     () => (stroke ? new Color(stroke) : undefined),
     [stroke]
   );
+  const normalizedBackgroundColor = useMemo(
+    () => (backgroundColor ? new Color(backgroundColor) : null),
+    [backgroundColor]
+  );
+  const normalizedStrokeColor = useMemo(
+    () => (strokeColor ? new Color(strokeColor) : null),
+    [strokeColor]
+  );
+
+  // Calculate background dimensions based on text and fontSize
+  const backgroundDimensions = useMemo(() => {
+    const charCount = shortText.length;
+    const estimatedWidth = charCount * fontSize * 0.6 + backgroundPadding * 2;
+    const estimatedHeight = fontSize * 1.2 + backgroundPadding * 2;
+
+    return {
+      width: estimatedWidth,
+      height: estimatedHeight
+    };
+  }, [shortText, fontSize, backgroundPadding]);
 
   return (
     <Billboard position={[0, 0, 1]} renderOrder={1}>
+      {/* Stroke layer - rendered behind the background */}
+      {strokeSize > 0 && normalizedStrokeColor && normalizedBackgroundColor && (
+        <mesh position={[0, 0, 10]}>
+          <RoundedBox
+            args={[
+              backgroundDimensions.width + strokeSize,
+              backgroundDimensions.height + strokeSize,
+              0.1
+            ]}
+            radius={fontSize * 0.1}
+            smoothness={8}
+            material-color={normalizedStrokeColor}
+            material-transparent={true}
+            material-opacity={backgroundOpacity}
+          />
+        </mesh>
+      )}
+      {/* Background layer */}
+      {normalizedBackgroundColor && (
+        <mesh position={[0, 0, 10]}>
+          <RoundedBox
+            args={[
+              backgroundDimensions.width,
+              backgroundDimensions.height,
+              0.1
+            ]}
+            radius={fontSize * 0.1}
+            smoothness={8}
+            material-color={normalizedBackgroundColor}
+            material-transparent={true}
+            material-opacity={backgroundOpacity}
+          />
+        </mesh>
+      )}
       <Text
+        position={[0, 0, 11]}
         font={fontUrl}
         fontSize={fontSize}
         color={normalizedColor}
