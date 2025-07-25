@@ -43,7 +43,7 @@ export interface LabelProps {
   /**
    * Padding around the text for background sizing.
    */
-  backgroundPadding?: number;
+  padding?: number;
 
   /**
    * Color of the background stroke/border.
@@ -53,7 +53,7 @@ export interface LabelProps {
   /**
    * Size of the background stroke/border.
    */
-  strokeSize?: number;
+  strokeWidth?: number;
 
   /**
    * Corner radius of the background.
@@ -90,9 +90,9 @@ export const Label: FC<LabelProps> = ({
   stroke,
   backgroundColor,
   backgroundOpacity = 1,
-  backgroundPadding = 1,
+  padding = 1,
   strokeColor,
-  strokeSize = 0,
+  strokeWidth = 0,
   radius = 0.1,
   active,
   ellipsis = 75,
@@ -113,32 +113,29 @@ export const Label: FC<LabelProps> = ({
     [strokeColor]
   );
   // Normalize the radius to be between 0 and 3
-  const normalizedRadius = useMemo(
-    () => Math.min(radius * fontSize, 3),
-    [radius, fontSize]
-  );
+  const normalizedRadius = Math.min(radius * fontSize, 3);
 
   // Calculate background dimensions based on text and fontSize
-  const backgroundDimensions = useMemo(() => {
-    const charCount = shortText.length;
-    const estimatedWidth = charCount * fontSize * 0.6 + backgroundPadding * 2;
-    const estimatedHeight = fontSize * 1.2 + backgroundPadding * 2;
+  const charCount = shortText.length;
+  const estimatedWidth = charCount * fontSize * 0.6 + padding * 2;
+  const estimatedHeight = fontSize * 1.2 + padding * 2;
 
-    return {
-      width: estimatedWidth,
-      height: estimatedHeight
-    };
-  }, [shortText, fontSize, backgroundPadding]);
+  const backgroundDimensions = {
+    width: estimatedWidth,
+    height: estimatedHeight
+  };
 
   return (
     <Billboard position={[0, 0, 11]} renderOrder={1}>
       {/* Stroke layer - rendered behind the background */}
-      {strokeSize > 0 && normalizedStrokeColor && normalizedBackgroundColor && (
+      {strokeWidth > 0 &&
+        normalizedStrokeColor &&
+        normalizedBackgroundColor && (
         <mesh position={[0, 0, 10]}>
           <RoundedBox
             args={[
-              backgroundDimensions.width + strokeSize,
-              backgroundDimensions.height + strokeSize,
+              backgroundDimensions.width + strokeWidth,
+              backgroundDimensions.height + strokeWidth,
               0.1
             ]}
             radius={normalizedRadius}

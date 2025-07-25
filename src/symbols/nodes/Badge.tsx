@@ -37,7 +37,12 @@ export interface BadgeProps extends NodeRendererProps {
   /**
    * Size of the badge border stroke.
    */
-  strokeSize?: number;
+  strokeWidth?: number;
+
+  /**
+   * Corner radius of the badge.
+   */
+  radius?: number;
 
   /**
    * Size multiplier for the badge relative to the node size.
@@ -63,7 +68,8 @@ export const Badge: FC<BadgeProps> = ({
   backgroundColor = '#ffffff',
   textColor = '#000000',
   strokeColor,
-  strokeSize = 0,
+  strokeWidth = 0,
+  radius = 0.12,
   badgeSize = 1.5,
   position = 'top-right',
   padding = 0.3
@@ -77,6 +83,8 @@ export const Badge: FC<BadgeProps> = ({
     () => (strokeColor ? new Color(strokeColor) : null),
     [strokeColor]
   );
+  // Guard for radius
+  const normalizedRadius = Math.min(radius, 0.2);
 
   // Calculate position based on preset or custom coordinates
   const badgePosition = useMemo((): [number, number, number] => {
@@ -143,32 +151,32 @@ export const Badge: FC<BadgeProps> = ({
   return (
     <Billboard position={badgePosition}>
       <a.group scale={scale as any} renderOrder={2}>
-        {/* Main background layer */}
-        <a.mesh position={[0, 0, 1]}>
-          <RoundedBox
-            args={[badgeDimensions.width, badgeDimensions.height, 0.01]} // dynamic width, height, depth
-            radius={0.12} // corner radius
-            smoothness={8}
-            material-color={normalizedBgColor}
-            material-transparent={true}
-          />
-        </a.mesh>
         {/* Stroke layer */}
-        {strokeSize > 0 && normalizedStrokeColor && (
+        {strokeWidth > 0 && normalizedStrokeColor && (
           <a.mesh position={[0, 0, 0.9]}>
             <RoundedBox
               args={[
-                badgeDimensions.width + strokeSize,
-                badgeDimensions.height + strokeSize,
+                badgeDimensions.width + strokeWidth,
+                badgeDimensions.height + strokeWidth,
                 0.01
               ]}
-              radius={0.12}
+              radius={normalizedRadius}
               smoothness={8}
               material-color={normalizedStrokeColor}
               material-transparent={true}
             />
           </a.mesh>
         )}
+        {/* Main background layer */}
+        <a.mesh position={[0, 0, 1]}>
+          <RoundedBox
+            args={[badgeDimensions.width, badgeDimensions.height, 0.01]} // dynamic width, height, depth
+            radius={normalizedRadius} // corner radius
+            smoothness={8}
+            material-color={normalizedBgColor}
+            material-transparent={true}
+          />
+        </a.mesh>
         <Text
           position={[0, 0, 1.1]}
           fontSize={0.3}

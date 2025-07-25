@@ -17,9 +17,9 @@ export interface Theme {
       activeColor: ColorRepresentation;
       backgroundColor?: ColorRepresentation;
       backgroundOpacity?: number;
-      backgroundPadding?: number;
+      padding?: number;
       strokeColor?: ColorRepresentation;
-      strokeSize?: number;
+      strokeWidth?: number;
       radius?: number;
     };
     subLabel?: {

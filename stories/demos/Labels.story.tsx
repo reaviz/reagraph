@@ -106,9 +106,9 @@ export const WithBackgrounds = () => {
           data: {
             bgColor: '#ffaa00',
             strokeColor: '#000000',
-            strokeSize: 1,
+            strokeWidth: 1,
             backgroundOpacity: 1,
-            backgroundPadding: 1.5,
+            padding: 1.5,
             textColor: '#000000',
             radius: 0.3
           }
@@ -118,9 +118,9 @@ export const WithBackgrounds = () => {
           label: 'Node 2',
           data: {
             bgColor: '#ff0000',
-            strokeSize: 1.5,
+            strokeWidth: 1.5,
             backgroundOpacity: 1,
-            backgroundPadding: 1.5,
+            padding: 1.5,
             textColor: '#ffffff',
             radius: 0.1
           }
@@ -130,9 +130,9 @@ export const WithBackgrounds = () => {
           label: 'Node 3',
           data: {
             bgColor: '#00ff00',
-            strokeSize: 1,
+            strokeWidth: 1,
             backgroundOpacity: 1,
-            backgroundPadding: 1,
+            padding: 1,
             textColor: '#000000',
             radius: 5
           }
@@ -143,9 +143,9 @@ export const WithBackgrounds = () => {
           data: {
             bgColor: '#ffa500',
             strokeColor: 'gray',
-            strokeSize: 2,
+            strokeWidth: 2,
             backgroundOpacity: 1,
-            backgroundPadding: 1.5,
+            padding: 1.5,
             textColor: '#ffffff',
             radius: 0
           }
@@ -178,10 +178,10 @@ export const WithBackgrounds = () => {
               fontSize={4}
               backgroundColor={node.data?.bgColor}
               strokeColor={node.data?.strokeColor}
-              strokeSize={node.data?.strokeSize}
+              strokeWidth={node.data?.strokeWidth}
               backgroundOpacity={node.data?.backgroundOpacity}
               color={node.data?.textColor}
-              backgroundPadding={node.data?.backgroundPadding}
+              padding={node.data?.padding}
               radius={node.data?.radius}
             />
           </group>
