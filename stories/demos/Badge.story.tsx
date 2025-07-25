@@ -65,8 +65,8 @@ export const DifferentSizes = () => (
           textColor="#ffffff"
           padding={0.8}
           badgeSize={1}
-          strokeColor="#ebebef"
-          strokeSize={1}
+          strokeColor="#b19cd9"
+          strokeSize={0.3}
           position="bottom-left"
         />
       </group>

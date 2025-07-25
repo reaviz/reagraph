@@ -56,6 +56,11 @@ export interface LabelProps {
   strokeSize?: number;
 
   /**
+   * Corner radius of the background.
+   */
+  radius?: number;
+
+  /**
    * Opacity for the label.
    */
   opacity?: number;
@@ -88,6 +93,7 @@ export const Label: FC<LabelProps> = ({
   backgroundPadding = 1,
   strokeColor,
   strokeSize = 0,
+  radius = 0.1,
   active,
   ellipsis = 75,
   rotation
@@ -106,6 +112,11 @@ export const Label: FC<LabelProps> = ({
     () => (strokeColor ? new Color(strokeColor) : null),
     [strokeColor]
   );
+  // Normalize the radius to be between 0 and 3
+  const normalizedRadius = useMemo(
+    () => Math.min(radius * fontSize, 3),
+    [radius, fontSize]
+  );
 
   // Calculate background dimensions based on text and fontSize
   const backgroundDimensions = useMemo(() => {
@@ -120,7 +131,7 @@ export const Label: FC<LabelProps> = ({
   }, [shortText, fontSize, backgroundPadding]);
 
   return (
-    <Billboard position={[0, 0, 1]} renderOrder={1}>
+    <Billboard position={[0, 0, 11]} renderOrder={1}>
       {/* Stroke layer - rendered behind the background */}
       {strokeSize > 0 && normalizedStrokeColor && normalizedBackgroundColor && (
         <mesh position={[0, 0, 10]}>
@@ -130,7 +141,7 @@ export const Label: FC<LabelProps> = ({
               backgroundDimensions.height + strokeSize,
               0.1
             ]}
-            radius={fontSize * 0.1}
+            radius={normalizedRadius}
             smoothness={8}
             material-color={normalizedStrokeColor}
             material-transparent={true}
@@ -147,7 +158,7 @@ export const Label: FC<LabelProps> = ({
               backgroundDimensions.height,
               0.1
             ]}
-            radius={fontSize * 0.1}
+            radius={normalizedRadius}
             smoothness={8}
             material-color={normalizedBackgroundColor}
             material-transparent={true}

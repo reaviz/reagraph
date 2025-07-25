@@ -106,10 +106,11 @@ export const WithBackgrounds = () => {
           data: {
             bgColor: '#ffaa00',
             strokeColor: '#000000',
-            strokeSize: 1.5,
-            backgroundOpacity: 0.8,
+            strokeSize: 1,
+            backgroundOpacity: 1,
             backgroundPadding: 1.5,
-            textColor: '#000000'
+            textColor: '#000000',
+            radius: 0.3
           }
         },
         {
@@ -118,9 +119,10 @@ export const WithBackgrounds = () => {
           data: {
             bgColor: '#ff0000',
             strokeSize: 1.5,
-            backgroundOpacity: 0.8,
+            backgroundOpacity: 1,
             backgroundPadding: 1.5,
-            textColor: '#ffffff'
+            textColor: '#ffffff',
+            radius: 0.1
           }
         },
         {
@@ -128,22 +130,24 @@ export const WithBackgrounds = () => {
           label: 'Node 3',
           data: {
             bgColor: '#00ff00',
-            strokeSize: 1.5,
-            backgroundOpacity: 0.8,
-            backgroundPadding: 1.5,
-            textColor: '#000000'
+            strokeSize: 1,
+            backgroundOpacity: 1,
+            backgroundPadding: 1,
+            textColor: '#000000',
+            radius: 5
           }
         },
         {
           id: '4',
           label: 'Node 4',
           data: {
-            bgColor: '#0000ff',
-            strokeColor: '#00ff00',
-            strokeSize: 1.5,
-            backgroundOpacity: 0.8,
+            bgColor: '#ffa500',
+            strokeColor: 'gray',
+            strokeSize: 2,
+            backgroundOpacity: 1,
             backgroundPadding: 1.5,
-            textColor: '#ffffff'
+            textColor: '#ffffff',
+            radius: 0
           }
         }
       ]}
@@ -178,6 +182,7 @@ export const WithBackgrounds = () => {
               backgroundOpacity={node.data?.backgroundOpacity}
               color={node.data?.textColor}
               backgroundPadding={node.data?.backgroundPadding}
+              radius={node.data?.radius}
             />
           </group>
         </group>

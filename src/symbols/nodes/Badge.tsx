@@ -87,17 +87,17 @@ export const Badge: FC<BadgeProps> = ({
     const offset = size * 0.65;
     switch (position) {
     case 'top-right':
-      return [offset, offset, 0.1];
+      return [offset, offset, 11];
     case 'top-left':
-      return [-offset, offset, 0.1];
+      return [-offset, offset, 11];
     case 'bottom-right':
-      return [offset, -offset, 0.1];
+      return [offset, -offset, 11];
     case 'bottom-left':
-      return [-offset, -offset, 0.1];
+      return [-offset, -offset, 11];
     case 'center':
-      return [0, 0, 0.1];
+      return [0, 0, 11];
     default:
-      return [offset, offset, 0.1];
+      return [offset, offset, 11];
     }
   }, [position, size]);
 
@@ -158,8 +158,8 @@ export const Badge: FC<BadgeProps> = ({
           <a.mesh position={[0, 0, 0.9]}>
             <RoundedBox
               args={[
-                badgeDimensions.width + strokeSize / 10,
-                badgeDimensions.height + strokeSize / 10,
+                badgeDimensions.width + strokeSize,
+                badgeDimensions.height + strokeSize,
                 0.01
               ]}
               radius={0.12}
