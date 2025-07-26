@@ -1,4 +1,6 @@
 import React, { useMemo, useRef } from 'react';
+import { Perf } from 'r3f-perf';
+
 import {
   darkTheme,
   GraphCanvas,
@@ -83,10 +85,7 @@ export const CyberInvestigation = () => {
       }
     }
 
-    return [
-      n,
-      e
-    ];
+    return [n, e];
   }, []);
 
   const {
@@ -137,11 +136,14 @@ export const MitreTools = () => {
     }
 
     for (const edge of mitreTools.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }
@@ -199,11 +201,14 @@ export const MitreTechniques = () => {
     }
 
     for (const edge of mitreTechniques.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }
@@ -261,11 +266,14 @@ export const MitreAllTechniques = () => {
     }
 
     for (const edge of mitreTechniquesAll.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }
@@ -304,5 +312,156 @@ export const MitreAllTechniques = () => {
       onNodePointerOver={onNodePointerOver}
       onNodePointerOut={onNodePointerOut}
     />
+  );
+};
+
+export const Performance = () => {
+  const ref = useRef<GraphCanvasRef | null>(null);
+  const nodeCount = 5000;
+  const edgeCount = 100;
+
+  interface DemoNode extends GraphNode {
+    id: string;
+    label: string;
+  }
+
+  interface DemoEdge extends GraphEdge {
+    id: string;
+    source: string;
+    target: string;
+    label: string;
+    labelVisible: boolean;
+  }
+
+  const nodes: DemoNode[] = useMemo(() => {
+    const n: DemoNode[] = [];
+    for (let i = 0; i < nodeCount; i++) {
+      n.push({
+        id: `node-${i}`,
+        label: `Node ${i}`,
+        fill: `#${Math.floor(Math.random() * 16777215)
+          .toString(16)
+          .padStart(6, '0')}`,
+        size: Math.floor(Math.random() * 81) + 20
+      });
+    }
+    return n;
+  }, []);
+
+  const edges: DemoEdge[] = useMemo(() => {
+    const e: DemoEdge[] = [];
+    for (let i = 0; i < edgeCount; i++) {
+      const sourceIndex = Math.floor(Math.random() * nodeCount);
+      let targetIndex = Math.floor(Math.random() * nodeCount);
+      while (targetIndex === sourceIndex) {
+        targetIndex = Math.floor(Math.random() * nodeCount);
+      }
+      e.push({
+        id: `edge-${i}`,
+        source: `node-${sourceIndex}`,
+        target: `node-${targetIndex}`,
+        label: `Edge ${i}`,
+        labelVisible: true
+      });
+    }
+    return e;
+  }, []);
+
+  return (
+    <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
+      <div
+        style={{
+          zIndex: 9,
+          position: 'absolute',
+          top: 175,
+          right: 15,
+          background: 'rgba(0, 0, 0, .5)',
+          padding: 1,
+          color: 'white'
+        }}
+      >
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.centerGraph()}
+        >
+          Center
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.fitNodesInView([nodes[2].id])}
+        >
+          Fit Node 2
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.fitNodesInView()}
+        >
+          Fit View
+        </button>
+        <br />
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.zoomIn()}
+        >
+          Zoom In
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.zoomOut()}
+        >
+          Zoom Out
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.dollyIn()}
+        >
+          Dolly In
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.dollyOut()}
+        >
+          Dolly Out
+        </button>
+        <br />
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.panDown()}
+        >
+          Pan Down
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.panUp()}
+        >
+          Pan Up
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.panLeft()}
+        >
+          Pan Left
+        </button>
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={() => ref.current?.panRight()}
+        >
+          Pan Right
+        </button>
+      </div>
+      <GraphCanvas
+        ref={ref}
+        nodes={nodes}
+        edges={edges}
+        theme={darkTheme}
+        cameraMode="orbit"
+        layoutType='forceDirected3d'
+        // labelType="all"
+        labelType="none"
+        animated={true}
+      >
+        <Perf />
+      </GraphCanvas>
+    </div>
   );
 };
