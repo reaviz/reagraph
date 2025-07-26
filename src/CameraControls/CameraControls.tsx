@@ -338,7 +338,7 @@ export const CameraControls: FC<
         panDown: (deltaTime = 100) => panDown({ deltaTime }),
         panUp: (deltaTime = 100) => panUp({ deltaTime }),
         resetControls: (animated?: boolean) =>
-          cameraRef.current?.reset(animated),
+          cameraRef.current?.normalizeRotations().reset(animated),
         freeze: () => {
           // Save the current speed
           if (cameraRef.current.truckSpeed) {

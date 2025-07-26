@@ -123,7 +123,7 @@ export const useCenterGraph = ({
         // Centers the graph based on the central most node
         const { x, y, z } = getLayoutCenter(nodes);
 
-        await controls.setTarget(x, y, z, animated);
+        await controls.normalizeRotations().setTarget(x, y, z, animated);
 
         if (!isCentered) {
           setIsCentered(true);
