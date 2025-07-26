@@ -70,7 +70,7 @@
     "graphology-layout-noverlap": "^0.4.2",
     "graphology-metrics": "^2.4.0",
     "graphology-shortest-path": "^2.1.0",
-    "hold-event": "^0.2.0",
+    "hold-event": "^1.1.2",
     "three": "^0.177.0",
     "three-stdlib": "^2.36.0",
     "zustand": "5.0.5"

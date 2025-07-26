@@ -57,13 +57,6 @@ ThreeCameraControls.install({
 // Extend r3f with the new controls
 extend({ ThreeCameraControls });
 
-const KEY_CODES = {
-  ARROW_LEFT: 37,
-  ARROW_UP: 38,
-  ARROW_RIGHT: 39,
-  ARROW_DOWN: 40
-};
-
 export type CameraMode = 'pan' | 'rotate' | 'orbit';
 
 export interface CameraControlsProps {
@@ -234,10 +227,10 @@ export const CameraControls: FC<
       // Only initialize on client side
       if (!isServerRender) {
         setKeyControls({
-          leftKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_LEFT, 100),
-          rightKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_RIGHT, 100),
-          upKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_UP, 100),
-          downKey: new holdEvent.KeyboardKeyHold(KEY_CODES.ARROW_DOWN, 100)
+          leftKey: new holdEvent.KeyboardKeyHold('ArrowLeft', 100),
+          rightKey: new holdEvent.KeyboardKeyHold('ArrowRight', 100),
+          upKey: new holdEvent.KeyboardKeyHold('ArrowUp', 100),
+          downKey: new holdEvent.KeyboardKeyHold('ArrowDown', 100)
         });
       }
     }, []);
