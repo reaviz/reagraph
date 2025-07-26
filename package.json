@@ -63,7 +63,7 @@
     "d3-force-3d": "^3.0.6",
     "d3-hierarchy": "^3.1.2",
     "d3-scale": "^4.0.2",
-    "ellipsize": "^0.5.1",
+    "ellipsize": "^0.6.1",
     "graphology": "^0.26.0",
     "graphology-layout": "^0.6.1",
     "graphology-layout-forceatlas2": "^0.10.1",
@@ -73,7 +73,7 @@
     "hold-event": "^1.1.2",
     "three": "^0.177.0",
     "three-stdlib": "^2.36.0",
-    "zustand": "5.0.5"
+    "zustand": "5.0.6"
   },
   "peerDependencies": {
     "react": ">=16",
