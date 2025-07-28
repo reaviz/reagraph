@@ -29,6 +29,23 @@ const loginSvg = (color = 'black') =>
 </svg>
 `)}`;
 
+const getSeverityColor = (severity: string) => {
+  switch (severity) {
+  case 'critical':
+    return '#e53e3e'; // Red
+  case 'high':
+    return '#fd8c73'; // Orange
+  case 'medium':
+    return '#fbb360'; // Light Orange
+  case 'low':
+    return '#68d391'; // Green
+  case 'info':
+    return '#4299e1'; // Blue
+  default:
+    return '#9ca3af'; // Gray
+  }
+};
+
 export default {
   title: 'Demos/Edges',
   component: GraphCanvas
