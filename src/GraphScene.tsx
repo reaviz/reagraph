@@ -33,7 +33,7 @@ import type {
 import { Cluster } from './symbols/Cluster';
 import { Edge } from './symbols/Edge';
 import { Edges } from './symbols/edges';
-import { Node } from './symbols';
+import { InstancedSpheres, Node } from './symbols';
 import { useCenterGraph } from './CameraControls/useCenterGraph';
 import { LabelVisibilityType } from './utils/visibility';
 import { useStore } from './store';
@@ -41,7 +41,7 @@ import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';
 import { aggregateEdges as aggregateEdgesUtil } from './utils/aggregateEdges';
-import { InstancedSpheres } from './symbols/nodes/InstancedSpheres';
+import { InstancedSpheresWithIcon } from './symbols/nodes/InstancedSpheresWithIcon';
 
 export interface GraphSceneProps {
   /**
@@ -440,40 +440,14 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         const useInstancedSpheres = true; // Force enable instancing
 
         if (useInstancedSpheres && !renderNode) {
-          // Filter nodes that should be rendered as spheres (no icon, not custom)
-          const sphereNodes = nodes.filter(n => !n.icon);
-          const iconNodes = nodes.filter(n => n.icon);
-
+          // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
           return (
-            <>
-              {sphereNodes.length > 0 && (
-                <InstancedSpheres
-                  nodes={sphereNodes}
-                  selections={rest.selections || []}
-                  actives={[nodes[0].id, nodes[1].id, nodes[2].id]}
-                  animated={animated}
-                />
-              )}
-              {iconNodes.map(n => (
-                <Node
-                  key={n?.id}
-                  id={n?.id}
-                  labelFontUrl={labelFontUrl}
-                  draggable={draggable}
-                  constrainDragging={constrainDragging}
-                  disabled={disabled}
-                  animated={animated}
-                  contextMenu={contextMenu}
-                  renderNode={renderNode}
-                  onClick={onNodeClick}
-                  onDoubleClick={onNodeDoubleClick}
-                  onContextMenu={onNodeContextMenu}
-                  onPointerOver={onNodePointerOver}
-                  onPointerOut={onNodePointerOut}
-                  onDragged={onNodeDraggedHandler}
-                />
-              ))}
-            </>
+            <InstancedSpheres
+              nodes={nodes}
+              selections={rest.selections || []}
+              actives={[]}
+              animated={animated}
+            />
           );
         }
 
