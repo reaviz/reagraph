@@ -83,7 +83,7 @@ const createInstanceShaderMaterial = () => {
     transparent: true,
     side: DoubleSide,
     fog: true,
-    depthWrite: false
+    depthWrite: true
   });
 };
 
@@ -107,7 +107,7 @@ export const InstancedSpheres: FC<InstancedSpheresProps> = ({
   const instanceData = useMemo(() => {
     return nodes.map(node => ({
       ...node,
-      opacity: actives.includes(node.id) ? 1.0 : 0.5,
+      opacity: actives.includes(node.id) ? 1.0 : 1,
       color: node.fill
     }));
   }, [nodes, actives]);

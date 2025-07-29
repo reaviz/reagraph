@@ -317,7 +317,7 @@ export const MitreAllTechniques = () => {
 
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
-  const nodeCount = 5000;
+  const nodeCount = 1000;
   const edgeCount = 100;
 
   interface DemoNode extends GraphNode {
@@ -468,7 +468,7 @@ export const Performance = () => {
         nodes={nodes}
         edges={edges}
         theme={darkTheme}
-        cameraMode="orbit"
+        cameraMode="rotate"
         layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
