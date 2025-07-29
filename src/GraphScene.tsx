@@ -55,6 +55,7 @@ import {
 } from 'symbols/nodes/SpriteText2';
 import { AdvancedCulledText, PointsText } from 'symbols/nodes/CulledText';
 import { AdaptiveText } from 'symbols/nodes/AdaptiveText';
+import { NestedSpheresWithIcons } from 'symbols/nodes/NestedSpheresWithIcons';
 
 export interface GraphSceneProps {
   /**
@@ -456,7 +457,13 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
           return (
             <>
-              <InstancedSpheres
+              {/* <InstancedSpheres
+                nodes={nodes}
+                selections={rest.selections || []}
+                actives={[]}
+                animated={animated}
+              /> */}
+              <NestedSpheresWithIcons
                 nodes={nodes}
                 selections={rest.selections || []}
                 actives={[]}
