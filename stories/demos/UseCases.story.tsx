@@ -317,7 +317,7 @@ export const MitreAllTechniques = () => {
 
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
-  const nodeCount = 1000;
+  const nodeCount = 5000;
   const edgeCount = 100;
 
   interface DemoNode extends GraphNode {
@@ -338,12 +338,25 @@ export const Performance = () => {
     for (let i = 0; i < nodeCount; i++) {
       n.push({
         id: `node-${i}`,
-        label: `Node ${i}`,
+        label: Array.from(
+          { length: Math.floor(Math.random() * 7) + 1 },
+          () =>
+            [
+              'lorem',
+              'ipsum',
+              'dolor',
+              'sit',
+              'amet',
+              'consectetur',
+              'adipiscing',
+              'elit'
+            ][Math.floor(Math.random() * 8)]
+        ).join(' '),
         fill: `#${Math.floor(Math.random() * 16777215)
           .toString(16)
           .padStart(6, '0')}`,
         size: Math.floor(Math.random() * 81) + 20,
-        icon: i % 2 === 0 ? twitterSvg : fireSvg,
+        icon: i % 2 === 0 ? twitterSvg : fireSvg
       });
     }
     return n;
@@ -455,8 +468,8 @@ export const Performance = () => {
         nodes={nodes}
         edges={edges}
         theme={darkTheme}
-        // cameraMode="orbit"
-        // layoutType='forceDirected3d'
+        cameraMode="orbit"
+        layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
         animated={true}

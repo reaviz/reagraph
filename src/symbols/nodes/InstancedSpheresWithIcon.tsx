@@ -440,7 +440,7 @@ export const InstancedSpheres: FC<InstancedSpheresProps> = ({
   const instanceData = useMemo(() => {
     return nodes.map(node => ({
       ...node,
-      opacity: actives.includes(node.id) ? 1.0 : 0.9,
+      opacity: actives.includes(node.id) ? 1.0 : 0.5,
       color: node.fill
     }));
   }, [nodes, actives]);
@@ -630,11 +630,13 @@ export const InstancedSpheres: FC<InstancedSpheresProps> = ({
 
   }, [instanceData, nodesByAtlas, nodesByIconAtlas, shouldShowLabels]);
 
+  const circleSegmentsDetail = 5;
+
   return (
     <>
       {/* Spheres - Higher subdivision for smoother appearance */}
       <Instances ref={instancesRef} limit={nodes.length} range={nodes.length}>
-        <icosahedronGeometry attach="geometry" args={[1, 3]} />
+        <icosahedronGeometry attach="geometry" args={[1, circleSegmentsDetail]} />
         <primitive attach="material" object={shaderMaterial} />
 
         {instanceData.map(node => (
