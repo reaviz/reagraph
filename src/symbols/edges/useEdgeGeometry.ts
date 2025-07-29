@@ -89,9 +89,9 @@ export function useEdgeGeometry(
         }
 
         const fromVector = getVector(from);
-        const fromOffset = from.size + labelFontSize;
+        const fromOffset = from.size;
         const toVector = getVector(to);
-        const toOffset = to.size + labelFontSize;
+        const toOffset = to.size;
         let curve = getCurve(
           fromVector,
           fromOffset,

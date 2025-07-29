@@ -210,6 +210,7 @@ export const Line: FC<LineProps> = ({
       onPointerDown={event => {
         // context menu controls
         if (event.nativeEvent.buttons === 2) {
+          event.nativeEvent.preventDefault();
           event.stopPropagation();
           onContextMenu();
         }
