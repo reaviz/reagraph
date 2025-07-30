@@ -166,6 +166,7 @@ export const MitreTools = () => {
 
   return (
     <GraphCanvas
+      showMinimap
       selections={selections}
       actives={actives}
       ref={graphRef}

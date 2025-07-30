@@ -27,6 +27,15 @@ Simple.args = {
   labelType: 'auto'
 };
 
+export const Minimap = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    showMinimap
+    minimapPosition="top-left"
+  />
+);
+
 export const TwoWayLink = () => (
   <GraphCanvas
     nodes={[

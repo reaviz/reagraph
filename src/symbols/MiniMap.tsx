@@ -10,11 +10,15 @@ interface MiniMapProps {
 export const MiniMap: React.FC<MiniMapProps> = ({
   width = 200,
   height = 150,
-  position = 'top-right'
+  position = 'bottom-right'
 }) => {
-  // Get actual nodes with positions from the store
+  // Get nodes, edges and theme from the store
   const storeNodes = useStore(state => state.nodes);
   const storeEdges = useStore(state => state.edges);
+  const theme = useStore(state => state.theme);
+  const actives = useStore(state => state.actives);
+  const selectedNodes = useStore(state => state.selections);
+  const hoveredNodeId = useStore(state => state.hoveredNodeId);
 
   // Calculate positions based on actual node positions from the store
   const nodePositions = useMemo(() => {
@@ -34,16 +38,6 @@ export const MiniMap: React.FC<MiniMapProps> = ({
         maxY = Math.max(maxY, node.position.y);
       }
     });
-
-    // If all positions are the same, use a small range
-    if (minX === maxX) {
-      minX -= 10;
-      maxX += 10;
-    }
-    if (minY === maxY) {
-      minY -= 10;
-      maxY += 10;
-    }
 
     // Scale and transform to fit minimap
     const padding = 20;
@@ -100,22 +94,29 @@ export const MiniMap: React.FC<MiniMapProps> = ({
         position: 'absolute',
         width,
         height,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
         border: '1px solid #ccc',
         borderRadius: '4px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-        zIndex: 1000,
+        zIndex: 100,
         ...positionStyles[position]
       }}
     >
       <svg width={width} height={height}>
         {/* Background */}
-        <rect width={width} height={height} fill="rgba(255, 255, 255, 0.8)" />
+        <rect
+          width={width}
+          height={height}
+          fill={String(theme.canvas.background)}
+        />
 
         {/* Edges */}
         {storeEdges.map(edge => {
           const sourcePos = nodePositions[edge.source];
           const targetPos = nodePositions[edge.target];
+          const isActive = actives.includes(edge.id);
+          const color = isActive
+            ? theme.edge.activeFill
+            : edge.fill || theme.edge.fill;
 
           if (sourcePos && targetPos) {
             return (
@@ -125,7 +126,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
                 y1={sourcePos.y}
                 x2={targetPos.x}
                 y2={targetPos.y}
-                stroke="#666"
+                stroke={String(color)}
                 strokeWidth={1}
                 opacity={0.6}
               />
@@ -137,6 +138,14 @@ export const MiniMap: React.FC<MiniMapProps> = ({
         {/* Nodes */}
         {storeNodes.map(node => {
           const pos = nodePositions[node.id];
+          const isSelected = selectedNodes.includes(node.id);
+          const isActive = actives.includes(node.id);
+          const isHovered = hoveredNodeId === node.id;
+          const color =
+            isActive || isSelected || isHovered
+              ? theme.node.activeFill
+              : node.fill || theme.node.fill;
+
           if (pos) {
             return (
               <circle
@@ -144,9 +153,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
                 cx={pos.x}
                 cy={pos.y}
                 r={3}
-                fill="#007bff"
-                stroke="#fff"
-                strokeWidth={1}
+                fill={String(color)}
               />
             );
           }
