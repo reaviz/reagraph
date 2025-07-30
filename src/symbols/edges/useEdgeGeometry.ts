@@ -79,6 +79,8 @@ export function useEdgeGeometry(
         if (!from || !to) {
           return;
         }
+        // Improved hash function to include size
+        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size}`;
 
         // Determine interpolation for this specific edge
         const edgeInterpolation = edge.interpolation || interpolation;
@@ -87,8 +89,6 @@ export function useEdgeGeometry(
         // Determine arrow placement for this specific edge
         const edgeArrowPlacement = edge.arrowPlacement || arrowPlacement;
 
-        // Improved hash function to include size, interpolation, and arrow placement
-        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size},${edgeInterpolation},${edgeArrowPlacement}`;
         if (cache.has(hash)) {
           geometries.push(cache.get(hash));
           return;
