@@ -52,6 +52,7 @@ import {
   InstancedSpriteText,
 } from 'symbols/nodes/SpriteText2';
 import { AdvancedCulledText } from 'symbols/nodes/CulledText';
+import { InstancedMeshSphere } from 'symbols/nodes/InstancedMeshSphere';
 
 export interface GraphSceneProps {
   /**
@@ -453,11 +454,19 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
           return (
             <>
-              <InstancedSpheres
+              {/* <InstancedSpheres
                 nodes={nodes}
                 selections={rest.selections || []}
-                actives={[]}
+                actives={nodes.slice(0, 10).map(node => node.id)}
                 animated={animated}
+              /> */}
+              <InstancedMeshSphere
+                nodes={nodes}
+                selections={rest.selections || []}
+                actives={nodes.slice(0, 10).map(node => node.id)}
+                animated={animated}
+                draggable={draggable}
+                onNodeDrag={onNodeDraggedHandler}
               />
               {/* <InstancedText
                 nodes={nodes}
@@ -467,20 +476,20 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                 fontSize={128}
               /> */}
 
-              <AdvancedCulledText
+              {/* <AdvancedCulledText
                 nodes={nodes}
                 selections={[]}
                 actives={actives}
                 fontSize={32}
                 maxWidth={300}
-              />
+              /> */}
 
-              <InstancedIcon
+              {/* <InstancedIcon
                 nodes={nodes}
                 selections={rest.selections || []}
                 actives={[]}
                 animated={animated}
-              />
+              /> */}
             </>
           );
         }

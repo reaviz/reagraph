@@ -89,6 +89,9 @@ export const InstancedSpheres: FC<InstancedSpheresProps> = ({
               ]}
               scale={node.size}
               color={node.color}
+              onClick={e => {
+                console.log('clicked', node.id);
+              }}
             />
           ))}
         </Instances>

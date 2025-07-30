@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Perf } from 'r3f-perf';
 
 import {
@@ -317,23 +317,12 @@ export const MitreAllTechniques = () => {
 
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
-  const nodeCount = 1000;
-  const edgeCount = 100;
+  const [nodeCount, setNodeCount] = useState(10);
+  const [edgeCount, setEdgeCount] = useState(10);
+  const [nodes, setNodes] = useState<DemoNode[]>([]);
+  const [edges, setEdges] = useState<DemoEdge[]>([]);
 
-  interface DemoNode extends GraphNode {
-    id: string;
-    label: string;
-  }
-
-  interface DemoEdge extends GraphEdge {
-    id: string;
-    source: string;
-    target: string;
-    label: string;
-    labelVisible: boolean;
-  }
-
-  const nodes: DemoNode[] = useMemo(() => {
+  useEffect(() => {
     const n: DemoNode[] = [];
     for (let i = 0; i < nodeCount; i++) {
       n.push({
@@ -359,10 +348,7 @@ export const Performance = () => {
         icon: i % 2 === 0 ? twitterSvg : fireSvg
       });
     }
-    return n;
-  }, []);
 
-  const edges: DemoEdge[] = useMemo(() => {
     const e: DemoEdge[] = [];
     for (let i = 0; i < edgeCount; i++) {
       const sourceIndex = Math.floor(Math.random() * nodeCount);
@@ -378,8 +364,37 @@ export const Performance = () => {
         labelVisible: true
       });
     }
-    return e;
-  }, []);
+
+    setNodes(n);
+    setEdges(e);
+  }, [nodeCount, edgeCount]);
+
+  interface DemoNode extends GraphNode {
+    id: string;
+    label: string;
+  }
+
+  interface DemoEdge extends GraphEdge {
+    id: string;
+    source: string;
+    target: string;
+    label: string;
+    labelVisible: boolean;
+  }
+
+  const addNode = useCallback(() => {
+    const next = nodes.length + 2;
+    setNodes(prev => [
+      ...prev,
+      {
+        id: `${next}`,
+        label: `Node ${next}`,
+        size: 100,
+        fill: '#ffffff',
+        icon: keySvg
+      }
+    ]);
+  }, [nodes]);
 
   return (
     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
@@ -394,6 +409,12 @@ export const Performance = () => {
           color: 'white'
         }}
       >
+        <button
+          style={{ display: 'block', width: '100%' }}
+          onClick={addNode}
+        >
+          Add Node
+        </button>
         <button
           style={{ display: 'block', width: '100%' }}
           onClick={() => ref.current?.centerGraph()}
@@ -468,11 +489,12 @@ export const Performance = () => {
         nodes={nodes}
         edges={edges}
         theme={darkTheme}
-        cameraMode="rotate"
-        layoutType='forceDirected3d'
+        // cameraMode="rotate"
+        // layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
         animated={true}
+        draggable={true}
       >
         <Perf />
       </GraphCanvas>
