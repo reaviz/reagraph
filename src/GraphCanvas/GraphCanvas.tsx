@@ -80,6 +80,7 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
 
   /**
    * Whether to show the minimap.
+   * The minimap displays a real-time overview of the graph with the same positioning as the main canvas.
    */
   showMinimap?: boolean;
 
