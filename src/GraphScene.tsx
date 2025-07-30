@@ -46,16 +46,12 @@ import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';
 import { aggregateEdges as aggregateEdgesUtil } from './utils/aggregateEdges';
-import { InstancedSpheresWithIcon } from './symbols/nodes/InstancedSpheresWithIcon';
 import { SpriteText } from 'symbols/nodes/SpriteText';
 import {
   CulledText,
   InstancedSpriteText,
-  LODText
 } from 'symbols/nodes/SpriteText2';
-import { AdvancedCulledText, PointsText } from 'symbols/nodes/CulledText';
-import { AdaptiveText } from 'symbols/nodes/AdaptiveText';
-import { NestedSpheresWithIcons } from 'symbols/nodes/NestedSpheresWithIcons';
+import { AdvancedCulledText } from 'symbols/nodes/CulledText';
 
 export interface GraphSceneProps {
   /**
@@ -457,13 +453,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
           return (
             <>
-              {/* <InstancedSpheres
-                nodes={nodes}
-                selections={rest.selections || []}
-                actives={[]}
-                animated={animated}
-              /> */}
-              <NestedSpheresWithIcons
+              <InstancedSpheres
                 nodes={nodes}
                 selections={rest.selections || []}
                 actives={[]}
@@ -476,27 +466,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                 animated={animated}
                 fontSize={128}
               /> */}
-              {/* <SpriteText
-                nodes={nodes}
-                selections={rest.selections || []}
-                actives={[]}
-                animated={animated}
-                fontSize={128}
-              /> */}
-              {/* <InstancedSpriteText
-                nodes={nodes}
-                selections={[]}
-                actives={actives}
-                fontSize={32}
-                maxWidth={300}
-              /> */}
-              {/* <CulledText
-                nodes={nodes}
-                selections={[]}
-                actives={actives}
-                fontSize={32}
-                maxWidth={300}
-              /> */}
+
               <AdvancedCulledText
                 nodes={nodes}
                 selections={[]}
@@ -504,14 +474,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                 fontSize={32}
                 maxWidth={300}
               />
-
-              {/* <AdaptiveText
-                nodes={nodes}
-                selections={[]}
-                actives={actives}
-                fontSize={128}
-                maxWidth={300}
-              /> */}
 
               <InstancedIcon
                 nodes={nodes}
