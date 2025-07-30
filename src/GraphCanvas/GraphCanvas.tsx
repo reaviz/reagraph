@@ -20,6 +20,7 @@ import { Lasso } from '../selection/Lasso';
 import type { LassoType } from '../selection/Lasso';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
+import { MiniMap } from 'symbols/MiniMap';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
@@ -76,6 +77,26 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * Whether to aggregate edges with the same source and target.
    */
   aggregateEdges?: boolean;
+
+  /**
+   * Whether to show the minimap.
+   */
+  showMinimap?: boolean;
+
+  /**
+   * The position of the minimap.
+   */
+  minimapPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+  /**
+   * The width of the minimap.
+   */
+  minimapWidth?: number;
+
+  /**
+   * The height of the minimap.
+   */
+  minimapHeight?: number;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
@@ -134,6 +155,10 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         onLasso,
         onLassoEnd,
         aggregateEdges,
+        showMinimap,
+        minimapPosition,
+        minimapWidth,
+        minimapHeight,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -189,16 +214,16 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
       return (
         <div className={css.canvas}>
-          <Canvas
-            legacy
-            linear
-            ref={canvasRef}
-            flat
-            gl={gl}
-            camera={CAMERA_DEFAULTS}
-            onPointerMissed={onCanvasClick}
-          >
-            <Provider store={store}>
+          <Provider store={store}>
+            <Canvas
+              legacy
+              linear
+              ref={canvasRef}
+              flat
+              gl={gl}
+              camera={CAMERA_DEFAULTS}
+              onPointerMissed={onCanvasClick}
+            >
               {theme.canvas?.background && (
                 <color attach="background" args={[theme.canvas.background]} />
               )}
@@ -240,8 +265,15 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                   </Suspense>
                 </Lasso>
               </CameraControls>
-            </Provider>
-          </Canvas>
+            </Canvas>
+            {showMinimap && (
+              <MiniMap
+                position={minimapPosition}
+                width={minimapWidth}
+                height={minimapHeight}
+              />
+            )}
+          </Provider>
         </div>
       );
     }
