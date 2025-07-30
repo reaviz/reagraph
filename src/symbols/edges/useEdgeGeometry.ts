@@ -49,7 +49,6 @@ export function useEdgeGeometry(
   const nullGeometryRef = useRef(new BoxGeometry(0, 0, 0));
   const baseArrowGeometryRef = useRef<CylinderGeometry | null>(null);
 
-  const curved = interpolation === 'curved';
   const getGeometries = useCallback(
     (edges: Array<InternalGraphEdge>): Array<BufferGeometry> => {
       const geometries: Array<BufferGeometry> = [];
@@ -81,8 +80,12 @@ export function useEdgeGeometry(
           return;
         }
 
-        // Improved hash function to include size
-        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size}`;
+        // Determine interpolation for this specific edge
+        const edgeInterpolation = edge.interpolation || interpolation;
+        const curved = edgeInterpolation === 'curved';
+
+        // Improved hash function to include size and interpolation
+        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size},${edgeInterpolation}`;
         if (cache.has(hash)) {
           geometries.push(cache.get(hash));
           return;
@@ -144,7 +147,7 @@ export function useEdgeGeometry(
       });
       return geometries;
     },
-    [arrowPlacement, curved, theme.edge.label.fontSize]
+    [arrowPlacement, interpolation, theme.edge.label.fontSize]
   );
 
   const getGeometry = useCallback(

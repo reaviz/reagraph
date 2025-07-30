@@ -54,6 +54,24 @@ export interface GraphNode extends GraphElementBaseAttributes {
    * Cluster ID for the node.
    */
   cluster?: string;
+
+  /**
+   * Fixed X position for force-directed layouts.
+   * When set, the node will be pinned to this X coordinate.
+   */
+  fx?: number;
+
+  /**
+   * Fixed Y position for force-directed layouts.
+   * When set, the node will be pinned to this Y coordinate.
+   */
+  fy?: number;
+
+  /**
+   * Fixed Z position for force-directed layouts.
+   * When set, the node will be pinned to this Z coordinate.
+   */
+  fz?: number;
 }
 
 export interface GraphEdge extends GraphElementBaseAttributes {
@@ -85,6 +103,13 @@ export interface GraphEdge extends GraphElementBaseAttributes {
    * - 'above': Show subLabel above the main label
    */
   subLabelPlacement?: 'below' | 'above';
+
+  /**
+   * Type of edge interpolation.
+   * - 'linear': Straight line
+   * - 'curved': Curved line
+   */
+  interpolation?: 'linear' | 'curved';
 }
 
 export interface Graph {

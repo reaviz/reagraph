@@ -96,15 +96,23 @@ export const Special = () => (
   <GraphCanvas
     edgeArrowPosition="none"
     edgeInterpolation="curved"
+    layoutType="forceDirected2d"
     nodes={[
       {
-        id: '1'
+        id: '1',
+        // Pin node to specific position using fx, fy, fz
+        fx: 50,
+        fy: 0,
+        fz: 0
       },
       {
         id: '2',
         data: {
           badge: 6
-        }
+        },
+        fx: 0,
+        fy: 50,
+        fz: 0
       },
       {
         id: 'core',
@@ -112,7 +120,11 @@ export const Special = () => (
         data: {
           borderColor: '#000000',
           image: coreSvg('#000000')
-        }
+        },
+        // Pin node to center
+        fx: 0,
+        fy: 0,
+        fz: 0
       }
     ]}
     edges={[
@@ -122,6 +134,22 @@ export const Special = () => (
         id: '1-2',
         dashed: true,
         fill: '#ee8a8f'
+      },
+      {
+        source: 'core',
+        target: '1',
+        id: 'core-1',
+        dashed: true,
+        fill: '#bcbac8',
+        interpolation: 'linear'
+      },
+      {
+        source: 'core',
+        target: '2',
+        id: 'core-2',
+        dashed: true,
+        fill: '#bcbac8',
+        interpolation: 'linear'
       }
     ]}
     renderNode={({ node, ...rest }) => (

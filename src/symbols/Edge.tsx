@@ -168,14 +168,18 @@ export const Edge: FC<EdgeProps> = ({
   // Edge properties
   const labelOffset = (size + theme.edge.label.fontSize) / 2;
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
+
+  // Use edge-specific interpolation if available, otherwise use global interpolation
+  const effectiveInterpolation = edge.interpolation || interpolation;
+
   const { curveOffset, curved } = useMemo(
     () =>
       calculateEdgeCurveOffset({
         edge,
         edges,
-        curved: interpolation === 'curved'
+        curved: effectiveInterpolation === 'curved'
       }),
-    [edge, edges, interpolation]
+    [edge, edges, effectiveInterpolation]
   );
 
   const [curve, arrowPosition, arrowRotation] = useMemo(() => {
