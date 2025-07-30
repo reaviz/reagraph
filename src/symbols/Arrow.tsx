@@ -104,6 +104,7 @@ export const Arrow: FC<ArrowProps> = ({
       onPointerDown={event => {
         // context menu controls
         if (event.nativeEvent.buttons === 2) {
+          event.nativeEvent.preventDefault();
           event.stopPropagation();
           onContextMenu();
         }
