@@ -1,7 +1,7 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC, useMemo, useRef, useEffect } from 'react';
 import { Instances, Instance } from '@react-three/drei';
 import { InternalGraphNode } from '../../types';
-import { ShaderMaterial } from 'three';
+import { ShaderMaterial, InstancedBufferAttribute, InstancedMesh } from 'three';
 
 interface InstancedSpheresProps {
   nodes: InternalGraphNode[];
@@ -10,27 +10,31 @@ interface InstancedSpheresProps {
   animated?: boolean;
 }
 
-// Basic sphere material that uses instance colors
+// Basic sphere material that uses instance colors and opacity
 const createBasicSphereMaterial = () => {
   return new ShaderMaterial({
     vertexShader: `
       varying vec3 vColor;
+      varying float vOpacity;
+      attribute float opacity;
 
       void main() {
         // Get color from instance matrix (stored in instance color)
         vColor = instanceColor;
+        vOpacity = opacity;
 
         gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
       }
     `,
     fragmentShader: `
       varying vec3 vColor;
+      varying float vOpacity;
 
       void main() {
-        gl_FragColor = vec4(vColor, 1.0);
+        gl_FragColor = vec4(vColor, vOpacity);
       }
     `,
-    transparent: false
+    transparent: true
   });
 };
 
@@ -49,18 +53,28 @@ export const InstancedSpheres: FC<InstancedSpheresProps> = ({
   const instanceData = useMemo(() => {
     return nodes.map(node => ({
       ...node,
-      opacity: actives.includes(node.id) ? 1.0 : 1,
+      opacity: actives.includes(node.id) ? 1.0 : 0.3,
       color: node.fill
     }));
   }, [nodes, actives]);
 
   const circleSegmentsDetail = 5;
 
+  const meshRef = useRef<InstancedMesh>(null);
+
+  // Set up opacity attribute after instances are created
+  useEffect(() => {
+    if (meshRef.current && meshRef.current.geometry) {
+      const opacityArray = new Float32Array(instanceData.map(node => node.opacity));
+      meshRef.current.geometry.setAttribute('opacity', new InstancedBufferAttribute(opacityArray, 1));
+    }
+  }, [instanceData]);
+
   return (
     <>
       {/* Spheres render first */}
       <group renderOrder={0}>
-        <Instances limit={nodes.length} range={nodes.length}>
+        <Instances ref={meshRef} limit={nodes.length} range={nodes.length}>
           <icosahedronGeometry args={[1, circleSegmentsDetail]} />
           <primitive object={sphereMaterial} />
 
