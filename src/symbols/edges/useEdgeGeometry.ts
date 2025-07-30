@@ -84,8 +84,11 @@ export function useEdgeGeometry(
         const edgeInterpolation = edge.interpolation || interpolation;
         const curved = edgeInterpolation === 'curved';
 
-        // Improved hash function to include size and interpolation
-        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size},${edgeInterpolation}`;
+        // Determine arrow placement for this specific edge
+        const edgeArrowPlacement = edge.arrowPlacement || arrowPlacement;
+
+        // Improved hash function to include size, interpolation, and arrow placement
+        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size},${edgeInterpolation},${edgeArrowPlacement}`;
         if (cache.has(hash)) {
           geometries.push(cache.get(hash));
           return;
@@ -105,7 +108,7 @@ export function useEdgeGeometry(
 
         let edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
 
-        if (arrowPlacement === 'none') {
+        if (edgeArrowPlacement === 'none') {
           geometries.push(edgeGeometry);
           cache.set(hash, edgeGeometry);
           return;
@@ -116,7 +119,7 @@ export function useEdgeGeometry(
         const arrowGeometry = baseArrowGeometryRef.current.clone();
         arrowGeometry.scale(arrowSize, arrowLength, arrowSize);
         const [arrowPosition, arrowRotation] = getArrowVectors(
-          arrowPlacement,
+          edgeArrowPlacement,
           curve,
           arrowLength
         );
@@ -130,7 +133,7 @@ export function useEdgeGeometry(
         );
 
         // Move edge so it doesn't stick through the arrow:
-        if (arrowPlacement && arrowPlacement === 'end') {
+        if (edgeArrowPlacement && edgeArrowPlacement === 'end') {
           const curve = getCurve(
             fromVector,
             fromOffset,

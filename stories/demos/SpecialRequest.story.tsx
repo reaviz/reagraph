@@ -2,7 +2,121 @@ import React from 'react';
 import { GraphCanvas } from '../../src';
 import { Badge, Sphere, Icon, Ring } from '../../src/symbols';
 import { RoundedBox } from '@react-three/drei';
-import { RingGeometry, CircleGeometry } from 'three';
+import { range } from 'lodash';
+import {
+  RingGeometry,
+  BufferGeometry,
+  Line,
+  Vector3,
+  lineDashedMaterial
+} from 'three';
+import { useRef, useEffect } from 'react';
+
+const RADIUS = 10;
+const SPACING = 30;
+
+// Dashed Circle Component
+function DashedCircle({ radius }: { radius: number }) {
+  const lineRef = useRef<Line>(null!);
+
+  const segments = 128;
+  const points = [];
+
+  for (let i = 0; i <= segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    points.push(
+      new Vector3(radius * Math.cos(angle), radius * Math.sin(angle), 0)
+    );
+  }
+
+  useEffect(() => {
+    if (lineRef.current) {
+      lineRef.current.computeLineDistances();
+    }
+  }, []);
+
+  const geometry = new BufferGeometry().setFromPoints(points);
+
+  return (
+    <line ref={lineRef} geometry={geometry}>
+      <lineDashedMaterial
+        attach="material"
+        color="#888"
+        dashSize={10}
+        gapSize={6}
+      />
+    </line>
+  );
+}
+
+function ConcentricRings({ maxLevel }: { maxLevel: number }) {
+  const colors = [
+    '#e8e6f7',
+    '#f0eefb',
+    '#f9f5fe',
+    '#D1C4E9',
+    '#C5CAE9',
+    '#BBDEFB',
+    '#B3E5FC',
+    '#B2EBF2',
+    '#B2DFDB',
+    '#C8E6C9',
+    '#DCEDC8',
+    '#F0F4C3'
+  ];
+
+  return (
+    <>
+      {range(maxLevel).map(level => {
+        const inner = RADIUS + level * SPACING + 50;
+        const outer = RADIUS + (level + 1) * SPACING + 50;
+        const color = colors[level % colors.length];
+        return (
+          <FilledRing
+            key={`fill-${level}`}
+            innerRadius={inner}
+            outerRadius={outer}
+            color={color}
+          />
+        );
+      })}
+
+      {range(maxLevel).map(level => (
+        <DashedCircle
+          key={`circle-${level}`}
+          radius={RADIUS + level * SPACING + 50}
+        />
+      ))}
+    </>
+  );
+}
+
+// Filled Ring Component
+function FilledRing({
+  innerRadius,
+  outerRadius,
+  color,
+  position = [0, 0, 0]
+}: {
+  innerRadius: number;
+  outerRadius: number;
+  color: string;
+  position?: [number, number, number];
+}) {
+  const geometry = new RingGeometry(innerRadius, outerRadius, 64);
+
+  return (
+    <mesh geometry={geometry} position={position}>
+      <meshBasicMaterial
+        attach="material"
+        color={color}
+        transparent={true}
+        opacity={0.2}
+        side={2}
+      />
+    </mesh>
+  );
+}
 
 const userSvg = (color = 'black') =>
   `data:image/svg+xml;base64,${btoa(`
@@ -37,56 +151,6 @@ const coreSvg = (color = 'black') =>
 </svg>
 `)}`;
 
-const FilledRing = ({
-  innerRadius,
-  outerRadius,
-  color,
-  position = [0, 0, 0]
-}: {
-  innerRadius: number;
-  outerRadius: number;
-  color: string;
-  position?: [number, number, number];
-}) => {
-  const geometry = new RingGeometry(innerRadius, outerRadius, 64);
-
-  return (
-    <mesh geometry={geometry} position={position}>
-      <meshBasicMaterial
-        attach="material"
-        color={color}
-        transparent={true}
-        opacity={0.2}
-        side={2}
-      />
-    </mesh>
-  );
-};
-
-const FilledCircle = ({
-  radius,
-  color,
-  position = [0, 0, 0]
-}: {
-  radius: number;
-  color: string;
-  position?: [number, number, number];
-}) => {
-  const geometry = new CircleGeometry(radius, 64);
-
-  return (
-    <mesh geometry={geometry} position={position}>
-      <meshBasicMaterial
-        attach="material"
-        color={color}
-        transparent={true}
-        opacity={0.2}
-        side={2}
-      />
-    </mesh>
-  );
-};
-
 export default {
   title: 'Demos/Edges',
   component: GraphCanvas
@@ -101,7 +165,7 @@ export const Special = () => (
       {
         id: '1',
         // Pin node to specific position using fx, fy, fz
-        fx: 50,
+        fx: 40,
         fy: 0,
         fz: 0
       },
@@ -111,7 +175,7 @@ export const Special = () => (
           badge: 6
         },
         fx: 0,
-        fy: 50,
+        fy: 40,
         fz: 0
       },
       {
@@ -141,7 +205,8 @@ export const Special = () => (
         id: 'core-1',
         dashed: true,
         fill: '#bcbac8',
-        interpolation: 'linear'
+        interpolation: 'linear',
+        arrowPlacement: 'end'
       },
       {
         source: 'core',
@@ -149,7 +214,8 @@ export const Special = () => (
         id: 'core-2',
         dashed: true,
         fill: '#bcbac8',
-        interpolation: 'linear'
+        interpolation: 'linear',
+        arrowPlacement: 'end'
       }
     ]}
     renderNode={({ node, ...rest }) => (
@@ -214,11 +280,6 @@ export const Special = () => (
     )}
   >
     {/* Circular background in center of canvas */}
-    <FilledRing
-      innerRadius={0}
-      outerRadius={100}
-      color="red"
-      position={[0, 0, -10]}
-    />
+    <ConcentricRings maxLevel={2} />
   </GraphCanvas>
 );

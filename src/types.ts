@@ -110,6 +110,14 @@ export interface GraphEdge extends GraphElementBaseAttributes {
    * - 'curved': Curved line
    */
   interpolation?: 'linear' | 'curved';
+
+  /**
+   * Placement of the edge arrow.
+   * - 'none': No arrow
+   * - 'mid': Arrow in the middle of the edge
+   * - 'end': Arrow at the end of the edge
+   */
+  arrowPlacement?: 'none' | 'mid' | 'end';
 }
 
 export interface Graph {
