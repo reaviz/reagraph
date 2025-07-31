@@ -39,7 +39,7 @@ export interface LineProps {
   dashed?: boolean;
 
   /**
-   * The dash size of the line.
+   * The size of the dash.
    */
   dashSize?: number;
 
