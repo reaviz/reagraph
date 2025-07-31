@@ -57,19 +57,16 @@ export interface GraphNode extends GraphElementBaseAttributes {
 
   /**
    * Fixed X position for force-directed layouts.
-   * When set, the node will be pinned to this X coordinate.
    */
   fx?: number;
 
   /**
    * Fixed Y position for force-directed layouts.
-   * When set, the node will be pinned to this Y coordinate.
    */
   fy?: number;
 
   /**
    * Fixed Z position for force-directed layouts.
-   * When set, the node will be pinned to this Z coordinate.
    */
   fz?: number;
 }
@@ -105,17 +102,12 @@ export interface GraphEdge extends GraphElementBaseAttributes {
   subLabelPlacement?: 'below' | 'above';
 
   /**
-   * Type of edge interpolation.
-   * - 'linear': Straight line
-   * - 'curved': Curved line
+   * Type of edge interpolation ('linear' | 'curved'). Default is 'linear'.
    */
   interpolation?: 'linear' | 'curved';
 
   /**
-   * Placement of the edge arrow.
-   * - 'none': No arrow
-   * - 'mid': Arrow in the middle of the edge
-   * - 'end': Arrow at the end of the edge
+   * Placement of the edge arrow ('none' | 'mid' | 'end'). Default is 'end'.
    */
   arrowPlacement?: 'none' | 'mid' | 'end';
 }
