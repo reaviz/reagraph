@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef, useLayoutEffect } from 'react';
+import React, { FC, useMemo, useRef, useLayoutEffect, forwardRef } from 'react';
 import { type ThreeElement } from '@react-three/fiber';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { RingGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
@@ -21,13 +21,10 @@ declare module '@react-three/fiber' {
   }
 }
 
-
 interface InstancedBillboardRingsProps {
   rings: InternalGraphNode[];
   animated?: boolean;
   billboardMode?: boolean;
-  floatingAnimation?: boolean;
-  orbitalAnimation?: boolean;
   onRingClick?: (ring: InternalGraphNode) => void;
 }
 
@@ -49,16 +46,12 @@ const ringToInstance = (
   instance.opacity = 0.8;
 };
 
-export const InstancedBillboardRings: FC<InstancedBillboardRingsProps> = ({
+export const InstancedBillboardRings = forwardRef<InstancedMesh2<RingData>, InstancedBillboardRingsProps>(({
   rings,
   animated = false,
   billboardMode = true,
-  floatingAnimation = false,
-  orbitalAnimation = false,
   onRingClick
-}) => {
-  const meshRef = useRef<InstancedMesh2<RingData>>(null);
-  const { camera } = useThree();
+}, ref) => {
 
   // Create geometry and material
   const geometry = useMemo(() => new RingGeometry(0.7, 0.85, 64), []);
@@ -78,7 +71,7 @@ export const InstancedBillboardRings: FC<InstancedBillboardRingsProps> = ({
 
   // Initialize mesh and update instances when data changes
   useLayoutEffect(() => {
-    const mesh = meshRef.current;
+    const mesh = (ref as React.RefObject<InstancedMesh2<RingData>>)?.current;
     if (!mesh || rings.length === 0) return;
 
     if (mesh.instances?.length) {
@@ -99,36 +92,37 @@ export const InstancedBillboardRings: FC<InstancedBillboardRingsProps> = ({
       });
     }
 
+    mesh.frustumCulled = false;
     mesh.computeBVH();
   }, [rings, animated, billboardMode]);
 
   return (
     <instancedMesh2
       key="instanced-billboard-rings"
-      ref={meshRef}
+      ref={ref}
       args={meshArgs}
       onClick={e => {
         const id = e.instanceId;
-        const ringId = meshRef.current?.instances?.[id]?.ringId;
+        const ringId = (ref as React.RefObject<InstancedMesh2<RingData>>)?.current?.instances?.[id]?.ringId;
         const ring = rings.find(r => r.id === ringId);
         if (ring && onRingClick) {
           onRingClick(ring);
         }
       }}
       onPointerEnter={e => {
-        const instance = meshRef.current?.instances?.[e.instanceId];
+        const instance = (ref as React.RefObject<InstancedMesh2<RingData>>)?.current?.instances?.[e.instanceId];
         if (instance) {
           instance.opacity = 1;
           instance.updateMatrix();
         }
       }}
       onPointerLeave={e => {
-        const instance = meshRef.current?.instances?.[e.instanceId];
+        const instance = (ref as React.RefObject<InstancedMesh2<RingData>>)?.current?.instances?.[e.instanceId];
         if (instance) {
-          instance.opacity = 0.3;
+          instance.opacity = 0.5;
           instance.updateMatrix();
         }
       }}
     />
   );
-};
+});

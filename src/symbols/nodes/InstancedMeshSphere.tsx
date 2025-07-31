@@ -1,9 +1,15 @@
-import React, { FC, useMemo, useRef, useLayoutEffect } from 'react';
+import React, { FC, useMemo, useRef, useLayoutEffect, useEffect } from 'react';
 import { type ThreeElement } from '@react-three/fiber';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Controller } from '@react-spring/core';
 import { InternalGraphNode, InternalGraphPosition } from '../../types';
-import { IcosahedronGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
+import {
+  IcosahedronGeometry,
+  MeshBasicMaterial,
+  Color,
+  Vector3,
+  Sphere
+} from 'three';
 import { extend } from '@react-three/fiber';
 import { animationConfig } from '../../utils/animation';
 import { useInstanceDrag } from '../../utils/useInstanceDrag';
@@ -121,6 +127,8 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
 }) => {
   const cameraControls = useCameraControls();
   const meshRef = useRef<InstancedMesh2<InstancedData>>(null);
+  const ringMeshRef = useRef<InstancedMesh2<any>>(null);
+  const nodesInstanceIdsMap = useRef<Map<string, number>>(new Map());
 
   // Create geometry and material
   const geometry = useMemo(() => new IcosahedronGeometry(1, 5), []);
@@ -141,6 +149,17 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
         if (instance) {
           instance.position.copy(pos);
           instance.updateMatrixPosition();
+
+          // Sync ring position if it exists
+          if (ringMeshRef.current && selections.includes(instance.nodeId)) {
+            const ringInstance = ringMeshRef.current.instances.find(
+              ringInst => ringInst.ringId === instance.nodeId
+            );
+            if (ringInstance) {
+              ringInstance.position.copy(pos);
+              ringInstance.updateMatrixPosition();
+            }
+          }
 
           const updatedNode = {
             ...instance.node,
@@ -165,15 +184,21 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
     if (!mesh || nodes.length === 0) return;
 
     if (mesh.instances?.length) {
-      nodes.forEach(node => {
-        const id = mesh.instances.findIndex(
-          instance => instance.nodeId === node.id
-        );
-        if (id === -1) {
-          mesh.addInstances(1, instance =>
-            nodeToInstance(node, instance, actives.includes(node.id), animated)
-          );
+      // Update the nodeId to instanceId map
+      nodesInstanceIdsMap.current.clear();
+      mesh.instances.forEach((instance, index) => {
+        if (instance.nodeId) {
+          nodesInstanceIdsMap.current.set(instance.nodeId, index);
+        }
+      });
 
+      nodes.forEach(node => {
+        const id = nodesInstanceIdsMap.current.get(node.id);
+        if (id === undefined) {
+          mesh.addInstances(1, instance => {
+            nodeToInstance(node, instance, actives.includes(node.id), animated);
+            nodesInstanceIdsMap.current.set(node.id, instance.id);
+          });
           return;
         }
         const instance = mesh.instances[id];
@@ -188,8 +213,15 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
           animated
         );
       });
+      // Initialize map for new instances
+      nodesInstanceIdsMap.current.clear();
+      nodes.forEach((node, index) => {
+        nodesInstanceIdsMap.current.set(node.id, index);
+      });
     }
 
+    // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
+    mesh.frustumCulled = false;
     mesh.computeBVH();
   }, [nodes, actives, animated]);
 
@@ -229,6 +261,7 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
         }}
       />
       <InstancedBillboardRings
+        ref={ringMeshRef}
         rings={nodes.filter(node => selections?.includes(node.id))}
         animated={animated}
         billboardMode={true}
