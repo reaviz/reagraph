@@ -317,9 +317,9 @@ export const MitreAllTechniques = () => {
 
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
-  const [nodeCount, setNodeCount] = useState(1000);
+  const [nodeCount, setNodeCount] = useState(10);
   const [tempNodeCount, setTempNodeCount] = useState(nodeCount);
-  const [edgeCount, setEdgeCount] = useState(100);
+  const [edgeCount, setEdgeCount] = useState(6);
   const [tempEdgeCount, setTempEdgeCount] = useState(edgeCount);
   const [nodes, setNodes] = useState<DemoNode[]>([]);
   const [edges, setEdges] = useState<DemoEdge[]>([]);

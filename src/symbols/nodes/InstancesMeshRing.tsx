@@ -1,9 +1,11 @@
 import React, { FC, useMemo, useRef, useLayoutEffect, forwardRef } from 'react';
 import { type ThreeElement } from '@react-three/fiber';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
+import { Controller } from '@react-spring/core';
 import { RingGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
 import { extend, useThree } from '@react-three/fiber';
 import { InternalGraphNode } from '../../types';
+import { animationConfig } from '../../utils/animation';
 
 // Add InstancedMesh2 to the jsx catalog
 extend({ InstancedMesh2 });
@@ -28,19 +30,75 @@ interface InstancedBillboardRingsProps {
   onRingClick?: (ring: InternalGraphNode) => void;
 }
 
-const animationConfig = {
-  tension: 120,
-  friction: 14,
-  mass: 1
-};
 
 const ringToInstance = (
   ring: InternalGraphNode,
-  instance: InstancedEntity & RingData
+  instance: InstancedEntity & RingData,
+  animated: boolean = false
 ) => {
   instance.ringId = ring.id;
-  instance.position.set(ring.position.x, ring.position.y, ring.position.z);
-  instance.updateMatrixPosition();
+
+  if (animated) {
+    // For initial render animation, start from center if instance is at origin
+    const isAtOrigin =
+      instance.position.x === 0 &&
+      instance.position.y === 0 &&
+      instance.position.z === 0;
+    const startPosition = {
+      x: isAtOrigin ? 0 : instance.position.x,
+      y: isAtOrigin ? 0 : instance.position.y,
+      z: isAtOrigin ? 0 : instance.position.z
+    };
+
+    // Target is ring position
+    const targetPosition = {
+      x: ring.position?.x || 0,
+      y: ring.position?.y || 0,
+      z: ring.position?.z || 0
+    };
+
+    // Skip animation if already at target (avoid unnecessary animation)
+    const distance = Math.sqrt(
+      Math.pow(targetPosition.x - startPosition.x, 2) +
+        Math.pow(targetPosition.y - startPosition.y, 2) +
+        Math.pow(targetPosition.z - startPosition.z, 2)
+    );
+
+    if (distance < 0.1) {
+      // Too close, just set position directly
+      instance.position.set(
+        targetPosition.x,
+        targetPosition.y,
+        targetPosition.z
+      );
+      instance.updateMatrixPosition();
+    } else {
+      const controller = new Controller({
+        x: startPosition.x,
+        y: startPosition.y,
+        z: startPosition.z,
+        config: animationConfig
+      });
+
+      controller.start({
+        x: targetPosition.x,
+        y: targetPosition.y,
+        z: targetPosition.z,
+        onChange: () => {
+          const x = controller.springs.x.get();
+          const y = controller.springs.y.get();
+          const z = controller.springs.z.get();
+
+          instance.position.set(x, y, z);
+          instance.updateMatrixPosition();
+        }
+      });
+    }
+  } else {
+    instance.position.set(ring.position.x, ring.position.y, ring.position.z);
+    instance.updateMatrixPosition();
+  }
+
   instance.scale.setScalar(ring.size * 2 || 1);
   instance.color = new Color(ring.fill || '#ffffff');
   instance.opacity = 0.8;
@@ -80,21 +138,21 @@ export const InstancedBillboardRings = forwardRef<InstancedMesh2<RingData>, Inst
           instance => instance.ringId === ring.id
         );
         if (id === -1) {
-          mesh.addInstances(1, instance => ringToInstance(ring, instance));
+          mesh.addInstances(1, instance => ringToInstance(ring, instance, animated));
           return;
         }
         const instance = mesh.instances[id];
-        ringToInstance(ring, instance);
+        ringToInstance(ring, instance, animated);
       });
     } else {
       mesh.addInstances(rings.length, (instance, index) => {
-        ringToInstance(rings[index], instance);
+        ringToInstance(rings[index], instance, animated);
       });
     }
 
     mesh.frustumCulled = false;
     mesh.computeBVH();
-  }, [rings, animated, billboardMode]);
+  }, [rings, animated, billboardMode, ref]);
 
   return (
     <instancedMesh2

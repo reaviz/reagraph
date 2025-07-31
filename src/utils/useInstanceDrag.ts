@@ -55,7 +55,7 @@ export const useInstanceDrag = ({
 
   const handlePointerMove = useCallback((event: PointerEvent) => {
     if (dragState.current.instanceId === null) return;
-    
+
     // Compute normalized mouse coordinates (screen space)
     const nx = ((event.clientX - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
     const ny = -((event.clientY - (clientRect?.top ?? 0)) / size.height) * 2 + 1;
@@ -115,7 +115,7 @@ export const useInstanceDrag = ({
 
   const handleDragStart = useCallback((instanceId: number, point: Vector3, instancePosition: Vector3) => {
     if (!draggable) return;
-    
+
     // Store drag state
     dragState.current.instanceId = instanceId;
     dragState.current.instancePosition.copy(instancePosition);

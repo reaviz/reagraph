@@ -184,25 +184,45 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
     if (!mesh || nodes.length === 0) return;
 
     if (mesh.instances?.length) {
-      // Update the nodeId to instanceId map
+      // Get existing instance node IDs
+      const existingNodeIds = new Set(
+        mesh.instances.map(instance => instance.nodeId).filter(Boolean)
+      );
+      // Find nodes that need new instances
+      const newNodes = nodes.filter(node => !existingNodeIds.has(node.id));
+      // Update all existing instances at once
+      mesh.updateInstances(instance => {
+        if (instance.nodeId) {
+          const node = nodes.find(n => n.id === instance.nodeId);
+          if (node) {
+            nodeToInstance(node, instance, actives.includes(node.id), animated);
+          } else {
+            mesh.removeInstances(instance.id);
+          }
+        }
+      });
+
+      // Add new instances for new nodes
+      if (newNodes.length > 0) {
+        let index = 0;
+        mesh.addInstances(newNodes.length, (instance, instanceIndex) => {
+          nodeToInstance(
+            newNodes[index],
+            instance,
+            actives.includes(newNodes[index].id),
+            animated
+          );
+          nodesInstanceIdsMap.current.set(newNodes[index].id, instanceIndex);
+          index++;
+        });
+      }
+
+      // Update the nodeId to instanceId mapping
       nodesInstanceIdsMap.current.clear();
       mesh.instances.forEach((instance, index) => {
         if (instance.nodeId) {
           nodesInstanceIdsMap.current.set(instance.nodeId, index);
         }
-      });
-
-      nodes.forEach(node => {
-        const id = nodesInstanceIdsMap.current.get(node.id);
-        if (id === undefined) {
-          mesh.addInstances(1, instance => {
-            nodeToInstance(node, instance, actives.includes(node.id), animated);
-            nodesInstanceIdsMap.current.set(node.id, instance.id);
-          });
-          return;
-        }
-        const instance = mesh.instances[id];
-        nodeToInstance(node, instance, actives.includes(node.id), animated);
       });
     } else {
       mesh.addInstances(nodes.length, (instance, index) => {
