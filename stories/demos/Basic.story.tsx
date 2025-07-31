@@ -33,6 +33,8 @@ export const Minimap = () => (
     edges={simpleEdges}
     showMinimap
     minimapPosition="top-left"
+    minimapWidth={300}
+    minimapHeight={230}
   />
 );
 
