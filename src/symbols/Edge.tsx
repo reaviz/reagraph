@@ -155,7 +155,8 @@ export const Edge: FC<EdgeProps> = ({
     labelVisible = false,
     size = 1,
     fill,
-    dashed = false
+    dashed = false,
+    dashSize = 3
   } = edge;
 
   // Use subLabelPlacement from edge data if available, otherwise use the prop value
@@ -465,6 +466,7 @@ export const Edge: FC<EdgeProps> = ({
         curve={curve}
         curved={curved}
         dashed={dashed}
+        dashSize={dashSize}
         id={id}
         opacity={selectionOpacity}
         size={size}

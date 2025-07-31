@@ -95,6 +95,11 @@ export interface GraphEdge extends GraphElementBaseAttributes {
   dashed?: boolean;
 
   /**
+   * The size of the dash.
+   */
+  dashSize?: number;
+
+  /**
    * Placement of the subLabel relative to the main label.
    * - 'below': Show subLabel below the main label (default)
    * - 'above': Show subLabel above the main label
