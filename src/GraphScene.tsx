@@ -462,9 +462,9 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               /> */}
               <InstancedMeshSphere
                 nodes={nodes}
-                selections={rest.selections || []}
+                selections={nodes.slice(0, 3).map(node => node.id)}
                 actives={nodes.slice(0, 10).map(node => node.id)}
-                animated={animated}
+                animated={true}
                 draggable={draggable}
                 onNodeDrag={onNodeDraggedHandler}
               />

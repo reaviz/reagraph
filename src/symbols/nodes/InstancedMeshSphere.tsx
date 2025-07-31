@@ -8,11 +8,12 @@ import { extend } from '@react-three/fiber';
 import { animationConfig } from '../../utils/animation';
 import { useInstanceDrag } from '../../utils/useInstanceDrag';
 import { useCameraControls } from '../../CameraControls/useCameraControls';
+import { InstancedBillboardRings } from './InstancesMeshRing';
 
 // add InstancedMesh2 to the jsx catalog i.e use it as a jsx component
 extend({ InstancedMesh2 });
 
-type InstancedData = { nodeId: string, node: InternalGraphNode };
+type InstancedData = { nodeId: string; node: InternalGraphNode };
 
 declare module '@react-three/fiber' {
   interface ThreeElements {
@@ -115,6 +116,7 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
   actives = [],
   animated = false,
   draggable = false,
+  selections = [],
   onNodeDrag
 }) => {
   const cameraControls = useCameraControls();
@@ -192,26 +194,45 @@ export const InstancedMeshSphere: FC<InstancedMeshSphereProps> = ({
   }, [nodes, actives, animated]);
 
   return (
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    <instancedMesh2
-      key="instanced-mesh-sphere"
-      ref={meshRef}
-      args={meshArgs}
-      // onClick={e => {
-      //   const id = e.instanceId;
-      //   const nodeId = meshRef.current?.instances?.[id]?.nodeId;
-      //   console.log('clicked', nodeId, meshRef.current?.instances.length);
-      // }}
-      onPointerDown={e => {
-        if (!draggable) return;
-        const instanceId = e.instanceId;
-        const instance = meshRef.current?.instances?.[instanceId];
-        if (instance) {
-          handleDragStart(instanceId, e.point, instance.position);
-          e.stopPropagation();
-        }
-      }}
-    />
+    <>
+      <instancedMesh2
+        key="instanced-mesh-sphere"
+        ref={meshRef}
+        args={meshArgs}
+        onClick={e => {
+          const id = e.instanceId;
+          const nodeId = meshRef.current?.instances?.[id]?.nodeId;
+          console.log('clicked', nodeId, meshRef.current?.instances.length);
+        }}
+        onPointerEnter={e => {
+          const instance = meshRef.current?.instances?.[e.instanceId];
+          if (instance) {
+            instance.opacity = 1;
+            instance.updateMatrix();
+          }
+        }}
+        onPointerLeave={e => {
+          const instance = meshRef.current?.instances?.[e.instanceId];
+          if (instance) {
+            instance.opacity = 0.5;
+            instance.updateMatrix();
+          }
+        }}
+        onPointerDown={e => {
+          if (!draggable) return;
+          const instanceId = e.instanceId;
+          const instance = meshRef.current?.instances?.[instanceId];
+          if (instance) {
+            handleDragStart(instanceId, e.point, instance.position);
+            e.stopPropagation();
+          }
+        }}
+      />
+      <InstancedBillboardRings
+        rings={nodes.filter(node => selections?.includes(node.id))}
+        animated={animated}
+        billboardMode={true}
+      />
+    </>
   );
 };

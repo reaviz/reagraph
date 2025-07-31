@@ -317,10 +317,46 @@ export const MitreAllTechniques = () => {
 
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
-  const [nodeCount, setNodeCount] = useState(10);
-  const [edgeCount, setEdgeCount] = useState(10);
+  const [nodeCount, setNodeCount] = useState(1000);
+  const [tempNodeCount, setTempNodeCount] = useState(nodeCount);
+  const [edgeCount, setEdgeCount] = useState(100);
+  const [tempEdgeCount, setTempEdgeCount] = useState(edgeCount);
   const [nodes, setNodes] = useState<DemoNode[]>([]);
   const [edges, setEdges] = useState<DemoEdge[]>([]);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const edgeDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      setNodeCount(tempNodeCount);
+    }, 1000);
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, [tempNodeCount]);
+
+  useEffect(() => {
+    if (edgeDebounceTimer.current) {
+      clearTimeout(edgeDebounceTimer.current);
+    }
+
+    edgeDebounceTimer.current = setTimeout(() => {
+      setEdgeCount(tempEdgeCount);
+    }, 1000);
+
+    return () => {
+      if (edgeDebounceTimer.current) {
+        clearTimeout(edgeDebounceTimer.current);
+      }
+    };
+  }, [tempEdgeCount]);
 
   useEffect(() => {
     const n: DemoNode[] = [];
@@ -409,12 +445,61 @@ export const Performance = () => {
           color: 'white'
         }}
       >
+
         <button
           style={{ display: 'block', width: '100%' }}
           onClick={addNode}
         >
           Add Node
         </button>
+        <div style={{ padding: '10px 5px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+          <label style={{ display: 'block', fontSize: '12px', marginBottom: '5px' }}>
+            Node Count: {tempNodeCount}
+          </label>
+          <input
+            type="range"
+            min="10"
+            max="5000"
+            step="100"
+            value={tempNodeCount}
+            onChange={e => setTempNodeCount(Number(e.target.value))}
+            style={{
+              width: '100%',
+              height: '20px',
+              background: 'rgba(255,255,255,0.2)',
+              outline: 'none',
+              borderRadius: '3px'
+            }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', marginTop: '2px' }}>
+            <span>10</span>
+            <span>5,000</span>
+          </div>
+        </div>
+        <div style={{ padding: '10px 5px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+          <label style={{ display: 'block', fontSize: '12px', marginBottom: '5px' }}>
+            Edge Count: {tempEdgeCount}
+          </label>
+          <input
+            type="range"
+            min="10"
+            max="1000"
+            step="10"
+            value={tempEdgeCount}
+            onChange={e => setTempEdgeCount(Number(e.target.value))}
+            style={{
+              width: '100%',
+              height: '20px',
+              background: 'rgba(255,255,255,0.2)',
+              outline: 'none',
+              borderRadius: '3px'
+            }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', marginTop: '2px' }}>
+            <span>10</span>
+            <span>1,000</span>
+          </div>
+        </div>
         <button
           style={{ display: 'block', width: '100%' }}
           onClick={() => ref.current?.centerGraph()}
