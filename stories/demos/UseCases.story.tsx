@@ -317,7 +317,7 @@ export const MitreAllTechniques = () => {
 
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
-  const [nodeCount, setNodeCount] = useState(100);
+  const [nodeCount, setNodeCount] = useState(500);
   const [tempNodeCount, setTempNodeCount] = useState(nodeCount);
   const [edgeCount, setEdgeCount] = useState(100);
   const [tempEdgeCount, setTempEdgeCount] = useState(edgeCount);
@@ -578,7 +578,7 @@ export const Performance = () => {
         // layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
-        animated={false}
+        animated={true}
         draggable={true}
       >
         <Perf />

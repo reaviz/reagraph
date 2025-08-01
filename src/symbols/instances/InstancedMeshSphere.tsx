@@ -163,10 +163,10 @@ export const InstancedMeshSphere = forwardRef<
         (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
         meshRef.current;
       if (!mesh || nodes.length === 0) return;
-      const nodesMap = new Map(nodes.map(node => [node.id, node]));
+      const perfStart = performance.now();
 
       if (mesh.instances?.length) {
-        console.log('[log] updating instances', performance.now());
+        const nodesMap = new Map(nodes.map(node => [node.id, node]));
         // Get existing instance node IDs
         const existingNodeIds = new Set(
           mesh.instances.map(instance => instance.nodeId).filter(Boolean)
@@ -227,10 +227,10 @@ export const InstancedMeshSphere = forwardRef<
           nodesInstanceIdsMap.current.set(node.id, index);
         });
       }
-      console.log('[log] updating instances', performance.now());
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
+      console.info('[log] Perf spheres updating', performance.now() - perfStart);
     }, [nodes, actives, animated, ref]);
 
     return (

@@ -144,6 +144,7 @@ export const InstancedBillboardRings = forwardRef<
       const mesh = (ref as React.RefObject<InstancedMesh2<InstancedData>>)
         ?.current;
       if (!mesh || nodes.length === 0) return;
+      const perfStart = performance.now();
 
       if (mesh.instances?.length) {
         const nodesMap = new Map(nodes.map(node => [node.id, node]));
@@ -180,7 +181,7 @@ export const InstancedBillboardRings = forwardRef<
 
       mesh.frustumCulled = false;
       mesh.computeBVH();
-      console.log('rings', nodes.length, mesh.instances.length);
+      console.info('[log] Perf rings updating', performance.now() - perfStart);
     }, [nodes, animated, billboardMode, ref]);
 
     return (
@@ -200,7 +201,6 @@ export const InstancedBillboardRings = forwardRef<
         onPointerEnter={e => {
           const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
             ?.current?.instances?.[e.instanceId];
-          console.log('onPointerEnter', instance);
           if (instance) {
             instance.opacity = 1;
             instance.updateMatrix();
