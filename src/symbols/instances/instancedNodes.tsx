@@ -28,6 +28,8 @@ export const InstancedNodes = ({
   const sphereRef = useRef<InstancedMesh2<any>>(null);
   const ringMeshRef = useRef<InstancedMesh2<any>>(null);
   const setNodePosition = useStore(state => state.setNodePosition);
+  const addDraggingId = useStore(state => state.addDraggingId);
+  const removeDraggingId = useStore(state => state.removeDraggingId);
 
 
   const cameraControls = useCameraControls();
@@ -65,11 +67,13 @@ export const InstancedNodes = ({
         // }
       }
     },
-    onDragStart: () => {
+    onDragStart: (instanceId: number) => {
       cameraControls.freeze();
+      addDraggingId(sphereRef.current?.instances[instanceId].nodeId);
     },
-    onDragEnd: () => {
+    onDragEnd: (instanceId: number) => {
       cameraControls.unFreeze();
+      removeDraggingId(sphereRef.current?.instances[instanceId].nodeId);
     }
   });
 

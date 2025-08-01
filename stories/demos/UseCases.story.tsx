@@ -578,7 +578,7 @@ export const Performance = () => {
         // layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
-        animated={true}
+        animated={false}
         draggable={true}
       >
         <Perf />

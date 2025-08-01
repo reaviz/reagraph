@@ -29,11 +29,13 @@ export const useInstanceDrag = ({
     instancePosition: Vector3;
     offset: Vector3;
     mouse3D: Vector3;
+    lastMoveTime: number;
   }>({
     instanceId: null,
     instancePosition: new Vector3(),
     offset: new Vector3(),
-    mouse3D: new Vector3()
+    mouse3D: new Vector3(),
+    lastMoveTime: 0
   });
 
   const { mouse2D, normal, plane } = useMemo(
@@ -53,55 +55,65 @@ export const useInstanceDrag = ({
     [gl.domElement]
   );
 
-  const handlePointerMove = useCallback((event: PointerEvent) => {
-    if (dragState.current.instanceId === null) return;
+  const handlePointerMove = useCallback(
+    (event: PointerEvent) => {
+      if (dragState.current.instanceId === null) return;
 
-    // Compute normalized mouse coordinates (screen space)
-    const nx = ((event.clientX - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
-    const ny = -((event.clientY - (clientRect?.top ?? 0)) / size.height) * 2 + 1;
+      // Throttle mouse move events to 16ms (~60fps) for better performance
+      const now = performance.now();
+      if (now - dragState.current.lastMoveTime < 16) return;
+      dragState.current.lastMoveTime = now;
 
-    // Unlike the mouse from useThree, this works offscreen
-    mouse2D.set(nx, ny);
+      // Compute normalized mouse coordinates (screen space)
+      const nx =
+        ((event.clientX - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
+      const ny =
+        -((event.clientY - (clientRect?.top ?? 0)) / size.height) * 2 + 1;
 
-    // Update raycaster (otherwise it doesn't track offscreen)
-    raycaster.setFromCamera(mouse2D, camera);
+      // Unlike the mouse from useThree, this works offscreen
+      mouse2D.set(nx, ny);
 
-    // The drag plane is normal to the camera view
-    camera.getWorldDirection(normal).negate();
+      // Update raycaster (otherwise it doesn't track offscreen)
+      raycaster.setFromCamera(mouse2D, camera);
 
-    // Find the plane that's normal to the camera and contains our drag point
-    plane.setFromNormalAndCoplanarPoint(normal, dragState.current.mouse3D);
+      // The drag plane is normal to the camera view
+      camera.getWorldDirection(normal).negate();
 
-    // Find the point of intersection
-    raycaster.ray.intersectPlane(plane, dragState.current.mouse3D);
+      // Find the plane that's normal to the camera and contains our drag point
+      plane.setFromNormalAndCoplanarPoint(normal, dragState.current.mouse3D);
 
-    // Update the object position with the original offset
-    const updated = new Vector3()
-      .copy(dragState.current.mouse3D)
-      .add(dragState.current.offset);
+      // Find the point of intersection
+      raycaster.ray.intersectPlane(plane, dragState.current.mouse3D);
 
-    // If there's a cluster, clamp the position within its circular bounds
-    if (bounds) {
-      const center = new Vector3(
-        (bounds.minX + bounds.maxX) / 2,
-        (bounds.minY + bounds.maxY) / 2,
-        (bounds.minZ + bounds.maxZ) / 2
-      );
-      const radius = (bounds.maxX - bounds.minX) / 2;
+      // Update the object position with the original offset
+      const updated = new Vector3()
+        .copy(dragState.current.mouse3D)
+        .add(dragState.current.offset);
 
-      // Calculate direction from center to updated position
-      const direction = updated.clone().sub(center);
-      const distance = direction.length();
+      // If there's a cluster, clamp the position within its circular bounds
+      if (bounds) {
+        const center = new Vector3(
+          (bounds.minX + bounds.maxX) / 2,
+          (bounds.minY + bounds.maxY) / 2,
+          (bounds.minZ + bounds.maxZ) / 2
+        );
+        const radius = (bounds.maxX - bounds.minX) / 2;
 
-      // If outside the circle, clamp to the circle's edge
-      if (distance > radius) {
-        direction.normalize().multiplyScalar(radius);
-        updated.copy(center).add(direction);
+        // Calculate direction from center to updated position
+        const direction = updated.clone().sub(center);
+        const distance = direction.length();
+
+        // If outside the circle, clamp to the circle's edge
+        if (distance > radius) {
+          direction.normalize().multiplyScalar(radius);
+          updated.copy(center).add(direction);
+        }
       }
-    }
 
-    set(dragState.current.instanceId, updated);
-  }, [camera, raycaster, size, clientRect, mouse2D, normal, plane, bounds, set]);
+      set(dragState.current.instanceId, updated);
+    },
+    [camera, raycaster, size, clientRect, mouse2D, normal, plane, bounds, set]
+  );
 
   const handlePointerUp = useCallback(() => {
     if (dragState.current.instanceId !== null) {
@@ -113,22 +125,26 @@ export const useInstanceDrag = ({
     }
   }, [handlePointerMove, onDragEnd]);
 
-  const handleDragStart = useCallback((instanceId: number, point: Vector3, instancePosition: Vector3) => {
-    if (!draggable) return;
+  const handleDragStart = useCallback(
+    (instanceId: number, point: Vector3, instancePosition: Vector3) => {
+      if (!draggable) return;
 
-    // Store drag state
-    dragState.current.instanceId = instanceId;
-    dragState.current.instancePosition.copy(instancePosition);
-    dragState.current.offset.copy(instancePosition).sub(point);
-    dragState.current.mouse3D.copy(point);
+      // Store drag state
+      dragState.current.instanceId = instanceId;
+      dragState.current.instancePosition.copy(instancePosition);
+      dragState.current.offset.copy(instancePosition).sub(point);
+      dragState.current.mouse3D.copy(point);
+      dragState.current.lastMoveTime = 0;
 
-    // Add global event listeners
-    document.addEventListener('pointermove', handlePointerMove);
-    document.addEventListener('pointerup', handlePointerUp);
+      // Add global event listeners
+      document.addEventListener('pointermove', handlePointerMove);
+      document.addEventListener('pointerup', handlePointerUp);
 
-    // Run user callback
-    onDragStart(instanceId);
-  }, [draggable, handlePointerMove, handlePointerUp, onDragStart]);
+      // Run user callback
+      onDragStart(instanceId);
+    },
+    [draggable, handlePointerMove, handlePointerUp, onDragStart]
+  );
 
   return { handleDragStart };
 };

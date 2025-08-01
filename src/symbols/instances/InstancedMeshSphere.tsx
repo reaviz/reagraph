@@ -229,7 +229,7 @@ export const InstancedMeshSphere = forwardRef<
       }
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
-      mesh.computeBVH();
+      // mesh.computeBVH();
       console.info('[log] Perf spheres updating', performance.now() - perfStart);
     }, [nodes, actives, animated, ref]);
 
