@@ -133,3 +133,69 @@ export const Dashed = () => (
     ]}
   />
 );
+
+export const DashSize = () => (
+  <GraphCanvas
+    edgeInterpolation="curved"
+    labelType="all"
+    nodes={[
+      {
+        id: '1',
+        label: '1'
+      },
+      {
+        id: '2',
+        label: '2'
+      },
+      {
+        id: '3',
+        label: '3'
+      },
+      {
+        id: '4',
+        label: '4'
+      },
+      {
+        id: '5',
+        label: '5'
+      }
+    ]}
+    edges={[
+      {
+        source: '1',
+        target: '2',
+        id: '1-2',
+        label: '1-2',
+        dashed: true,
+        dashArray: [1, 1]
+      },
+      {
+        source: '2',
+        target: '3',
+        id: '2-3',
+        label: '2-3',
+        size: 5,
+        dashed: true,
+        dashArray: [3, 1]
+      },
+      {
+        source: '3',
+        target: '4',
+        id: '3-4',
+        label: '3-4',
+        size: 3,
+        dashed: true,
+        dashArray: [5, 5]
+      },
+      {
+        source: '4',
+        target: '5',
+        id: '4-5',
+        label: '4-5',
+        size: 10,
+        dashed: true,
+        dashArray: [7, 3]
+      }
+    ]}
+  />
+);

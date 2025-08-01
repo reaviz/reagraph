@@ -39,6 +39,11 @@ export interface LineProps {
   dashed?: boolean;
 
   /**
+   * Dash pattern for the line: [dashSize, gapSize]
+   */
+  dashArray?: [number, number];
+
+  /**
    * The unique identifier of the line.
    */
   id: string;
@@ -93,11 +98,12 @@ const dashedFragmentShader = `
   uniform float opacity;
   uniform float dashSize;
   uniform float gapSize;
+  uniform float lineLength;
   varying vec2 vUv;
   
   void main() {
     float totalSize = dashSize + gapSize;
-    float position = mod(vUv.x * 10.0, totalSize);
+    float position = mod(vUv.x * lineLength, totalSize);
     
     if (position > dashSize) {
       discard;
@@ -114,6 +120,7 @@ export const Line: FC<LineProps> = ({
   curve,
   curved = false,
   dashed = false,
+  dashArray = [3, 1],
   id,
   opacity = 1,
   size = 1,
@@ -131,20 +138,22 @@ export const Line: FC<LineProps> = ({
   // Create dashed material
   const dashedMaterial = useMemo(() => {
     if (!dashed) return null;
+    const [dashSize, dashGap] = dashArray;
 
     return new ShaderMaterial({
       uniforms: {
         color: { value: normalizedColor },
         opacity: { value: opacity },
-        dashSize: { value: 0.5 },
-        gapSize: { value: 0.3 }
+        dashSize: { value: dashSize },
+        gapSize: { value: dashGap },
+        lineLength: { value: curve.getLength() }
       },
       vertexShader: dashedVertexShader,
       fragmentShader: dashedFragmentShader,
       transparent: true,
       depthTest: false
     });
-  }, [dashed, normalizedColor, opacity]);
+  }, [dashed, normalizedColor, opacity, curve, dashArray]);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({
