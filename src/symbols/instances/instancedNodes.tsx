@@ -1,12 +1,14 @@
 import React, { useRef, useState } from 'react';
+import { InstancedMesh2 } from '@three.ez/instanced-mesh';
+import { Vector3 } from 'three';
 import { InternalGraphNode, InternalGraphPosition } from '../../types';
+
 import { useInstanceDrag } from '../../utils/useInstanceDrag';
 import { useCameraControls } from '../../CameraControls/useCameraControls';
-import { Vector3 } from 'three';
-import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { InstancedMeshSphere } from './InstancedMeshSphere';
 import { InstancedBillboardRings } from './InstancesMeshRing';
 import { useStore } from '../../store';
+import { CulledText } from './CulledText';
 
 interface InstancedNodesProps {
   nodes: InternalGraphNode[];
@@ -122,6 +124,13 @@ export const InstancedNodes = ({
             handleDragStart(instanceId, e.point, instance.position);
           }
         }}
+      />
+      <CulledText
+        nodes={nodes}
+        selections={[]}
+        actives={actives}
+        fontSize={32}
+        maxWidth={300}
       />
     </>
   );

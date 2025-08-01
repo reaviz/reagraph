@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useRef, useLayoutEffect } from 'react';
+import React, { FC, useMemo, useRef, useLayoutEffect, useEffect } from 'react';
 import {
   CanvasTexture,
   NearestFilter,
@@ -34,7 +34,7 @@ const cleanupTextureCache = () => {
   if (textureCache.size <= 100) {
     return;
   }
-  
+
   const now = Date.now();
   const entries = Array.from(textureCache.entries());
 
@@ -43,7 +43,7 @@ const cleanupTextureCache = () => {
     const veryOld = now - data.lastUsed > 600000; // 10 minutes
     const completelyUnused = data.refCount === 0 && !data.isActive;
     const notInActiveSet = !activeTextures.has(key);
-    
+
     if (veryOld && completelyUnused && notInActiveSet && textureCache.size > 100) {
       try {
         if (data.texture) {
@@ -214,7 +214,7 @@ const createTextTexture = (text: string, fontSize: number, color: string, maxWid
   const actualLineHeight = actualFontSize * 1.2;
   const actualTotalHeight = lines.length * actualLineHeight;
   const startY = canvas.height / 2 - (actualTotalHeight - actualLineHeight) / 2;
-  
+
   lines.forEach((line, index) => {
     context.fillText(line, canvas.width / 2, startY + index * actualLineHeight);
   });
@@ -230,7 +230,7 @@ const createTextTexture = (text: string, fontSize: number, color: string, maxWid
 
   // Force texture upload to prevent deferred allocation issues
   texture.needsUpdate = true;
-  
+
   // Add validation flag
   (texture as any)._isValid = true;
 
@@ -243,7 +243,7 @@ const createTextTexture = (text: string, fontSize: number, color: string, maxWid
     isActive: true,
     frameProtected: currentFrame + 60 // Protect for 60 frames
   });
-  
+
   // Mark texture as active
   activeTextures.add(cacheKey);
 
@@ -262,7 +262,7 @@ const disposeTextTexture = (text: string, fontSize: number, color: string, maxWi
 
   if (cached) {
     cached.refCount--;
-    
+
     // Don't actually dispose textures to prevent blinking - just mark as inactive
     if (cached.refCount <= 0) {
       cached.isActive = false;
@@ -327,7 +327,7 @@ const createInstancedTextShader = (texture: CanvasTexture) => {
 
       void main() {
         vec4 texColor = texture2D(map, vUv);
-        
+
         // Only discard completely transparent pixels
         if (texColor.a < 0.01) {
           discard;
@@ -383,7 +383,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   const currentTextGroupsRef = useRef<{ text: string; color: string; fontSize: number; maxWidth: number }[]>([]);
   const geometryRefs = useRef<PlaneGeometry[]>([]);
   const { gl } = useThree();
-  
+
   // Update frame counter for texture protection
   React.useEffect(() => {
     const updateFrame = () => {
@@ -454,7 +454,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     return Array.from(groups.entries()).map(([key, groupNodes]) => {
       const [text, color] = key.split('|');
       const texture = createTextTexture(text, fontSize, color, maxWidth);
-      
+
       // Ensure texture stays active while in use with frame protection
       const cacheKey = `${text}|${color}|${fontSize}|${maxWidth}`;
       const cached = textureCache.get(cacheKey);
@@ -464,7 +464,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         cached.frameProtected = currentFrame + 120; // Longer protection during active use
         activeTextures.add(cacheKey);
       }
-      
+
       return {
         text,
         color,
@@ -475,7 +475,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   }, [nodes, fontSize, maxWidth]);
 
   // Cleanup textures and geometries when component unmounts or textGroups change
-  React.useEffect(() => {
+  useEffect(() => {
     // Don't dispose textures during re-renders - let cache cleanup handle it
     // This prevents blinking and ensures text remains visible
 
@@ -499,7 +499,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
     return () => {
       // Don't dispose textures on unmount - prevents blinking on component changes
-      // Just mark as inactive and let the cleanup timer handle it much later if needed  
+      // Just mark as inactive and let the cleanup timer handle it much later if needed
       currentTextGroupsRef.current.forEach(({ text, color, fontSize, maxWidth }) => {
         const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
         const cached = textureCache.get(cacheKey);
@@ -536,7 +536,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         activeTextures.add(cacheKey);
       }
     });
-    
+
     textGroups.forEach((group, groupIndex) => {
       const mesh = meshRefs.current[groupIndex];
       if (!mesh) return;
@@ -609,7 +609,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 // SOLUTION 5: Advanced Frustum Culling with Occlusion Detection
 // Most sophisticated visibility detection
 
-export const AdvancedCulledText: FC<OptimizedTextProps> = ({
+export const CulledText: FC<OptimizedTextProps> = ({
   nodes,
   selections = [],
   actives = [],
@@ -627,11 +627,20 @@ export const AdvancedCulledText: FC<OptimizedTextProps> = ({
     y: camera.position.y,
     z: camera.position.z
   });
+  const lastNodesHashRef = useRef<string>('');
 
   useFrame(() => {
     frameCountRef.current++;
 
-    if (frameCountRef.current % 30 !== 0) {
+    // Create a hash of node positions to detect changes
+    const nodesHash = nodes.map(n => `${n.id}:${n.position?.x || 0},${n.position?.y || 0},${n.position?.z || 0}`).join('|');
+    const nodesChanged = lastNodesHashRef.current !== nodesHash;
+
+    // For smooth movement, update every frame when nodes are changing position
+    // Only throttle when nodes are static and camera isn't moving
+    const shouldThrottle = !nodesChanged && frameCountRef.current % 30 !== 0;
+    
+    if (shouldThrottle) {
       return;
     }
 
@@ -641,9 +650,14 @@ export const AdvancedCulledText: FC<OptimizedTextProps> = ({
       lastPos.x !== currPos.x ||
       lastPos.y !== currPos.y ||
       lastPos.z !== currPos.z;
-
-    if (!hasMoved) {
+    
+    // Always update if camera moved OR nodes changed OR if we don't have any visible nodes yet
+    if (!hasMoved && !nodesChanged && visibleNodes.length > 0) {
       return;
+    }
+    
+    if (nodesChanged) {
+      lastNodesHashRef.current = nodesHash;
     }
 
     lastCameraPositionRef.current = {
