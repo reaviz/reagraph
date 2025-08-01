@@ -75,13 +75,13 @@ export const InstancedNodes = ({
       if (instance) {
         instance.isDragging = true;
         addDraggingId(instance.nodeId);
-        console.log('onDragStart', instance.nodeId);
       }
     },
     onDragEnd: (instanceId: number) => {
       cameraControls.unFreeze();
       const instance = sphereRef.current?.instances[instanceId];
       if (instance) {
+        instance.isDragging = false;
         removeDraggingId(instance.nodeId);
       }
     }

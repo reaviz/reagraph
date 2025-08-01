@@ -590,7 +590,7 @@ export const Performance = () => {
         // layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
-        animated={false}
+        animated={true}
         draggable={true}
         useInstances={useInstances}
       >

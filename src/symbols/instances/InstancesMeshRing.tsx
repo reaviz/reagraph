@@ -41,6 +41,66 @@ const ringToInstance = (
 ) => {
   instance.nodeId = node.id;
 
+  if (animated && !instance.isDragging) {
+    // For initial render animation, start from center if instance is at origin
+    const isAtOrigin =
+      instance.position.x === 0 &&
+      instance.position.y === 0 &&
+      instance.position.z === 0;
+    const startPosition = {
+      x: isAtOrigin ? 0 : instance.position.x,
+      y: isAtOrigin ? 0 : instance.position.y,
+      z: isAtOrigin ? 0 : instance.position.z
+    };
+
+    // Target is ring position
+    const targetPosition = {
+      x: node.position?.x || 0,
+      y: node.position?.y || 0,
+      z: node.position?.z || 0
+    };
+
+    // Skip animation if already at target (avoid unnecessary animation)
+    const distance = Math.sqrt(
+      Math.pow(targetPosition.x - startPosition.x, 2) +
+        Math.pow(targetPosition.y - startPosition.y, 2) +
+        Math.pow(targetPosition.z - startPosition.z, 2)
+    );
+
+    if (distance < 0.1) {
+      // Too close, just set position directly
+      instance.position.set(
+        targetPosition.x,
+        targetPosition.y,
+        targetPosition.z
+      );
+      instance.updateMatrixPosition();
+    } else {
+      const controller = new Controller({
+        x: startPosition.x,
+        y: startPosition.y,
+        z: startPosition.z,
+        config: animationConfig
+      });
+
+      controller.start({
+        x: targetPosition.x,
+        y: targetPosition.y,
+        z: targetPosition.z,
+        onChange: () => {
+          const x = controller.springs.x.get();
+          const y = controller.springs.y.get();
+          const z = controller.springs.z.get();
+
+          instance.position.set(x, y, z);
+          instance.updateMatrixPosition();
+        }
+      });
+    }
+  } else {
+    instance.position.set(node.position.x, node.position.y, node.position.z);
+    instance.updateMatrixPosition();
+  }
   instance.position.set(node.position.x, node.position.y, node.position.z);
   instance.updateMatrixPosition();
   instance.scale.setScalar(node.size * 2 || 1);

@@ -56,11 +56,59 @@ const nodeToInstance = (
   instance.nodeId = node.id;
   instance.node = node;
 
-  instance.position.set(node.position.x, node.position.y, node.position.z);
+  if (animated && !instance.isDragging) {
+    // For initial render animation, start from center if instance is at origin
+    const isAtOrigin =
+      instance.position.x === 0 &&
+      instance.position.y === 0 &&
+      instance.position.z === 0;
+    const startPosition = {
+      x: isAtOrigin ? 0 : instance.position.x,
+      y: isAtOrigin ? 0 : instance.position.y,
+      z: isAtOrigin ? 0 : instance.position.z
+    };
+
+    // Target is node position
+    const targetPosition = {
+      x: node.position?.x || 0,
+      y: node.position?.y || 0,
+      z: node.position?.z || 0
+    };
+
+    const controller = new Controller({
+      x: startPosition.x,
+      y: startPosition.y,
+      z: startPosition.z,
+      config: animationConfig
+    });
+
+    controller.start({
+      x: targetPosition.x,
+      y: targetPosition.y,
+      z: targetPosition.z,
+      onChange: () => {
+        const x = controller.springs.x.get();
+        const y = controller.springs.y.get();
+        const z = controller.springs.z.get();
+
+        instance.position.copy(new Vector3(x, y, z));
+        instance.updateMatrixPosition();
+      }
+    });
+  } else {
+    instance.position.copy(
+      new Vector3(
+        node.position?.x || 0,
+        node.position?.y || 0,
+        node.position?.z || 0
+      )
+    );
+    instance.updateMatrixPosition();
+  }
+
   instance.scale.setScalar(node.size);
   instance.color = new Color(node.fill);
   instance.opacity = active ? 1.0 : 0.5;
-  instance.updateMatrix();
 };
 
 export const InstancedMeshSphere = forwardRef<
@@ -165,7 +213,7 @@ export const InstancedMeshSphere = forwardRef<
       }
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
-      // mesh.computeBVH();
+      mesh.computeBVH();
       console.info(
         '[log] Perf spheres updating',
         performance.now() - perfStart
