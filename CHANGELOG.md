@@ -1,3 +1,6 @@
+# 4.28.0 - 8/1/25
+- [chore] fix: update all major deps & some minor #351
+
 # 4.27.0 - 7/25/25
 - [feature] Add `strokeWidth` and `strokeColor` props to Badge
 - [feature] Add `backgroundColor`, `backgroundOpacity`, `padding`, `strokeColor`, `strokeWidth`, and `radius` props to Label
