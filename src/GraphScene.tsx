@@ -52,7 +52,9 @@ import {
   InstancedSpriteText,
 } from 'symbols/nodes/SpriteText2';
 import { AdvancedCulledText } from 'symbols/nodes/CulledText';
-import { InstancedMeshSphere } from 'symbols/nodes/InstancedMeshSphere';
+import { InstancedMeshSphere } from 'symbols/instances/InstancedMeshSphere';
+import { BatchedMeshSphere } from 'symbols/nodes/BatchedMesh';
+import { InstancedNodes } from './symbols/instances/instancedNodes';
 
 export interface GraphSceneProps {
   /**
@@ -454,20 +456,36 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
           // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
           return (
             <>
+              <InstancedNodes
+                nodes={nodes}
+                selections={nodes.slice(0, 3).map(node => node.id)}
+                actives={nodes.slice(0, 10).map(node => node.id)}
+                animated={animated}
+                draggable={draggable}
+                onNodeDrag={onNodeDraggedHandler}
+              />
               {/* <InstancedSpheres
                 nodes={nodes}
                 selections={rest.selections || []}
                 actives={nodes.slice(0, 10).map(node => node.id)}
                 animated={animated}
               /> */}
-              <InstancedMeshSphere
+              {/* <InstancedMeshSphere
                 nodes={nodes}
                 selections={nodes.slice(0, 3).map(node => node.id)}
                 actives={nodes.slice(0, 10).map(node => node.id)}
                 animated={true}
                 draggable={draggable}
                 onNodeDrag={onNodeDraggedHandler}
-              />
+              /> */}
+              {/* <BatchedMeshSphere
+                nodes={nodes}
+                selections={nodes.slice(0, 3).map(node => node.id)}
+                actives={nodes.slice(0, 10).map(node => node.id)}
+                animated={true}
+                draggable={draggable}
+                onNodeDrag={onNodeDraggedHandler}
+              /> */}
               {/* <InstancedText
                 nodes={nodes}
                 selections={rest.selections || []}

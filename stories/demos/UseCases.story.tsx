@@ -317,9 +317,9 @@ export const MitreAllTechniques = () => {
 
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
-  const [nodeCount, setNodeCount] = useState(10);
+  const [nodeCount, setNodeCount] = useState(100);
   const [tempNodeCount, setTempNodeCount] = useState(nodeCount);
-  const [edgeCount, setEdgeCount] = useState(6);
+  const [edgeCount, setEdgeCount] = useState(100);
   const [tempEdgeCount, setTempEdgeCount] = useState(edgeCount);
   const [nodes, setNodes] = useState<DemoNode[]>([]);
   const [edges, setEdges] = useState<DemoEdge[]>([]);
@@ -381,7 +381,7 @@ export const Performance = () => {
           .toString(16)
           .padStart(6, '0')}`,
         size: Math.floor(Math.random() * 81) + 20,
-        icon: i % 2 === 0 ? twitterSvg : fireSvg
+        // icon: i % 2 === 0 ? twitterSvg : fireSvg
       });
     }
 
@@ -574,11 +574,11 @@ export const Performance = () => {
         nodes={nodes}
         edges={edges}
         theme={darkTheme}
-        // cameraMode="rotate"
+        // cameraMode="orbit"
         // layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
-        animated={true}
+        animated={false}
         draggable={true}
       >
         <Perf />
