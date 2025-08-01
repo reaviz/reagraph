@@ -170,6 +170,11 @@ export interface GraphSceneProps {
   constrainDragging?: boolean;
 
   /**
+   * Use instanced rendering for nodes. Default is `false`.
+   */
+  useInstances?: boolean;
+
+  /**
    * Render a custom node
    */
   renderNode?: NodeRenderer;
@@ -359,6 +364,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         animated,
         disabled,
         draggable,
+        useInstances = false,
         constrainDragging = false,
         edgeLabelPosition,
         edgeArrowPosition,
@@ -449,10 +455,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       );
 
       const nodeComponents = useMemo(() => {
-        // PERFORMANCE FIX: Use instanced rendering for better performance
-        const useInstancedSpheres = true; // Force enable instancing
-
-        if (useInstancedSpheres && !renderNode) {
+        if (useInstances && !renderNode) {
           // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
           return (
             <>
@@ -549,7 +552,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         onNodePointerOver,
         renderNode,
         rest.selections,
-        rest.actives
+        rest.actives,
+        useInstances,
       ]);
 
       const edgeComponents = useMemo(

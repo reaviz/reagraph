@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { InternalGraphNode, InternalGraphPosition } from '../../types';
 import { useInstanceDrag } from '../../utils/useInstanceDrag';
 import { useCameraControls } from '../../CameraControls/useCameraControls';
@@ -30,7 +30,8 @@ export const InstancedNodes = ({
   const setNodePosition = useStore(state => state.setNodePosition);
   const addDraggingId = useStore(state => state.addDraggingId);
   const removeDraggingId = useStore(state => state.removeDraggingId);
-
+  const draggingIds = useStore(state => state.draggingIds);
+  const isDragging = draggingIds.length > 0;
 
   const cameraControls = useCameraControls();
   const { handleDragStart } = useInstanceDrag({
@@ -38,6 +39,7 @@ export const InstancedNodes = ({
     set: (instanceId: number, pos: Vector3) => {
       if (sphereRef.current) {
         const instance = sphereRef.current.instances[instanceId];
+        console.log('setNodePosition', instance.nodeId, pos);
         setNodePosition(instance.nodeId, {
           x: pos.x,
           y: pos.y,
@@ -69,11 +71,19 @@ export const InstancedNodes = ({
     },
     onDragStart: (instanceId: number) => {
       cameraControls.freeze();
-      addDraggingId(sphereRef.current?.instances[instanceId].nodeId);
+      const instance = sphereRef.current?.instances[instanceId];
+      if (instance) {
+        instance.isDragging = true;
+        addDraggingId(instance.nodeId);
+        console.log('onDragStart', instance.nodeId);
+      }
     },
     onDragEnd: (instanceId: number) => {
       cameraControls.unFreeze();
-      removeDraggingId(sphereRef.current?.instances[instanceId].nodeId);
+      const instance = sphereRef.current?.instances[instanceId];
+      if (instance) {
+        removeDraggingId(instance.nodeId);
+      }
     }
   });
 
@@ -82,11 +92,12 @@ export const InstancedNodes = ({
       <InstancedMeshSphere
         ref={sphereRef}
         nodes={nodes}
-        animated={false}
+        animated={animated}
         draggable={draggable}
         selections={selections}
         actives={actives}
         onPointerDown={(e, instanceId) => {
+          console.log('onPointerDown', instanceId);
           const instance = sphereRef.current?.instances?.[instanceId];
           if (instance) {
             handleDragStart(instanceId, e.point, instance.position);
@@ -96,7 +107,7 @@ export const InstancedNodes = ({
       <InstancedBillboardRings
         ref={ringMeshRef}
         nodes={nodes.filter(node => selections?.includes(node.id))}
-        animated={false}
+        animated={animated}
         billboardMode={true}
         draggable={draggable}
         onPointerDown={(e, instanceId) => {

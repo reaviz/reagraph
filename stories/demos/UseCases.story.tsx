@@ -321,6 +321,7 @@ export const Performance = () => {
   const [tempNodeCount, setTempNodeCount] = useState(nodeCount);
   const [edgeCount, setEdgeCount] = useState(100);
   const [tempEdgeCount, setTempEdgeCount] = useState(edgeCount);
+  const [useInstances, setUseInstances] = useState(true);
   const [nodes, setNodes] = useState<DemoNode[]>([]);
   const [edges, setEdges] = useState<DemoEdge[]>([]);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -446,6 +447,17 @@ export const Performance = () => {
         }}
       >
 
+        <div style={{ padding: '10px 5px', borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+          <label style={{ display: 'flex', alignItems: 'center', fontSize: '12px', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={useInstances}
+              onChange={e => setUseInstances(e.target.checked)}
+              style={{ marginRight: '8px' }}
+            />
+            Use Instances
+          </label>
+        </div>
         <button
           style={{ display: 'block', width: '100%' }}
           onClick={addNode}
@@ -580,6 +592,7 @@ export const Performance = () => {
         // labelType="none"
         animated={false}
         draggable={true}
+        useInstances={useInstances}
       >
         <Perf />
       </GraphCanvas>

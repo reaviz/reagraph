@@ -172,7 +172,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
 
       // It's pretty hard to get good animation performance with large n of edges/nodes
       const finalAnimated =
-        edges.length + nodes.length > 4000 ? false : animated;
+        edges.length + nodes.length > 1000 ? false : animated;
 
       const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
       // zustand/context migration (https://github.com/pmndrs/zustand/discussions/1180)
