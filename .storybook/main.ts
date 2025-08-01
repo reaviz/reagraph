@@ -5,24 +5,20 @@ const config: StorybookConfig = {
     '../stories/**/*.story.tsx'
   ],
 
-  addons: [
-    '@storybook/addon-essentials',
-    '@storybook/addon-storysource',
-    '@storybook/addon-mdx-gfm'
-  ],
+  addons: ['@storybook/addon-docs'],
 
   framework: {
     name: '@storybook/react-vite',
     options: {}
   },
 
-  docs: {
-    autodocs: 'tag'
-  },
-
   typescript: {
     reactDocgen: 'react-docgen-typescript'
-  }
+  },
+
+  core: {
+    disableTelemetry: true, // XXX: wanted?
+  },
 };
 
 export default config;
