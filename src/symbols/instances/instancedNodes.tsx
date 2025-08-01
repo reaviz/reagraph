@@ -79,7 +79,9 @@ export const InstancedNodes = ({
         const ringInstance = ringMeshRef.current.instances.find(
           ringInst => ringInst.nodeId === instance.nodeId
         );
-        ringInstance.isDragging = true;
+        if (ringInstance) {
+          ringInstance.isDragging = true;
+        }
         addDraggingId(instance.nodeId);
       }
     },
@@ -91,7 +93,9 @@ export const InstancedNodes = ({
         const ringInstance = ringMeshRef.current.instances.find(
           ringInst => ringInst.nodeId === instance.nodeId
         );
-        ringInstance.isDragging = false;
+        if (ringInstance) {
+          ringInstance.isDragging = false;
+        }
         removeDraggingId(instance.nodeId);
       }
     }
