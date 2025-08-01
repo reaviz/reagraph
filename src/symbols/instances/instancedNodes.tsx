@@ -74,6 +74,10 @@ export const InstancedNodes = ({
       const instance = sphereRef.current?.instances[instanceId];
       if (instance) {
         instance.isDragging = true;
+        const ringInstance = ringMeshRef.current.instances.find(
+          ringInst => ringInst.nodeId === instance.nodeId
+        );
+        ringInstance.isDragging = true;
         addDraggingId(instance.nodeId);
       }
     },
@@ -82,6 +86,10 @@ export const InstancedNodes = ({
       const instance = sphereRef.current?.instances[instanceId];
       if (instance) {
         instance.isDragging = false;
+        const ringInstance = ringMeshRef.current.instances.find(
+          ringInst => ringInst.nodeId === instance.nodeId
+        );
+        ringInstance.isDragging = false;
         removeDraggingId(instance.nodeId);
       }
     }

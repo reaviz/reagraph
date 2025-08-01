@@ -68,12 +68,19 @@ const nodeToInstance = (
       z: isAtOrigin ? 0 : instance.position.z
     };
 
-    // Target is node position
+    // Target is ring position
     const targetPosition = {
       x: node.position?.x || 0,
       y: node.position?.y || 0,
       z: node.position?.z || 0
     };
+
+    // Skip animation if already at target (avoid unnecessary animation)
+    const distance = Math.sqrt(
+      Math.pow(targetPosition.x - startPosition.x, 2) +
+        Math.pow(targetPosition.y - startPosition.y, 2) +
+        Math.pow(targetPosition.z - startPosition.z, 2)
+    );
 
     const controller = new Controller({
       x: startPosition.x,
