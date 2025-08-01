@@ -97,7 +97,6 @@ export const InstancedNodes = ({
         selections={selections}
         actives={actives}
         onPointerDown={(e, instanceId) => {
-          console.log('onPointerDown', instanceId);
           const instance = sphereRef.current?.instances?.[instanceId];
           if (instance) {
             handleDragStart(instanceId, e.point, instance.position);
@@ -112,7 +111,6 @@ export const InstancedNodes = ({
         draggable={draggable}
         onPointerDown={(e, instanceId) => {
           const instance = ringMeshRef.current?.instances?.[instanceId];
-          console.log('onPointerDown', instance);
           if (instance) {
             handleDragStart(instanceId, e.point, instance.position);
           }
