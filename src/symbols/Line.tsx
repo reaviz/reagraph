@@ -39,9 +39,9 @@ export interface LineProps {
   dashed?: boolean;
 
   /**
-   * The size of the dash.
+   * Dash pattern for the line: [dashSize, gapSize]
    */
-  dashSize?: number;
+  dashArray?: [number, number];
 
   /**
    * The unique identifier of the line.
@@ -120,7 +120,7 @@ export const Line: FC<LineProps> = ({
   curve,
   curved = false,
   dashed = false,
-  dashSize = 3,
+  dashArray = [3, 1],
   id,
   opacity = 1,
   size = 1,
@@ -138,13 +138,14 @@ export const Line: FC<LineProps> = ({
   // Create dashed material
   const dashedMaterial = useMemo(() => {
     if (!dashed) return null;
+    const [dashSize, dashGap] = dashArray;
 
     return new ShaderMaterial({
       uniforms: {
         color: { value: normalizedColor },
         opacity: { value: opacity },
         dashSize: { value: dashSize },
-        gapSize: { value: 1 },
+        gapSize: { value: dashGap },
         lineLength: { value: curve.getLength() }
       },
       vertexShader: dashedVertexShader,
@@ -152,7 +153,7 @@ export const Line: FC<LineProps> = ({
       transparent: true,
       depthTest: false
     });
-  }, [dashed, normalizedColor, opacity, curve, dashSize]);
+  }, [dashed, normalizedColor, opacity, curve, dashArray]);
 
   // Do opacity seperate from vertices for perf
   const { lineOpacity } = useSpring({

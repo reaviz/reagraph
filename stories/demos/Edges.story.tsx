@@ -167,7 +167,7 @@ export const DashSize = () => (
         id: '1-2',
         label: '1-2',
         dashed: true,
-        dashSize: 1
+        dashArray: [1, 1]
       },
       {
         source: '2',
@@ -176,7 +176,7 @@ export const DashSize = () => (
         label: '2-3',
         size: 5,
         dashed: true,
-        dashSize: 2
+        dashArray: [3, 1]
       },
       {
         source: '3',
@@ -185,7 +185,7 @@ export const DashSize = () => (
         label: '3-4',
         size: 3,
         dashed: true,
-        dashSize: 10
+        dashArray: [5, 5]
       },
       {
         source: '4',
@@ -194,7 +194,7 @@ export const DashSize = () => (
         label: '4-5',
         size: 10,
         dashed: true,
-        dashSize: 1
+        dashArray: [7, 3]
       }
     ]}
   />

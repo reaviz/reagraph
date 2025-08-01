@@ -95,9 +95,9 @@ export interface GraphEdge extends GraphElementBaseAttributes {
   dashed?: boolean;
 
   /**
-   * The size of the dash.
+   * Dash pattern for the line: [dashSize, gapSize]
    */
-  dashSize?: number;
+  dashArray?: [number, number];
 
   /**
    * Placement of the subLabel relative to the main label.
