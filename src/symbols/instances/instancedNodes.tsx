@@ -115,7 +115,6 @@ export const InstancedNodes = ({
         ref={ringMeshRef}
         nodes={nodes.filter(node => selections?.includes(node.id))}
         animated={animated}
-        billboardMode={true}
         draggable={draggable}
         onPointerDown={(e, instanceId) => {
           const instance = ringMeshRef.current?.instances?.[instanceId];

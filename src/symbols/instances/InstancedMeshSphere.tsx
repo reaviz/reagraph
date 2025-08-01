@@ -3,48 +3,26 @@ import React, {
   useMemo,
   useRef,
   useLayoutEffect,
-  useEffect,
   forwardRef,
   RefObject
 } from 'react';
+import { Controller } from '@react-spring/three';
+import { extend } from '@react-three/fiber';
 import { type ThreeElement } from '@react-three/fiber';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
-import { InternalGraphNode, InternalGraphPosition } from '../../types';
-import {
-  IcosahedronGeometry,
-  MeshBasicMaterial,
-  Color,
-  Vector3,
-  Sphere
-} from 'three';
-import { extend } from '@react-three/fiber';
+import { IcosahedronGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
+
+import { InternalGraphNode } from '../../types';
 import { animationConfig } from '../../utils/animation';
-import { Controller } from '@react-spring/three';
+
+import { InstancedData, InstancedMeshProps } from './types';
 
 // add InstancedMesh2 to the jsx catalog i.e use it as a jsx component
 extend({ InstancedMesh2 });
-
-type InstancedData = {
-  nodeId: string;
-  node: InternalGraphNode;
-  isDragging: boolean;
-  hasAnimated: boolean;
-};
-
 declare module '@react-three/fiber' {
   interface ThreeElements {
     instancedMesh2: ThreeElement<typeof InstancedMesh2>;
   }
-}
-
-interface InstancedMeshSphereProps {
-  nodes: InternalGraphNode[];
-  actives?: string[];
-  selections?: string[];
-  animated?: boolean;
-  draggable?: boolean;
-  onNodeDrag?: (node: InternalGraphNode) => void;
-  onPointerDown?: (event: any, instanceId: number) => void;
 }
 
 const nodeToInstance = (
@@ -120,7 +98,7 @@ const nodeToInstance = (
 
 export const InstancedMeshSphere = forwardRef<
   InstancedMesh2<InstancedData>,
-  InstancedMeshSphereProps
+  InstancedMeshProps
 >(
   (
     {
