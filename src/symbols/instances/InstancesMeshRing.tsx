@@ -3,9 +3,11 @@ import React, {
   useRef,
   useLayoutEffect,
   forwardRef,
-  RefObject
+  RefObject,
+  useState
 } from 'react';
 import { type ThreeElement } from '@react-three/fiber';
+import { useCursor } from '@react-three/drei';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Controller } from '@react-spring/core';
 import { RingGeometry, MeshBasicMaterial, Color, DoubleSide } from 'three';
@@ -101,68 +103,89 @@ const ringToInstance = (
 export const InstancedBillboardRings = forwardRef<
   InstancedMesh2<InstancedData>,
   InstancedMeshProps
->(({ nodes, animated = false, draggable = false, onPointerDown }, ref) => {
-  const meshRef = useRef<InstancedMesh2<InstancedData>>(null);
-  // Create geometry and material
-  const geometry = useMemo(() => new RingGeometry(1.1, 1.25, 64), []);
-  const material = useMemo(
-    () =>
-      new MeshBasicMaterial({
-        transparent: true,
-        side: DoubleSide
-      }),
-    []
-  );
+>(
+  (
+    {
+      nodes,
+      animated = false,
+      draggable = false,
+      selections = [],
+      actives = [],
+      onPointerDown
+    },
+    ref
+  ) => {
+    const meshRef = useRef<InstancedMesh2<InstancedData>>(null);
+    const [hovered, setHovered] = useState<boolean>(false);
 
-  const meshArgs = useMemo(
-    () => [geometry, material, { createEntities: true }],
-    [geometry, material]
-  ) as any;
+    useCursor(hovered);
 
-  // Initialize mesh and update instances when data changes
-  useLayoutEffect(() => {
-    const mesh = (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-      ?.current;
-    if (!mesh) return;
-
-    mesh.clearInstances();
-    mesh.addInstances(nodes.length, (instance, index) =>
-      ringToInstance(nodes[index], instance, animated)
+    // Create geometry and material
+    const geometry = useMemo(() => new RingGeometry(1.1, 1.25, 64), []);
+    const material = useMemo(
+      () =>
+        new MeshBasicMaterial({
+          transparent: true,
+          side: DoubleSide
+        }),
+      []
     );
 
-    mesh.frustumCulled = false;
-    mesh.computeBVH();
-  }, [nodes, animated, ref]);
+    const meshArgs = useMemo(
+      () => [geometry, material, { createEntities: true }],
+      [geometry, material]
+    ) as any;
 
-  return (
-    <instancedMesh2
-      key="instanced-billboard-rings"
-      ref={ref || meshRef}
-      args={meshArgs}
-      onPointerEnter={e => {
-        const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
-          ?.current?.instances?.[e.instanceId];
-        if (instance) {
-          instance.opacity = 1;
-          instance.updateMatrix();
-        }
-      }}
-      onPointerLeave={e => {
-        const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
-          ?.current?.instances?.[e.instanceId];
-        if (instance) {
-          instance.opacity = 0.5;
-          instance.updateMatrix();
-        }
-      }}
-      onPointerDown={e => {
-        if (!draggable) return;
-        const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
-          ?.current?.instances?.[e.instanceId];
-        if (instance) {
-          onPointerDown?.(e, instance);
-        }
-      }}
-    />
-  );
-});
+    // Initialize mesh and update instances when data changes
+    useLayoutEffect(() => {
+      const mesh = (ref as React.RefObject<InstancedMesh2<InstancedData>>)
+        ?.current;
+      if (!mesh) return;
+
+      mesh.clearInstances();
+      mesh.addInstances(nodes.length, (instance, index) =>
+        ringToInstance(nodes[index], instance, animated)
+      );
+
+      mesh.frustumCulled = false;
+      mesh.computeBVH();
+    }, [nodes, animated, ref]);
+
+    return (
+      <instancedMesh2
+        key="instanced-billboard-rings"
+        ref={ref || meshRef}
+        args={meshArgs}
+        onPointerEnter={e => {
+          setHovered(true);
+          const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
+            ?.current?.instances?.[e.instanceId];
+          if (instance) {
+            instance.opacity = 1;
+            instance.updateMatrix();
+          }
+        }}
+        onPointerLeave={e => {
+          setHovered(false);
+          const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
+            ?.current?.instances?.[e.instanceId];
+          if (instance) {
+            const isActive =
+              actives.includes(instance.nodeId) ||
+              selections.includes(instance.nodeId);
+            instance.opacity = isActive ? 1 : 0.5;
+            instance.updateMatrix();
+          }
+        }}
+        onPointerDown={e => {
+          if (!draggable) return;
+          const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
+            ?.current?.instances?.[e.instanceId];
+          if (instance) {
+            onPointerDown?.(e, instance);
+          }
+        }}
+      />
+    );
+  }
+);

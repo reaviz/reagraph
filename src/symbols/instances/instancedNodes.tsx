@@ -16,6 +16,7 @@ import { InstancedBillboardRings } from './InstancesMeshRing';
 import { useStore } from '../../store';
 import { CulledText } from './CulledText';
 import { Instance } from './types';
+import { useHoverIntent } from 'utils/useHoverIntent';
 
 interface InstancedNodesProps {
   nodes: InternalGraphNode[];

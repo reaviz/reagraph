@@ -4,11 +4,13 @@ import React, {
   useRef,
   useLayoutEffect,
   forwardRef,
-  RefObject
+  RefObject,
+  useState
 } from 'react';
 import { Controller } from '@react-spring/three';
 import { extend, Instance } from '@react-three/fiber';
 import { type ThreeElement } from '@react-three/fiber';
+import { useCursor } from '@react-three/drei';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { IcosahedronGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
 
@@ -118,6 +120,9 @@ export const InstancedMeshSphere = forwardRef<
   ) => {
     const meshRef = useRef<InstancedMesh2<InstancedData>>(null);
     const nodesInstanceIdsMap = useRef<Map<string, number>>(new Map());
+    const [hovered, setHovered] = useState<boolean>(false);
+
+    useCursor(hovered);
 
     // Create geometry and material
     const geometry = useMemo(() => new IcosahedronGeometry(1, 5), []);
@@ -214,6 +219,7 @@ export const InstancedMeshSphere = forwardRef<
             onClick?.(e, mesh?.instances?.[id]);
           }}
           onPointerEnter={e => {
+            setHovered(true);
             const mesh =
               (ref as React.RefObject<InstancedMesh2<InstancedData>>)
                 ?.current || meshRef.current;
@@ -224,6 +230,7 @@ export const InstancedMeshSphere = forwardRef<
             }
           }}
           onPointerLeave={e => {
+            setHovered(false);
             const mesh =
               (ref as React.RefObject<InstancedMesh2<InstancedData>>)
                 ?.current || meshRef.current;
