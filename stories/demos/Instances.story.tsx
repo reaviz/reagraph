@@ -91,6 +91,38 @@ export const Selections = () => {
   );
 };
 
+export const LassoSelectionNotWorking = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    type: 'multi'
+  });
+
+  return (
+    <>
+      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+        <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
+      </div>
+      <GraphCanvas
+        ref={graphRef}
+        useInstances={true}
+        theme={darkTheme}
+        nodes={complexNodes}
+        edges={complexEdges}
+        selections={selections}
+        actives={actives}
+        onNodeClick={onNodeClick}
+        onCanvasClick={onCanvasClick}
+        lassoType="all"
+        onLasso={onLasso}
+        onLassoEnd={onLassoEnd}
+      />
+    </>
+  );
+};
+
 export const Draggable = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const { selections, onNodeClick, onCanvasClick } = useSelection({
@@ -104,7 +136,7 @@ export const Draggable = () => {
     <GraphCanvas
       ref={graphRef}
       draggable
-      useInstances
+      useInstances={true}
       theme={darkTheme}
       nodes={complexNodes}
       edges={complexEdges}

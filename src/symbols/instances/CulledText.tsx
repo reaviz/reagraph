@@ -15,7 +15,17 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { InternalGraphNode } from '../../types';
 
 // Texture cache to prevent memory leaks and WebGL context loss
-const textureCache = new Map<string, { texture: CanvasTexture; lastUsed: number; refCount: number; canvas: HTMLCanvasElement; isActive: boolean; frameProtected: number }>();
+const textureCache = new Map<
+  string,
+  {
+    texture: CanvasTexture;
+    lastUsed: number;
+    refCount: number;
+    canvas: HTMLCanvasElement;
+    isActive: boolean;
+    frameProtected: number;
+  }
+>();
 const canvasElements = new Set<HTMLCanvasElement>();
 const activeTextures = new Set<string>();
 let currentFrame = 0;
@@ -44,7 +54,12 @@ const cleanupTextureCache = () => {
     const completelyUnused = data.refCount === 0 && !data.isActive;
     const notInActiveSet = !activeTextures.has(key);
 
-    if (veryOld && completelyUnused && notInActiveSet && textureCache.size > 100) {
+    if (
+      veryOld &&
+      completelyUnused &&
+      notInActiveSet &&
+      textureCache.size > 100
+    ) {
       try {
         if (data.texture) {
           data.texture.dispose();
@@ -60,7 +75,6 @@ const cleanupTextureCache = () => {
   });
 };
 
-
 // Initialize cleanup interval with memory monitoring
 const initializeCleanup = () => {
   if (!cleanupIntervalId) {
@@ -71,7 +85,8 @@ const initializeCleanup = () => {
       if (typeof performance !== 'undefined' && (performance as any).memory) {
         const memoryInfo = (performance as any).memory;
         const usedMemoryMB = memoryInfo.usedJSHeapSize / 1048576;
-        const memoryUsageRatio = memoryInfo.usedJSHeapSize / memoryInfo.jsHeapSizeLimit;
+        const memoryUsageRatio =
+          memoryInfo.usedJSHeapSize / memoryInfo.jsHeapSizeLimit;
 
         // Disable memory-based cleanup to prevent text disappearing
         // if (memoryUsageRatio > 0.98 || usedMemoryMB > 300) {
@@ -134,7 +149,12 @@ interface OptimizedTextProps {
 // SOLUTION 1: Instanced Mesh with Custom Shader (Best Performance)
 // Groups identical texts and uses instancing to reduce draw calls
 
-const createTextTexture = (text: string, fontSize: number, color: string, maxWidth: number) => {
+const createTextTexture = (
+  text: string,
+  fontSize: number,
+  color: string,
+  maxWidth: number
+) => {
   const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
   const cached = textureCache.get(cacheKey);
 
@@ -142,7 +162,12 @@ const createTextTexture = (text: string, fontSize: number, color: string, maxWid
     cached.lastUsed = Date.now();
     cached.refCount++;
     // Ensure texture is still valid and mark as active with frame protection
-    if (cached.texture && cached.canvas && cached.canvas.width > 0 && cached.canvas.height > 0) {
+    if (
+      cached.texture &&
+      cached.canvas &&
+      cached.canvas.width > 0 &&
+      cached.canvas.height > 0
+    ) {
       cached.isActive = true;
       cached.frameProtected = currentFrame + 60; // Protect for 60 frames (~1 second at 60fps)
       activeTextures.add(cacheKey);
@@ -256,7 +281,12 @@ const createTextTexture = (text: string, fontSize: number, color: string, maxWid
 };
 
 // Helper function to dispose texture when no longer needed
-const disposeTextTexture = (text: string, fontSize: number, color: string, maxWidth: number) => {
+const disposeTextTexture = (
+  text: string,
+  fontSize: number,
+  color: string,
+  maxWidth: number
+) => {
   const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
   const cached = textureCache.get(cacheKey);
 
@@ -380,12 +410,14 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   maxWidth = 300
 }) => {
   const meshRefs = useRef<InstancedMesh[]>([]);
-  const currentTextGroupsRef = useRef<{ text: string; color: string; fontSize: number; maxWidth: number }[]>([]);
+  const currentTextGroupsRef = useRef<
+    { text: string; color: string; fontSize: number; maxWidth: number }[]
+  >([]);
   const geometryRefs = useRef<PlaneGeometry[]>([]);
   const { gl } = useThree();
 
   // Update frame counter for texture protection
-  React.useEffect(() => {
+  useEffect(() => {
     const updateFrame = () => {
       currentFrame++;
       requestAnimationFrame(updateFrame);
@@ -395,7 +427,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   }, []);
 
   // WebGL context recovery
-  React.useEffect(() => {
+  useEffect(() => {
     const handleContextLost = (event: Event) => {
       event.preventDefault();
       console.warn('WebGL context lost, clearing texture cache...');
@@ -500,14 +532,16 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     return () => {
       // Don't dispose textures on unmount - prevents blinking on component changes
       // Just mark as inactive and let the cleanup timer handle it much later if needed
-      currentTextGroupsRef.current.forEach(({ text, color, fontSize, maxWidth }) => {
-        const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
-        const cached = textureCache.get(cacheKey);
-        if (cached) {
-          cached.isActive = false;
-          activeTextures.delete(cacheKey);
+      currentTextGroupsRef.current.forEach(
+        ({ text, color, fontSize, maxWidth }) => {
+          const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
+          const cached = textureCache.get(cacheKey);
+          if (cached) {
+            cached.isActive = false;
+            activeTextures.delete(cacheKey);
+          }
         }
-      });
+      );
 
       // Dispose all geometries
       geometryRefs.current.forEach(geometry => {
@@ -564,7 +598,9 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         mesh.setMatrixAt(i, matrix);
 
         // Set opacity
-        opacityArray[i] = actives.includes(node.id) ? 1.0 : 0.5;
+        const isActive =
+          actives.includes(node.id) || selections.includes(node.id);
+        opacityArray[i] = isActive ? 1.0 : 0.5;
 
         // Set color
         const color = new Color(node.fill || 'white');
@@ -577,8 +613,14 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
       // Update custom attributes
       if (mesh.geometry) {
-        mesh.geometry.setAttribute('opacity', new InstancedBufferAttribute(opacityArray, 1));
-        mesh.geometry.setAttribute('color', new InstancedBufferAttribute(colorArray, 3));
+        mesh.geometry.setAttribute(
+          'opacity',
+          new InstancedBufferAttribute(opacityArray, 1)
+        );
+        mesh.geometry.setAttribute(
+          'color',
+          new InstancedBufferAttribute(colorArray, 3)
+        );
       }
     });
   }, [textGroups, actives, selections, fontSize, maxWidth]);
@@ -586,7 +628,8 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   return (
     <group name="instanced-sprite-text">
       {textGroups.map((group, index) => {
-        const aspectRatio = group.texture.image.width / group.texture.image.height;
+        const aspectRatio =
+          group.texture.image.width / group.texture.image.height;
 
         // Create and store geometry reference for proper disposal
         const geometry = new PlaneGeometry(aspectRatio, 1);
@@ -595,7 +638,9 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         return (
           <instancedMesh
             key={`${group.text}-${group.color}`}
-            ref={ref => { meshRefs.current[index] = ref!; }}
+            ref={ref => {
+              meshRefs.current[index] = ref!;
+            }}
             args={[geometry, undefined, group.nodes.length]}
           >
             <primitive object={createInstancedTextShader(group.texture)} />
@@ -606,9 +651,6 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   );
 };
 
-// SOLUTION 5: Advanced Frustum Culling with Occlusion Detection
-// Most sophisticated visibility detection
-
 export const CulledText: FC<OptimizedTextProps> = ({
   nodes,
   selections = [],
@@ -617,7 +659,9 @@ export const CulledText: FC<OptimizedTextProps> = ({
   maxWidth = 300
 }) => {
   const { camera, size } = useThree();
-  const [visibleNodes, setVisibleNodes] = React.useState<InternalGraphNode[]>([]);
+  const [visibleNodes, setVisibleNodes] = React.useState<InternalGraphNode[]>(
+    []
+  );
   const frustumRef = useRef(new THREE.Frustum());
   const matrixRef = useRef(new Matrix4());
   const frameCountRef = useRef(0);
@@ -633,13 +677,18 @@ export const CulledText: FC<OptimizedTextProps> = ({
     frameCountRef.current++;
 
     // Create a hash of node positions to detect changes
-    const nodesHash = nodes.map(n => `${n.id}:${n.position?.x || 0},${n.position?.y || 0},${n.position?.z || 0}`).join('|');
+    const nodesHash = nodes
+      .map(
+        n =>
+          `${n.id}:${n.position?.x || 0},${n.position?.y || 0},${n.position?.z || 0}`
+      )
+      .join('|');
     const nodesChanged = lastNodesHashRef.current !== nodesHash;
 
     // For smooth movement, update every frame when nodes are changing position
     // Only throttle when nodes are static and camera isn't moving
     const shouldThrottle = !nodesChanged && frameCountRef.current % 30 !== 0;
-    
+
     if (shouldThrottle) {
       return;
     }
@@ -650,12 +699,12 @@ export const CulledText: FC<OptimizedTextProps> = ({
       lastPos.x !== currPos.x ||
       lastPos.y !== currPos.y ||
       lastPos.z !== currPos.z;
-    
+
     // Always update if camera moved OR nodes changed OR if we don't have any visible nodes yet
     if (!hasMoved && !nodesChanged && visibleNodes.length > 0) {
       return;
     }
-    
+
     if (nodesChanged) {
       lastNodesHashRef.current = nodesHash;
     }
@@ -666,7 +715,10 @@ export const CulledText: FC<OptimizedTextProps> = ({
       z: currPos.z
     };
 
-    matrixRef.current.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+    matrixRef.current.multiplyMatrices(
+      camera.projectionMatrix,
+      camera.matrixWorldInverse
+    );
     frustumRef.current.setFromProjectionMatrix(matrixRef.current);
 
     const visible = nodes.filter(node => {
@@ -688,9 +740,12 @@ export const CulledText: FC<OptimizedTextProps> = ({
 
       const screenPosition = nodePosition.clone().project(camera);
       const isOnScreen =
-        screenPosition.x >= -1.2 && screenPosition.x <= 1.2 &&
-        screenPosition.y >= -1.2 && screenPosition.y <= 1.2 &&
-        screenPosition.z >= 0 && screenPosition.z <= 1;
+        screenPosition.x >= -1.2 &&
+        screenPosition.x <= 1.2 &&
+        screenPosition.y >= -1.2 &&
+        screenPosition.y <= 1.2 &&
+        screenPosition.z >= 0 &&
+        screenPosition.z <= 1;
 
       if (!isOnScreen) {
         return false;
@@ -700,7 +755,9 @@ export const CulledText: FC<OptimizedTextProps> = ({
       const fov = (camera as any).fov;
       let projectedSize = 0;
       if (typeof fov === 'number') {
-        projectedSize = (nodeSize * size.height) / (distance * Math.tan(fov * Math.PI / 360));
+        projectedSize =
+          (nodeSize * size.height) /
+          (distance * Math.tan((fov * Math.PI) / 360));
       } else {
         projectedSize = nodeSize * 2;
       }
@@ -714,7 +771,11 @@ export const CulledText: FC<OptimizedTextProps> = ({
     const prioritizedVisible = visible
       .map(node => {
         const distance = camera.position.distanceTo(
-          new Vector3(node.position?.x || 0, node.position?.y || 0, node.position?.z || 0)
+          new Vector3(
+            node.position?.x || 0,
+            node.position?.y || 0,
+            node.position?.z || 0
+          )
         );
 
         let priority = 1000 - distance;

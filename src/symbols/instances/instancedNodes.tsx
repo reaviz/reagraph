@@ -143,7 +143,7 @@ export const InstancedNodes = ({
       />
       <CulledText
         nodes={nodes}
-        selections={[]}
+        selections={selections}
         actives={actives}
         fontSize={32}
         maxWidth={300}

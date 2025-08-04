@@ -412,7 +412,6 @@ export const Node: FC<NodeProps> = ({
       onPointerOver={pointerOver}
       onPointerOut={pointerOut}
       onClick={(event: ThreeEvent<MouseEvent>) => {
-        console.log('onClick', isDraggingCurrent);
         if (!disabled && !isDraggingCurrent) {
           onClick?.(
             node,

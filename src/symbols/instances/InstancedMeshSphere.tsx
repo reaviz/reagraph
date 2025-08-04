@@ -151,12 +151,9 @@ export const InstancedMeshSphere = forwardRef<
             const node = nodesMap.get(instance.nodeId);
             if (node) {
               instance.isDragging = isDragging && selections.includes(node.id);
-              nodeToInstance(
-                node,
-                instance,
-                actives.includes(node.id),
-                animated
-              );
+              const isActive =
+                actives.includes(node.id) || selections.includes(node.id);
+              nodeToInstance(node, instance, isActive, animated);
             } else {
               mesh.removeInstances(instance.id);
             }
@@ -167,12 +164,10 @@ export const InstancedMeshSphere = forwardRef<
         if (newNodes.length > 0) {
           let index = 0;
           mesh.addInstances(newNodes.length, (instance, instanceIndex) => {
-            nodeToInstance(
-              newNodes[index],
-              instance,
-              actives.includes(newNodes[index].id),
-              animated
-            );
+            const isActive =
+              actives.includes(newNodes[index].id) ||
+              selections.includes(newNodes[index].id);
+            nodeToInstance(newNodes[index], instance, isActive, animated);
             nodesInstanceIdsMap.current.set(newNodes[index].id, instanceIndex);
             index++;
           });
@@ -203,7 +198,7 @@ export const InstancedMeshSphere = forwardRef<
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
-    }, [nodes, actives, animated, ref]);
+    }, [nodes, actives, animated, ref, isDragging, selections]);
 
     return (
       <>
@@ -234,7 +229,7 @@ export const InstancedMeshSphere = forwardRef<
                 ?.current || meshRef.current;
             const instance = mesh?.instances?.[e.instanceId];
             if (instance) {
-              instance.opacity = 0.5;
+              instance.opacity = selections.includes(instance.nodeId) ? 1 : 0.5;
               instance.updateMatrix();
             }
           }}
