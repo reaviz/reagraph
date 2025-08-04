@@ -57,7 +57,6 @@ export const useInstanceDrag = ({
 
   const handlePointerMove = useCallback(
     (event: PointerEvent) => {
-      console.log('handlePointerMove', event);
       if (dragState.current.instanceId === null) return;
 
       // Throttle mouse move events to 16ms (~60fps) for better performance

@@ -7,7 +7,7 @@ import React, {
   RefObject
 } from 'react';
 import { Controller } from '@react-spring/three';
-import { extend } from '@react-three/fiber';
+import { extend, Instance } from '@react-three/fiber';
 import { type ThreeElement } from '@react-three/fiber';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { IcosahedronGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
@@ -107,8 +107,10 @@ export const InstancedMeshSphere = forwardRef<
       animated = false,
       draggable = false,
       selections = [],
+      disabled = false,
       onNodeDrag,
-      onPointerDown
+      onPointerDown,
+      onClick
     },
     ref
   ) => {
@@ -199,10 +201,6 @@ export const InstancedMeshSphere = forwardRef<
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
-      console.info(
-        '[log] Perf spheres updating',
-        performance.now() - perfStart
-      );
     }, [nodes, actives, animated, ref]);
 
     return (
@@ -216,8 +214,7 @@ export const InstancedMeshSphere = forwardRef<
             const mesh =
               (ref as React.RefObject<InstancedMesh2<InstancedData>>)
                 ?.current || meshRef.current;
-            const nodeId = mesh?.instances?.[id]?.nodeId;
-            console.log('clicked', nodeId, mesh?.instances.length);
+            onClick?.(e, mesh?.instances?.[id]);
           }}
           onPointerEnter={e => {
             const mesh =
@@ -240,9 +237,11 @@ export const InstancedMeshSphere = forwardRef<
             }
           }}
           onPointerDown={e => {
-            console.log('onPointerDown', e);
             if (!draggable) return;
-            onPointerDown?.(e, e.instanceId);
+            const mesh =
+              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
+                ?.current || meshRef.current;
+            onPointerDown?.(e, mesh?.instances?.[e.instanceId]);
           }}
         />
       </>

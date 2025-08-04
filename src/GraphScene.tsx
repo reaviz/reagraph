@@ -403,7 +403,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const setEdges = useStore(state => state.setEdges);
       const clusters = useStore(state => [...state.clusters.values()]);
       const theme = useStore(state => state.theme);
-      const actives = useStore(state => state.actives);
 
       // Process edges based on aggregation setting and update store
       const edges = useMemo(() => {
@@ -461,11 +460,12 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
             <>
               <InstancedNodes
                 nodes={nodes}
-                selections={nodes.slice(0, 3).map(node => node.id)}
-                actives={nodes.slice(0, 10).map(node => node.id)}
+                selections={rest.selections}
+                actives={rest.actives}
                 animated={animated}
                 draggable={draggable}
-                onNodeDrag={onNodeDraggedHandler}
+                onClick={onNodeClick}
+                onDrag={onNodeDraggedHandler}
               />
               {/* <InstancedSpheres
                 nodes={nodes}

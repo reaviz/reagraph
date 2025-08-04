@@ -8,7 +8,7 @@ import React, {
 import { type ThreeElement } from '@react-three/fiber';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Controller } from '@react-spring/core';
-import { RingGeometry, MeshBasicMaterial, Color } from 'three';
+import { RingGeometry, MeshBasicMaterial, Color, DoubleSide } from 'three';
 import { extend } from '@react-three/fiber';
 
 import { InternalGraphNode } from '../../types';
@@ -104,12 +104,12 @@ export const InstancedBillboardRings = forwardRef<
 >(({ nodes, animated = false, draggable = false, onPointerDown }, ref) => {
   const meshRef = useRef<InstancedMesh2<InstancedData>>(null);
   // Create geometry and material
-  const geometry = useMemo(() => new RingGeometry(0.7, 0.85, 64), []);
+  const geometry = useMemo(() => new RingGeometry(1.1, 1.25, 64), []);
   const material = useMemo(
     () =>
       new MeshBasicMaterial({
         transparent: true,
-        side: 2 // DoubleSide
+        side: DoubleSide
       }),
     []
   );
@@ -123,42 +123,15 @@ export const InstancedBillboardRings = forwardRef<
   useLayoutEffect(() => {
     const mesh = (ref as React.RefObject<InstancedMesh2<InstancedData>>)
       ?.current;
-    if (!mesh || nodes.length === 0) return;
-    const perfStart = performance.now();
+    if (!mesh) return;
 
-    if (mesh.instances?.length) {
-      const nodesMap = new Map(nodes.map(node => [node.id, node]));
-      // Find nodes that need new instances
-      const newNodes = nodes.filter(node => !nodesMap.has(node.id));
-
-      mesh.updateInstances(instance => {
-        if (instance.nodeId) {
-          const node = nodesMap.get(instance.nodeId);
-          if (node) {
-            ringToInstance(node, instance, animated);
-          } else {
-            mesh.removeInstances(instance.id);
-          }
-        }
-      });
-
-      // Add new instances for new nodes
-      if (newNodes.length > 0) {
-        let index = 0;
-        mesh.addInstances(newNodes.length, (instance, instanceIndex) => {
-          ringToInstance(newNodes[index], instance);
-          index++;
-        });
-      }
-    } else {
-      mesh.addInstances(nodes.length, (instance, index) => {
-        ringToInstance(nodes[index], instance, animated);
-      });
-    }
+    mesh.clearInstances();
+    mesh.addInstances(nodes.length, (instance, index) =>
+      ringToInstance(nodes[index], instance, animated)
+    );
 
     mesh.frustumCulled = false;
     mesh.computeBVH();
-    console.info('[log] Perf rings updating', performance.now() - perfStart);
   }, [nodes, animated, ref]);
 
   return (
@@ -184,7 +157,11 @@ export const InstancedBillboardRings = forwardRef<
       }}
       onPointerDown={e => {
         if (!draggable) return;
-        onPointerDown?.(e, e.instanceId);
+        const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
+          ?.current?.instances?.[e.instanceId];
+        if (instance) {
+          onPointerDown?.(e, instance);
+        }
       }}
     />
   );

@@ -1,7 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { InstancedMesh2 } from '@three.ez/instanced-mesh';
+import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Vector3 } from 'three';
-import { InternalGraphNode, InternalGraphPosition } from '../../types';
+import { ThreeEvent } from '@react-three/fiber';
+
+import {
+  CollapseProps,
+  InternalGraphNode,
+  InternalGraphPosition
+} from '../../types';
 
 import { useInstanceDrag } from '../../utils/useInstanceDrag';
 import { useCameraControls } from '../../CameraControls/useCameraControls';
@@ -16,16 +22,28 @@ interface InstancedNodesProps {
   selections?: string[];
   animated?: boolean;
   draggable?: boolean;
-  onNodeDrag?: (node: InternalGraphNode) => void;
+  disabled?: boolean;
+  onDrag?: (node: InternalGraphNode) => void;
+
+  /**
+   * The function to call when the node is clicked.
+   */
+  onClick?: (
+    node: InternalGraphNode,
+    props?: CollapseProps,
+    event?: ThreeEvent<MouseEvent>
+  ) => void;
 }
 
 export const InstancedNodes = ({
   nodes,
   animated = false,
   draggable = false,
-  onNodeDrag,
   selections = [],
-  actives = []
+  actives = [],
+  disabled = false,
+  onDrag,
+  onClick
 }: InstancedNodesProps) => {
   const sphereRef = useRef<InstancedMesh2<any>>(null);
   const ringMeshRef = useRef<InstancedMesh2<any>>(null);
@@ -41,34 +59,11 @@ export const InstancedNodes = ({
     set: (instanceId: number, pos: Vector3) => {
       if (sphereRef.current) {
         const instance = sphereRef.current.instances[instanceId];
-        console.log('setNodePosition', instance.nodeId, pos);
         setNodePosition(instance.nodeId, {
           x: pos.x,
           y: pos.y,
           z: pos.z
         } as InternalGraphPosition);
-        // if (instance) {
-        //   instance.position.copy(pos);
-        //   instance.updateMatrixPosition();
-
-        //   // Sync ring position if it exists
-        //   if (ringMeshRef.current && selections.includes(instance.nodeId)) {
-        //     const ringInstance = ringMeshRef.current.instances.find(
-        //       ringInst => ringInst.nodeId === instance.nodeId
-        //     );
-        //     if (ringInstance) {
-        //       ringInstance.position.copy(pos);
-        //       ringInstance.updateMatrixPosition();
-        //     }
-        //   }
-
-        //   const updatedNode = {
-        //     ...instance.node,
-        //     position: { x: pos.x, y: pos.y, z: pos.z } as InternalGraphPosition
-        //   };
-
-        //   onNodeDrag?.(updatedNode);
-        // }
       }
     },
     onDragStart: (instanceId: number) => {
@@ -101,6 +96,8 @@ export const InstancedNodes = ({
     }
   });
 
+  console.log('selections', selections);
+
   return (
     <>
       <InstancedMeshSphere
@@ -110,22 +107,39 @@ export const InstancedNodes = ({
         draggable={draggable}
         selections={selections}
         actives={actives}
-        onPointerDown={(e, instanceId) => {
-          const instance = sphereRef.current?.instances?.[instanceId];
+        onPointerDown={(event, instance) => {
           if (instance) {
-            handleDragStart(instanceId, e.point, instance.position);
+            handleDragStart(instance.id, event.point, instance.position);
+          }
+        }}
+        onClick={(event, instance) => {
+          const nodeId = instance.nodeId;
+          const node = instance.node;
+          const isDraggingCurrent = draggingIds.includes(nodeId);
+          if (!disabled && !isDraggingCurrent) {
+            onClick?.(
+              node,
+              {
+                canCollapse: false,
+                isCollapsed: false
+              },
+              event
+            );
           }
         }}
       />
       <InstancedBillboardRings
         ref={ringMeshRef}
-        nodes={nodes.filter(node => selections?.includes(node.id))}
-        animated={animated}
+        nodes={
+          selections.length
+            ? nodes.filter(node => selections?.includes(node.id))
+            : []
+        }
+        animated={false}
         draggable={draggable}
-        onPointerDown={(e, instanceId) => {
-          const instance = ringMeshRef.current?.instances?.[instanceId];
+        onPointerDown={(event, instance) => {
           if (instance) {
-            handleDragStart(instanceId, e.point, instance.position);
+            handleDragStart(instance.id, event.point, instance.position);
           }
         }}
       />
