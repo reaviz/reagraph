@@ -108,8 +108,10 @@ export const InstancedMeshSphere = forwardRef<
       draggable = false,
       selections = [],
       disabled = false,
+      isDragging = false,
       onNodeDrag,
       onPointerDown,
+      onPointerUp,
       onClick
     },
     ref
@@ -134,7 +136,6 @@ export const InstancedMeshSphere = forwardRef<
         (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
         meshRef.current;
       if (!mesh || nodes.length === 0) return;
-      const perfStart = performance.now();
 
       if (mesh.instances?.length) {
         const nodesMap = new Map(nodes.map(node => [node.id, node]));
@@ -149,6 +150,7 @@ export const InstancedMeshSphere = forwardRef<
           if (instance.nodeId) {
             const node = nodesMap.get(instance.nodeId);
             if (node) {
+              instance.isDragging = isDragging && selections.includes(node.id);
               nodeToInstance(
                 node,
                 instance,
@@ -242,6 +244,13 @@ export const InstancedMeshSphere = forwardRef<
               (ref as React.RefObject<InstancedMesh2<InstancedData>>)
                 ?.current || meshRef.current;
             onPointerDown?.(e, mesh?.instances?.[e.instanceId]);
+          }}
+          onPointerUp={e => {
+            if (!draggable) return;
+            const mesh =
+              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
+                ?.current || meshRef.current;
+            onPointerUp?.(e, mesh?.instances?.[e.instanceId]);
           }}
         />
       </>

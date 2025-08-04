@@ -15,6 +15,7 @@ import { InstancedMeshSphere } from './InstancedMeshSphere';
 import { InstancedBillboardRings } from './InstancesMeshRing';
 import { useStore } from '../../store';
 import { CulledText } from './CulledText';
+import { Instance } from './types';
 
 interface InstancedNodesProps {
   nodes: InternalGraphNode[];
@@ -45,8 +46,8 @@ export const InstancedNodes = ({
   onDrag,
   onClick
 }: InstancedNodesProps) => {
-  const sphereRef = useRef<InstancedMesh2<any>>(null);
-  const ringMeshRef = useRef<InstancedMesh2<any>>(null);
+  const sphereRef = useRef<InstancedMesh2<Instance> | null>(null);
+  const ringMeshRef = useRef<InstancedMesh2<Instance> | null>(null);
   const setNodePosition = useStore(state => state.setNodePosition);
   const addDraggingId = useStore(state => state.addDraggingId);
   const removeDraggingId = useStore(state => state.removeDraggingId);
@@ -96,8 +97,6 @@ export const InstancedNodes = ({
     }
   });
 
-  console.log('selections', selections);
-
   return (
     <>
       <InstancedMeshSphere
@@ -107,16 +106,13 @@ export const InstancedNodes = ({
         draggable={draggable}
         selections={selections}
         actives={actives}
+        isDragging={isDragging}
         onPointerDown={(event, instance) => {
-          if (instance) {
-            handleDragStart(instance.id, event.point, instance.position);
-          }
+          handleDragStart(instance.id, event.point, instance.position);
         }}
         onClick={(event, instance) => {
-          const nodeId = instance.nodeId;
           const node = instance.node;
-          const isDraggingCurrent = draggingIds.includes(nodeId);
-          if (!disabled && !isDraggingCurrent) {
+          if (!disabled && !instance.isDragging) {
             onClick?.(
               node,
               {
@@ -137,6 +133,8 @@ export const InstancedNodes = ({
         }
         animated={false}
         draggable={draggable}
+        selections={selections}
+        isDragging={isDragging}
         onPointerDown={(event, instance) => {
           if (instance) {
             handleDragStart(instance.id, event.point, instance.position);

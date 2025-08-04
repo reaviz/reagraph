@@ -29,19 +29,22 @@ export const useInstanceDrag = ({
     instancePosition: Vector3;
     offset: Vector3;
     mouse3D: Vector3;
-    lastMoveTime: number;
   }>({
     instanceId: null,
     instancePosition: new Vector3(),
     offset: new Vector3(),
-    mouse3D: new Vector3(),
-    lastMoveTime: 0
+    mouse3D: new Vector3()
   });
 
-  const { mouse2D, normal, plane } = useMemo(
+  // Reference: https://codesandbox.io/s/react-three-draggable-cxu37
+  const { mouse2D, mouse3D, offset, normal, plane } = useMemo(
     () => ({
       // Normalized 2D screen space mouse coords
       mouse2D: new Vector2(),
+      // 3D world space mouse coords
+      mouse3D: new Vector3(),
+      // Drag point offset from object origin
+      offset: new Vector3(),
       // Normal of the drag plane
       normal: new Vector3(),
       // Drag plane
@@ -59,11 +62,6 @@ export const useInstanceDrag = ({
     (event: PointerEvent) => {
       if (dragState.current.instanceId === null) return;
 
-      // Throttle mouse move events to 16ms (~60fps) for better performance
-      const now = performance.now();
-      if (now - dragState.current.lastMoveTime < 16) return;
-      dragState.current.lastMoveTime = now;
-
       // Compute normalized mouse coordinates (screen space)
       const nx =
         ((event.clientX - (clientRect?.left ?? 0)) / size.width) * 2 - 1;
@@ -80,15 +78,13 @@ export const useInstanceDrag = ({
       camera.getWorldDirection(normal).negate();
 
       // Find the plane that's normal to the camera and contains our drag point
-      plane.setFromNormalAndCoplanarPoint(normal, dragState.current.mouse3D);
+      plane.setFromNormalAndCoplanarPoint(normal, mouse3D);
 
       // Find the point of intersection
-      raycaster.ray.intersectPlane(plane, dragState.current.mouse3D);
+      raycaster.ray.intersectPlane(plane, mouse3D);
 
       // Update the object position with the original offset
-      const updated = new Vector3()
-        .copy(dragState.current.mouse3D)
-        .add(dragState.current.offset);
+      const updated = new Vector3().copy(mouse3D).add(offset);
 
       // If there's a cluster, clamp the position within its circular bounds
       if (bounds) {
@@ -112,7 +108,19 @@ export const useInstanceDrag = ({
 
       set(dragState.current.instanceId, updated);
     },
-    [camera, raycaster, size, clientRect, mouse2D, normal, plane, bounds, set]
+    [
+      camera,
+      raycaster,
+      size,
+      clientRect,
+      mouse2D,
+      normal,
+      plane,
+      bounds,
+      set,
+      mouse3D,
+      offset
+    ]
   );
 
   const handlePointerUp = useCallback(() => {
@@ -132,9 +140,12 @@ export const useInstanceDrag = ({
       // Store drag state
       dragState.current.instanceId = instanceId;
       dragState.current.instancePosition.copy(instancePosition);
-      dragState.current.offset.copy(instancePosition).sub(point);
-      dragState.current.mouse3D.copy(point);
-      dragState.current.lastMoveTime = 0;
+
+      // Save the offset of click point from object origin
+      offset.copy(instancePosition).sub(point);
+
+      // Set initial 3D cursor position (needed for onDrag plane calculation)
+      mouse3D.copy(point);
 
       // Add global event listeners
       document.addEventListener('pointermove', handlePointerMove);
@@ -143,7 +154,14 @@ export const useInstanceDrag = ({
       // Run user callback
       onDragStart(instanceId);
     },
-    [draggable, handlePointerMove, handlePointerUp, onDragStart]
+    [
+      draggable,
+      handlePointerMove,
+      handlePointerUp,
+      onDragStart,
+      offset,
+      mouse3D
+    ]
   );
 
   return { handleDragStart };
