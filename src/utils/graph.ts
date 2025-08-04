@@ -42,7 +42,10 @@ export function buildGraph(
     try {
       graph.addEdge(edge.source, edge.target, edge);
     } catch (e) {
-      console.error(`[Graph] Error adding edge '${edge.source} -> ${edge.target}`, e);
+      console.error(
+        `[Graph] Error adding edge '${edge.source} -> ${edge.target}`,
+        e
+      );
     }
   }
 

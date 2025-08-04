@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomLayoutInputs, GraphCanvas, NodePositionArgs, recommendLayout } from '../../src';
+import { GraphCanvas, NodePositionArgs, recommendLayout, LayoutFactoryProps } from '../../src';
 import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
@@ -37,14 +37,13 @@ export const Custom = () => (
     layoutOverrides={{
       getNodePosition: (id: string, { nodes }: NodePositionArgs) => {
         const idx = nodes.findIndex(n => n.id === id);
-        const node = nodes[idx];
         return {
           x: 25 * idx,
           y: idx % 2 === 0 ? 0 : 50,
           z: 1
         };
       }
-    } as CustomLayoutInputs}
+    } as LayoutFactoryProps}
     nodes={simpleNodes}
     edges={simpleEdges}
   />

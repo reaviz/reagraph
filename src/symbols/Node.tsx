@@ -327,6 +327,12 @@ export const Node: FC<NodeProps> = ({
             fontUrl={labelFontUrl}
             opacity={selectionOpacity}
             stroke={theme.node.label.stroke}
+            backgroundColor={theme.node.label.backgroundColor}
+            backgroundOpacity={theme.node.label.backgroundOpacity}
+            padding={theme.node.label.padding}
+            strokeColor={theme.node.label.strokeColor}
+            strokeWidth={theme.node.label.strokeWidth}
+            radius={theme.node.label.radius}
             active={isSelected || active || isDraggingCurrent || isActive}
             color={
               isSelected || active || isDraggingCurrent || isActive
@@ -368,6 +374,12 @@ export const Node: FC<NodeProps> = ({
       theme.node.label.activeColor,
       theme.node.label.color,
       theme.node.label.stroke,
+      theme.node.label.backgroundColor,
+      theme.node.label.backgroundOpacity,
+      theme.node.label.padding,
+      theme.node.label.strokeColor,
+      theme.node.label.strokeWidth,
+      theme.node.label.radius,
       theme.node.subLabel?.activeColor,
       theme.node.subLabel?.color,
       theme.node.subLabel?.stroke

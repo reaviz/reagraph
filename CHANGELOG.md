@@ -1,3 +1,15 @@
+# 4.28.0 - 8/1/25
+- [chore] fix: update all major deps & some minor #351
+
+# 4.27.0 - 7/25/25
+- [feature] Add `strokeWidth` and `strokeColor` props to Badge
+- [feature] Add `backgroundColor`, `backgroundOpacity`, `padding`, `strokeColor`, `strokeWidth`, and `radius` props to Label
+
+# 4.26.0 - 7/24/25
+- [feature] concentric layout
+- [feature] node badges
+- [feature] edge styling via dashing
+
 # 4.25.1 - 7/22/25
 - [fix] Display label always for next types: all, nodes, edges #344
 

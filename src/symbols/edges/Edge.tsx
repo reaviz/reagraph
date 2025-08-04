@@ -120,8 +120,9 @@ export const Edge: FC<EdgeProps> = ({
 
   const removeContextMenu = useCallback(
     (edgeId: string) => {
-      edgeContextMenus.delete(edgeId);
-      setEdgeContextMenus(new Set(edgeContextMenus));
+      const newEdgeContextMenus = new Set(edgeContextMenus);
+      newEdgeContextMenus.delete(edgeId);
+      setEdgeContextMenus(newEdgeContextMenus);
     },
     [edgeContextMenus, setEdgeContextMenus]
   );

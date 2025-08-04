@@ -154,7 +154,9 @@ export const Edge: FC<EdgeProps> = ({
     subLabel,
     labelVisible = false,
     size = 1,
-    fill
+    fill,
+    dashed = false,
+    dashArray = [3, 1]
   } = edge;
 
   // Use subLabelPlacement from edge data if available, otherwise use the prop value
@@ -167,14 +169,21 @@ export const Edge: FC<EdgeProps> = ({
   // Edge properties
   const labelOffset = (size + theme.edge.label.fontSize) / 2;
   const [arrowLength, arrowSize] = useMemo(() => getArrowSize(size), [size]);
+
+  // Use edge-specific interpolation if available, otherwise use global interpolation
+  const effectiveInterpolation = edge.interpolation || interpolation;
+
+  // Use edge-specific arrow placement if available, otherwise use global arrow placement
+  const effectiveArrowPlacement = edge.arrowPlacement || arrowPlacement;
+
   const { curveOffset, curved } = useMemo(
     () =>
       calculateEdgeCurveOffset({
         edge,
         edges,
-        curved: interpolation === 'curved'
+        curved: effectiveInterpolation === 'curved'
       }),
-    [edge, edges, interpolation]
+    [edge, edges, effectiveInterpolation]
   );
 
   const [curve, arrowPosition, arrowRotation] = useMemo(() => {
@@ -193,12 +202,12 @@ export const Edge: FC<EdgeProps> = ({
     );
 
     const [arrowPosition, arrowRotation] = getArrowVectors(
-      arrowPlacement,
+      effectiveArrowPlacement,
       curve,
       arrowLength
     );
 
-    if (arrowPlacement === 'end') {
+    if (effectiveArrowPlacement === 'end') {
       curve = getCurve(
         fromVector,
         fromOffset,
@@ -210,7 +219,7 @@ export const Edge: FC<EdgeProps> = ({
     }
 
     return [curve, arrowPosition, arrowRotation];
-  }, [from, to, curved, curveOffset, arrowPlacement, arrowLength]);
+  }, [from, to, curved, curveOffset, effectiveArrowPlacement, arrowLength]);
 
   const midPoint = useMemo(() => {
     let newMidPoint = getMidPoint(
@@ -309,7 +318,7 @@ export const Edge: FC<EdgeProps> = ({
 
   const arrowComponent = useMemo(
     () =>
-      arrowPlacement !== 'none' && (
+      effectiveArrowPlacement !== 'none' && (
         <Arrow
           animated={animated}
           color={
@@ -336,7 +345,7 @@ export const Edge: FC<EdgeProps> = ({
       active,
       animated,
       arrowLength,
-      arrowPlacement,
+      effectiveArrowPlacement,
       arrowPosition,
       arrowRotation,
       arrowSize,
@@ -456,6 +465,8 @@ export const Edge: FC<EdgeProps> = ({
         }
         curve={curve}
         curved={curved}
+        dashed={dashed}
+        dashArray={dashArray}
         id={id}
         opacity={selectionOpacity}
         size={size}

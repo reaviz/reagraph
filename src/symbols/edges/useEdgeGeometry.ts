@@ -49,7 +49,6 @@ export function useEdgeGeometry(
   const nullGeometryRef = useRef(new BoxGeometry(0, 0, 0));
   const baseArrowGeometryRef = useRef<CylinderGeometry | null>(null);
 
-  const curved = interpolation === 'curved';
   const getGeometries = useCallback(
     (edges: Array<InternalGraphEdge>): Array<BufferGeometry> => {
       const geometries: Array<BufferGeometry> = [];
@@ -80,18 +79,25 @@ export function useEdgeGeometry(
         if (!from || !to) {
           return;
         }
-
         // Improved hash function to include size
         const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size}`;
+
+        // Determine interpolation for this specific edge
+        const edgeInterpolation = edge.interpolation || interpolation;
+        const curved = edgeInterpolation === 'curved';
+
+        // Determine arrow placement for this specific edge
+        const edgeArrowPlacement = edge.arrowPlacement || arrowPlacement;
+
         if (cache.has(hash)) {
           geometries.push(cache.get(hash));
           return;
         }
 
         const fromVector = getVector(from);
-        const fromOffset = from.size + labelFontSize;
+        const fromOffset = from.size;
         const toVector = getVector(to);
-        const toOffset = to.size + labelFontSize;
+        const toOffset = to.size;
         let curve = getCurve(
           fromVector,
           fromOffset,
@@ -102,7 +108,7 @@ export function useEdgeGeometry(
 
         let edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
 
-        if (arrowPlacement === 'none') {
+        if (edgeArrowPlacement === 'none') {
           geometries.push(edgeGeometry);
           cache.set(hash, edgeGeometry);
           return;
@@ -113,7 +119,7 @@ export function useEdgeGeometry(
         const arrowGeometry = baseArrowGeometryRef.current.clone();
         arrowGeometry.scale(arrowSize, arrowLength, arrowSize);
         const [arrowPosition, arrowRotation] = getArrowVectors(
-          arrowPlacement,
+          edgeArrowPlacement,
           curve,
           arrowLength
         );
@@ -127,7 +133,7 @@ export function useEdgeGeometry(
         );
 
         // Move edge so it doesn't stick through the arrow:
-        if (arrowPlacement && arrowPlacement === 'end') {
+        if (edgeArrowPlacement && edgeArrowPlacement === 'end') {
           const curve = getCurve(
             fromVector,
             fromOffset,
@@ -144,7 +150,7 @@ export function useEdgeGeometry(
       });
       return geometries;
     },
-    [arrowPlacement, curved, theme.edge.label.fontSize]
+    [arrowPlacement, interpolation, theme.edge.label.fontSize]
   );
 
   const getGeometry = useCallback(

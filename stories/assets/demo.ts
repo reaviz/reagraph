@@ -5,12 +5,14 @@ import computerSvg from './computer.svg';
 
 export const random = (floor, ceil) => Math.floor(Math.random() * ceil) + floor;
 
+const counts = [5, 100, 5843, 9992, 1000000];
 export const simpleNodes: GraphNode[] =
   range(5).map(i => ({
     id: `n-${i}`,
     label: `Node ${i}`,
     data: {
-      priority: random(0, 10)
+      priority: random(0, 10),
+      count: counts[i]
     }
   }));
 

@@ -1,6 +1,8 @@
+import { concentricLayout } from 'layout/concentric2d';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
 import { circular2d, CircularLayoutInputs } from './circular2d';
+import { ConcentricLayoutInputs } from './concentric2d';
 import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
 import { NoOverlapLayoutInputs, nooverlap } from './nooverlap';
 import { ForceAtlas2LayoutInputs, forceAtlas2 } from './forceatlas2';
@@ -9,6 +11,7 @@ import { custom } from './custom';
 export type LayoutOverrides = Partial<
   | Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'>
   | CircularLayoutInputs
+  | ConcentricLayoutInputs
   | HierarchicalLayoutInputs
 >;
 
@@ -115,6 +118,8 @@ export function layoutProvider({
       ...rest,
       radius: radius || 300
     } as CircularLayoutInputs);
+  } else if (type === 'concentric2d') {
+    return concentricLayout(rest as CircularLayoutInputs);
   } else if (type === 'hierarchicalTd') {
     return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);
   } else if (type === 'hierarchicalLr') {
