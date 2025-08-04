@@ -46,14 +46,6 @@ import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';
 import { aggregateEdges as aggregateEdgesUtil } from './utils/aggregateEdges';
-import { SpriteText } from 'symbols/nodes/SpriteText';
-import {
-  CulledText,
-  InstancedSpriteText,
-} from 'symbols/nodes/SpriteText2';
-import { AdvancedCulledText } from 'symbols/nodes/CulledText';
-import { InstancedMeshSphere } from 'symbols/instances/InstancedMeshSphere';
-import { BatchedMeshSphere } from 'symbols/nodes/BatchedMesh';
 import { InstancedNodes } from './symbols/instances/instancedNodes';
 
 export interface GraphSceneProps {
@@ -553,7 +545,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         renderNode,
         rest.selections,
         rest.actives,
-        useInstances,
+        useInstances
       ]);
 
       const edgeComponents = useMemo(
