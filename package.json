@@ -113,6 +113,7 @@
     "postcss-nested": "^7.0.2",
     "postcss-preset-env": "^10.2.4",
     "prettier": "^3.6.2",
+    "r3f-perf": "^7.2.3",
     "react": "^19.1.0",
     "react-docgen-typescript": "^2.4.0",
     "react-dom": "^19.1.0",
