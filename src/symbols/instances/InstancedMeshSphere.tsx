@@ -159,11 +159,6 @@ export const InstancedMeshSphere = forwardRef<
             const node = nodesMap.get(instance.nodeId);
             if (node) {
               instance.isDragging = isDragging || selections.includes(node.id);
-              console.log(
-                'isDragging',
-                isDragging,
-                selections.includes(node.id)
-              );
               const isActive =
                 actives.includes(node.id) || selections.includes(node.id);
               nodeToInstance(node, instance, isActive, animated);
