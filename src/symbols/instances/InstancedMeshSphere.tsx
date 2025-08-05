@@ -48,6 +48,7 @@ export const InstancedMeshSphere = forwardRef<
     ref
   ) => {
     const meshRef = useRef<InstancedMesh2<InstancedData | null>>(null);
+    const prevOpacity = useRef<number>(1);
     const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
     // Helper function to get current mesh reference
@@ -150,6 +151,8 @@ export const InstancedMeshSphere = forwardRef<
             if (instance) {
               setHoveredNodeId(instance.nodeId);
               instance.color = theme.node.activeFill;
+              prevOpacity.current = instance.opacity;
+              instance.opacity = 1;
               instance.updateMatrix();
             }
           }}
@@ -164,6 +167,7 @@ export const InstancedMeshSphere = forwardRef<
                 actives,
                 selections
               );
+              instance.opacity = prevOpacity.current;
               instance.updateMatrix();
             }
           }}

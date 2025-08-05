@@ -9,12 +9,20 @@ import React, {
 import { type ThreeElement } from '@react-three/fiber';
 import { useCursor } from '@react-three/drei';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
-import { Controller } from '@react-spring/core';
-import { RingGeometry, MeshBasicMaterial, Color, DoubleSide } from 'three';
+import {
+  RingGeometry,
+  MeshBasicMaterial,
+  Color,
+  DoubleSide,
+  Vector3
+} from 'three';
 import { extend } from '@react-three/fiber';
 
 import { InternalGraphNode } from '../../types';
-import { animationConfig } from '../../utils/animation';
+import {
+  getInstanceColor,
+  updateInstancePosition
+} from '../../utils/instances';
 import { InstancedData, InstancedMeshProps } from './types';
 
 // Add InstancedMesh2 to the jsx catalog
@@ -26,78 +34,35 @@ declare module '@react-three/fiber' {
   }
 }
 
+/**
+ * Convert a node to an instance for the ring mesh
+ * @param node - The node to convert to an instance
+ * @param instance - The instance to update
+ * @param animated - Whether to animate the instance
+ * @param theme - The theme to use
+ * @param actives - The active nodes
+ * @param selections - The selected nodes
+ */
 const ringToInstance = (
   node: InternalGraphNode,
   instance: InstancedEntity & InstancedData,
-  animated: boolean = false
+  animated: boolean = false,
+  theme: any,
+  actives: string[] = [],
+  selections: string[] = []
 ) => {
   instance.nodeId = node.id;
+  instance.node = node;
 
-  if (animated && !instance.isDragging) {
-    // For initial render animation, start from center if instance is at origin
-    const isAtOrigin =
-      instance.position.x === 0 &&
-      instance.position.y === 0 &&
-      instance.position.z === 0;
-    const startPosition = {
-      x: isAtOrigin ? 0 : instance.position.x,
-      y: isAtOrigin ? 0 : instance.position.y,
-      z: isAtOrigin ? 0 : instance.position.z
-    };
-
-    // Target is ring position
-    const targetPosition = {
-      x: node.position?.x || 0,
-      y: node.position?.y || 0,
-      z: node.position?.z || 0
-    };
-
-    // Skip animation if already at target (avoid unnecessary animation)
-    const distance = Math.sqrt(
-      Math.pow(targetPosition.x - startPosition.x, 2) +
-        Math.pow(targetPosition.y - startPosition.y, 2) +
-        Math.pow(targetPosition.z - startPosition.z, 2)
-    );
-
-    if (distance < 0.1) {
-      // Too close, just set position directly
-      instance.position.set(
-        targetPosition.x,
-        targetPosition.y,
-        targetPosition.z
-      );
-      instance.updateMatrixPosition();
-    } else {
-      const controller = new Controller({
-        x: startPosition.x,
-        y: startPosition.y,
-        z: startPosition.z,
-        config: animationConfig
-      });
-
-      controller.start({
-        x: targetPosition.x,
-        y: targetPosition.y,
-        z: targetPosition.z,
-        onChange: () => {
-          const x = controller.springs.x.get();
-          const y = controller.springs.y.get();
-          const z = controller.springs.z.get();
-
-          instance.position.set(x, y, z);
-          instance.updateMatrixPosition();
-        }
-      });
-    }
-  } else {
-    instance.position.set(node.position.x, node.position.y, node.position.z);
-    instance.updateMatrixPosition();
-  }
-  instance.position.set(node.position.x, node.position.y, node.position.z);
+  updateInstancePosition(
+    instance,
+    node.position as unknown as Vector3,
+    animated
+  );
   instance.updateMatrixPosition();
   instance.scale.setScalar(node.size * 2 || 1);
-  instance.color = new Color(node.fill || '#ffffff');
-  instance.opacity = 0.8;
+  instance.color = getInstanceColor(instance, node, theme, actives, selections);
+  instance.opacity = 1;
 };
 
 export const InstancedBillboardRings = forwardRef<
@@ -111,6 +76,7 @@ export const InstancedBillboardRings = forwardRef<
       draggable = false,
       selections = [],
       actives = [],
+      theme,
       onPointerDown
     },
     ref
@@ -143,12 +109,24 @@ export const InstancedBillboardRings = forwardRef<
 
       mesh.clearInstances();
       mesh.addInstances(nodes.length, (instance, index) =>
-        ringToInstance(nodes[index], instance, animated)
+        ringToInstance(
+          nodes[index],
+          instance,
+          animated,
+          theme,
+          actives,
+          selections
+        )
       );
 
       mesh.frustumCulled = false;
       mesh.computeBVH();
-    }, [nodes, animated, ref]);
+    }, [nodes, animated, theme, actives, selections, ref]);
+
+    // Helper function to get current mesh reference
+    const getMesh = () =>
+      (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+      meshRef.current;
 
     return (
       <instancedMesh2
@@ -157,29 +135,29 @@ export const InstancedBillboardRings = forwardRef<
         args={meshArgs}
         onPointerEnter={e => {
           setHovered(true);
-          const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
-            ?.current?.instances?.[e.instanceId];
+          const instance = getMesh()?.instances?.[e.instanceId];
           if (instance) {
-            instance.opacity = 1;
+            instance.color = theme.node.activeFill;
             instance.updateMatrix();
           }
         }}
         onPointerLeave={e => {
           setHovered(false);
-          const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
-            ?.current?.instances?.[e.instanceId];
+          const instance = getMesh()?.instances?.[e.instanceId];
           if (instance) {
-            const isActive =
-              actives.includes(instance.nodeId) ||
-              selections.includes(instance.nodeId);
-            instance.opacity = isActive ? 1 : 0.5;
+            instance.color = getInstanceColor(
+              instance,
+              instance.node,
+              theme,
+              actives,
+              selections
+            );
             instance.updateMatrix();
           }
         }}
         onPointerDown={e => {
           if (!draggable) return;
-          const instance = (ref as RefObject<InstancedMesh2<InstancedData>>)
-            ?.current?.instances?.[e.instanceId];
+          const instance = getMesh()?.instances?.[e.instanceId];
           if (instance) {
             onPointerDown?.(e, instance);
           }
