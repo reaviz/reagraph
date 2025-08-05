@@ -18,8 +18,8 @@ export interface InstancedMeshProps {
   animated?: boolean;
   draggable?: boolean;
   disabled?: boolean;
-  isDragging?: boolean;
-  onNodeDrag?: (node: InternalGraphNode) => void;
+  draggingIds?: string[];
+  onDrag?: (node: InternalGraphNode) => void;
   onPointerDown?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
   onPointerOver?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
   onPointerOut?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;

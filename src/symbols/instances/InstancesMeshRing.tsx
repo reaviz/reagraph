@@ -138,8 +138,7 @@ export const InstancedBillboardRings = forwardRef<
 
     // Initialize mesh and update instances when data changes
     useLayoutEffect(() => {
-      const mesh = (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-        ?.current;
+      const mesh = (ref as RefObject<InstancedMesh2<InstancedData>>)?.current;
       if (!mesh) return;
 
       mesh.clearInstances();

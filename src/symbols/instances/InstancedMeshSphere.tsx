@@ -7,7 +7,6 @@ import React, {
   RefObject,
   useState
 } from 'react';
-import { Controller } from '@react-spring/three';
 import { extend, Instance } from '@react-three/fiber';
 import { type ThreeElement } from '@react-three/fiber';
 import { useCursor } from '@react-three/drei';
@@ -15,8 +14,7 @@ import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { IcosahedronGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
 
 import { InternalGraphNode } from '../../types';
-import { animationConfig } from '../../utils/animation';
-
+import { updateInstancePosition } from '../../utils/instances';
 import { InstancedData, InstancedMeshProps } from './types';
 
 // add InstancedMesh2 to the jsx catalog i.e use it as a jsx component
@@ -35,64 +33,11 @@ const nodeToInstance = (
 ) => {
   instance.nodeId = node.id;
   instance.node = node;
-
-  if (animated && !instance.isDragging) {
-    // For initial render animation, start from center if instance is at origin
-    const isAtOrigin =
-      instance.position.x === 0 &&
-      instance.position.y === 0 &&
-      instance.position.z === 0;
-    const startPosition = {
-      x: isAtOrigin ? 0 : instance.position.x,
-      y: isAtOrigin ? 0 : instance.position.y,
-      z: isAtOrigin ? 0 : instance.position.z
-    };
-
-    // Target is ring position
-    const targetPosition = {
-      x: node.position?.x || 0,
-      y: node.position?.y || 0,
-      z: node.position?.z || 0
-    };
-
-    // Skip animation if already at target (avoid unnecessary animation)
-    const distance = Math.sqrt(
-      Math.pow(targetPosition.x - startPosition.x, 2) +
-        Math.pow(targetPosition.y - startPosition.y, 2) +
-        Math.pow(targetPosition.z - startPosition.z, 2)
-    );
-
-    const controller = new Controller({
-      x: startPosition.x,
-      y: startPosition.y,
-      z: startPosition.z,
-      config: animationConfig
-    });
-
-    controller.start({
-      x: targetPosition.x,
-      y: targetPosition.y,
-      z: targetPosition.z,
-      onChange: () => {
-        const x = controller.springs.x.get();
-        const y = controller.springs.y.get();
-        const z = controller.springs.z.get();
-
-        instance.position.copy(new Vector3(x, y, z));
-        instance.updateMatrixPosition();
-      }
-    });
-  } else {
-    instance.position.copy(
-      new Vector3(
-        node.position?.x || 0,
-        node.position?.y || 0,
-        node.position?.z || 0
-      )
-    );
-    instance.updateMatrixPosition();
-  }
-
+  updateInstancePosition(
+    instance,
+    node.position as unknown as Vector3,
+    animated
+  );
   instance.scale.setScalar(node.size);
   instance.color = new Color(node.fill);
   instance.opacity = active ? 1.0 : 0.5;
@@ -110,8 +55,8 @@ export const InstancedMeshSphere = forwardRef<
       draggable = false,
       selections = [],
       disabled = false,
-      isDragging = false,
-      onNodeDrag,
+      draggingIds = [],
+      onDrag,
       onPointerDown,
       onPointerUp,
       onPointerOver,
@@ -120,12 +65,12 @@ export const InstancedMeshSphere = forwardRef<
     },
     ref
   ) => {
-    const meshRef = useRef<InstancedMesh2<InstancedData>>(null);
+    const meshRef = useRef<InstancedMesh2<InstancedData | null>>(null);
     const nodesInstanceIdsMap = useRef<Map<string, number>>(new Map());
     const [hovered, setHovered] = useState<boolean>(false);
 
     useCursor(hovered);
-    useCursor(isDragging, 'grabbing');
+    useCursor(draggingIds.length > 0, 'grabbing');
 
     // Create geometry and material
     const geometry = useMemo(() => new IcosahedronGeometry(1, 5), []);
@@ -158,9 +103,12 @@ export const InstancedMeshSphere = forwardRef<
           if (instance.nodeId) {
             const node = nodesMap.get(instance.nodeId);
             if (node) {
+              const isDragging = draggingIds.includes(node.id);
               instance.isDragging = isDragging || selections.includes(node.id);
               const isActive =
-                actives.includes(node.id) || selections.includes(node.id);
+                isDragging ||
+                actives.includes(node.id) ||
+                selections.includes(node.id);
               nodeToInstance(node, instance, isActive, animated);
             } else {
               mesh.removeInstances(instance.id);
@@ -206,7 +154,7 @@ export const InstancedMeshSphere = forwardRef<
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
-    }, [nodes, actives, animated, ref, isDragging, selections]);
+    }, [nodes, actives, animated, ref, selections, draggingIds]);
 
     return (
       <>
@@ -217,15 +165,15 @@ export const InstancedMeshSphere = forwardRef<
           onClick={e => {
             const id = e.instanceId;
             const mesh =
-              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-                ?.current || meshRef.current;
+              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+              meshRef.current;
             onClick?.(e, mesh?.instances?.[id]);
           }}
           onPointerEnter={e => {
             setHovered(true);
             const mesh =
-              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-                ?.current || meshRef.current;
+              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+              meshRef.current;
             const instance = mesh?.instances?.[e.instanceId];
             if (instance) {
               instance.opacity = 1;
@@ -246,27 +194,27 @@ export const InstancedMeshSphere = forwardRef<
           onPointerDown={e => {
             if (!draggable) return;
             const mesh =
-              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-                ?.current || meshRef.current;
+              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+              meshRef.current;
             onPointerDown?.(e, mesh?.instances?.[e.instanceId]);
           }}
           onPointerUp={e => {
             if (!draggable) return;
             const mesh =
-              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-                ?.current || meshRef.current;
+              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+              meshRef.current;
             onPointerUp?.(e, mesh?.instances?.[e.instanceId]);
           }}
           onPointerOver={e => {
             const mesh =
-              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-                ?.current || meshRef.current;
+              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+              meshRef.current;
             onPointerOver?.(e, mesh?.instances?.[e.instanceId]);
           }}
           onPointerOut={e => {
             const mesh =
-              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-                ?.current || meshRef.current;
+              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+              meshRef.current;
             onPointerOut?.(e, mesh?.instances?.[e.instanceId]);
           }}
         />

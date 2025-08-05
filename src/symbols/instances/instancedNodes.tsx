@@ -16,7 +16,8 @@ import { InstancedBillboardRings } from './InstancesMeshRing';
 import { useStore } from '../../store';
 import { CulledText } from './CulledText';
 import { Instance } from './types';
-import { useHoverIntent } from 'utils/useHoverIntent';
+import { useHoverIntent } from '../../utils/useHoverIntent';
+import { updateInstancePosition } from '../../utils/instances';
 
 interface InstancedNodesProps {
   nodes: InternalGraphNode[];
@@ -64,7 +65,7 @@ export const InstancedNodes = ({
   const removeDraggingId = useStore(state => state.removeDraggingId);
   const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
   const draggingIds = useStore(state => state.draggingIds);
-  const isDragging = draggingIds.length > 0;
+  const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null);
 
   const cameraControls = useCameraControls();
   const { handleDragStart } = useInstanceDrag({
@@ -72,11 +73,13 @@ export const InstancedNodes = ({
     set: (instanceId: number, pos: Vector3) => {
       if (sphereRef.current) {
         const instance = sphereRef.current.instances[instanceId];
+        updateInstancePosition(instance, pos, false);
         setNodePosition(instance.nodeId, {
           x: pos.x,
           y: pos.y,
           z: pos.z
         } as InternalGraphPosition);
+        setDraggedNodeId(instance.nodeId);
       }
     },
     onDragStart: (instanceId: number) => {
@@ -84,6 +87,7 @@ export const InstancedNodes = ({
       const instance = sphereRef.current?.instances[instanceId];
       if (instance) {
         instance.isDragging = true;
+        setDraggedNodeId(null);
         const ringInstance = ringMeshRef.current.instances.find(
           ringInst => ringInst.nodeId === instance.nodeId
         );
@@ -142,13 +146,17 @@ export const InstancedNodes = ({
         draggable={draggable}
         selections={selections}
         actives={actives}
-        isDragging={isDragging}
+        draggingIds={draggingIds}
         onPointerDown={(event, instance) => {
           handleDragStart(instance.id, event.point, instance.position);
         }}
         onClick={(event, instance) => {
           const node = instance.node;
-          if (!disabled && !instance.isDragging) {
+          if (
+            !disabled &&
+            !instance.isDragging &&
+            draggedNodeId !== instance.nodeId
+          ) {
             onClick?.(
               node,
               {
@@ -158,6 +166,7 @@ export const InstancedNodes = ({
               event
             );
           }
+          setDraggedNodeId(null);
         }}
         onPointerOver={pointerOver}
         onPointerOut={pointerOut}
@@ -172,7 +181,7 @@ export const InstancedNodes = ({
         animated={false}
         draggable={draggable}
         selections={selections}
-        isDragging={isDragging}
+        draggingIds={draggingIds}
         onPointerDown={(event, instance) => {
           if (instance) {
             handleDragStart(instance.id, event.point, instance.position);
