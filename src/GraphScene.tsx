@@ -461,50 +461,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                 onPointerOver={onNodePointerOver}
                 onPointerOut={onNodePointerOut}
               />
-              {/* <InstancedSpheres
-                nodes={nodes}
-                selections={rest.selections || []}
-                actives={nodes.slice(0, 10).map(node => node.id)}
-                animated={animated}
-              /> */}
-              {/* <InstancedMeshSphere
-                nodes={nodes}
-                selections={nodes.slice(0, 3).map(node => node.id)}
-                actives={nodes.slice(0, 10).map(node => node.id)}
-                animated={true}
-                draggable={draggable}
-                onNodeDrag={onNodeDraggedHandler}
-              /> */}
-              {/* <BatchedMeshSphere
-                nodes={nodes}
-                selections={nodes.slice(0, 3).map(node => node.id)}
-                actives={nodes.slice(0, 10).map(node => node.id)}
-                animated={true}
-                draggable={draggable}
-                onNodeDrag={onNodeDraggedHandler}
-              /> */}
-              {/* <InstancedText
-                nodes={nodes}
-                selections={rest.selections || []}
-                actives={[]}
-                animated={animated}
-                fontSize={128}
-              /> */}
-
-              {/* <AdvancedCulledText
-                nodes={nodes}
-                selections={[]}
-                actives={actives}
-                fontSize={32}
-                maxWidth={300}
-              /> */}
-
-              {/* <InstancedIcon
-                nodes={nodes}
-                selections={rest.selections || []}
-                actives={[]}
-                animated={animated}
-              /> */}
             </>
           );
         }
