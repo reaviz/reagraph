@@ -61,7 +61,13 @@ const ringToInstance = (
   );
   instance.updateMatrixPosition();
   instance.scale.setScalar(node.size * 2 || 1);
-  instance.color = getInstanceColor(instance, node, theme, actives, selections);
+  instance.color = getInstanceColor(
+    node,
+    theme,
+    actives,
+    selections,
+    instance.isDragging
+  );
   instance.opacity = 1;
 };
 
@@ -146,11 +152,11 @@ export const InstancedBillboardRings = forwardRef<
           const instance = getMesh()?.instances?.[e.instanceId];
           if (instance) {
             instance.color = getInstanceColor(
-              instance,
               instance.node,
               theme,
               actives,
-              selections
+              selections,
+              instance.isDragging
             );
             instance.updateMatrix();
           }

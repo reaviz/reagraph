@@ -13,6 +13,8 @@ import {
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { InternalGraphNode } from '../../types';
+import { getInstanceColor } from '../../utils/instances';
+import { Theme } from '../../themes/theme';
 
 // Texture cache to prevent memory leaks and WebGL context loss
 const textureCache = new Map<
@@ -144,6 +146,7 @@ interface OptimizedTextProps {
   animated?: boolean;
   fontSize?: number;
   maxWidth?: number;
+  theme: Theme;
 }
 
 // SOLUTION 1: Instanced Mesh with Custom Shader (Best Performance)
@@ -440,7 +443,8 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   selections = [],
   actives = [],
   fontSize = 32,
-  maxWidth = 300
+  maxWidth = 300,
+  theme
 }) => {
   const meshRefs = useRef<InstancedMesh[]>([]);
   const currentTextGroupsRef = useRef<
@@ -509,7 +513,14 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     const groups = new Map<string, InternalGraphNode[]>();
 
     nodes.forEach(node => {
-      const key = `${node.label}|${node.fill || 'white'}`;
+      const nodeColor = getInstanceColor(
+        node,
+        theme,
+        actives,
+        selections,
+        false
+      );
+      const key = `${node.label}|${nodeColor}`;
       if (!groups.has(key)) {
         groups.set(key, []);
       }
@@ -537,7 +548,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         texture
       };
     });
-  }, [nodes, fontSize, maxWidth]);
+  }, [nodes, fontSize, maxWidth, theme, actives, selections]);
 
   // Cleanup textures and geometries when component unmounts or textGroups change
   useEffect(() => {
@@ -633,10 +644,11 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         // Set opacity
         const isActive =
           actives.includes(node.id) || selections.includes(node.id);
-        opacityArray[i] = isActive ? 1.0 : 0.5;
+        opacityArray[i] = 1;
 
-        // Set color
-        const color = new Color(node.fill || 'white');
+        const color = new Color(
+          isActive ? theme.node.label.activeColor : theme.node.label.color
+        );
         colorArray[i * 3] = color.r;
         colorArray[i * 3 + 1] = color.g;
         colorArray[i * 3 + 2] = color.b;
@@ -656,7 +668,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         );
       }
     });
-  }, [textGroups, actives, selections, fontSize, maxWidth]);
+  }, [textGroups, actives, selections, fontSize, maxWidth, theme]);
 
   return (
     <group name="instanced-sprite-text">
@@ -689,7 +701,8 @@ export const CulledText: FC<OptimizedTextProps> = ({
   selections = [],
   actives = [],
   fontSize = 32,
-  maxWidth = 300
+  maxWidth = 300,
+  theme
 }) => {
   const { camera, size } = useThree();
   const [visibleNodes, setVisibleNodes] = React.useState<InternalGraphNode[]>(
@@ -835,6 +848,7 @@ export const CulledText: FC<OptimizedTextProps> = ({
       actives={actives}
       fontSize={fontSize}
       maxWidth={maxWidth}
+      theme={theme}
     />
   );
 };

@@ -161,11 +161,11 @@ export const InstancedMeshSphere = forwardRef<
             const instance = getMesh()?.instances?.[e.instanceId];
             if (instance) {
               instance.color = getInstanceColor(
-                instance,
                 instance.node,
                 theme,
                 actives,
-                selections
+                selections,
+                instance.isDragging
               );
               instance.opacity = prevOpacity.current;
               instance.updateMatrix();

@@ -55,16 +55,16 @@ export const updateInstancePosition = (
 };
 
 export const getInstanceColor = (
-  instance: Instance,
   node: InternalGraphNode,
   theme: Theme,
   actives: string[],
-  selections: string[]
+  selections: string[],
+  isDragging: boolean
 ) => {
   const isActive = actives.includes(node.id);
   const isSelected = selections.includes(node.id);
   const shouldHighlight = isSelected || isActive;
-  const combinedActiveState = shouldHighlight || instance.isDragging;
+  const combinedActiveState = shouldHighlight || isDragging;
   const color = combinedActiveState
     ? theme.node.activeFill
     : node.fill || theme.node.fill;
@@ -101,7 +101,13 @@ export const nodeToInstance = (
     node.position as unknown as Vector3,
     animated
   );
-  instance.color = getInstanceColor(instance, node, theme, actives, selections);
+  instance.color = getInstanceColor(
+    node,
+    theme,
+    actives,
+    selections,
+    instance.isDragging
+  );
   instance.scale.setScalar(node.size);
   instance.opacity = selectionOpacity;
 };

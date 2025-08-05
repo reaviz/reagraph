@@ -193,8 +193,10 @@ export const InstancedNodes = ({
       />
       <CulledText
         nodes={nodes}
+        theme={theme}
         selections={selections}
         actives={actives}
+        draggingIds={draggingIds}
         fontSize={32}
         maxWidth={300}
       />

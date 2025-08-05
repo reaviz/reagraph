@@ -134,6 +134,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         onLasso,
         onLassoEnd,
         aggregateEdges,
+        useInstances = false,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -190,10 +191,10 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       return (
         <div className={css.canvas}>
           <Canvas
-            // legacy
-            // linear
+            legacy={!useInstances}
+            linear={!useInstances}
             ref={canvasRef}
-            // flat
+            flat={!useInstances}
             gl={gl}
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
