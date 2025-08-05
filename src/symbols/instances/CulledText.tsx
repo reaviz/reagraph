@@ -142,6 +142,7 @@ if (typeof window !== 'undefined') {
 interface OptimizedTextProps {
   nodes: InternalGraphNode[];
   selections?: string[];
+  draggingIds?: string[];
   actives?: string[];
   animated?: boolean;
   fontSize?: number;

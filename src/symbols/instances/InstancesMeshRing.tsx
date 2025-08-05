@@ -68,7 +68,7 @@ const ringToInstance = (
     selections,
     instance.isDragging
   );
-  instance.opacity = 1;
+  instance.opacity = 0.8;
 };
 
 export const InstancedBillboardRings = forwardRef<

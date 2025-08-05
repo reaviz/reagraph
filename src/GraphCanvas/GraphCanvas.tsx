@@ -191,10 +191,10 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       return (
         <div className={css.canvas}>
           <Canvas
-            legacy={!useInstances}
-            linear={!useInstances}
+            legacy
+            linear
             ref={canvasRef}
-            flat={!useInstances}
+            flat
             gl={gl}
             camera={CAMERA_DEFAULTS}
             onPointerMissed={onCanvasClick}
