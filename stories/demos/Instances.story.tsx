@@ -149,6 +149,57 @@ export const Draggable = () => {
   );
 };
 
+
+export const HighlightHover = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    pathHoverType: 'all'
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      theme={darkTheme}
+      useInstances={true}
+      nodes={complexNodes}
+      edges={complexEdges}
+      selections={selections}
+      actives={actives}
+      onNodePointerOver={onNodePointerOver}
+      onNodePointerOut={onNodePointerOut}
+      onCanvasClick={onCanvasClick}
+      onNodeClick={onNodeClick}
+    />
+  );
+};
+
+export const HighlightClick = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const { selections, actives, onNodeClick, onCanvasClick } = useSelection({
+    ref: graphRef,
+    nodes: complexNodes,
+    edges: complexEdges,
+    pathSelectionType: 'all'
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      theme={darkTheme}
+      useInstances={true}
+      nodes={complexNodes}
+      edges={complexEdges}
+      selections={selections}
+      actives={actives}
+      onCanvasClick={onCanvasClick}
+      onNodeClick={onNodeClick}
+    />
+  );
+};
+
 export const Performance = () => {
   const ref = useRef<GraphCanvasRef | null>(null);
   const [nodeCount, setNodeCount] = useState(1000);

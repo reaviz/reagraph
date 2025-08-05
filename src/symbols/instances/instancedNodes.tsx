@@ -26,6 +26,14 @@ interface InstancedNodesProps {
   draggable?: boolean;
   disabled?: boolean;
   onDrag?: (node: InternalGraphNode) => void;
+  onPointerOver?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
+  onPointerOut?: (
+    node: InternalGraphNode,
+    event: ThreeEvent<PointerEvent>
+  ) => void;
 
   /**
    * The function to call when the node is clicked.
@@ -45,13 +53,16 @@ export const InstancedNodes = ({
   actives = [],
   disabled = false,
   onDrag,
-  onClick
+  onClick,
+  onPointerOver,
+  onPointerOut
 }: InstancedNodesProps) => {
   const sphereRef = useRef<InstancedMesh2<Instance> | null>(null);
   const ringMeshRef = useRef<InstancedMesh2<Instance> | null>(null);
   const setNodePosition = useStore(state => state.setNodePosition);
   const addDraggingId = useStore(state => state.addDraggingId);
   const removeDraggingId = useStore(state => state.removeDraggingId);
+  const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
   const draggingIds = useStore(state => state.draggingIds);
   const isDragging = draggingIds.length > 0;
 
@@ -98,6 +109,30 @@ export const InstancedNodes = ({
     }
   });
 
+  const { pointerOver, pointerOut } = useHoverIntent({
+    disabled: disabled,
+    onPointerOver: (event: ThreeEvent<PointerEvent>) => {
+      cameraControls.freeze();
+      const instanceId = event.instanceId;
+      const instance = (event.eventObject as InstancedMesh2<Instance>)
+        .instances?.[instanceId];
+      if (instance) {
+        onPointerOver?.(instance.node, event);
+        setHoveredNodeId(instance.nodeId);
+      }
+    },
+    onPointerOut: (event: ThreeEvent<PointerEvent>) => {
+      cameraControls.unFreeze();
+      const instanceId = event.instanceId;
+      const instance = (event.eventObject as InstancedMesh2<Instance>)
+        .instances?.[instanceId];
+      if (instance) {
+        onPointerOut?.(instance.node, event);
+      }
+      setHoveredNodeId(null);
+    }
+  });
+
   return (
     <>
       <InstancedMeshSphere
@@ -124,6 +159,8 @@ export const InstancedNodes = ({
             );
           }
         }}
+        onPointerOver={pointerOver}
+        onPointerOut={pointerOut}
       />
       <InstancedBillboardRings
         ref={ringMeshRef}

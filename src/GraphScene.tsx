@@ -458,6 +458,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
                 draggable={draggable}
                 onClick={onNodeClick}
                 onDrag={onNodeDraggedHandler}
+                onPointerOver={onNodePointerOver}
+                onPointerOut={onNodePointerOut}
               />
               {/* <InstancedSpheres
                 nodes={nodes}

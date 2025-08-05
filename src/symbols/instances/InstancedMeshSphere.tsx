@@ -114,6 +114,8 @@ export const InstancedMeshSphere = forwardRef<
       onNodeDrag,
       onPointerDown,
       onPointerUp,
+      onPointerOver,
+      onPointerOut,
       onClick
     },
     ref
@@ -123,6 +125,7 @@ export const InstancedMeshSphere = forwardRef<
     const [hovered, setHovered] = useState<boolean>(false);
 
     useCursor(hovered);
+    useCursor(isDragging, 'grabbing');
 
     // Create geometry and material
     const geometry = useMemo(() => new IcosahedronGeometry(1, 5), []);
@@ -253,6 +256,18 @@ export const InstancedMeshSphere = forwardRef<
               (ref as React.RefObject<InstancedMesh2<InstancedData>>)
                 ?.current || meshRef.current;
             onPointerUp?.(e, mesh?.instances?.[e.instanceId]);
+          }}
+          onPointerOver={e => {
+            const mesh =
+              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
+                ?.current || meshRef.current;
+            onPointerOver?.(e, mesh?.instances?.[e.instanceId]);
+          }}
+          onPointerOut={e => {
+            const mesh =
+              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
+                ?.current || meshRef.current;
+            onPointerOut?.(e, mesh?.instances?.[e.instanceId]);
           }}
         />
       </>

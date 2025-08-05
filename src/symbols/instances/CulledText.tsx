@@ -212,14 +212,24 @@ const createTextTexture = (
     maxLineWidth = Math.max(maxLineWidth, context.measureText(line).width);
   });
 
-  // Ensure minimum canvas size but keep it small for memory efficiency
-  const desiredWidth = Math.max(16, maxLineWidth + 10);
-  const desiredHeight = Math.max(16, totalHeight + 10);
-  const targetWidth = Math.max(32, Math.min(MAX_CANVAS_SIZE, desiredWidth));
-  const targetHeight = Math.max(32, Math.min(MAX_CANVAS_SIZE, desiredHeight));
+  // Use higher resolution for better quality when zoomed
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for memory
+  const desiredWidth = Math.max(16, maxLineWidth + 20);
+  const desiredHeight = Math.max(16, totalHeight + 20);
+  const targetWidth = Math.max(
+    64,
+    Math.min(MAX_CANVAS_SIZE, desiredWidth * pixelRatio)
+  );
+  const targetHeight = Math.max(
+    64,
+    Math.min(MAX_CANVAS_SIZE, desiredHeight * pixelRatio)
+  );
 
   canvas.width = targetWidth;
   canvas.height = targetHeight;
+
+  // Scale context for high DPI
+  context.scale(pixelRatio, pixelRatio);
 
   // Use simple font scaling instead of complex calculations
   let actualFontSize = fontSize;
@@ -231,23 +241,46 @@ const createTextTexture = (
   }
 
   // Redraw with potentially scaled font
-  context.font = `${actualFontSize}px Arial, sans-serif`;
-  context.fillStyle = color;
+  context.font = `${actualFontSize * 1.2}px Arial, sans-serif`;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
 
   const actualLineHeight = actualFontSize * 1.2;
   const actualTotalHeight = lines.length * actualLineHeight;
-  const startY = canvas.height / 2 - (actualTotalHeight - actualLineHeight) / 2;
+  const startY =
+    canvas.height / pixelRatio / 2 - (actualTotalHeight - actualLineHeight) / 2;
+
+  // Draw text with multi-layer halo/glow effect
+  context.font = `${actualFontSize}px Arial, sans-serif`;
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.lineJoin = 'round';
+  context.miterLimit = 2;
 
   lines.forEach((line, index) => {
-    context.fillText(line, canvas.width / 2, startY + index * actualLineHeight);
+    const x = canvas.width / pixelRatio / 2;
+    const y = startY + index * actualLineHeight;
+
+    // Draw multiple stroke layers for soft halo effect
+    const maxStroke = Math.max(6, actualFontSize / 6);
+
+    // Outer glow layers
+    for (let i = maxStroke; i > 0; i--) {
+      const alpha = 0.9 * (1 - i / maxStroke);
+      context.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
+      context.lineWidth = i * 2.5;
+      context.strokeText(line, x, y);
+    }
+
+    // Draw main text
+    context.fillStyle = color;
+    context.fillText(line, x, y);
   });
 
   const texture = new CanvasTexture(canvas);
-  texture.minFilter = NearestFilter;
-  texture.magFilter = NearestFilter;
-  texture.generateMipmaps = false; // Disable mipmaps to save memory
+  texture.minFilter = THREE.LinearFilter;
+  texture.magFilter = THREE.LinearFilter;
+  texture.generateMipmaps = true; // Enable mipmaps for better quality when scaled
   texture.format = THREE.RGBAFormat;
   texture.type = THREE.UnsignedByteType;
   texture.wrapS = THREE.ClampToEdgeWrapping;
