@@ -7,14 +7,13 @@ import React, {
   RefObject,
   useState
 } from 'react';
-import { extend, Instance } from '@react-three/fiber';
+import { extend } from '@react-three/fiber';
 import { type ThreeElement } from '@react-three/fiber';
 import { useCursor } from '@react-three/drei';
-import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
-import { IcosahedronGeometry, MeshBasicMaterial, Color, Vector3 } from 'three';
+import { InstancedMesh2 } from '@three.ez/instanced-mesh';
+import { IcosahedronGeometry, MeshBasicMaterial } from 'three';
 
-import { InternalGraphNode } from '../../types';
-import { updateInstancePosition } from '../../utils/instances';
+import { getInstanceColor, nodeToInstance } from '../../utils/instances';
 import { InstancedData, InstancedMeshProps } from './types';
 
 // add InstancedMesh2 to the jsx catalog i.e use it as a jsx component
@@ -24,24 +23,6 @@ declare module '@react-three/fiber' {
     instancedMesh2: ThreeElement<typeof InstancedMesh2>;
   }
 }
-
-const nodeToInstance = (
-  node: InternalGraphNode,
-  instance: InstancedEntity & InstancedData,
-  active: boolean,
-  animated: boolean = false
-) => {
-  instance.nodeId = node.id;
-  instance.node = node;
-  updateInstancePosition(
-    instance,
-    node.position as unknown as Vector3,
-    animated
-  );
-  instance.scale.setScalar(node.size);
-  instance.color = new Color(node.fill);
-  instance.opacity = active ? 1.0 : 0.5;
-};
 
 export const InstancedMeshSphere = forwardRef<
   InstancedMesh2<InstancedData>,
@@ -56,6 +37,7 @@ export const InstancedMeshSphere = forwardRef<
       selections = [],
       disabled = false,
       draggingIds = [],
+      theme,
       onDrag,
       onPointerDown,
       onPointerUp,
@@ -66,10 +48,14 @@ export const InstancedMeshSphere = forwardRef<
     ref
   ) => {
     const meshRef = useRef<InstancedMesh2<InstancedData | null>>(null);
-    const nodesInstanceIdsMap = useRef<Map<string, number>>(new Map());
-    const [hovered, setHovered] = useState<boolean>(false);
+    const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
-    useCursor(hovered);
+    // Helper function to get current mesh reference
+    const getMesh = () =>
+      (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+      meshRef.current;
+
+    useCursor(hoveredNodeId !== null);
     useCursor(draggingIds.length > 0, 'grabbing');
 
     // Create geometry and material
@@ -103,13 +89,15 @@ export const InstancedMeshSphere = forwardRef<
           if (instance.nodeId) {
             const node = nodesMap.get(instance.nodeId);
             if (node) {
-              const isDragging = draggingIds.includes(node.id);
-              instance.isDragging = isDragging || selections.includes(node.id);
-              const isActive =
-                isDragging ||
-                actives.includes(node.id) ||
-                selections.includes(node.id);
-              nodeToInstance(node, instance, isActive, animated);
+              nodeToInstance(
+                node,
+                instance,
+                animated,
+                theme,
+                actives,
+                selections,
+                draggingIds
+              );
             } else {
               mesh.removeInstances(instance.id);
             }
@@ -120,41 +108,35 @@ export const InstancedMeshSphere = forwardRef<
         if (newNodes.length > 0) {
           let index = 0;
           mesh.addInstances(newNodes.length, (instance, instanceIndex) => {
-            const isActive =
-              actives.includes(newNodes[index].id) ||
-              selections.includes(newNodes[index].id);
-            nodeToInstance(newNodes[index], instance, isActive, animated);
-            nodesInstanceIdsMap.current.set(newNodes[index].id, instanceIndex);
+            nodeToInstance(
+              newNodes[index],
+              instance,
+              animated,
+              theme,
+              actives,
+              selections,
+              draggingIds
+            );
             index++;
           });
         }
-
-        // Update the nodeId to instanceId mapping
-        nodesInstanceIdsMap.current.clear();
-        mesh.instances.forEach((instance, index) => {
-          if (instance.nodeId) {
-            nodesInstanceIdsMap.current.set(instance.nodeId, index);
-          }
-        });
       } else {
         mesh.addInstances(nodes.length, (instance, index) => {
           nodeToInstance(
             nodes[index],
             instance,
-            actives.includes(nodes[index].id),
-            animated
+            animated,
+            theme,
+            actives,
+            selections,
+            draggingIds
           );
-        });
-        // Initialize map for new instances
-        nodesInstanceIdsMap.current.clear();
-        nodes.forEach((node, index) => {
-          nodesInstanceIdsMap.current.set(node.id, index);
         });
       }
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
-    }, [nodes, actives, animated, ref, selections, draggingIds]);
+    }, [nodes, actives, animated, ref, selections, draggingIds, theme]);
 
     return (
       <>
@@ -162,61 +144,43 @@ export const InstancedMeshSphere = forwardRef<
           key="instanced-mesh-sphere"
           ref={ref || meshRef}
           args={meshArgs}
-          onClick={e => {
-            const id = e.instanceId;
-            const mesh =
-              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
-              meshRef.current;
-            onClick?.(e, mesh?.instances?.[id]);
-          }}
+          onClick={e => onClick?.(e, getMesh()?.instances?.[e.instanceId])}
           onPointerEnter={e => {
-            setHovered(true);
-            const mesh =
-              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
-              meshRef.current;
-            const instance = mesh?.instances?.[e.instanceId];
+            const instance = getMesh()?.instances?.[e.instanceId];
             if (instance) {
-              instance.opacity = 1;
+              setHoveredNodeId(instance.nodeId);
+              instance.color = theme.node.activeFill;
               instance.updateMatrix();
             }
           }}
           onPointerLeave={e => {
-            setHovered(false);
-            const mesh =
-              (ref as React.RefObject<InstancedMesh2<InstancedData>>)
-                ?.current || meshRef.current;
-            const instance = mesh?.instances?.[e.instanceId];
+            setHoveredNodeId(null);
+            const instance = getMesh()?.instances?.[e.instanceId];
             if (instance) {
-              instance.opacity = selections.includes(instance.nodeId) ? 1 : 0.5;
+              instance.color = getInstanceColor(
+                instance,
+                instance.node,
+                theme,
+                actives,
+                selections
+              );
               instance.updateMatrix();
             }
           }}
           onPointerDown={e => {
             if (!draggable) return;
-            const mesh =
-              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
-              meshRef.current;
-            onPointerDown?.(e, mesh?.instances?.[e.instanceId]);
+            onPointerDown?.(e, getMesh()?.instances?.[e.instanceId]);
           }}
           onPointerUp={e => {
             if (!draggable) return;
-            const mesh =
-              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
-              meshRef.current;
-            onPointerUp?.(e, mesh?.instances?.[e.instanceId]);
+            onPointerUp?.(e, getMesh()?.instances?.[e.instanceId]);
           }}
-          onPointerOver={e => {
-            const mesh =
-              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
-              meshRef.current;
-            onPointerOver?.(e, mesh?.instances?.[e.instanceId]);
-          }}
-          onPointerOut={e => {
-            const mesh =
-              (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
-              meshRef.current;
-            onPointerOut?.(e, mesh?.instances?.[e.instanceId]);
-          }}
+          onPointerOver={e =>
+            onPointerOver?.(e, getMesh()?.instances?.[e.instanceId])
+          }
+          onPointerOut={e =>
+            onPointerOut?.(e, getMesh()?.instances?.[e.instanceId])
+          }
         />
       </>
     );

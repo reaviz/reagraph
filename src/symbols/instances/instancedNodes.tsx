@@ -60,6 +60,7 @@ export const InstancedNodes = ({
 }: InstancedNodesProps) => {
   const sphereRef = useRef<InstancedMesh2<Instance> | null>(null);
   const ringMeshRef = useRef<InstancedMesh2<Instance> | null>(null);
+  const theme = useStore(state => state.theme);
   const setNodePosition = useStore(state => state.setNodePosition);
   const addDraggingId = useStore(state => state.addDraggingId);
   const removeDraggingId = useStore(state => state.removeDraggingId);
@@ -141,6 +142,7 @@ export const InstancedNodes = ({
     <>
       <InstancedMeshSphere
         ref={sphereRef}
+        theme={theme}
         nodes={nodes}
         animated={animated}
         draggable={draggable}
@@ -173,6 +175,7 @@ export const InstancedNodes = ({
       />
       <InstancedBillboardRings
         ref={ringMeshRef}
+        theme={theme}
         nodes={
           selections.length
             ? nodes.filter(node => selections?.includes(node.id))

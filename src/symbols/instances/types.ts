@@ -1,5 +1,6 @@
 import { ThreeEvent } from '@react-three/fiber';
 import { InstancedEntity } from '@three.ez/instanced-mesh';
+import { Theme } from '../../themes/theme';
 import { InternalGraphNode } from 'types';
 
 export type InstancedData = {
@@ -13,6 +14,7 @@ export type Instance = InstancedEntity & InstancedData;
 
 export interface InstancedMeshProps {
   nodes: InternalGraphNode[];
+  theme: Theme;
   actives?: string[];
   selections?: string[];
   animated?: boolean;

@@ -1,8 +1,10 @@
-import { Vector3 } from 'three';
+import { Color, Vector3 } from 'three';
 import { Controller } from '@react-spring/three';
 
 import { Instance } from '../symbols/instances/types';
 import { animationConfig } from './animation';
+import { InternalGraphNode } from '../types';
+import { Theme } from '../themes/theme';
 
 export const updateInstancePosition = (
   instance: Instance,
@@ -50,4 +52,56 @@ export const updateInstancePosition = (
     instance.position.copy(new Vector3(position.x, position.y, position.z));
     instance.updateMatrixPosition();
   }
+};
+
+export const getInstanceColor = (
+  instance: Instance,
+  node: InternalGraphNode,
+  theme: Theme,
+  actives: string[],
+  selections: string[]
+) => {
+  const isActive = actives.includes(node.id);
+  const isSelected = selections.includes(node.id);
+  const shouldHighlight = isSelected || isActive;
+  const combinedActiveState = shouldHighlight || instance.isDragging;
+  const color = combinedActiveState
+    ? theme.node.activeFill
+    : node.fill || theme.node.fill;
+
+  return color;
+};
+
+export const nodeToInstance = (
+  node: InternalGraphNode,
+  instance: Instance,
+  animated: boolean,
+  theme: Theme,
+  actives: string[],
+  selections: string[],
+  draggingIds: string[]
+) => {
+  const isActive = actives.includes(node.id);
+  const hasSelections = selections.length > 0;
+  const isSelected = selections.includes(node.id);
+  const isDragging = draggingIds.includes(node.id);
+  const shouldHighlight = isSelected || isActive;
+
+  const selectionOpacity = hasSelections
+    ? shouldHighlight
+      ? theme.node.selectedOpacity
+      : theme.node.inactiveOpacity
+    : theme.node.opacity;
+
+  instance.nodeId = node.id;
+  instance.node = node;
+  instance.isDragging = isDragging || isSelected;
+  updateInstancePosition(
+    instance,
+    node.position as unknown as Vector3,
+    animated
+  );
+  instance.color = getInstanceColor(instance, node, theme, actives, selections);
+  instance.scale.setScalar(node.size);
+  instance.opacity = selectionOpacity;
 };
