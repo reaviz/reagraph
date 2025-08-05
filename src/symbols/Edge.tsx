@@ -17,9 +17,10 @@ import { useStore } from '../store';
 import type { ContextMenuEvent, InternalGraphEdge } from '../types';
 import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
-import { Euler, Vector3 } from 'three';
+import { CatmullRomCurve3, Euler, Vector3 } from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
 import { calculateSubLabelOffset } from '../utils/position';
+import { SelfLoop } from './edges/SelfLoop';
 
 /**
  * Label positions relatively edge.
@@ -165,6 +166,9 @@ export const Edge: FC<EdgeProps> = ({
 
   const from = useStore(store => store.nodes.find(node => node.id === source));
   const to = useStore(store => store.nodes.find(node => node.id === target));
+
+  // Detect self-loop
+  const isSelfLoop = from.id === to.id;
 
   // Edge properties
   const labelOffset = (size + theme.edge.label.fontSize) / 2;
@@ -316,49 +320,112 @@ export const Edge: FC<EdgeProps> = ({
     }
   });
 
-  const arrowComponent = useMemo(
-    () =>
-      effectiveArrowPlacement !== 'none' && (
-        <Arrow
-          animated={animated}
-          color={
-            isSelected || active || isActive
-              ? theme.arrow.activeFill
-              : fill || theme.arrow.fill
+  const selfLoopCurve = useMemo(() => {
+    if (!isSelfLoop) return null;
+
+    const nodePosition = getVector(from);
+    const loopRadius = from.size;
+    const angle = Math.PI / 2; // 90 degrees on top of the node
+
+    const loopCenter = nodePosition
+      .clone()
+      .add(
+        new Vector3(
+          loopRadius * Math.cos(angle),
+          loopRadius * 1.3 * Math.sin(angle),
+          0
+        )
+      );
+
+    // Create selfLoopCurve
+    const numPoints = 10; // Use more points for smoother curve
+    const points: Vector3[] = [];
+
+    for (let i = 0; i < numPoints; i++) {
+      const theta = (i / numPoints) * 2 * Math.PI;
+      points.push(
+        loopCenter
+          .clone()
+          .add(
+            new Vector3(
+              loopRadius * Math.cos(theta),
+              loopRadius * Math.sin(theta),
+              0
+            )
+          )
+      );
+    }
+    const selfLoopCurve = new CatmullRomCurve3(points, true);
+
+    return selfLoopCurve;
+  }, [isSelfLoop, from]);
+
+  const arrowComponent = useMemo(() => {
+    if (effectiveArrowPlacement === 'none') return null;
+
+    let position: Vector3;
+    let rotation: Vector3;
+
+    if (isSelfLoop && selfLoopCurve) {
+      // Arrow for self-loop
+      const uEnd = 0.58;
+      const uMid = 0.25;
+      if (effectiveArrowPlacement === 'mid') {
+        position = selfLoopCurve.getPointAt(uMid);
+        rotation = selfLoopCurve.getTangentAt(uMid);
+      } else {
+        // end is default
+        position = selfLoopCurve.getPointAt(uEnd);
+        rotation = selfLoopCurve.getTangentAt(uEnd);
+      }
+    } else {
+      // Arrow for normal edge
+      position = arrowPosition;
+      rotation = arrowRotation;
+    }
+
+    return (
+      <Arrow
+        animated={animated}
+        color={
+          isSelected || active || isActive
+            ? theme.arrow.activeFill
+            : fill || theme.arrow.fill
+        }
+        length={arrowLength}
+        opacity={selectionOpacity}
+        position={position}
+        rotation={rotation}
+        size={arrowSize}
+        onActive={setActive}
+        onContextMenu={() => {
+          if (!disabled) {
+            setMenuVisible(true);
+            onContextMenu?.(edge);
           }
-          length={arrowLength}
-          opacity={selectionOpacity}
-          position={arrowPosition}
-          rotation={arrowRotation}
-          size={arrowSize}
-          onActive={setActive}
-          onContextMenu={() => {
-            if (!disabled) {
-              setMenuVisible(true);
-              onContextMenu?.(edge);
-            }
-          }}
-        />
-      ),
-    [
-      fill,
-      active,
-      animated,
-      arrowLength,
-      effectiveArrowPlacement,
-      arrowPosition,
-      arrowRotation,
-      arrowSize,
-      disabled,
-      edge,
-      isActive,
-      isSelected,
-      onContextMenu,
-      selectionOpacity,
-      theme.arrow.activeFill,
-      theme.arrow.fill
-    ]
-  );
+        }}
+      />
+    );
+  }, [
+    fill,
+    active,
+    animated,
+    arrowLength,
+    effectiveArrowPlacement,
+    arrowPosition,
+    arrowRotation,
+    arrowSize,
+    disabled,
+    edge,
+    isActive,
+    isSelected,
+    onContextMenu,
+    selectionOpacity,
+    theme.arrow.activeFill,
+    theme.arrow.fill,
+    isSelfLoop,
+    selfLoopCurve
+  ]);
 
   const labelComponent = useMemo(
     () =>
@@ -455,35 +522,63 @@ export const Edge: FC<EdgeProps> = ({
 
   return (
     <group>
-      <Line
-        curveOffset={curveOffset}
-        animated={animated}
-        color={
-          isSelected || active || isActive
-            ? theme.edge.activeFill
-            : fill || theme.edge.fill
-        }
-        curve={curve}
-        curved={curved}
-        dashed={dashed}
-        dashArray={dashArray}
-        id={id}
-        opacity={selectionOpacity}
-        size={size}
-        onClick={event => {
-          if (!disabled) {
-            onClick?.(edge, event);
+      {isSelfLoop && selfLoopCurve ? (
+        <SelfLoop
+          id={id}
+          curve={selfLoopCurve}
+          size={size}
+          animated={animated}
+          color={
+            isSelected || active || isActive
+              ? theme.edge.activeFill
+              : fill || theme.edge.fill
           }
-        }}
-        onPointerOver={pointerOver}
-        onPointerOut={pointerOut}
-        onContextMenu={() => {
-          if (!disabled) {
-            setMenuVisible(true);
-            onContextMenu?.(edge);
+          opacity={selectionOpacity}
+          onClick={event => {
+            if (!disabled) {
+              onClick?.(edge, event);
+            }
+          }}
+          onContextMenu={() => {
+            if (!disabled) {
+              setMenuVisible(true);
+              onContextMenu?.(edge);
+            }
+          }}
+          onPointerOver={pointerOver}
+          onPointerOut={pointerOut}
+        />
+      ) : (
+        <Line
+          curveOffset={curveOffset}
+          animated={animated}
+          color={
+            isSelected || active || isActive
+              ? theme.edge.activeFill
+              : fill || theme.edge.fill
           }
-        }}
-      />
+          curve={curve}
+          curved={curved}
+          dashed={dashed}
+          dashArray={dashArray}
+          id={id}
+          opacity={selectionOpacity}
+          size={size}
+          onClick={event => {
+            if (!disabled) {
+              onClick?.(edge, event);
+            }
+          }}
+          onPointerOver={pointerOver}
+          onPointerOut={pointerOut}
+          onContextMenu={() => {
+            if (!disabled) {
+              setMenuVisible(true);
+              onContextMenu?.(edge);
+            }
+          }}
+        />
+      )}
       {arrowComponent}
       {labelComponent}
       {menuComponent}
