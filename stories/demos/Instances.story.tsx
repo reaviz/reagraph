@@ -524,8 +524,8 @@ export const Performance = () => {
         nodes={nodes}
         edges={edges}
         theme={darkTheme}
-        cameraMode="orbit"
-        layoutType='forceDirected3d'
+        // cameraMode="orbit"
+        // layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
         animated={true}

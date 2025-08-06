@@ -18,6 +18,9 @@ import { CulledText } from './text/CulledText';
 import { Instance } from './types';
 import { useHoverIntent } from '../../utils/useHoverIntent';
 import { updateInstancePosition } from '../../utils/instances';
+import { InstancedSpriteText } from './text/InstancedSpriteText';
+
+const MAX_NODES_FOR_CULLED_TEXT = 1000;
 
 interface InstancedNodesProps {
   nodes: InternalGraphNode[];
@@ -191,16 +194,29 @@ export const InstancedNodes = ({
           }
         }}
       />
-      <CulledText
-        nodes={nodes}
-        theme={theme}
-        selections={selections}
-        animated={animated}
-        actives={actives}
-        draggingIds={draggingIds}
-        fontSize={32}
-        maxWidth={300}
-      />
+      {nodes.length >= MAX_NODES_FOR_CULLED_TEXT ? (
+        <CulledText
+          nodes={nodes}
+          theme={theme}
+          selections={selections}
+          animated={animated}
+          actives={actives}
+          draggingIds={draggingIds}
+          fontSize={32}
+          maxWidth={300}
+        />
+      ) : (
+        <InstancedSpriteText
+          nodes={nodes}
+          theme={theme}
+          selections={selections}
+          animated={animated}
+          actives={actives}
+          draggingIds={draggingIds}
+          fontSize={32}
+          maxWidth={300}
+        />
+      )}
     </>
   );
 };
