@@ -257,3 +257,45 @@ export const NodeDoubleClick = () => (
     onNodeDoubleClick={node => alert(node.label)}
   />
 );
+
+export const Circular = () => (
+  <GraphCanvas
+    cameraMode="rotate"
+    nodes={[
+      {
+        id: '1',
+        label: '1'
+      },
+      {
+        id: '2',
+        label: '2'
+      },
+      {
+        id: '3',
+        label: '3'
+      }
+    ]}
+    edges={[
+      {
+        source: '1',
+        target: '1',
+        id: '1-1',
+        label: '1-1',
+      },
+      {
+        source: '2',
+        target: '2',
+        id: '2-2',
+        label: '2-2',
+        arrowPlacement: 'mid'
+      },
+      {
+        source: '3',
+        target: '3',
+        id: '3-3',
+        label: '3-3',
+        arrowPlacement: 'none'
+      },
+    ]}
+  />
+);
