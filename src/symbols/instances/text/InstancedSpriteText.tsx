@@ -14,7 +14,6 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Controller } from '@react-spring/core';
 import { InternalGraphNode } from '../../../types';
-import { getInstanceColor } from '../../../utils/instances';
 import { animationConfig } from '../../../utils/animation';
 import { Theme } from '../../../themes/theme';
 import { fragmentShader } from './shaders/fragmentShader';
@@ -158,10 +157,17 @@ export interface OptimizedTextProps {
 const createTextTexture = (
   text: string,
   fontSize: number,
-  color: string,
-  maxWidth: number
+  maxWidth: number,
+  theme: Theme,
+  isActive: boolean = false
 ) => {
-  const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
+  // Include theme properties in cache key for accurate caching
+  const backgroundColor = theme.node.label.backgroundColor;
+  const stroke = theme.node.label.stroke;
+  const backgroundOpacity = theme.node.label.backgroundOpacity || 0.8;
+  const padding = theme.node.label.padding || 2;
+
+  const cacheKey = `${text}|${fontSize}|${maxWidth}|${backgroundColor}|${stroke}|${backgroundOpacity}|${padding}|${isActive}`;
   const cached = textureCache.get(cacheKey);
 
   if (cached) {
@@ -201,7 +207,7 @@ const createTextTexture = (
 
   for (const word of words) {
     const testLine = currentLine ? `${currentLine} ${word}` : word;
-    if (context.measureText(testLine).width <= maxWidth - 20) {
+    if (context.measureText(testLine).width <= maxWidth - padding * 4) {
       currentLine = testLine;
     } else {
       if (currentLine) lines.push(currentLine);
@@ -220,8 +226,8 @@ const createTextTexture = (
 
   // Use higher resolution for better quality when zoomed
   const pixelRatio = Math.min(window.devicePixelRatio || 1, 2); // Cap at 2x for memory
-  const desiredWidth = Math.max(16, maxLineWidth + 20);
-  const desiredHeight = Math.max(16, totalHeight + 20);
+  const desiredWidth = Math.max(16, maxLineWidth + padding * 4);
+  const desiredHeight = Math.max(16, totalHeight + padding * 4);
   const targetWidth = Math.max(
     64,
     Math.min(MAX_CANVAS_SIZE, desiredWidth * pixelRatio)
@@ -256,7 +262,33 @@ const createTextTexture = (
   const startY =
     canvas.height / pixelRatio / 2 - (actualTotalHeight - actualLineHeight) / 2;
 
-  // Draw text with multi-layer halo/glow effect
+  // Clear canvas with transparency
+  context.clearRect(
+    0,
+    0,
+    canvas.width / pixelRatio,
+    canvas.height / pixelRatio
+  );
+
+  // Draw background if specified
+  if (backgroundColor) {
+    const bgPadding = padding * (actualFontSize / fontSize);
+    const bgWidth = canvas.width / pixelRatio - bgPadding * 2;
+    const bgHeight = canvas.height / pixelRatio - bgPadding * 2;
+
+    context.fillStyle = backgroundColor as string;
+    context.globalAlpha = backgroundOpacity;
+
+    // Draw rounded rectangle background
+    const radius = Math.min(bgPadding, 8);
+    context.beginPath();
+    context.roundRect(bgPadding, bgPadding, bgWidth, bgHeight, radius);
+    context.fill();
+
+    context.globalAlpha = 1.0; // Reset alpha
+  }
+
+  // Set up text drawing
   context.font = `${actualFontSize}px Arial, sans-serif`;
   context.textAlign = 'center';
   context.textBaseline = 'middle';
@@ -267,20 +299,29 @@ const createTextTexture = (
     const x = canvas.width / pixelRatio / 2;
     const y = startY + index * actualLineHeight;
 
-    // Draw multiple stroke layers for soft halo effect
-    const maxStroke = Math.max(6, actualFontSize / 6);
-
-    // Outer glow layers
-    for (let i = maxStroke; i > 0; i--) {
-      const alpha = 0.9 * (1 - i / maxStroke);
-      context.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
-      context.lineWidth = i * 2.5;
+    // Draw stroke if specified
+    if (stroke) {
+      context.strokeStyle = stroke as string;
+      context.lineWidth = Math.max(1, actualFontSize / 16);
       context.strokeText(line, x, y);
+    } else {
+      // Draw multiple stroke layers for soft halo effect (fallback)
+      const maxStroke = Math.max(6, actualFontSize / 6);
+
+      // Outer glow layers
+      for (let i = maxStroke; i > 0; i--) {
+        const alpha = 0.9 * (1 - i / maxStroke);
+        context.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
+        context.lineWidth = i * 2.5;
+        context.strokeText(line, x, y);
+      }
     }
 
-    // Draw main text
-    context.fillStyle = color;
+    // Draw main text in white to let shader handle coloring
+    context.fillStyle = '#ffffff';
+    context.globalAlpha = 1.0; // Use full opacity for text
     context.fillText(line, x, y);
+    context.globalAlpha = 1.0; // Reset alpha
   });
 
   const texture = new CanvasTexture(canvas);
@@ -452,26 +493,32 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     const groups = new Map<string, InternalGraphNode[]>();
 
     nodes.forEach(node => {
-      const nodeColor = getInstanceColor(
-        node,
-        theme,
-        actives,
-        selections,
-        false
-      );
-      const key = `${node.label}|${nodeColor}`;
+      // Group only by text content since shader handles coloring
+      const key = node.label;
       if (!groups.has(key)) {
         groups.set(key, []);
       }
       groups.get(key)!.push(node);
     });
 
-    return Array.from(groups.entries()).map(([key, groupNodes]) => {
-      const [text, color] = key.split('|');
-      const texture = createTextTexture(text, fontSize, color, maxWidth);
+    return Array.from(groups.entries()).map(([text, groupNodes]) => {
+      const isActive = groupNodes.some(
+        node => actives.includes(node.id) || selections.includes(node.id)
+      );
+      const texture = createTextTexture(
+        text,
+        fontSize,
+        maxWidth,
+        theme,
+        isActive
+      );
 
       // Ensure texture stays active while in use with frame protection
-      const cacheKey = `${text}|${color}|${fontSize}|${maxWidth}`;
+      const backgroundColor = theme.node.label.backgroundColor;
+      const stroke = theme.node.label.stroke;
+      const backgroundOpacity = theme.node.label.backgroundOpacity || 0.8;
+      const padding = theme.node.label.padding || 2;
+      const cacheKey = `${text}|${fontSize}|${maxWidth}|${backgroundColor}|${stroke}|${backgroundOpacity}|${padding}|${isActive}`;
       const cached = textureCache.get(cacheKey);
       if (cached) {
         cached.isActive = true;
@@ -482,7 +529,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
       return {
         text,
-        color,
+        color: '#ffffff', // Color handled by shader
         nodes: groupNodes,
         texture
       };
@@ -525,16 +572,11 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
       // Don't dispose textures on unmount - prevents blinking on component changes
       // Just mark as inactive and let the cleanup timer handle it much later if needed
-      currentTextGroupsRef.current.forEach(
-        ({ text, color, fontSize, maxWidth }) => {
-          const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
-          const cached = textureCache.get(cacheKey);
-          if (cached) {
-            cached.isActive = false;
-            activeTextures.delete(cacheKey);
-          }
-        }
-      );
+      // Note: We can't easily reconstruct the full cache key here, so we'll iterate through all cached textures
+      textureCache.forEach((cached, key) => {
+        cached.isActive = false;
+        activeTextures.delete(key);
+      });
 
       // Dispose all geometries
       geometryRefs.current.forEach(geometry => {
@@ -594,7 +636,15 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   useLayoutEffect(() => {
     // Keep textures active during rendering updates
     textGroups.forEach(group => {
-      const cacheKey = `${group.text}|${group.color}|${fontSize}|${maxWidth}`;
+      const isActive = group.nodes.some(
+        node => actives.includes(node.id) || selections.includes(node.id)
+      );
+      const backgroundColor = theme.node.label.backgroundColor;
+      const stroke = theme.node.label.stroke;
+      const backgroundOpacity = theme.node.label.backgroundOpacity || 0.8;
+      const padding = theme.node.label.padding || 2;
+      const cacheKey = `${group.text}|${fontSize}|${maxWidth}|${backgroundColor}|${stroke}|${backgroundOpacity}|${padding}|${isActive}`;
+
       const cached = textureCache.get(cacheKey);
       if (cached) {
         cached.isActive = true;
@@ -680,10 +730,13 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         // Update previous position tracking
         prevNodePositionsRef.current.set(nodeId, currentPos);
 
-        // Set opacity
+        // Set opacity and color based on node state
         const isActive =
           actives.includes(node.id) || selections.includes(node.id);
-        opacityArray[i] = 1;
+        const isSelected = selections.includes(node.id);
+
+        // Selected nodes should be full bright
+        opacityArray[i] = isSelected ? 1.0 : isActive ? 1.0 : 0.7;
 
         const color = new Color(
           isActive ? theme.node.label.activeColor : theme.node.label.color
