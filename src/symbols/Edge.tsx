@@ -19,7 +19,7 @@ import { Html, useCursor } from '@react-three/drei';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { CatmullRomCurve3, Euler, Vector3 } from 'three';
 import type { ThreeEvent } from '@react-three/fiber';
-import { calculateSubLabelOffset } from '../utils/position';
+import { calculateSubLabelOffset, getSelfLoopCurve } from '../utils/position';
 import { SelfLoop } from './edges/SelfLoop';
 
 /**
@@ -320,45 +320,7 @@ export const Edge: FC<EdgeProps> = ({
     }
   });
 
-  const selfLoopCurve = useMemo(() => {
-    if (!isSelfLoop) return null;
-
-    const nodePosition = getVector(from);
-    const loopRadius = from.size;
-    const angle = Math.PI / 2; // 90 degrees on top of the node
-
-    const loopCenter = nodePosition
-      .clone()
-      .add(
-        new Vector3(
-          loopRadius * Math.cos(angle),
-          loopRadius * 1.3 * Math.sin(angle),
-          0
-        )
-      );
-
-    // Create selfLoopCurve
-    const numPoints = 10; // Use more points for smoother curve
-    const points: Vector3[] = [];
-
-    for (let i = 0; i < numPoints; i++) {
-      const theta = (i / numPoints) * 2 * Math.PI;
-      points.push(
-        loopCenter
-          .clone()
-          .add(
-            new Vector3(
-              loopRadius * Math.cos(theta),
-              loopRadius * Math.sin(theta),
-              0
-            )
-          )
-      );
-    }
-    const selfLoopCurve = new CatmullRomCurve3(points, true);
-
-    return selfLoopCurve;
-  }, [isSelfLoop, from]);
+  const selfLoopCurve = useMemo(() => getSelfLoopCurve(from), [from]);
 
   const arrowComponent = useMemo(() => {
     if (effectiveArrowPlacement === 'none') return null;

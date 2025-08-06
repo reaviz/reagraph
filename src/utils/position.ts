@@ -1,4 +1,10 @@
-import { Curve, LineCurve3, QuadraticBezierCurve3, Vector3 } from 'three';
+import {
+  CatmullRomCurve3,
+  Curve,
+  LineCurve3,
+  QuadraticBezierCurve3,
+  Vector3
+} from 'three';
 import { InternalGraphNode, InternalVector3 } from '../types';
 import { EdgeSubLabelPosition } from 'symbols/Edge';
 
@@ -67,6 +73,47 @@ export function getCurve(
       ...getCurvePoints(offsetFrom, offsetTo, curveOffset)
     )
     : new LineCurve3(offsetFrom, offsetTo);
+}
+
+/**
+ * Get the curve for a self-loop.
+ */
+export function getSelfLoopCurve(from: InternalGraphNode) {
+  const nodePosition = getVector(from);
+  const loopRadius = from.size;
+  const angle = Math.PI / 2; // 90 degrees on top of the node
+
+  const loopCenter = nodePosition
+    .clone()
+    .add(
+      new Vector3(
+        loopRadius * Math.cos(angle),
+        loopRadius * 1.3 * Math.sin(angle),
+        0
+      )
+    );
+
+  // Create selfLoopCurve
+  const numPoints = 10; // Use more points for smoother curve
+  const points: Vector3[] = [];
+
+  for (let i = 0; i < numPoints; i++) {
+    const theta = (i / numPoints) * 2 * Math.PI;
+    points.push(
+      loopCenter
+        .clone()
+        .add(
+          new Vector3(
+            loopRadius * Math.cos(theta),
+            loopRadius * Math.sin(theta),
+            0
+          )
+        )
+    );
+  }
+  const selfLoopCurve = new CatmullRomCurve3(points, true);
+
+  return selfLoopCurve;
 }
 
 /**
