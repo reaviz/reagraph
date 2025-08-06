@@ -33,12 +33,7 @@ import type {
 import { Cluster } from './symbols/Cluster';
 import { Edge } from './symbols/Edge';
 import { Edges } from './symbols/edges';
-import {
-  InstancedIcon,
-  InstancedSpheres,
-  InstancedText,
-  Node
-} from './symbols';
+import { Node } from './symbols';
 import { useCenterGraph } from './CameraControls/useCenterGraph';
 import { LabelVisibilityType } from './utils/visibility';
 import { useStore } from './store';

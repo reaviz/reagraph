@@ -387,6 +387,11 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     }
   }, [animated]);
 
+  // Track previous node positions to detect when positions change
+  const prevNodePositionsRef = useRef<
+    Map<string, { x: number; y: number; z: number }>
+  >(new Map());
+
   // Update frame counter for texture protection
   useEffect(() => {
     const updateFrame = () => {
@@ -598,6 +603,14 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
       }
     });
 
+    // Clean up position tracking for nodes that are no longer present
+    const currentNodeIds = new Set(nodes.map(n => n.id));
+    for (const [nodeId] of prevNodePositionsRef.current) {
+      if (!currentNodeIds.has(nodeId)) {
+        prevNodePositionsRef.current.delete(nodeId);
+      }
+    }
+
     textGroups.forEach((group, groupIndex) => {
       const mesh = meshRefs.current[groupIndex];
       if (!mesh) return;
@@ -623,28 +636,49 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
         const scale = (node.size || 1) * 2;
 
-        if (animated && isNewNode) {
-          // New node - animate from center
-          const startPos = new Vector3(0, 0, 0);
-          seenNodes.current.add(nodeId);
+        // Check if position has changed for existing nodes
+        const currentPos = { x: position.x, y: position.y, z: position.z };
+        const prevPos = prevNodePositionsRef.current.get(nodeId);
+        const positionChanged =
+          prevPos &&
+          (Math.abs(prevPos.x - currentPos.x) > 0.01 ||
+            Math.abs(prevPos.y - currentPos.y) > 0.01 ||
+            Math.abs(prevPos.z - currentPos.z) > 0.01);
 
-          // Set initial position at center
-          matrix.makeTranslation(0, 0, 0);
+        if (animated && (isNewNode || positionChanged)) {
+          let startPos: Vector3;
+
+          if (isNewNode) {
+            // New node - animate from center
+            startPos = new Vector3(0, 0, 0);
+            seenNodes.current.add(nodeId);
+          } else if (positionChanged && prevPos) {
+            // Existing node with position change - animate from previous position
+            startPos = new Vector3(prevPos.x, prevPos.y, prevPos.z);
+          } else {
+            startPos = new Vector3(position.x, position.y, position.z);
+          }
+
+          // Set initial position
+          matrix.makeTranslation(startPos.x, startPos.y, startPos.z);
           matrix.scale(new Vector3(scale, scale, scale));
           mesh.setMatrixAt(i, matrix);
           mesh.instanceMatrix.needsUpdate = true;
 
-          // Start animation immediately after setting initial position
+          // Start animation to target position
           requestAnimationFrame(() => {
             animateNode(nodeId, mesh, i, startPos, position, scale);
           });
         } else {
-          // Existing node or no animation - set directly
+          // Existing node with no animation or no position change - set directly
           seenNodes.current.add(nodeId);
           matrix.makeTranslation(position.x, position.y, position.z);
           matrix.scale(new Vector3(scale, scale, scale));
           mesh.setMatrixAt(i, matrix);
         }
+
+        // Update previous position tracking
+        prevNodePositionsRef.current.set(nodeId, currentPos);
 
         // Set opacity
         const isActive =
@@ -674,7 +708,16 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         );
       }
     });
-  }, [textGroups, actives, selections, animated, fontSize, maxWidth, theme]);
+  }, [
+    textGroups,
+    actives,
+    selections,
+    animated,
+    fontSize,
+    maxWidth,
+    theme,
+    nodes
+  ]);
 
   return (
     <group name="instanced-sprite-text">
