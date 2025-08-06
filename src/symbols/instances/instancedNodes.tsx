@@ -12,9 +12,9 @@ import {
 import { useInstanceDrag } from '../../utils/useInstanceDrag';
 import { useCameraControls } from '../../CameraControls/useCameraControls';
 import { InstancedMeshSphere } from './InstancedMeshSphere';
-import { InstancedBillboardRings } from './InstancesMeshRing';
+import { InstancedMeshRings } from './InstancesMeshRing';
 import { useStore } from '../../store';
-import { CulledText } from './CulledText';
+import { CulledText } from './text/CulledText';
 import { Instance } from './types';
 import { useHoverIntent } from '../../utils/useHoverIntent';
 import { updateInstancePosition } from '../../utils/instances';
@@ -173,7 +173,7 @@ export const InstancedNodes = ({
         onPointerOver={pointerOver}
         onPointerOut={pointerOut}
       />
-      <InstancedBillboardRings
+      <InstancedMeshRings
         ref={ringMeshRef}
         theme={theme}
         nodes={
@@ -195,6 +195,7 @@ export const InstancedNodes = ({
         nodes={nodes}
         theme={theme}
         selections={selections}
+        animated={animated}
         actives={actives}
         draggingIds={draggingIds}
         fontSize={32}

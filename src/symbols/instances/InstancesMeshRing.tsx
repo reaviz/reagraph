@@ -71,7 +71,7 @@ const ringToInstance = (
   instance.opacity = 0.8;
 };
 
-export const InstancedBillboardRings = forwardRef<
+export const InstancedMeshRings = forwardRef<
   InstancedMesh2<InstancedData>,
   InstancedMeshProps
 >(

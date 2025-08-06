@@ -12,9 +12,13 @@ import {
 } from 'three';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
-import { InternalGraphNode } from '../../types';
-import { getInstanceColor } from '../../utils/instances';
-import { Theme } from '../../themes/theme';
+import { Controller } from '@react-spring/core';
+import { InternalGraphNode } from '../../../types';
+import { getInstanceColor } from '../../../utils/instances';
+import { animationConfig } from '../../../utils/animation';
+import { Theme } from '../../../themes/theme';
+import { fragmentShader } from './shaders/fragmentShader';
+import { vertexShader } from './shaders/vertexShader';
 
 // Texture cache to prevent memory leaks and WebGL context loss
 const textureCache = new Map<
@@ -32,7 +36,7 @@ const canvasElements = new Set<HTMLCanvasElement>();
 const activeTextures = new Set<string>();
 let currentFrame = 0;
 const MAX_CACHE_SIZE = 20; // Further reduce cache size to prevent memory issues
-const CACHE_CLEANUP_INTERVAL = 10000; // Less frequent cleanup (10 seconds)
+const CACHE_CLEANUP_INTERVAL = 30000; // Less frequent cleanup (30 seconds)
 const MAX_CANVAS_SIZE = 256; // Smaller canvas dimensions to reduce memory
 
 // Global cleanup interval reference for proper disposal
@@ -81,21 +85,19 @@ const cleanupTextureCache = () => {
 const initializeCleanup = () => {
   if (!cleanupIntervalId) {
     cleanupIntervalId = setInterval(() => {
-      cleanupTextureCache();
-
-      // Monitor memory usage and trigger aggressive cleanup if needed
+      // Monitor memory usage and trigger cleanup only if needed
       if (typeof performance !== 'undefined' && (performance as any).memory) {
         const memoryInfo = (performance as any).memory;
-        const usedMemoryMB = memoryInfo.usedJSHeapSize / 1048576;
         const memoryUsageRatio =
           memoryInfo.usedJSHeapSize / memoryInfo.jsHeapSizeLimit;
 
-        // Disable memory-based cleanup to prevent text disappearing
-        // if (memoryUsageRatio > 0.98 || usedMemoryMB > 300) {
-        //   console.warn(`Critical memory usage detected: ${usedMemoryMB.toFixed(2)}MB, triggering cleanup`);
-        //   // Only cleanup unused textures, never active ones
-        //   cleanupTextureCache(false);
-        // }
+        // Only cleanup when memory usage is high
+        if (memoryUsageRatio > 0.85) {
+          console.warn(
+            `High memory usage detected: ${(memoryUsageRatio * 100).toFixed(1)}%, triggering cleanup`
+          );
+          cleanupTextureCache();
+        }
       }
     }, CACHE_CLEANUP_INTERVAL);
   }
@@ -317,28 +319,6 @@ const createTextTexture = (
   return texture;
 };
 
-// Helper function to dispose texture when no longer needed
-const disposeTextTexture = (
-  text: string,
-  fontSize: number,
-  color: string,
-  maxWidth: number
-) => {
-  const cacheKey = `${text}|${fontSize}|${color}|${maxWidth}`;
-  const cached = textureCache.get(cacheKey);
-
-  if (cached) {
-    cached.refCount--;
-
-    // Don't actually dispose textures to prevent blinking - just mark as inactive
-    if (cached.refCount <= 0) {
-      cached.isActive = false;
-      activeTextures.delete(cacheKey);
-      // Don't dispose - let cleanup handle it much later if needed
-    }
-  }
-};
-
 // Shader material cache to prevent recreation
 const shaderMaterialCache = new Map<string, ShaderMaterial>();
 
@@ -357,52 +337,8 @@ const createInstancedTextShader = (texture: CanvasTexture) => {
 
   // Create new shader material
   material = new ShaderMaterial({
-    vertexShader: `
-      attribute float opacity;
-      attribute vec3 color;
-
-      varying vec2 vUv;
-      varying float vOpacity;
-      varying vec3 vColor;
-
-      void main() {
-        vUv = uv;
-        vOpacity = opacity;
-        vColor = color;
-
-        // Billboard effect
-        vec4 mvPosition = modelViewMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0);
-
-        // Scale and orient to camera
-        vec3 scale = vec3(
-          length(instanceMatrix[0].xyz),
-          length(instanceMatrix[1].xyz),
-          length(instanceMatrix[2].xyz)
-        );
-
-        mvPosition.xy += position.xy * scale.xy;
-
-        gl_Position = projectionMatrix * mvPosition;
-      }
-    `,
-    fragmentShader: `
-      uniform sampler2D map;
-
-      varying vec2 vUv;
-      varying float vOpacity;
-      varying vec3 vColor;
-
-      void main() {
-        vec4 texColor = texture2D(map, vUv);
-
-        // Only discard completely transparent pixels
-        if (texColor.a < 0.01) {
-          discard;
-        }
-
-        gl_FragColor = vec4(texColor.rgb * vColor, texColor.a * vOpacity);
-      }
-    `,
+    vertexShader,
+    fragmentShader,
     uniforms: {
       map: { value: texture }
     },
@@ -412,19 +348,6 @@ const createInstancedTextShader = (texture: CanvasTexture) => {
 
   shaderMaterialCache.set(textureId, material);
   return material;
-};
-
-// Dispose shader material and remove from cache
-const disposeShaderMaterial = (textureId: string) => {
-  const material = shaderMaterialCache.get(textureId);
-  if (material) {
-    try {
-      material.dispose();
-    } catch (e) {
-      console.warn('Error disposing shader material:', e);
-    }
-    shaderMaterialCache.delete(textureId);
-  }
 };
 
 // Clear all shader materials
@@ -443,16 +366,26 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   nodes,
   selections = [],
   actives = [],
+  animated = false,
   fontSize = 32,
   maxWidth = 300,
   theme
 }) => {
+  const { gl } = useThree();
   const meshRefs = useRef<InstancedMesh[]>([]);
   const currentTextGroupsRef = useRef<
     { text: string; color: string; fontSize: number; maxWidth: number }[]
   >([]);
   const geometryRefs = useRef<PlaneGeometry[]>([]);
-  const { gl } = useThree();
+  const animationControllers = useRef<Map<string, Controller>>(new Map());
+  const seenNodes = useRef<Set<string>>(new Set());
+
+  // Reset seen nodes when animated prop changes to ensure animations restart
+  useEffect(() => {
+    if (animated) {
+      seenNodes.current.clear();
+    }
+  }, [animated]);
 
   // Update frame counter for texture protection
   useEffect(() => {
@@ -575,6 +508,16 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     }));
 
     return () => {
+      // Stop all animation controllers
+      animationControllers.current.forEach(controller => {
+        try {
+          controller.stop();
+        } catch (e) {
+          // Ignore errors during cleanup
+        }
+      });
+      animationControllers.current.clear();
+
       // Don't dispose textures on unmount - prevents blinking on component changes
       // Just mark as inactive and let the cleanup timer handle it much later if needed
       currentTextGroupsRef.current.forEach(
@@ -603,6 +546,45 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     };
   }, [textGroups, fontSize, maxWidth]);
 
+  // Animation helper function
+  const animateNode = (
+    nodeId: string,
+    mesh: InstancedMesh,
+    nodeIndex: number,
+    startPos: Vector3,
+    targetPos: Vector3,
+    scale: number
+  ) => {
+    const controller = new Controller({
+      x: startPos.x,
+      y: startPos.y,
+      z: startPos.z,
+      config: animationConfig
+    });
+
+    animationControllers.current.set(nodeId, controller);
+
+    controller.start({
+      x: targetPos.x,
+      y: targetPos.y,
+      z: targetPos.z,
+      onChange: () => {
+        const matrix = new Matrix4();
+        matrix.makeTranslation(
+          controller.springs.x.get(),
+          controller.springs.y.get(),
+          controller.springs.z.get()
+        );
+        matrix.scale(new Vector3(scale, scale, scale));
+        mesh.setMatrixAt(nodeIndex, matrix);
+        mesh.instanceMatrix.needsUpdate = true;
+      },
+      onRest: () => {
+        animationControllers.current.delete(nodeId);
+      }
+    });
+  };
+
   // Update instance matrices and attributes
   useLayoutEffect(() => {
     // Keep textures active during rendering updates
@@ -629,7 +611,10 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
       const colorArray = new Float32Array(groupNodes.length * 3);
 
       groupNodes.forEach((node, i) => {
-        // Set position and scale
+        const nodeId = node.id;
+        const isNewNode = !seenNodes.current.has(nodeId);
+
+        // Set target position
         position.set(
           node.position?.x || 0,
           (node.position?.y || 0) - (node.size || 1) * 2,
@@ -637,10 +622,29 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         );
 
         const scale = (node.size || 1) * 2;
-        matrix.makeTranslation(position.x, position.y, position.z);
-        matrix.scale(new Vector3(scale, scale, scale));
 
-        mesh.setMatrixAt(i, matrix);
+        if (animated && isNewNode) {
+          // New node - animate from center
+          const startPos = new Vector3(0, 0, 0);
+          seenNodes.current.add(nodeId);
+
+          // Set initial position at center
+          matrix.makeTranslation(0, 0, 0);
+          matrix.scale(new Vector3(scale, scale, scale));
+          mesh.setMatrixAt(i, matrix);
+          mesh.instanceMatrix.needsUpdate = true;
+
+          // Start animation immediately after setting initial position
+          requestAnimationFrame(() => {
+            animateNode(nodeId, mesh, i, startPos, position, scale);
+          });
+        } else {
+          // Existing node or no animation - set directly
+          seenNodes.current.add(nodeId);
+          matrix.makeTranslation(position.x, position.y, position.z);
+          matrix.scale(new Vector3(scale, scale, scale));
+          mesh.setMatrixAt(i, matrix);
+        }
 
         // Set opacity
         const isActive =
@@ -655,6 +659,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         colorArray[i * 3 + 2] = color.b;
       });
 
+      // Make sure instance matrix is updated for all changes
       mesh.instanceMatrix.needsUpdate = true;
 
       // Update custom attributes
@@ -669,7 +674,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
         );
       }
     });
-  }, [textGroups, actives, selections, fontSize, maxWidth, theme]);
+  }, [textGroups, actives, selections, animated, fontSize, maxWidth, theme]);
 
   return (
     <group name="instanced-sprite-text">
@@ -701,6 +706,7 @@ export const CulledText: FC<OptimizedTextProps> = ({
   nodes,
   selections = [],
   actives = [],
+  animated = false,
   fontSize = 32,
   maxWidth = 300,
   theme
@@ -847,6 +853,7 @@ export const CulledText: FC<OptimizedTextProps> = ({
       nodes={visibleNodes}
       selections={selections}
       actives={actives}
+      animated={animated}
       fontSize={fontSize}
       maxWidth={maxWidth}
       theme={theme}

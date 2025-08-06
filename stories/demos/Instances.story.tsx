@@ -60,9 +60,7 @@ export const Spheres = () => {
       edges={simpleEdges}
       useInstances={true}
       theme={darkTheme}
-    >
-      <Perf />
-    </GraphCanvas>
+    />
   );
 };
 
@@ -85,15 +83,20 @@ export const Selections = () => {
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
       theme={darkTheme}
-    >
-      <Perf />
-    </GraphCanvas>
+    />
   );
 };
 
 export const LassoSelectionNotWorking = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
+  const {
+    actives,
+    selections,
+    onNodeClick,
+    onCanvasClick,
+    onLasso,
+    onLassoEnd
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -102,7 +105,17 @@ export const LassoSelectionNotWorking = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div
+        style={{
+          zIndex: 9,
+          userSelect: 'none',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'rgba(0, 0, 0, .5)',
+          color: 'white'
+        }}
+      >
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
@@ -143,16 +156,20 @@ export const Draggable = () => {
       selections={selections}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
-    >
-      <Perf />
-    </GraphCanvas>
+    />
   );
 };
 
-
 export const HighlightHover = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+  const {
+    selections,
+    actives,
+    onNodeClick,
+    onCanvasClick,
+    onNodePointerOver,
+    onNodePointerOut
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -507,8 +524,8 @@ export const Performance = () => {
         nodes={nodes}
         edges={edges}
         theme={darkTheme}
-        // cameraMode="orbit"
-        // layoutType='forceDirected3d'
+        cameraMode="orbit"
+        layoutType='forceDirected3d'
         labelType="all"
         // labelType="none"
         animated={true}
