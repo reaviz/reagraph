@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { Frustum, Matrix4, Vector3 } from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { a, useSpring } from '@react-spring/three';
@@ -46,6 +46,7 @@ export const CulledLabels: FC<CulledLabelProps> = ({
   const frustumRef = useRef(new Frustum());
   const matrixRef = useRef(new Matrix4());
   const frameCountRef = useRef(0);
+  const [shouldAnimate, setShouldAnimate] = useState(animated);
 
   const lastCameraPositionRef = useRef<{ x: number; y: number; z: number }>({
     x: camera.position.x,
@@ -53,6 +54,10 @@ export const CulledLabels: FC<CulledLabelProps> = ({
     z: camera.position.z
   });
   const lastNodesHashRef = useRef<string>('');
+
+  useEffect(() => {
+    setShouldAnimate(animated);
+  }, [animated, nodes]);
 
   useFrame(() => {
     frameCountRef.current++;
@@ -184,6 +189,8 @@ export const CulledLabels: FC<CulledLabelProps> = ({
           hoveredNodeId={hoveredNodeId || ''}
           fontSize={fontSize}
           animated={animated}
+          shouldAnimate={shouldAnimate}
+          setShouldAnimate={setShouldAnimate}
         />
       ))}
     </>
@@ -192,6 +199,8 @@ export const CulledLabels: FC<CulledLabelProps> = ({
 
 interface AnimatedLabelProps extends Omit<CulledLabelProps, 'nodes'> {
   node: InternalGraphNode;
+  shouldAnimate: boolean;
+  setShouldAnimate: (value: boolean) => void;
 }
 
 const AnimatedLabel = ({
@@ -201,7 +210,9 @@ const AnimatedLabel = ({
   actives,
   hoveredNodeId,
   fontSize,
-  animated
+  animated,
+  shouldAnimate,
+  setShouldAnimate
 }: AnimatedLabelProps) => {
   const center = useStore(state => state.centerPosition);
   const draggingIds = useStore(state => state.draggingIds);
@@ -236,7 +247,13 @@ const AnimatedLabel = ({
       },
       config: {
         ...animationConfig,
-        duration: animated && !isDragging ? undefined : 0
+        duration: animated && shouldAnimate && !isDragging ? undefined : 0
+      },
+      onRest: () => {
+        // Disable animation after first render completes
+        if (shouldAnimate && animated && !isDragging) {
+          setShouldAnimate(false);
+        }
       }
     }),
     [
@@ -246,7 +263,8 @@ const AnimatedLabel = ({
       shouldHighlight,
       isDragging,
       nodeSize,
-      totalOffset
+      totalOffset,
+      shouldAnimate
     ]
   );
 
