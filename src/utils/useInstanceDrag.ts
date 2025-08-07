@@ -6,9 +6,9 @@ import { CenterPositionVector } from '../utils/layout';
 interface InstanceDragParams {
   draggable: boolean;
   bounds?: CenterPositionVector;
-  set: (instanceId: number, position: Vector3) => void;
-  onDragStart: (instanceId: number) => void;
-  onDragEnd: (instanceId: number) => void;
+  set: (nodeId: string, position: Vector3, instanceId?: number) => void;
+  onDragStart: (nodeId: string, instanceId?: number) => void;
+  onDragEnd: (nodeId: string, instanceId?: number) => void;
 }
 
 export const useInstanceDrag = ({
@@ -26,11 +26,13 @@ export const useInstanceDrag = ({
   // Store drag state internally
   const dragState = useRef<{
     instanceId: number | null;
+    nodeId: string | null;
     instancePosition: Vector3;
     offset: Vector3;
     mouse3D: Vector3;
   }>({
     instanceId: null,
+    nodeId: null,
     instancePosition: new Vector3(),
     offset: new Vector3(),
     mouse3D: new Vector3()
@@ -106,7 +108,7 @@ export const useInstanceDrag = ({
         }
       }
 
-      set(dragState.current.instanceId, updated);
+      set(dragState.current.nodeId, updated, dragState.current.instanceId || undefined);
     },
     [
       camera,
@@ -126,19 +128,22 @@ export const useInstanceDrag = ({
   const handlePointerUp = useCallback(() => {
     if (dragState.current.instanceId !== null) {
       const instanceId = dragState.current.instanceId;
+      const nodeId = dragState.current.nodeId;
       dragState.current.instanceId = null;
+      dragState.current.nodeId = null;
       document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('pointerup', handlePointerUp);
-      onDragEnd(instanceId);
+      onDragEnd(nodeId, instanceId);
     }
   }, [handlePointerMove, onDragEnd]);
 
   const handleDragStart = useCallback(
-    (instanceId: number, point: Vector3, instancePosition: Vector3) => {
+    (instanceId: number, point: Vector3, instancePosition: Vector3, nodeId?: string) => {
       if (!draggable) return;
 
       // Store drag state
       dragState.current.instanceId = instanceId;
+      dragState.current.nodeId = nodeId || null;
       dragState.current.instancePosition.copy(instancePosition);
 
       // Save the offset of click point from object origin
@@ -152,7 +157,7 @@ export const useInstanceDrag = ({
       document.addEventListener('pointerup', handlePointerUp);
 
       // Run user callback
-      onDragStart(instanceId);
+      onDragStart(nodeId, instanceId);
     },
     [
       draggable,

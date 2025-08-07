@@ -38,6 +38,7 @@ export const InstancedMeshSphere = forwardRef<
       disabled = false,
       draggingIds = [],
       theme,
+      hoveredNodeId,
       onDrag,
       onPointerDown,
       onPointerUp,
@@ -49,7 +50,6 @@ export const InstancedMeshSphere = forwardRef<
   ) => {
     const meshRef = useRef<InstancedMesh2<InstancedData | null>>(null);
     const prevOpacity = useRef<number>(1);
-    const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
 
     // Helper function to get current mesh reference
     const getMesh = () =>
@@ -97,7 +97,8 @@ export const InstancedMeshSphere = forwardRef<
                 theme,
                 actives,
                 selections,
-                draggingIds
+                draggingIds,
+                hoveredNodeId
               );
             } else {
               mesh.removeInstances(instance.id);
@@ -116,7 +117,8 @@ export const InstancedMeshSphere = forwardRef<
               theme,
               actives,
               selections,
-              draggingIds
+              draggingIds,
+              hoveredNodeId
             );
             index++;
           });
@@ -130,14 +132,15 @@ export const InstancedMeshSphere = forwardRef<
             theme,
             actives,
             selections,
-            draggingIds
+            draggingIds,
+            hoveredNodeId
           );
         });
       }
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
-    }, [nodes, actives, animated, ref, selections, draggingIds, theme]);
+    }, [nodes, actives, animated, ref, selections, draggingIds, theme, hoveredNodeId]);
 
     return (
       <>
@@ -146,31 +149,6 @@ export const InstancedMeshSphere = forwardRef<
           ref={ref || meshRef}
           args={meshArgs}
           onClick={e => onClick?.(e, getMesh()?.instances?.[e.instanceId])}
-          onPointerEnter={e => {
-            const instance = getMesh()?.instances?.[e.instanceId];
-            if (instance) {
-              setHoveredNodeId(instance.nodeId);
-              instance.color = theme.node.activeFill;
-              prevOpacity.current = instance.opacity;
-              instance.opacity = 1;
-              instance.updateMatrix();
-            }
-          }}
-          onPointerLeave={e => {
-            setHoveredNodeId(null);
-            const instance = getMesh()?.instances?.[e.instanceId];
-            if (instance) {
-              instance.color = getInstanceColor(
-                instance.node,
-                theme,
-                actives,
-                selections,
-                instance.isDragging
-              );
-              instance.opacity = prevOpacity.current;
-              instance.updateMatrix();
-            }
-          }}
           onPointerDown={e => {
             if (!draggable) return;
             onPointerDown?.(e, getMesh()?.instances?.[e.instanceId]);

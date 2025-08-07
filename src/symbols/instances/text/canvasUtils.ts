@@ -18,6 +18,7 @@ const textureCache = new Map<
     refCount: number;
     canvas: HTMLCanvasElement;
     isActive: boolean;
+    // It's a performance optimization that prevents texture flickering by ensuring textures remain available during the typical React re-render window, providing smooth visual experience.
     frameProtected: number;
   }
 >();

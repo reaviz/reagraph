@@ -18,6 +18,7 @@ import { animationConfig } from '../../../utils/animation';
 import { Theme } from '../../../themes/theme';
 import { fragmentShader } from './shaders/fragmentShader';
 import { vertexShader } from './shaders/vertexShader';
+import { InstancedEvents, InstancedMeshProps } from '../types';
 
 // Texture cache to prevent memory leaks and WebGL context loss
 const textureCache = new Map<
@@ -140,15 +141,9 @@ if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', destroyTextureCache);
 }
 
-export interface OptimizedTextProps {
-  nodes: InternalGraphNode[];
-  selections?: string[];
-  draggingIds?: string[];
-  actives?: string[];
-  animated?: boolean;
+export interface OptimizedTextProps extends InstancedMeshProps {
   fontSize?: number;
   maxWidth?: number;
-  theme: Theme;
 }
 
 // SOLUTION 1: Instanced Mesh with Custom Shader (Best Performance)
@@ -403,14 +398,72 @@ const clearShaderMaterials = () => {
   shaderMaterialCache.clear();
 };
 
+const animationControllers = new Map<string, Controller>();
+
+/**
+ * Animates a node to a target position using a spring animation.
+ * @param nodeId - The ID of the node to animate
+ * @param mesh - The instanced mesh to update
+ * @param nodeIndex - The index of the node in the mesh
+ * @param startPos - The starting position of the node
+ * @param targetPos - The target position of the node
+ * @param scale - The scale of the node
+ * @param animationControllers - The map of animation controllers for each node
+ */
+const animateNode = (
+  nodeId: string,
+  mesh: InstancedMesh,
+  nodeIndex: number,
+  startPos: Vector3,
+  targetPos: Vector3,
+  scale: number,
+  animationControllers: Map<string, Controller>
+) => {
+  const controller = new Controller({
+    x: startPos.x,
+    y: startPos.y,
+    z: startPos.z,
+    config: animationConfig
+  });
+
+  animationControllers.set(nodeId, controller);
+
+  controller.start({
+    x: targetPos.x,
+    y: targetPos.y,
+    z: targetPos.z,
+    onChange: () => {
+      const matrix = new Matrix4();
+      matrix.makeTranslation(
+        controller.springs.x.get(),
+        controller.springs.y.get(),
+        controller.springs.z.get()
+      );
+      matrix.scale(new Vector3(scale, scale, scale));
+      mesh.setMatrixAt(nodeIndex, matrix);
+      mesh.instanceMatrix.needsUpdate = true;
+    },
+    onRest: () => {
+      animationControllers.delete(nodeId);
+    }
+  });
+};
+
 export const InstancedSpriteText: FC<OptimizedTextProps> = ({
   nodes,
   selections = [],
   actives = [],
   animated = false,
+  draggable = false,
   fontSize = 32,
   maxWidth = 300,
-  theme
+  theme,
+  hoveredNodeId,
+  onClick,
+  onPointerDown,
+  onPointerUp,
+  onPointerOver,
+  onPointerOut
 }) => {
   const { gl } = useThree();
   const meshRefs = useRef<InstancedMesh[]>([]);
@@ -418,7 +471,6 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     { text: string; color: string; fontSize: number; maxWidth: number }[]
   >([]);
   const geometryRefs = useRef<PlaneGeometry[]>([]);
-  const animationControllers = useRef<Map<string, Controller>>(new Map());
   const seenNodes = useRef<Set<string>>(new Set());
 
   // Reset seen nodes when animated prop changes to ensure animations restart
@@ -561,14 +613,14 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
     return () => {
       // Stop all animation controllers
-      animationControllers.current.forEach(controller => {
+      animationControllers.forEach(controller => {
         try {
           controller.stop();
         } catch (e) {
           // Ignore errors during cleanup
         }
       });
-      animationControllers.current.clear();
+      animationControllers.clear();
 
       // Don't dispose textures on unmount - prevents blinking on component changes
       // Just mark as inactive and let the cleanup timer handle it much later if needed
@@ -592,45 +644,6 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
       meshRefs.current = [];
     };
   }, [textGroups, fontSize, maxWidth]);
-
-  // Animation helper function
-  const animateNode = (
-    nodeId: string,
-    mesh: InstancedMesh,
-    nodeIndex: number,
-    startPos: Vector3,
-    targetPos: Vector3,
-    scale: number
-  ) => {
-    const controller = new Controller({
-      x: startPos.x,
-      y: startPos.y,
-      z: startPos.z,
-      config: animationConfig
-    });
-
-    animationControllers.current.set(nodeId, controller);
-
-    controller.start({
-      x: targetPos.x,
-      y: targetPos.y,
-      z: targetPos.z,
-      onChange: () => {
-        const matrix = new Matrix4();
-        matrix.makeTranslation(
-          controller.springs.x.get(),
-          controller.springs.y.get(),
-          controller.springs.z.get()
-        );
-        matrix.scale(new Vector3(scale, scale, scale));
-        mesh.setMatrixAt(nodeIndex, matrix);
-        mesh.instanceMatrix.needsUpdate = true;
-      },
-      onRest: () => {
-        animationControllers.current.delete(nodeId);
-      }
-    });
-  };
 
   // Update instance matrices and attributes
   useLayoutEffect(() => {
@@ -717,7 +730,7 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
           // Start animation to target position
           requestAnimationFrame(() => {
-            animateNode(nodeId, mesh, i, startPos, position, scale);
+            animateNode(nodeId, mesh, i, startPos, position, scale, animationControllers);
           });
         } else {
           // Existing node with no animation or no position change - set directly
@@ -732,7 +745,9 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
 
         // Set opacity and color based on node state
         const isActive =
-          actives.includes(node.id) || selections.includes(node.id);
+          actives.includes(node.id) ||
+          selections.includes(node.id) ||
+          hoveredNodeId === node.id;
         const isSelected = selections.includes(node.id);
 
         // Selected nodes should be full bright
@@ -769,7 +784,8 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
     fontSize,
     maxWidth,
     theme,
-    nodes
+    nodes,
+    hoveredNodeId
   ]);
 
   return (
@@ -789,6 +805,21 @@ export const InstancedSpriteText: FC<OptimizedTextProps> = ({
               meshRefs.current[index] = ref!;
             }}
             args={[geometry, undefined, group.nodes.length]}
+            // onClick={e => onClick?.(e, getMesh()?.instances?.[e.instanceId])}
+            // onPointerDown={e => {
+            //   if (!draggable) return;
+            //   onPointerDown?.(e, getMesh()?.instances?.[e.instanceId]);
+            // }}
+            // onPointerUp={e => {
+            //   if (!draggable) return;
+            //   onPointerUp?.(e, getMesh()?.instances?.[e.instanceId]);
+            // }}
+            // onPointerOver={e =>
+            //   onPointerOver?.(e, getMesh()?.instances?.[e.instanceId])
+            // }
+            // onPointerOut={e =>
+            //   onPointerOut?.(e, getMesh()?.instances?.[e.instanceId])
+            // }
           >
             <primitive object={createInstancedTextShader(group.texture)} />
           </instancedMesh>

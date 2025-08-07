@@ -59,12 +59,13 @@ export const getInstanceColor = (
   theme: Theme,
   actives: string[],
   selections: string[],
-  isDragging: boolean
+  isDragging: boolean,
+  isHovered: boolean = false
 ) => {
   const isActive = actives.includes(node.id);
   const isSelected = selections.includes(node.id);
   const shouldHighlight = isSelected || isActive;
-  const combinedActiveState = shouldHighlight || isDragging;
+  const combinedActiveState = shouldHighlight || isDragging || isHovered;
   const color = combinedActiveState
     ? theme.node.activeFill
     : node.fill || theme.node.fill;
@@ -79,7 +80,8 @@ export const nodeToInstance = (
   theme: Theme,
   actives: string[],
   selections: string[],
-  draggingIds: string[]
+  draggingIds: string[],
+  hoveredNodeId: string
 ) => {
   const isActive = actives.includes(node.id);
   const hasSelections = selections.length > 0;
@@ -106,7 +108,8 @@ export const nodeToInstance = (
     theme,
     actives,
     selections,
-    instance.isDragging
+    instance.isDragging,
+    hoveredNodeId === node.id
   );
   instance.scale.setScalar(node.size);
   instance.opacity = selectionOpacity;

@@ -19,6 +19,7 @@ import { Instance } from './types';
 import { useHoverIntent } from '../../utils/useHoverIntent';
 import { updateInstancePosition } from '../../utils/instances';
 import { InstancedSpriteText } from './text/InstancedSpriteText';
+import { InstancedTextGeometry } from './text/InstancedTextGeometry';
 
 const MAX_NODES_FOR_CULLED_TEXT = 1000;
 
@@ -63,57 +64,54 @@ export const InstancedNodes = ({
 }: InstancedNodesProps) => {
   const sphereRef = useRef<InstancedMesh2<Instance> | null>(null);
   const ringMeshRef = useRef<InstancedMesh2<Instance> | null>(null);
+  const nodeInstances = useRef<Map<string, Instance[]>>(new Map());
   const theme = useStore(state => state.theme);
   const setNodePosition = useStore(state => state.setNodePosition);
   const addDraggingId = useStore(state => state.addDraggingId);
   const removeDraggingId = useStore(state => state.removeDraggingId);
   const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
+  const hoveredNodeId = useStore(state => state.hoveredNodeId);
   const draggingIds = useStore(state => state.draggingIds);
   const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null);
 
   const cameraControls = useCameraControls();
   const { handleDragStart } = useInstanceDrag({
     draggable,
-    set: (instanceId: number, pos: Vector3) => {
-      if (sphereRef.current) {
-        const instance = sphereRef.current.instances[instanceId];
-        updateInstancePosition(instance, pos, false);
-        setNodePosition(instance.nodeId, {
-          x: pos.x,
-          y: pos.y,
-          z: pos.z
-        } as InternalGraphPosition);
-        setDraggedNodeId(instance.nodeId);
-      }
+    set: (nodeId: string, pos: Vector3) => {
+      const instances = nodeInstances.current.get(nodeId);
+      // Update instances position directly due to performance reasons
+      instances?.forEach(inst => updateInstancePosition(inst, pos, false));
+      setDraggedNodeId(nodeId);
+      setNodePosition(nodeId, {
+        x: pos.x,
+        y: pos.y,
+        z: pos.z
+      } as InternalGraphPosition);
     },
-    onDragStart: (instanceId: number) => {
+    onDragStart: (nodeId?: string) => {
       cameraControls.freeze();
-      const instance = sphereRef.current?.instances[instanceId];
-      if (instance) {
-        instance.isDragging = true;
-        setDraggedNodeId(null);
-        const ringInstance = ringMeshRef.current.instances.find(
-          ringInst => ringInst.nodeId === instance.nodeId
-        );
-        if (ringInstance) {
-          ringInstance.isDragging = true;
-        }
-        addDraggingId(instance.nodeId);
-      }
+
+      [
+        ...(sphereRef.current?.instances || []),
+        ...(ringMeshRef.current?.instances || [])
+      ].forEach(inst => {
+        nodeInstances.current.set(inst.nodeId, [
+          ...(nodeInstances.current.get(inst.nodeId) || []),
+          inst
+        ]);
+      });
+      nodeInstances.current.get(nodeId)?.forEach(inst => {
+        inst.isDragging = true;
+      });
+
+      addDraggingId(nodeId);
     },
-    onDragEnd: (instanceId: number) => {
+    onDragEnd: (nodeId: string) => {
       cameraControls.unFreeze();
-      const instance = sphereRef.current?.instances[instanceId];
-      if (instance) {
-        instance.isDragging = false;
-        const ringInstance = ringMeshRef.current.instances.find(
-          ringInst => ringInst.nodeId === instance.nodeId
-        );
-        if (ringInstance) {
-          ringInstance.isDragging = false;
-        }
-        removeDraggingId(instance.nodeId);
-      }
+      const instances = nodeInstances.current.get(nodeId);
+      instances?.forEach(inst => (inst.isDragging = false));
+      nodeInstances.current.clear();
+      removeDraggingId(nodeId);
     }
   });
 
@@ -152,8 +150,16 @@ export const InstancedNodes = ({
         selections={selections}
         actives={actives}
         draggingIds={draggingIds}
+        hoveredNodeId={hoveredNodeId}
         onPointerDown={(event, instance) => {
-          handleDragStart(instance.id, event.point, instance.position);
+          if (instance) {
+            handleDragStart(
+              instance.id,
+              event.point,
+              instance.position,
+              instance.nodeId
+            );
+          }
         }}
         onClick={(event, instance) => {
           const node = instance.node;
@@ -190,7 +196,12 @@ export const InstancedNodes = ({
         draggingIds={draggingIds}
         onPointerDown={(event, instance) => {
           if (instance) {
-            handleDragStart(instance.id, event.point, instance.position);
+            handleDragStart(
+              instance.id,
+              event.point,
+              instance.position,
+              instance.nodeId
+            );
           }
         }}
       />
@@ -202,7 +213,7 @@ export const InstancedNodes = ({
           animated={animated}
           actives={actives}
           draggingIds={draggingIds}
-          fontSize={32}
+          fontSize={24}
           maxWidth={300}
         />
       ) : (
@@ -213,7 +224,8 @@ export const InstancedNodes = ({
           animated={animated}
           actives={actives}
           draggingIds={draggingIds}
-          fontSize={32}
+          hoveredNodeId={hoveredNodeId}
+          fontSize={24}
           maxWidth={300}
         />
       )}

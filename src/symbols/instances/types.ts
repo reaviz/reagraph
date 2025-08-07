@@ -12,19 +12,25 @@ export type InstancedData = {
 
 export type Instance = InstancedEntity & InstancedData;
 
-export interface InstancedMeshProps {
+export interface InstancedEvents {
+  onDrag?: (node: InternalGraphNode) => void;
+  onPointerEnter?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
+  onPointerLeave?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
+  onPointerDown?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
+  onPointerOver?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
+  onPointerOut?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
+  onPointerUp?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
+  onClick?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
+}
+
+export interface InstancedMeshProps extends InstancedEvents {
   nodes: InternalGraphNode[];
   theme: Theme;
+  hoveredNodeId?: string;
   actives?: string[];
   selections?: string[];
   animated?: boolean;
   draggable?: boolean;
   disabled?: boolean;
   draggingIds?: string[];
-  onDrag?: (node: InternalGraphNode) => void;
-  onPointerDown?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
-  onPointerOver?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
-  onPointerOut?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
-  onPointerUp?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
-  onClick?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
 }
