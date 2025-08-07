@@ -46,7 +46,7 @@ export const useDrag = ({
 
   const clientRect = useMemo(
     () => gl.domElement.getBoundingClientRect(),
-    [gl.domElement]
+    [gl.domElement, size]
   );
 
   return useGesture(
