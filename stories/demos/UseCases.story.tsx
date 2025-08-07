@@ -1,4 +1,6 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Perf } from 'r3f-perf';
+
 import {
   darkTheme,
   GraphCanvas,
@@ -83,10 +85,7 @@ export const CyberInvestigation = () => {
       }
     }
 
-    return [
-      n,
-      e
-    ];
+    return [n, e];
   }, []);
 
   const {
@@ -137,11 +136,14 @@ export const MitreTools = () => {
     }
 
     for (const edge of mitreTools.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }
@@ -199,11 +201,14 @@ export const MitreTechniques = () => {
     }
 
     for (const edge of mitreTechniques.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }
@@ -261,11 +266,14 @@ export const MitreAllTechniques = () => {
     }
 
     for (const edge of mitreTechniquesAll.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }

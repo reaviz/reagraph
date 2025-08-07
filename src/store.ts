@@ -25,6 +25,7 @@ export type DragReferences = {
 
 export interface GraphState {
   nodes: InternalGraphNode[];
+  nodeMap: Map<string, InternalGraphNode>;
   edges: InternalGraphEdge[];
   graph: Graph;
   clusters: Map<string, ClusterGroup>;
@@ -78,6 +79,7 @@ export const createStore = ({
     },
     edges: [],
     nodes: [],
+    nodeMap: new Map(),
     collapsedNodeIds,
     clusters: new Map(),
     panning: false,
@@ -110,33 +112,43 @@ export const createStore = ({
     setSelections: selections => set(state => ({ ...state, selections })),
     setHoveredNodeId: hoveredNodeId =>
       set(state => ({ ...state, hoveredNodeId })),
-    setNodes: nodes =>
+    setNodes: nodes => {
+      const nodeMap = new Map<string, InternalGraphNode>(
+        nodes.map(node => [node.id, node])
+      );
       set(state => ({
         ...state,
         nodes,
+        nodeMap,
         centerPosition: getLayoutCenter(nodes)
-      })),
+      }));
+    },
     setEdges: edges => set(state => ({ ...state, edges })),
     setNodePosition: (id, position) =>
       set(state => {
-        const node = state.nodes.find(n => n.id === id);
+        const node = state.nodeMap.get(id);
         const originalVector = getVector(node);
         const newVector = new Vector3(position.x, position.y, position.z);
         const offset = newVector.sub(originalVector);
         const nodes = [...state.nodes];
+        const nodeMap = new Map(state.nodeMap);
 
         if (state.selections?.includes(id)) {
           state.selections?.forEach(id => {
-            const node = state.nodes.find(n => n.id === id);
+            const node = state.nodeMap.get(id);
             // Selections can contain edges:
             if (node) {
               const nodeIndex = state.nodes.indexOf(node);
-              nodes[nodeIndex] = updateNodePosition(node, offset);
+              const updatedNode = updateNodePosition(node, offset);
+              nodes[nodeIndex] = updatedNode;
+              nodeMap.set(id, updatedNode);
             }
           });
         } else {
           const nodeIndex = state.nodes.indexOf(node);
-          nodes[nodeIndex] = updateNodePosition(node, offset);
+          const updatedNode = updateNodePosition(node, offset);
+          nodes[nodeIndex] = updatedNode;
+          nodeMap.set(id, updatedNode);
         }
 
         return {
@@ -145,7 +157,8 @@ export const createStore = ({
             ...state.drags,
             [id]: node
           },
-          nodes
+          nodes,
+          nodeMap
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
@@ -167,10 +180,11 @@ export const createStore = ({
 
           // Update all nodes in the cluster
           const nodes: InternalGraphNode[] = [...state.nodes];
+          const nodeMap = new Map(state.nodeMap);
           const drags: DragReferences = { ...state.drags };
           nodes.forEach((node, index) => {
             if (node.cluster === id) {
-              nodes[index] = {
+              const updatedNode = {
                 ...node,
                 position: {
                   ...node.position,
@@ -179,8 +193,10 @@ export const createStore = ({
                   z: node.position.z + (offset.z ?? 0)
                 } as InternalGraphPosition
               };
+              nodes[index] = updatedNode;
+              nodeMap.set(node.id, updatedNode);
               // Update node in drag reference
-              drags[node.id] = node;
+              drags[node.id] = updatedNode;
             }
           });
 
@@ -201,7 +217,8 @@ export const createStore = ({
               [id]: cluster
             },
             clusters,
-            nodes
+            nodes,
+            nodeMap
           };
         }
 

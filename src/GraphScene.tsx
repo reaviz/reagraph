@@ -41,6 +41,7 @@ import Graph from 'graphology';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useThree } from '@react-three/fiber';
 import { aggregateEdges as aggregateEdgesUtil } from './utils/aggregateEdges';
+import { InstancedNodes } from './symbols/instances/instancedNodes';
 
 export interface GraphSceneProps {
   /**
@@ -154,6 +155,11 @@ export interface GraphSceneProps {
    * Constrain dragging to the cluster bounds. Default is `false`.
    */
   constrainDragging?: boolean;
+
+  /**
+   * Use instanced rendering for nodes. Default is `false`.
+   */
+  useInstances?: boolean;
 
   /**
    * Render a custom node
@@ -345,6 +351,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         animated,
         disabled,
         draggable,
+        useInstances = false,
         constrainDragging = false,
         edgeLabelPosition,
         edgeArrowPosition,
@@ -382,6 +389,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
       const edgesStore = useStore(state => state.edges);
       const setEdges = useStore(state => state.setEdges);
       const clusters = useStore(state => [...state.clusters.values()]);
+      const theme = useStore(state => state.theme);
 
       // Process edges based on aggregation setting and update store
       const edges = useMemo(() => {
@@ -432,44 +440,66 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         [clusterAttribute, onNodeDragged, updateLayout]
       );
 
-      const nodeComponents = useMemo(
-        () =>
-          nodes.map(n => (
-            <Node
-              key={n?.id}
-              id={n?.id}
-              labelFontUrl={labelFontUrl}
-              draggable={draggable}
-              constrainDragging={constrainDragging}
-              disabled={disabled}
-              animated={animated}
-              contextMenu={contextMenu}
-              renderNode={renderNode}
-              onClick={onNodeClick}
-              onDoubleClick={onNodeDoubleClick}
-              onContextMenu={onNodeContextMenu}
-              onPointerOver={onNodePointerOver}
-              onPointerOut={onNodePointerOut}
-              onDragged={onNodeDraggedHandler}
-            />
-          )),
-        [
-          constrainDragging,
-          animated,
-          contextMenu,
-          disabled,
-          draggable,
-          labelFontUrl,
-          nodes,
-          onNodeClick,
-          onNodeContextMenu,
-          onNodeDoubleClick,
-          onNodeDraggedHandler,
-          onNodePointerOut,
-          onNodePointerOver,
-          renderNode
-        ]
-      );
+      const nodeComponents = useMemo(() => {
+        if (useInstances && !renderNode) {
+          // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
+          return (
+            <>
+              <InstancedNodes
+                nodes={nodes}
+                selections={rest.selections}
+                actives={rest.actives}
+                animated={animated}
+                draggable={draggable}
+                onClick={onNodeClick}
+                onDrag={onNodeDraggedHandler}
+                onPointerOver={onNodePointerOver}
+                onPointerOut={onNodePointerOut}
+              />
+            </>
+          );
+        }
+
+        // Fallback to individual node rendering
+        return nodes.map(n => (
+          <Node
+            key={n?.id}
+            id={n?.id}
+            labelFontUrl={labelFontUrl}
+            draggable={draggable}
+            constrainDragging={constrainDragging}
+            disabled={disabled}
+            animated={animated}
+            contextMenu={contextMenu}
+            renderNode={renderNode}
+            onClick={onNodeClick}
+            onDoubleClick={onNodeDoubleClick}
+            onContextMenu={onNodeContextMenu}
+            onPointerOver={onNodePointerOver}
+            onPointerOut={onNodePointerOut}
+            onDragged={onNodeDraggedHandler}
+          />
+        ));
+      }, [
+        constrainDragging,
+        animated,
+        contextMenu,
+        disabled,
+        draggable,
+        labelFontUrl,
+        theme,
+        nodes,
+        onNodeClick,
+        onNodeContextMenu,
+        onNodeDoubleClick,
+        onNodeDraggedHandler,
+        onNodePointerOut,
+        onNodePointerOver,
+        renderNode,
+        rest.selections,
+        rest.actives,
+        useInstances
+      ]);
 
       const edgeComponents = useMemo(
         () =>
