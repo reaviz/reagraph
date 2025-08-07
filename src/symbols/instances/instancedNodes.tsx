@@ -14,14 +14,10 @@ import { useCameraControls } from '../../CameraControls/useCameraControls';
 import { InstancedMeshSphere } from './InstancedMeshSphere';
 import { InstancedMeshRings } from './InstancesMeshRing';
 import { useStore } from '../../store';
-import { CulledText } from './text/CulledText';
 import { Instance } from './types';
 import { useHoverIntent } from '../../utils/useHoverIntent';
 import { updateInstancePosition } from '../../utils/instances';
-import { InstancedSpriteText } from './text/InstancedSpriteText';
-import { InstancedTextGeometry } from './text/InstancedTextGeometry';
-
-const MAX_NODES_FOR_CULLED_TEXT = 1000;
+import { CulledLabels } from '../CulledLabels';
 
 interface InstancedNodesProps {
   nodes: InternalGraphNode[];
@@ -205,30 +201,15 @@ export const InstancedNodes = ({
           }
         }}
       />
-      {nodes.length >= MAX_NODES_FOR_CULLED_TEXT ? (
-        <CulledText
-          nodes={nodes}
-          theme={theme}
-          selections={selections}
-          animated={animated}
-          actives={actives}
-          draggingIds={draggingIds}
-          fontSize={24}
-          maxWidth={300}
-        />
-      ) : (
-        <InstancedSpriteText
-          nodes={nodes}
-          theme={theme}
-          selections={selections}
-          animated={animated}
-          actives={actives}
-          draggingIds={draggingIds}
-          hoveredNodeId={hoveredNodeId}
-          fontSize={24}
-          maxWidth={300}
-        />
-      )}
+      <CulledLabels
+        nodes={nodes}
+        selections={selections}
+        actives={actives}
+        animated={animated}
+        fontSize={7}
+        theme={theme}
+        hoveredNodeId={hoveredNodeId}
+      />
     </>
   );
 };
