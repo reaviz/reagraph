@@ -46,6 +46,8 @@ export const useDrag = ({
 
   const clientRect = useMemo(
     () => gl.domElement.getBoundingClientRect(),
+    // Size dependency ensures the clientRect updates when container dimensions change.
+    // Without it, drag calculations would use stale positioning data from the previous container size.
     [gl.domElement, size]
   );
 
