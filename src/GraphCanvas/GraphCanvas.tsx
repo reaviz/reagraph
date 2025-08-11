@@ -20,7 +20,7 @@ import { Lasso } from '../selection/Lasso';
 import type { LassoType } from '../selection/Lasso';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
-import { MiniMap } from 'symbols/MiniMap';
+import { MiniMap } from '../symbols/MiniMap';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
