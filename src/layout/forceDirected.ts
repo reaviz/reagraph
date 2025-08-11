@@ -217,8 +217,10 @@ export function forceDirected({
 
   return {
     step() {
+      // If the graph has more than 1000 nodes, we need to use a lower accuracy to get a stable result faster
+      const accuracy = nodes.length > 1000 ? 0.1 : 0.01;
       // Run the simulation til we get a stable result
-      while (sim.alpha() > 0.01) {
+      while (sim.alpha() > accuracy) {
         sim.tick();
       }
       return true;

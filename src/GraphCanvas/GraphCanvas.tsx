@@ -135,6 +135,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         onLasso,
         onLassoEnd,
         aggregateEdges,
+        useInstances = false,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -241,6 +242,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                       minNodeSize={minNodeSize}
                       maxNodeSize={maxNodeSize}
                       aggregateEdges={aggregateEdges}
+                      useInstances={useInstances}
                       {...rest}
                     />
                   </Suspense>

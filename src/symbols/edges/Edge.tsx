@@ -78,14 +78,10 @@ export const Edge: FC<EdgeProps> = ({
   const theme = useStore(state => state.theme);
   const { target, source, label, labelVisible = false, size = 1 } = edge;
 
-  const nodes = useStore(store => store.nodes);
-  const [from, to] = useMemo(
-    () => [
-      nodes.find(node => node.id === source),
-      nodes.find(node => node.id === target)
-    ],
-    [nodes, source, target]
-  );
+  const nodesMap = useStore(store => store.nodeMap);
+  const from = nodesMap.get(source);
+  const to = nodesMap.get(target);
+
   const isDragging = useStore(state => state.draggingIds.length > 0);
 
   const labelOffset = useMemo(
