@@ -1,6 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useStore } from 'store';
 
+/**
+ * MiniMap component for displaying a real-time overview of the graph.
+ *
+ * Usage:
+ * ```
+ * <GraphCanvas nodes={nodes} edges={edges}>
+ *   <MiniMap
+ *     position="bottom-left"
+ *     width={200}
+ *     height={130}
+ *   />
+ * </GraphCanvas>
+ * ```
+ *
+ * The GraphCanvas component automatically detects MiniMap as an HTML component
+ * and renders it outside the 3D Canvas context, preventing React Three Fiber errors.
+ */
 export interface MiniMapProps {
   width?: number;
   height?: number;
@@ -44,7 +61,7 @@ export const MiniMap: React.FC<MiniMapProps> = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       captureGraphAsPNG();
-    }, 2000); // 2 second timeout
+    }, 2000); // 2 second timeout required for the graph to render
 
     return () => clearTimeout(timer);
   }, []);

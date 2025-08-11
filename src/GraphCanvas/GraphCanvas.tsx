@@ -20,6 +20,7 @@ import { Lasso } from '../selection/Lasso';
 import type { LassoType } from '../selection/Lasso';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
+import { separateChildren } from '../utils';
 import { MiniMap } from '../symbols/MiniMap';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
@@ -49,7 +50,9 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   lassoType?: LassoType;
 
   /**
-   * Children to render in the canvas. Useful for things like lights.
+   * Children to render. The component automatically separates:
+   * - 3D children (like lights) go inside the Canvas
+   * - HTML children (like MiniMap) go outside the Canvas but inside the Provider
    */
   children?: ReactNode;
 
@@ -77,27 +80,6 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * Whether to aggregate edges with the same source and target.
    */
   aggregateEdges?: boolean;
-
-  /**
-   * Whether to show the minimap.
-   * The minimap displays a real-time overview of the graph with the same positioning as the main canvas.
-   */
-  showMinimap?: boolean;
-
-  /**
-   * The position of the minimap.
-   */
-  minimapPosition?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-
-  /**
-   * The width of the minimap.
-   */
-  minimapWidth?: number;
-
-  /**
-   * The height of the minimap.
-   */
-  minimapHeight?: number;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
@@ -157,10 +139,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         onLasso,
         onLassoEnd,
         aggregateEdges,
-        showMinimap,
-        minimapPosition,
-        minimapWidth,
-        minimapHeight,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -201,6 +179,9 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       const finalAnimated =
         edges.length + nodes.length > 400 ? false : animated;
 
+      // Automatically separate 3D and HTML children
+      const { threeDChildren, htmlChildren } = separateChildren(children);
+
       const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
       // zustand/context migration (https://github.com/pmndrs/zustand/discussions/1180)
       const store = useRef(
@@ -230,7 +211,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 <color attach="background" args={[theme.canvas.background]} />
               )}
               <ambientLight intensity={1} />
-              {children}
+              {threeDChildren}
               {theme.canvas?.fog && (
                 <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
               )}
@@ -268,13 +249,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 </Lasso>
               </CameraControls>
             </Canvas>
-            {showMinimap && (
-              <MiniMap
-                position={minimapPosition}
-                width={minimapWidth}
-                height={minimapHeight}
-              />
-            )}
+            {htmlChildren}
           </Provider>
         </div>
       );
