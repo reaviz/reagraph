@@ -100,15 +100,15 @@ const dashedFragmentShader = `
   uniform float gapSize;
   uniform float lineLength;
   varying vec2 vUv;
-  
+
   void main() {
     float totalSize = dashSize + gapSize;
     float position = mod(vUv.x * lineLength, totalSize);
-    
+
     if (position > dashSize) {
       discard;
     }
-    
+
     gl_FragColor = vec4(color, opacity);
   }
 `;
@@ -216,13 +216,16 @@ export const Line: FC<LineProps> = ({
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut}
       onClick={onClick}
+      // context menu controls
       onPointerDown={event => {
-        // context menu controls
         if (event.nativeEvent.buttons === 2) {
-          event.nativeEvent.preventDefault();
           event.stopPropagation();
-          onContextMenu();
         }
+      }}
+      onContextMenu={event => {
+        event.nativeEvent.preventDefault();
+        event.stopPropagation();
+        onContextMenu();
       }}
     >
       <tubeGeometry attach="geometry" ref={tubeRef} />
