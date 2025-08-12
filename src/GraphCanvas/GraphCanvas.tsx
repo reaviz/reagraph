@@ -20,7 +20,6 @@ import { Lasso } from '../selection/Lasso';
 import type { LassoType } from '../selection/Lasso';
 import ThreeCameraControls from 'camera-controls';
 import css from './GraphCanvas.module.css';
-import { separateChildren } from '../utils';
 
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
@@ -49,9 +48,7 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   lassoType?: LassoType;
 
   /**
-   * Children to render. The component automatically separates:
-   * - 3D children (like lights) go inside the Canvas
-   * - HTML children (like MiniMap) go outside the Canvas but inside the Provider
+   * Children to render in the canvas. Useful for things like lights.
    */
   children?: ReactNode;
 
@@ -178,9 +175,6 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       const finalAnimated =
         edges.length + nodes.length > 400 ? false : animated;
 
-      // Automatically separate 3D and HTML children
-      const { threeDChildren, htmlChildren } = separateChildren(children);
-
       const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
       // zustand/context migration (https://github.com/pmndrs/zustand/discussions/1180)
       const store = useRef(
@@ -196,21 +190,21 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666
       return (
         <div className={css.canvas}>
-          <Provider store={store}>
-            <Canvas
-              legacy
-              linear
-              ref={canvasRef}
-              flat
-              gl={gl}
-              camera={CAMERA_DEFAULTS}
-              onPointerMissed={onCanvasClick}
-            >
+          <Canvas
+            legacy
+            linear
+            ref={canvasRef}
+            flat
+            gl={gl}
+            camera={CAMERA_DEFAULTS}
+            onPointerMissed={onCanvasClick}
+          >
+            <Provider store={store}>
               {theme.canvas?.background && (
                 <color attach="background" args={[theme.canvas.background]} />
               )}
               <ambientLight intensity={1} />
-              {threeDChildren}
+              {children}
               {theme.canvas?.fog && (
                 <fog attach="fog" args={[theme.canvas.fog, 4000, 9000]} />
               )}
@@ -247,9 +241,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                   </Suspense>
                 </Lasso>
               </CameraControls>
-            </Canvas>
-            {htmlChildren}
-          </Provider>
+            </Provider>
+          </Canvas>
         </div>
       );
     }

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Html } from '@react-three/drei';
 import { useStore } from 'store';
 
 /**
- * MiniMap component for displaying a real-time overview of the graph.
- *
+ * MiniMap component for displaying a static overview of the graph.
  * Usage:
  * ```
  * <GraphCanvas nodes={nodes} edges={edges}>
@@ -14,9 +14,6 @@ import { useStore } from 'store';
  *   />
  * </GraphCanvas>
  * ```
- *
- * The GraphCanvas component automatically detects MiniMap as an HTML component
- * and renders it outside the 3D Canvas context, preventing React Three Fiber errors.
  */
 export interface MiniMapProps {
   width?: number;
@@ -67,43 +64,50 @@ export const MiniMap: React.FC<MiniMapProps> = ({
   }, []);
 
   return (
-    <div
+    <Html
       style={{
-        position: 'absolute',
-        width,
-        height,
-        border: `1px solid ${String(theme.node.label.color)}`,
-        zIndex: 10,
-        backgroundColor: String(theme.canvas.background),
-        overflow: 'hidden',
-        ...POSITION_STYLES[position]
+        pointerEvents: 'none'
       }}
     >
-      {graphImage ? (
-        <img
-          src={graphImage}
-          alt="Graph minimap"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            display: 'block'
-          }}
-        />
-      ) : (
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: String(theme.node.label.color)
-          }}
-        >
-          Loading minimap...
-        </div>
-      )}
-    </div>
+      <div
+        style={{
+          position: 'fixed',
+          width,
+          height,
+          border: `1px solid ${String(theme.node.label.color)}`,
+          zIndex: 10,
+          backgroundColor: String(theme.canvas.background),
+          overflow: 'hidden',
+          pointerEvents: 'auto', // Allow interaction within the minimap div
+          ...POSITION_STYLES[position]
+        }}
+      >
+        {graphImage ? (
+          <img
+            src={graphImage}
+            alt="Graph minimap"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block'
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: String(theme.node.label.color)
+            }}
+          >
+            Loading minimap...
+          </div>
+        )}
+      </div>
+    </Html>
   );
 };

@@ -7,4 +7,3 @@ export * from './graph';
 export * from './cluster';
 export * from './paths';
 export * from './dom';
-export * from './componentDetection';
