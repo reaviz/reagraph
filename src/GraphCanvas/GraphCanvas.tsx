@@ -6,7 +6,8 @@ import React, {
   Suspense,
   useImperativeHandle,
   useRef,
-  useMemo
+  useMemo,
+  useEffect
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene } from '../GraphScene';
@@ -185,6 +186,11 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           collapsedNodeIds
         })
       ).current;
+
+      // Update store theme when theme prop changes
+      useEffect(() => {
+        store.getState().setTheme(theme);
+      }, [theme, store]);
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666

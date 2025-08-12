@@ -1,6 +1,6 @@
 import { Stats } from '@react-three/drei';
 import theme from './theme';
-import { Preview } from '@storybook/react';
+import { Preview } from '@storybook/react-vite';
 import React from 'react';
 
 const withProvider = (Story, context) => (
@@ -17,7 +17,8 @@ const preview: Preview = {
     controls: { hideNoControlsWarning: true },
     actions: { argTypesRegex: '^on[A-Z].*' },
     docs: {
-      theme
+      theme,
+      codePanel: true
     },
     options: {
       storySort: {

@@ -92,3 +92,49 @@ export const CurvedSizes = () => (
     ]}
   />
 );
+
+export const IndividualCurved = () => (
+  <GraphCanvas
+    nodes={[
+      {
+        id: '1',
+        label: 'Node'
+      },
+      {
+        id: '2',
+        label: 'Curved'
+      },
+      {
+        id: '3',
+        label: 'Straight'
+      },
+      {
+        id: '4',
+        label: 'Dashed & Curved'
+      }
+    ]}
+    edges={[
+      {
+        source: '1',
+        target: '2',
+        id: '1-2',
+        label: '1-2',
+        interpolation: 'curved'
+      },
+      {
+        source: '1',
+        target: '3',
+        id: '1-3',
+        label: '1-3'
+      },
+      {
+        source: '3',
+        target: '4',
+        id: '3-4',
+        label: '3-4',
+        interpolation: 'curved',
+        dashed: true
+      }
+    ]}
+  />
+);

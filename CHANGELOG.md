@@ -1,3 +1,10 @@
+# 4.29.0 - 8/5/25
+- [feature] Added `dashArray` prop to edges, allowing individual control over dash patterns.  
+  The `dashArray` prop accepts a tuple `[dashSize, gapSize]`, letting you specify the length of dashes and the spacing between them for each edge.
+
+# 4.28.0 - 8/1/25
+- [chore] fix: update all major deps & some minor #351
+
 # 4.27.0 - 7/25/25
 - [feature] Add `strokeWidth` and `strokeColor` props to Badge
 - [feature] Add `backgroundColor`, `backgroundOpacity`, `padding`, `strokeColor`, `strokeWidth`, and `radius` props to Label
