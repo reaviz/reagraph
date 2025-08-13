@@ -24,6 +24,9 @@ export function useEdgeEvents(
   const setEdgeContextMenus = useStore(
     useCallback(state => state.setEdgeContextMenus, [])
   );
+  const setHoveredEdgeId = useStore(
+    useCallback(state => state.setHoveredEdgeId, [])
+  );
 
   const clickRef = useRef(false);
   const handleClick = useCallback(() => {
@@ -72,6 +75,10 @@ export function useEdgeEvents(
         }
       }
 
+      // Update hover state in store - use first intersected edge
+      const hoveredId = intersected.length > 0 ? intersected[0].id : null;
+      setHoveredEdgeId(hoveredId);
+
       if (onPointerOver) {
         const over = intersected.filter(index => !previous.includes(index));
         over.forEach(edge => {
@@ -86,7 +93,13 @@ export function useEdgeEvents(
         });
       }
     },
-    [contextMenu, disabled, edgeContextMenus, setEdgeContextMenus]
+    [
+      contextMenu,
+      disabled,
+      edgeContextMenus,
+      setEdgeContextMenus,
+      setHoveredEdgeId
+    ]
   );
 
   return {

@@ -34,6 +34,8 @@ export interface GraphState {
   selections?: string[];
   // The node that is currently hovered, used to disable cluster dragging
   hoveredNodeId?: string;
+  // The edge that is currently hovered over, required for cases when animation is disabled
+  hoveredEdgeId?: string;
   edgeContextMenus?: Set<string>;
   setEdgeContextMenus: (edges: Set<string>) => void;
   edgeMeshes: Array<Mesh<BufferGeometry>>;
@@ -51,6 +53,7 @@ export interface GraphState {
   setActives: (actives: string[]) => void;
   setSelections: (selections: string[]) => void;
   setHoveredNodeId: (hoveredNodeId: string | null) => void;
+  setHoveredEdgeId: (hoveredEdgeId: string | null) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
   setNodePosition: (id: string, position: InternalGraphPosition) => void;
@@ -83,6 +86,7 @@ export const createStore = ({
     panning: false,
     draggingIds: [],
     actives,
+    hoveredEdgeId: null,
     edgeContextMenus: new Set(),
     edgeMeshes: [],
     selections,
@@ -110,6 +114,8 @@ export const createStore = ({
     setSelections: selections => set(state => ({ ...state, selections })),
     setHoveredNodeId: hoveredNodeId =>
       set(state => ({ ...state, hoveredNodeId })),
+    setHoveredEdgeId: hoveredEdgeId =>
+      set(state => ({ ...state, hoveredEdgeId })),
     setNodes: nodes =>
       set(state => ({
         ...state,
