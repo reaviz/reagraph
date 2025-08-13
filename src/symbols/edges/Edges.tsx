@@ -200,7 +200,6 @@ export const Edges: FC<EdgesProps> = ({
 
   const draggingIdRef = useRef<string[]>([]);
   const intersectingRef = useRef<Array<InternalGraphEdge>>([]);
-  const previousHoveredEdgeIdRef = useRef<string | null>(null);
 
   useFrame(state => {
     staticEdgesRef.current.geometry = staticEdgesGeometry;
