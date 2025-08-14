@@ -1,6 +1,6 @@
 import { ConcentricLayoutInputs } from 'layout/concentric2d';
 import { buildNodeEdges } from './layoutUtils';
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 
 /**
  * Generates a point on a Fibonacci sphere.
@@ -15,10 +15,18 @@ function fibonacciSpherePoint(i: number, n: number, r: number) {
   const y = r * Math.sin(phi) * Math.sin(theta);
   const z = r * Math.cos(phi);
 
-  return new THREE.Vector3(x, y, z);
+  return new Vector3(x, y, z);
 }
 
-export function concentric({
+/**
+ * Concentric layout algorithm for 3D graphs.
+ * @param graph
+ * @param radius
+ * @param drags
+ * @param getNodePosition
+ * @param concentricSpacing
+ */
+export function concentric3d({
   graph,
   radius = 40,
   drags,
@@ -61,10 +69,10 @@ export function concentric({
     const count = nodeIds.length;
     const r = radius + level * concentricSpacing;
 
-    nodeIds.forEach((id, i) => {
+    for (const [i, id] of nodeIds.entries()) {
       const pos = fibonacciSpherePoint(i, count, r);
       layout[id] = { x: pos.x, y: pos.y, z: pos.z };
-    });
+    }
   }
 
   // Determine which levels are partially used and which are available
@@ -97,7 +105,9 @@ export function concentric({
     getNodePosition(id: string) {
       if (getNodePosition) {
         const pos = getNodePosition(id, { graph, drags, nodes, edges });
-        if (pos) return pos as any;
+        if (pos) {
+          return pos;
+        }
       }
 
       if (drags?.[id]?.position) {

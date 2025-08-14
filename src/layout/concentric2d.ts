@@ -12,6 +12,14 @@ export interface ConcentricLayoutInputs extends LayoutFactoryProps {
   concentricSpacing?: number;
 }
 
+/**
+ * Concentric layout algorithm for 2D graphs.
+ * @param graph
+ * @param radius
+ * @param drags
+ * @param getNodePosition
+ * @param concentricSpacing
+ */
 export function concentric2d({
   graph,
   radius = 40,

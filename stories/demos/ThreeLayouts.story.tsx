@@ -8,6 +8,12 @@ export default {
   component: GraphCanvas
 };
 
+/**
+ * Calculate concentric level based on current index, total nodes, and growth ratio.
+ * @param current
+ * @param total
+ * @param ratio
+ */
 function getConcentricLevel(current, total, ratio) {
   let level = 1;
   let levelSize = 20;
@@ -39,7 +45,7 @@ export const TreeTopDown = () => (
 );
 
 export const Concentric = () => (
-  <GraphCanvas layoutType="concentric" nodes={range(300).map(i => ({
+  <GraphCanvas layoutType="concentric3d" nodes={range(300).map(i => ({
     id: `${i}`,
     label: `Node ${i}`,
     fill: `hsl(${getConcentricLevel(i, 300, 7) * 100}, 100%, 50%)`,

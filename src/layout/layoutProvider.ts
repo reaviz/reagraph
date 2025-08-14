@@ -1,4 +1,4 @@
-import { concentric } from 'layout/concentric';
+import { concentric3d } from 'layout/concentric3d';
 import { concentric2d } from 'layout/concentric2d';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
@@ -121,8 +121,8 @@ export function layoutProvider({
     } as CircularLayoutInputs);
   } else if (type === 'concentric2d') {
     return concentric2d(rest as ConcentricLayoutInputs);
-  } else if (type === 'concentric') {
-    return concentric(rest as ConcentricLayoutInputs);
+  } else if (type === 'concentric3d') {
+    return concentric3d(rest as ConcentricLayoutInputs);
   } else if (type === 'hierarchicalTd') {
     return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);
   } else if (type === 'hierarchicalLr') {
