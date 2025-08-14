@@ -86,7 +86,7 @@ export const createStore = ({
     panning: false,
     draggingIds: [],
     actives,
-    hoveredEdgeIds: null,
+    hoveredEdgeIds: [],
     edgeContextMenus: new Set(),
     edgeMeshes: [],
     selections,
