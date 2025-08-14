@@ -106,7 +106,7 @@ export const Edges: FC<EdgesProps> = ({
   const setEdgeMeshes = useStore(state => state.setEdgeMeshes);
   const actives = useStore(state => state.actives || []);
   const selections = useStore(state => state.selections || []);
-  const hoveredEdgeId = useStore(state => state.hoveredEdgeId);
+  const hoveredEdgeIds = useStore(state => state.hoveredEdgeIds || []);
 
   const [active, inactive, draggingActive, draggingInactive] = useMemo(() => {
     const active: Array<InternalGraphEdge> = [];
@@ -121,7 +121,7 @@ export const Edges: FC<EdgesProps> = ({
         if (
           selections.includes(edge.id) ||
           actives.includes(edge.id) ||
-          edge.id === hoveredEdgeId
+          hoveredEdgeIds.includes(edge.id)
         ) {
           draggingActive.push(edge);
         } else {
@@ -133,7 +133,7 @@ export const Edges: FC<EdgesProps> = ({
       if (
         selections.includes(edge.id) ||
         actives.includes(edge.id) ||
-        edge.id === hoveredEdgeId
+        hoveredEdgeIds.includes(edge.id)
       ) {
         active.push(edge);
       } else {
@@ -141,7 +141,7 @@ export const Edges: FC<EdgesProps> = ({
       }
     });
     return [active, inactive, draggingActive, draggingInactive];
-  }, [edges, actives, selections, draggingIds, hoveredEdgeId]);
+  }, [edges, actives, selections, draggingIds, hoveredEdgeIds]);
 
   const hasSelections = !!selections.length;
 
