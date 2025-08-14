@@ -280,7 +280,7 @@ export const Circular = () => (
         source: '1',
         target: '1',
         id: '1-1',
-        label: '1-1',
+        label: '1-1'
       },
       {
         source: '2',
@@ -295,7 +295,7 @@ export const Circular = () => (
         id: '3-3',
         label: '3-3',
         arrowPlacement: 'none'
-      },
+      }
     ]}
   />
 );
