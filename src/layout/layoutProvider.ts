@@ -1,4 +1,5 @@
-import { concentricLayout } from 'layout/concentric2d';
+import { concentric } from 'layout/concentric';
+import { concentric2d } from 'layout/concentric2d';
 import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
 import { circular2d, CircularLayoutInputs } from './circular2d';
@@ -119,7 +120,9 @@ export function layoutProvider({
       radius: radius || 300
     } as CircularLayoutInputs);
   } else if (type === 'concentric2d') {
-    return concentricLayout(rest as CircularLayoutInputs);
+    return concentric2d(rest as ConcentricLayoutInputs);
+  } else if (type === 'concentric') {
+    return concentric(rest as ConcentricLayoutInputs);
   } else if (type === 'hierarchicalTd') {
     return hierarchical({ ...rest, mode: 'td' } as HierarchicalLayoutInputs);
   } else if (type === 'hierarchicalLr') {

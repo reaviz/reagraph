@@ -1,18 +1,24 @@
-import { LayoutFactoryProps } from './types';
+import { ConcentricLayoutInputs } from 'layout/concentric2d';
 import { buildNodeEdges } from './layoutUtils';
+import * as THREE from 'three';
 
-export interface ConcentricLayoutInputs extends LayoutFactoryProps {
-  /**
-   * Base radius of the innermost circle.
-   */
-  radius: number;
-  /**
-   * Distance between circles.
-   */
-  concentricSpacing?: number;
+/**
+ * Generates a point on a Fibonacci sphere.
+ * @param i
+ * @param n
+ * @param r
+ */
+function fibonacciSpherePoint(i: number, n: number, r: number) {
+  const phi = Math.acos(1 - (2 * (i + 0.5)) / n);
+  const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+  const x = r * Math.sin(phi) * Math.cos(theta);
+  const y = r * Math.sin(phi) * Math.sin(theta);
+  const z = r * Math.cos(phi);
+
+  return new THREE.Vector3(x, y, z);
 }
 
-export function concentric2d({
+export function concentric({
   graph,
   radius = 40,
   drags,
@@ -21,7 +27,7 @@ export function concentric2d({
 }: ConcentricLayoutInputs) {
   const { nodes, edges } = buildNodeEdges(graph);
 
-  const layout: Record<string, { x: number; y: number }> = {};
+  const layout: Record<string, { x: number; y: number; z: number }> = {};
 
   const getNodesInLevel = (level: number) => {
     const circumference = 2 * Math.PI * (radius + level * concentricSpacing);
@@ -50,18 +56,15 @@ export function concentric2d({
   // Sort dynamic nodes by degree
   dynamicNodes.sort((a, b) => b.metric - a.metric);
 
-  // Fill layout for fixed-level nodes
+  // Fill layout for fixed-level nodes (3D spherical placement)
   for (const [level, nodeIds] of fixedLevelMap.entries()) {
     const count = nodeIds.length;
     const r = radius + level * concentricSpacing;
 
-    for (let i = 0; i < count; i++) {
-      const angle = (2 * Math.PI * i) / count;
-      layout[nodeIds[i]] = {
-        x: r * Math.cos(angle),
-        y: r * Math.sin(angle)
-      };
-    }
+    nodeIds.forEach((id, i) => {
+      const pos = fibonacciSpherePoint(i, count, r);
+      layout[id] = { x: pos.x, y: pos.y, z: pos.z };
+    });
   }
 
   // Determine which levels are partially used and which are available
@@ -79,11 +82,8 @@ export function concentric2d({
     const r = radius + dynamicLevel * concentricSpacing;
 
     for (let j = 0; j < nodesInLevel && i < dynamicNodes.length; j++) {
-      const angle = (2 * Math.PI * j) / nodesInLevel;
-      layout[dynamicNodes[i].id] = {
-        x: r * Math.cos(angle),
-        y: r * Math.sin(angle)
-      };
+      const pos = fibonacciSpherePoint(j, nodesInLevel, r);
+      layout[dynamicNodes[i].id] = { x: pos.x, y: pos.y, z: pos.z };
       i++;
     }
 
@@ -97,7 +97,7 @@ export function concentric2d({
     getNodePosition(id: string) {
       if (getNodePosition) {
         const pos = getNodePosition(id, { graph, drags, nodes, edges });
-        if (pos) return pos;
+        if (pos) return pos as any;
       }
 
       if (drags?.[id]?.position) {
