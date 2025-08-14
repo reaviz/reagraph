@@ -8,6 +8,7 @@ import {
   random
 } from '../assets/demo';
 import { range } from 'd3-array';
+import { MiniMap } from '../../src/symbols/MiniMap';
 
 export default {
   title: 'Demos/Basic',
@@ -26,6 +27,12 @@ Simple.args = {
   sizingType: 'none',
   labelType: 'auto'
 };
+
+export const Minimap = () => (
+  <GraphCanvas nodes={simpleNodes} edges={simpleEdges}>
+    <MiniMap position="top-right" />
+  </GraphCanvas>
+);
 
 export const TwoWayLink = () => (
   <GraphCanvas
