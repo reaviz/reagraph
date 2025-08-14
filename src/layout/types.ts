@@ -11,6 +11,7 @@ export type LayoutTypes =
   | 'forceDirected3d'
   | 'circular2d'
   | 'concentric2d'
+  | 'concentric3d'
   | 'treeTd2d'
   | 'treeTd3d'
   | 'treeLr2d'
