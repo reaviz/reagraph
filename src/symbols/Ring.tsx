@@ -74,7 +74,10 @@ export const Ring: FC<RingProps> = ({
 
   return (
     <Billboard position={[0, 0, 1]}>
-      <a.mesh scale={ringSize as any}>
+      <a.mesh
+        scale={ringSize as any}
+        raycast={opacity > 0 ? undefined : () => []}
+      >
         <ringGeometry
           attach="geometry"
           args={[innerRadius, outerRadius, segments]}
