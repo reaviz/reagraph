@@ -27,8 +27,10 @@ export interface CulledLabelProps {
   selections?: string[];
   actives?: string[];
   animated?: boolean;
+  draggable?: boolean;
   fontSize?: number;
   theme: Theme;
+  draggingIds?: string[];
   hoveredNodeId?: string;
   onPointerOver?: (
     event: ThreeEvent<PointerEvent>,
@@ -39,6 +41,14 @@ export interface CulledLabelProps {
     node: InternalGraphNode
   ) => void;
   onClick?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode) => void;
+  onPointerDown?: (
+    event: ThreeEvent<PointerEvent>,
+    node: InternalGraphNode
+  ) => void;
+  onPointerUp?: (
+    event: ThreeEvent<PointerEvent>,
+    node: InternalGraphNode
+  ) => void;
 }
 
 export const CulledLabels: FC<CulledLabelProps> = ({
@@ -46,9 +56,13 @@ export const CulledLabels: FC<CulledLabelProps> = ({
   selections = [],
   actives = [],
   animated = false,
+  draggable = false,
   fontSize = 7,
   theme,
   hoveredNodeId,
+  draggingIds,
+  onPointerDown,
+  onPointerUp,
   ...rest
 }) => {
   const { camera, size } = useThree();
@@ -196,11 +210,20 @@ export const CulledLabels: FC<CulledLabelProps> = ({
           theme={theme}
           selections={selections}
           actives={actives}
+          draggingIds={draggingIds}
           hoveredNodeId={hoveredNodeId || ''}
           fontSize={fontSize}
           animated={animated}
           shouldAnimate={shouldAnimate}
           setShouldAnimate={setShouldAnimate}
+          onPointerDown={e => {
+            if (!draggable) return;
+            onPointerDown?.(e, node);
+          }}
+          onPointerUp={e => {
+            if (!draggable) return;
+            onPointerUp?.(e, node);
+          }}
           {...rest}
         />
       ))}
@@ -220,16 +243,18 @@ const AnimatedLabel = ({
   selections,
   actives,
   hoveredNodeId,
+  draggingIds,
   fontSize,
   animated,
   shouldAnimate,
   setShouldAnimate,
   onPointerOver,
   onPointerOut,
+  onPointerDown,
+  onPointerUp,
   onClick
 }: AnimatedLabelProps) => {
   const center = useStore(state => state.centerPosition);
-  const draggingIds = useStore(state => state.draggingIds);
   const nodeSize = node.size || 1;
   const shouldHighlight =
     selections.includes(node.id) ||
@@ -290,6 +315,8 @@ const AnimatedLabel = ({
       onClick={e => onClick?.(e, node)}
       onPointerOver={e => onPointerOver?.(e, node)}
       onPointerOut={e => onPointerOut?.(e, node)}
+      onPointerDown={e => onPointerDown?.(e, node)}
+      onPointerUp={e => onPointerUp?.(e, node)}
     >
       <Label
         text={node.label || ''}
@@ -302,7 +329,11 @@ const AnimatedLabel = ({
         strokeWidth={theme.node.label.strokeWidth}
         radius={theme.node.label.radius}
         active={isActive}
-        color={isActive ? theme.node.label.activeColor : theme.node.label.color}
+        color={
+          isActive || draggingIds.includes(node.id)
+            ? theme.node.label.activeColor
+            : theme.node.label.color
+        }
         fontSize={fontSize}
       />
     </a.group>

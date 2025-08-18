@@ -221,9 +221,11 @@ export const InstancedNodes = ({
         selections={selections}
         actives={actives}
         animated={animated}
+        draggable={draggable}
         fontSize={7}
         theme={theme}
         hoveredNodeId={hoveredNodeId}
+        draggingIds={draggingIds}
         onPointerOver={pointerOver}
         onPointerOut={pointerOut}
         onClick={(event, node) => {
@@ -238,6 +240,18 @@ export const InstancedNodes = ({
             );
           }
           draggedNodeIdRef.current = null;
+        }}
+        onPointerDown={(event, node) => {
+          handleDragStart(
+            undefined,
+            event.point,
+            new Vector3(
+              node.position?.x || 0,
+              node.position?.y || 0,
+              node.position?.z || 0
+            ),
+            node.id
+          );
         }}
       />
     </>

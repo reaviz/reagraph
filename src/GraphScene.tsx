@@ -442,21 +442,18 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
 
       const nodeComponents = useMemo(() => {
         if (useInstances && !renderNode) {
-          // Use InstancedSpheres for all nodes - it handles both regular spheres and icons
           return (
-            <>
-              <InstancedNodes
-                nodes={nodes}
-                selections={rest.selections}
-                actives={rest.actives}
-                animated={animated}
-                draggable={draggable}
-                onClick={onNodeClick}
-                onDrag={onNodeDraggedHandler}
-                onPointerOver={onNodePointerOver}
-                onPointerOut={onNodePointerOut}
-              />
-            </>
+            <InstancedNodes
+              nodes={nodes}
+              selections={rest.selections}
+              actives={rest.actives}
+              animated={animated}
+              draggable={draggable}
+              onClick={onNodeClick}
+              onDrag={onNodeDraggedHandler}
+              onPointerOver={onNodePointerOver}
+              onPointerOut={onNodePointerOut}
+            />
           );
         }
 
@@ -487,7 +484,6 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         disabled,
         draggable,
         labelFontUrl,
-        theme,
         nodes,
         onNodeClick,
         onNodeContextMenu,
