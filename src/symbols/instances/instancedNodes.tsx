@@ -1,7 +1,8 @@
-import React, { useRef, useState } from 'react';
-import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
+import React, { useRef } from 'react';
+import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Vector3 } from 'three';
 import { ThreeEvent } from '@react-three/fiber';
+import { useCursor } from '@react-three/drei';
 
 import {
   CollapseProps,
@@ -68,7 +69,10 @@ export const InstancedNodes = ({
   const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
   const hoveredNodeId = useStore(state => state.hoveredNodeId);
   const draggingIds = useStore(state => state.draggingIds);
-  const [draggedNodeId, setDraggedNodeId] = useState<string | null>(null);
+  const draggedNodeIdRef = useRef<string | null>(null);
+
+  useCursor(hoveredNodeId !== null);
+  useCursor(draggingIds.length > 0, 'grabbing');
 
   const cameraControls = useCameraControls();
   const { handleDragStart } = useInstanceDrag({
@@ -77,7 +81,7 @@ export const InstancedNodes = ({
       const instances = nodeInstances.current.get(nodeId);
       // Update instances position directly due to performance reasons
       instances?.forEach(inst => updateInstancePosition(inst, pos, false));
-      setDraggedNodeId(nodeId);
+      draggedNodeIdRef.current = nodeId;
       setNodePosition(nodeId, {
         x: pos.x,
         y: pos.y,
@@ -115,21 +119,32 @@ export const InstancedNodes = ({
     disabled: disabled,
     onPointerOver: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.freeze();
-      const instanceId = event.instanceId;
-      const instance = (event.eventObject as InstancedMesh2<Instance>)
-        .instances?.[instanceId];
-      if (instance) {
-        onPointerOver?.(instance.node, event);
-        setHoveredNodeId(instance.nodeId);
+      const node = event.eventObject.userData.node;
+      if (node) {
+        onPointerOver?.(node, event);
+        setHoveredNodeId(node.id);
+      } else {
+        const instanceId = event.instanceId;
+        const instance = (event.eventObject as InstancedMesh2<Instance>)
+          .instances?.[instanceId];
+        if (instance) {
+          onPointerOver?.(instance.node, event);
+          setHoveredNodeId(instance.nodeId);
+        }
       }
     },
     onPointerOut: (event: ThreeEvent<PointerEvent>) => {
       cameraControls.unFreeze();
-      const instanceId = event.instanceId;
-      const instance = (event.eventObject as InstancedMesh2<Instance>)
-        .instances?.[instanceId];
-      if (instance) {
-        onPointerOut?.(instance.node, event);
+      const node = event.eventObject.userData.node;
+      if (node) {
+        onPointerOut?.(node, event);
+      } else {
+        const instanceId = event.instanceId;
+        const instance = (event.eventObject as InstancedMesh2<Instance>)
+          .instances?.[instanceId];
+        if (instance) {
+          onPointerOut?.(instance.node, event);
+        }
       }
       setHoveredNodeId(null);
     }
@@ -162,7 +177,7 @@ export const InstancedNodes = ({
           if (
             !disabled &&
             !instance.isDragging &&
-            draggedNodeId !== instance.nodeId
+            draggedNodeIdRef.current !== instance.nodeId
           ) {
             onClick?.(
               node,
@@ -173,7 +188,7 @@ export const InstancedNodes = ({
               event
             );
           }
-          setDraggedNodeId(null);
+          draggedNodeIdRef.current = null;
         }}
         onPointerOver={pointerOver}
         onPointerOut={pointerOut}
@@ -209,6 +224,21 @@ export const InstancedNodes = ({
         fontSize={7}
         theme={theme}
         hoveredNodeId={hoveredNodeId}
+        onPointerOver={pointerOver}
+        onPointerOut={pointerOut}
+        onClick={(event, node) => {
+          if (!disabled && draggedNodeIdRef.current !== node.id) {
+            onClick?.(
+              node,
+              {
+                canCollapse: false,
+                isCollapsed: false
+              },
+              event
+            );
+          }
+          draggedNodeIdRef.current = null;
+        }}
       />
     </>
   );

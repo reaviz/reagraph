@@ -4,16 +4,14 @@ import React, {
   useRef,
   useLayoutEffect,
   forwardRef,
-  RefObject,
-  useState
+  RefObject
 } from 'react';
 import { extend } from '@react-three/fiber';
 import { type ThreeElement } from '@react-three/fiber';
-import { useCursor } from '@react-three/drei';
 import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { IcosahedronGeometry, MeshBasicMaterial } from 'three';
 
-import { getInstanceColor, nodeToInstance } from '../../utils/instances';
+import { nodeToInstance } from '../../utils/instances';
 import { InstancedData, InstancedMeshProps } from './types';
 
 // add InstancedMesh2 to the jsx catalog i.e use it as a jsx component
@@ -39,7 +37,6 @@ export const InstancedMeshSphere = forwardRef<
       draggingIds = [],
       theme,
       hoveredNodeId,
-      onDrag,
       onPointerDown,
       onPointerUp,
       onPointerOver,
@@ -49,15 +46,11 @@ export const InstancedMeshSphere = forwardRef<
     ref
   ) => {
     const meshRef = useRef<InstancedMesh2<InstancedData | null>>(null);
-    const prevOpacity = useRef<number>(1);
 
     // Helper function to get current mesh reference
     const getMesh = () =>
       (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
       meshRef.current;
-
-    useCursor(hoveredNodeId !== null);
-    useCursor(draggingIds.length > 0, 'grabbing');
 
     // Create geometry and material
     const geometry = useMemo(() => new IcosahedronGeometry(1, 5), []);

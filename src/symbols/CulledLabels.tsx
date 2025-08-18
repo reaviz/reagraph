@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { Frustum, Matrix4, Vector3 } from 'three';
-import { useFrame, useThree } from '@react-three/fiber';
+import { ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { a, useSpring } from '@react-spring/three';
 
 import { Label } from './Label';
@@ -30,6 +30,15 @@ export interface CulledLabelProps {
   fontSize?: number;
   theme: Theme;
   hoveredNodeId?: string;
+  onPointerOver?: (
+    event: ThreeEvent<PointerEvent>,
+    node: InternalGraphNode
+  ) => void;
+  onPointerOut?: (
+    event: ThreeEvent<PointerEvent>,
+    node: InternalGraphNode
+  ) => void;
+  onClick?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode) => void;
 }
 
 export const CulledLabels: FC<CulledLabelProps> = ({
@@ -39,7 +48,8 @@ export const CulledLabels: FC<CulledLabelProps> = ({
   animated = false,
   fontSize = 7,
   theme,
-  hoveredNodeId
+  hoveredNodeId,
+  ...rest
 }) => {
   const { camera, size } = useThree();
   const [visibleNodes, setVisibleNodes] = useState<InternalGraphNode[]>([]);
@@ -191,6 +201,7 @@ export const CulledLabels: FC<CulledLabelProps> = ({
           animated={animated}
           shouldAnimate={shouldAnimate}
           setShouldAnimate={setShouldAnimate}
+          {...rest}
         />
       ))}
     </>
@@ -212,7 +223,10 @@ const AnimatedLabel = ({
   fontSize,
   animated,
   shouldAnimate,
-  setShouldAnimate
+  setShouldAnimate,
+  onPointerOver,
+  onPointerOut,
+  onClick
 }: AnimatedLabelProps) => {
   const center = useStore(state => state.centerPosition);
   const draggingIds = useStore(state => state.draggingIds);
@@ -269,7 +283,14 @@ const AnimatedLabel = ({
   );
 
   return (
-    <a.group key={node.id} position={position as any}>
+    <a.group
+      key={node.id}
+      position={position as any}
+      userData={{ node: node }}
+      onClick={e => onClick?.(e, node)}
+      onPointerOver={e => onPointerOver?.(e, node)}
+      onPointerOut={e => onPointerOut?.(e, node)}
+    >
       <Label
         text={node.label || ''}
         opacity={1}

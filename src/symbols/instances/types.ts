@@ -13,7 +13,6 @@ export type InstancedData = {
 export type Instance = InstancedEntity & InstancedData;
 
 export interface InstancedEvents {
-  onDrag?: (node: InternalGraphNode) => void;
   onPointerEnter?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
   onPointerLeave?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
   onPointerDown?: (event: ThreeEvent<MouseEvent>, instance: Instance) => void;
