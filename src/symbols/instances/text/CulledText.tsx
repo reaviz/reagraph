@@ -1,8 +1,9 @@
 import React, { FC, useRef, useState } from 'react';
+import { Frustum, Matrix4, Vector3 } from 'three';
+
 import { InstancedSpriteText, OptimizedTextProps } from './InstancedSpriteText';
 import { useFrame, useThree } from '@react-three/fiber';
 import { InternalGraphNode } from '../../../types';
-import { Frustum, Matrix4, Vector3 } from 'three';
 
 export const CulledText: FC<OptimizedTextProps> = ({
   nodes,
