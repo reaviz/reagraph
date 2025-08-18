@@ -74,7 +74,12 @@ export const Ring: FC<RingProps> = ({
 
   return (
     <Billboard position={[0, 0, 1]}>
-      <a.mesh scale={ringSize as any}>
+      <a.mesh
+        scale={ringSize as any}
+        // Disabling raycast/pointer events when ring is invisible (opacity = 0)
+        // This prevents invisible rings highlighting parent nodes when hovered over
+        raycast={opacity > 0 ? undefined : () => []}
+      >
         <ringGeometry
           attach="geometry"
           args={[innerRadius, outerRadius, segments]}
