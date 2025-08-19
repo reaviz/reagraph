@@ -192,7 +192,7 @@ export const IntersectingEdges = () => {
       nodes={intersectingNodes}
       edges={intersectingEdges}
       labelType={'all'}
-    //   animated={false}
+      draggable={true}
       selections={selections}
       actives={actives}
       onCanvasClick={onCanvasClick}
