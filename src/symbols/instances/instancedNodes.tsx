@@ -1,14 +1,23 @@
-import React, { ReactNode, useLayoutEffect, useMemo, useRef } from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Vector3 } from 'three';
 import { ThreeEvent } from '@react-three/fiber';
-import { useCursor } from '@react-three/drei';
+import { Html, useCursor } from '@react-three/drei';
 
 import {
   CollapseProps,
+  ContextMenuEvent,
   InstancesRendererProps,
   InternalGraphNode,
-  InternalGraphPosition
+  InternalGraphPosition,
+  NodeContextMenuProps
 } from '../../types';
 
 import { useInstanceDrag } from '../../utils/useInstanceDrag';
@@ -23,17 +32,58 @@ import { CulledLabels } from '../labels';
 import { InstancedIcon } from './InstancedIcon';
 
 interface InstancedNodesProps {
+  /**
+   * The nodes to render.
+   */
   nodes: InternalGraphNode[];
+  /**
+   * The nodes that are active.
+   */
   actives?: string[];
+  /**
+   * The nodes that are selected.
+   */
   selections?: string[];
+  /**
+   * Whether the nodes are animated.
+   */
   animated?: boolean;
+  /**
+   * Whether the nodes are draggable.
+   */
   draggable?: boolean;
+  /**
+   * Whether the nodes are disabled.
+   */
   disabled?: boolean;
+  /**
+   * The function to use to render the instances.
+   */
   renderInstances?: (args: InstancesRendererProps) => ReactNode;
+  /**
+   * The context menu for the node.
+   */
+  contextMenu?: (event: ContextMenuEvent) => ReactNode;
+
+  /**
+   * The function to call when the node is right clicked.
+   */
+  onContextMenu?: (
+    node?: InternalGraphNode,
+    props?: NodeContextMenuProps
+  ) => void;
+
+  /**
+   * The function to call when the pointer is over the node.
+   */
   onPointerOver?: (
     node: InternalGraphNode,
     event: ThreeEvent<PointerEvent>
   ) => void;
+
+  /**
+   * The function to call when the pointer is out of the node.
+   */
   onPointerOut?: (
     node: InternalGraphNode,
     event: ThreeEvent<PointerEvent>
@@ -56,20 +106,27 @@ export const InstancedNodes = ({
   selections = [],
   actives = [],
   disabled = false,
+  contextMenu,
   renderInstances,
   onClick,
   onPointerOver,
-  onPointerOut
+  onPointerOut,
+  onContextMenu
 }: InstancedNodesProps) => {
   const instancesRefs = useRef<InstancedMesh2<Instance>[]>([]);
   const sphereRef = useRef<InstancedMesh2<Instance> | null>(null);
   const ringMeshRef = useRef<InstancedMesh2<Instance> | null>(null);
   const nodeInstances = useRef<Map<string, Instance[]>>(new Map());
+  const [contextMenuNode, setContextMenuNode] =
+    useState<InternalGraphNode | null>(null);
   const theme = useStore(state => state.theme);
   const setNodePosition = useStore(state => state.setNodePosition);
   const addDraggingId = useStore(state => state.addDraggingId);
   const removeDraggingId = useStore(state => state.removeDraggingId);
   const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
+  const setCollapsedNodeIds = useStore(state => state.setCollapsedNodeIds);
+  const edges = useStore(state => state.edges);
+  const collapsedNodeIds = useStore(state => state.collapsedNodeIds);
   const hoveredNodeId = useStore(state => state.hoveredNodeId);
   const draggingIds = useStore(state => state.draggingIds);
   const draggedNodeIdRef = useRef<string | null>(null);
@@ -165,6 +222,76 @@ export const InstancedNodes = ({
     }
   }, [renderInstances]);
 
+  const isCollapsed = useMemo(() => {
+    return collapsedNodeIds.includes(contextMenuNode?.id);
+  }, [collapsedNodeIds, contextMenuNode]);
+
+  const canCollapse = useMemo(() => {
+    if (!contextMenuNode) return false;
+    // If the node has outgoing edges, it can collapse via context menu
+    const outboundLinks = edges.filter(l => l.source === contextMenuNode?.id);
+    const isCollapsed = collapsedNodeIds.includes(contextMenuNode?.id);
+
+    return outboundLinks.length > 0 || isCollapsed;
+  }, [collapsedNodeIds, contextMenuNode, edges]);
+
+  const onCollapse = useCallback(() => {
+    if (canCollapse) {
+      if (isCollapsed) {
+        setCollapsedNodeIds(
+          collapsedNodeIds.filter(p => p !== contextMenuNode?.id)
+        );
+      } else {
+        setCollapsedNodeIds([...collapsedNodeIds, contextMenuNode?.id]);
+      }
+    }
+  }, [
+    canCollapse,
+    collapsedNodeIds,
+    contextMenuNode?.id,
+    isCollapsed,
+    setCollapsedNodeIds
+  ]);
+
+  const contextMenuHandler = useCallback(
+    (_, node: InternalGraphNode) => {
+      if (!disabled) {
+        setContextMenuNode(node);
+        onContextMenu?.(node, {
+          canCollapse,
+          isCollapsed,
+          onCollapse: onCollapse
+        });
+      }
+    },
+    [disabled, canCollapse, isCollapsed, onContextMenu, onCollapse]
+  );
+
+  const contextMenuComponent = useMemo(
+    () =>
+      contextMenuNode &&
+      contextMenu && (
+        <Html
+          prepend={true}
+          center={true}
+          position={[
+            contextMenuNode.position?.x,
+            contextMenuNode.position?.y,
+            contextMenuNode.position?.z
+          ]}
+        >
+          {contextMenu({
+            data: contextMenuNode,
+            canCollapse,
+            isCollapsed,
+            onCollapse,
+            onClose: () => setContextMenuNode(null)
+          })}
+        </Html>
+      ),
+    [contextMenuNode, canCollapse, isCollapsed, contextMenu, onCollapse]
+  );
+
   if (renderInstances) {
     return renderInstances({
       instancesRef: instancesRefs,
@@ -247,6 +374,7 @@ export const InstancedNodes = ({
             }
             draggedNodeIdRef.current = null;
           }}
+          onContextMenu={contextMenuHandler}
           onPointerOver={pointerOver}
           onPointerOut={pointerOut}
         />
@@ -263,6 +391,7 @@ export const InstancedNodes = ({
           hoveredNodeId={hoveredNodeId}
           onPointerOver={pointerOver}
           onPointerOut={pointerOut}
+          onContextMenu={contextMenuHandler}
           onPointerDown={(event, node) => {
             if (draggable) {
               handleDragStart(
@@ -351,6 +480,7 @@ export const InstancedNodes = ({
           );
         }}
       />
+      {contextMenuComponent}
     </>
   );
 };

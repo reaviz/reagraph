@@ -164,6 +164,7 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
   onPointerOver,
   onPointerOut,
   onPointerDown,
+  onContextMenu,
   onClick
 }) => {
   const instancesRef = useRef<InstancedMesh | null>(null);
@@ -497,6 +498,7 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
                   if (!draggable) return;
                   onPointerDown?.(event, node);
                 }}
+                onContextMenu={event => onContextMenu?.(event, node)}
               />
             );
           })}

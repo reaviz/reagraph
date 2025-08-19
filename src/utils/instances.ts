@@ -112,4 +112,5 @@ export const nodeToInstance = (
   );
   instance.scale.setScalar(node.size);
   instance.opacity = selectionOpacity;
+  instance.visible = true;
 };

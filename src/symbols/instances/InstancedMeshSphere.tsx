@@ -37,7 +37,6 @@ export const InstancedMeshSphere = forwardRef<
       animated = false,
       draggable = false,
       selections = [],
-      disabled = false,
       draggingIds = [],
       theme,
       hoveredNodeId,
@@ -45,7 +44,8 @@ export const InstancedMeshSphere = forwardRef<
       onPointerUp,
       onPointerOver,
       onPointerOut,
-      onClick
+      onClick,
+      onContextMenu
     },
     ref
   ) => {
@@ -78,13 +78,17 @@ export const InstancedMeshSphere = forwardRef<
         const nodesMap = new Map(nodes.map(node => [node.id, node]));
         // Get existing instance node IDs
         const existingNodeIds = new Set(
-          mesh.instances.map(instance => instance.nodeId).filter(Boolean)
+          mesh.instances
+            .filter(instance => instance.active)
+            .map(instance => instance.nodeId)
+            .filter(Boolean)
         );
         // Find nodes that need new instances
         const newNodes = nodes.filter(node => !existingNodeIds.has(node.id));
+        const instanceIdsToRemove = [];
         // Update all existing instances at once
         mesh.updateInstances(instance => {
-          if (instance.nodeId) {
+          if (instance.nodeId && instance.active) {
             const node = nodesMap.get(instance.nodeId);
             if (node) {
               nodeToInstance(
@@ -98,7 +102,7 @@ export const InstancedMeshSphere = forwardRef<
                 hoveredNodeId
               );
             } else {
-              mesh.removeInstances(instance.id);
+              instanceIdsToRemove.push(instance.id);
             }
           }
         });
@@ -120,6 +124,10 @@ export const InstancedMeshSphere = forwardRef<
             index++;
           });
         }
+
+        if (instanceIdsToRemove.length > 0) {
+          mesh.removeInstances(...instanceIdsToRemove);
+        }
       } else {
         mesh.addInstances(nodes.length, (instance, index) => {
           nodeToInstance(
@@ -134,6 +142,7 @@ export const InstancedMeshSphere = forwardRef<
           );
         });
       }
+
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
@@ -175,6 +184,10 @@ export const InstancedMeshSphere = forwardRef<
           onPointerOut={e => {
             const instance = getMesh()?.instances?.[e.instanceId];
             onPointerOut?.(e, instance?.node, instance);
+          }}
+          onContextMenu={e => {
+            const instance = getMesh()?.instances?.[e.instanceId];
+            onContextMenu?.(e, instance?.node, instance);
           }}
         />
       </>

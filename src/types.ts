@@ -278,13 +278,46 @@ export type InstancedData = {
 export type Instance = InstancedEntity & InstancedData;
 
 export interface InstancedEvents {
-  onPointerEnter?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
-  onPointerLeave?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
-  onPointerDown?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
-  onPointerOver?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
-  onPointerOut?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
-  onPointerUp?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
-  onClick?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+  onPointerEnter?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
+  onPointerLeave?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
+  onPointerDown?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
+  onPointerOver?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
+  onPointerOut?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
+  onPointerUp?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
+  onClick?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
+  onContextMenu?: (
+    event: ThreeEvent<MouseEvent>,
+    node: InternalGraphNode,
+    instance?: Instance
+  ) => void;
 }
 
 export interface InstancedMeshProps extends InstancedEvents {
@@ -298,7 +331,6 @@ export interface InstancedMeshProps extends InstancedEvents {
   disabled?: boolean;
   draggingIds?: string[];
 }
-
 
 export interface NodeRendererProps {
   /**
