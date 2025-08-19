@@ -170,24 +170,34 @@ export const InstancedMeshSphere = forwardRef<
           onPointerDown={e => {
             if (!draggable) return;
             const instance = getMesh()?.instances?.[e.instanceId];
-            onPointerDown?.(e, instance?.node, instance);
+            if (instance) {
+              onPointerDown?.(e, instance?.node, instance);
+            }
           }}
           onPointerUp={e => {
             if (!draggable) return;
             const instance = getMesh()?.instances?.[e.instanceId];
-            onPointerUp?.(e, instance?.node, instance);
+            if (instance) {
+              onPointerUp?.(e, instance?.node, instance);
+            }
           }}
           onPointerOver={e => {
             const instance = getMesh()?.instances?.[e.instanceId];
-            onPointerOver?.(e, instance?.node, instance);
+            if (instance) {
+              onPointerOver?.(e, instance?.node, instance);
+            }
           }}
           onPointerOut={e => {
             const instance = getMesh()?.instances?.[e.instanceId];
-            onPointerOut?.(e, instance?.node, instance);
+            if (instance) {
+              onPointerOut?.(e, instance?.node, instance);
+            }
           }}
           onContextMenu={e => {
             const instance = getMesh()?.instances?.[e.instanceId];
-            onContextMenu?.(e, instance?.node, instance);
+            if (instance) {
+              onContextMenu?.(e, instance?.node, instance);
+            }
           }}
         />
       </>

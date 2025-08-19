@@ -592,7 +592,6 @@ export const CustomInstances = () => {
             onPointerOver={onPointerOver}
             onPointerOut={onPointerOut}
             onPointerDown={onPointerDown}
-            onClick={onClick}
           />
           <InstancedMeshRings
             ref={instancesRef[1]}

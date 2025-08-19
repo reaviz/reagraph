@@ -267,6 +267,23 @@ export const InstancedNodes = ({
     [disabled, canCollapse, isCollapsed, onContextMenu, onCollapse]
   );
 
+  const clickHandler = useCallback(
+    (event: ThreeEvent<MouseEvent>, node: InternalGraphNode) => {
+      if (!disabled && draggedNodeIdRef.current !== node.id) {
+        onClick?.(
+          node,
+          {
+            canCollapse,
+            isCollapsed
+          },
+          event
+        );
+      }
+      draggedNodeIdRef.current = null;
+    },
+    [disabled, onClick, canCollapse, isCollapsed]
+  );
+
   const contextMenuComponent = useMemo(
     () =>
       contextMenuNode &&
@@ -322,19 +339,7 @@ export const InstancedNodes = ({
           node.id
         );
       },
-      onClick: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode) => {
-        if (!disabled && draggedNodeIdRef.current !== node.id) {
-          onClick?.(
-            node,
-            {
-              canCollapse: false,
-              isCollapsed: false
-            },
-            event
-          );
-        }
-        draggedNodeIdRef.current = null;
-      }
+      onClick: clickHandler
     });
   }
 
@@ -352,28 +357,14 @@ export const InstancedNodes = ({
           draggingIds={draggingIds}
           hoveredNodeId={hoveredNodeId}
           onPointerDown={(event, node, instance) => {
-            if (instance) {
-              handleDragStart(
-                instance.id,
-                event.point,
-                instance.position,
-                node.id
-              );
-            }
+            handleDragStart(
+              instance.id,
+              event.point,
+              instance.position,
+              node.id
+            );
           }}
-          onClick={(event, node) => {
-            if (!disabled && draggedNodeIdRef.current !== node.id) {
-              onClick?.(
-                node,
-                {
-                  canCollapse: false,
-                  isCollapsed: false
-                },
-                event
-              );
-            }
-            draggedNodeIdRef.current = null;
-          }}
+          onClick={clickHandler}
           onContextMenu={contextMenuHandler}
           onPointerOver={pointerOver}
           onPointerOut={pointerOut}
@@ -393,31 +384,18 @@ export const InstancedNodes = ({
           onPointerOut={pointerOut}
           onContextMenu={contextMenuHandler}
           onPointerDown={(event, node) => {
-            if (draggable) {
-              handleDragStart(
-                undefined,
-                event.point,
-                new Vector3(
-                  node.position?.x || 0,
-                  node.position?.y || 0,
-                  node.position?.z || 0
-                ),
-                node.id
-              );
-            }
+            handleDragStart(
+              undefined,
+              event.point,
+              new Vector3(
+                node.position?.x || 0,
+                node.position?.y || 0,
+                node.position?.z || 0
+              ),
+              node.id
+            );
           }}
-          onClick={(event, node) => {
-            if (!disabled && draggedNodeIdRef.current !== node.id) {
-              onClick?.(
-                node,
-                {
-                  canCollapse: false,
-                  isCollapsed: false
-                },
-                event
-              );
-            }
-          }}
+          onClick={clickHandler}
         />
       )}
       <InstancedMeshRings
@@ -433,14 +411,7 @@ export const InstancedNodes = ({
         selections={selections}
         draggingIds={draggingIds}
         onPointerDown={(event, node, instance) => {
-          if (instance) {
-            handleDragStart(
-              instance.id,
-              event.point,
-              instance.position,
-              node.id
-            );
-          }
+          handleDragStart(instance.id, event.point, instance.position, node.id);
         }}
       />
       <CulledLabels
@@ -454,19 +425,7 @@ export const InstancedNodes = ({
         draggingIds={draggingIds}
         onPointerOver={pointerOver}
         onPointerOut={pointerOut}
-        onClick={(event, node) => {
-          if (!disabled && draggedNodeIdRef.current !== node.id) {
-            onClick?.(
-              node,
-              {
-                canCollapse: false,
-                isCollapsed: false
-              },
-              event
-            );
-          }
-          draggedNodeIdRef.current = null;
-        }}
+        onClick={clickHandler}
         onPointerDown={(event, node) => {
           handleDragStart(
             undefined,
