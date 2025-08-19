@@ -57,14 +57,13 @@ const iconMap = {
   Product: productSvg
 };
 
+const NODES_WITH_ICONS = complexNodes.map((node, index) => ({
+  ...node,
+  icon: iconMap[Object.keys(iconMap)[index % Object.keys(iconMap).length]]
+}));
+
 export const Spheres = () => {
-  return (
-    <GraphCanvas
-      nodes={simpleNodes}
-      edges={simpleEdges}
-      useInstances={true}
-    />
-  );
+  return <GraphCanvas nodes={simpleNodes} edges={simpleEdges} useInstances />;
 };
 
 export const Selections = () => {
@@ -81,7 +80,7 @@ export const Selections = () => {
       ref={graphRef}
       nodes={complexNodes}
       edges={complexEdges}
-      useInstances={true}
+      useInstances
       selections={selections}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
@@ -122,7 +121,7 @@ export const LassoSelectionNotWorking = () => {
       </div>
       <GraphCanvas
         ref={graphRef}
-        useInstances={true}
+        useInstances
         nodes={complexNodes}
         edges={complexEdges}
         selections={selections}
@@ -150,7 +149,7 @@ export const Draggable = () => {
     <GraphCanvas
       ref={graphRef}
       draggable
-      useInstances={true}
+      useInstances
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
@@ -179,7 +178,7 @@ export const HighlightHover = () => {
   return (
     <GraphCanvas
       ref={graphRef}
-      useInstances={true}
+      useInstances
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
@@ -204,7 +203,7 @@ export const HighlightClick = () => {
   return (
     <GraphCanvas
       ref={graphRef}
-      useInstances={true}
+      useInstances
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
@@ -231,8 +230,8 @@ export const IconInstances = () => {
   return (
     <GraphCanvas
       ref={graphRef}
-      useInstances={true}
-      draggable={true}
+      useInstances
+      draggable
       nodes={nodes}
       edges={complexEdges}
       selections={selections}
@@ -245,14 +244,10 @@ export const IconInstances = () => {
 
 export const CustomInstances = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const nodes = complexNodes.map((node, index) => ({
-    ...node,
-    icon: iconMap[Object.keys(iconMap)[index % Object.keys(iconMap).length]]
-  }));
 
   const { selections, onNodeClick, onCanvasClick } = useSelection({
     ref: graphRef,
-    nodes: nodes,
+    nodes: NODES_WITH_ICONS,
     edges: complexEdges,
     type: 'multi'
   });
@@ -260,9 +255,10 @@ export const CustomInstances = () => {
   return (
     <GraphCanvas
       ref={graphRef}
+      theme={darkTheme}
       draggable
-      useInstances={true}
-      nodes={nodes}
+      useInstances
+      nodes={NODES_WITH_ICONS}
       edges={complexEdges}
       selections={selections}
       renderInstances={({
@@ -279,55 +275,53 @@ export const CustomInstances = () => {
         onPointerOut,
         onPointerDown,
         onClick
-      }) => {
-        return (
-          <>
-            <InstancedMeshSphere
-              ref={instancesRef[0]}
-              nodes={nodes}
-              selections={selections}
-              actives={actives}
-              animated={animated}
-              draggable={draggable}
-              theme={theme}
-              draggingIds={draggingIds}
-              hoveredNodeId={hoveredNodeId}
-              onPointerOver={onPointerOver}
-              onPointerOut={onPointerOut}
-              onPointerDown={onPointerDown}
-              onClick={onClick}
-            />
-            <InstancedIcon
-              nodes={nodes}
-              selections={selections}
-              actives={actives}
-              animated={animated}
-              draggable={draggable}
-              theme={theme}
-              draggingIds={draggingIds}
-              hoveredNodeId={hoveredNodeId}
-              onPointerOver={onPointerOver}
-              onPointerOut={onPointerOut}
-              onPointerDown={onPointerDown}
-              onClick={onClick}
-            />
-            <InstancedMeshRings
-              ref={instancesRef[1]}
-              theme={theme}
-              nodes={
-                selections.length
-                  ? nodes.filter(node => selections?.includes(node.id))
-                  : []
-              }
-              animated={false}
-              draggable={draggable}
-              selections={selections}
-              draggingIds={draggingIds}
-              onPointerDown={onPointerDown}
-            />
-          </>
-        );
-      }}
+      }) => (
+        <>
+          <InstancedMeshSphere
+            ref={instancesRef[0]}
+            nodes={nodes}
+            selections={selections}
+            actives={actives}
+            animated={animated}
+            draggable={draggable}
+            theme={theme}
+            draggingIds={draggingIds}
+            hoveredNodeId={hoveredNodeId}
+            onPointerOver={onPointerOver}
+            onPointerOut={onPointerOut}
+            onPointerDown={onPointerDown}
+            onClick={onClick}
+          />
+          <InstancedIcon
+            nodes={nodes}
+            selections={selections}
+            actives={actives}
+            animated={animated}
+            draggable={draggable}
+            theme={theme}
+            draggingIds={draggingIds}
+            hoveredNodeId={hoveredNodeId}
+            onPointerOver={onPointerOver}
+            onPointerOut={onPointerOut}
+            onPointerDown={onPointerDown}
+            onClick={onClick}
+          />
+          <InstancedMeshRings
+            ref={instancesRef[1]}
+            theme={theme}
+            nodes={
+              selections.length
+                ? nodes.filter(node => selections?.includes(node.id))
+                : []
+            }
+            animated={false}
+            draggable={draggable}
+            selections={selections}
+            draggingIds={draggingIds}
+            onPointerDown={onPointerDown}
+          />
+        </>
+      )}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
     />

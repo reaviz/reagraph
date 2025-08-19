@@ -122,6 +122,7 @@ export const createStore = ({
       const nodeMap = new Map<string, InternalGraphNode>(
         nodes.map(node => [node.id, node])
       );
+
       set(state => ({
         ...state,
         nodes,
