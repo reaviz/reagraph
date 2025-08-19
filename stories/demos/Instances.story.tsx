@@ -33,8 +33,6 @@ import govSvg from '../assets/gov.svg';
 import productSvg from '../assets/product.svg';
 import missleSvg from '../assets/missle.svg';
 import { InstancedIcon } from '../../src/symbols/instances/InstancedIcon';
-import { InstancedMesh2 } from '@three.ez/instanced-mesh';
-import { Instance } from '@react-three/fiber';
 import { InstancedMeshSphere } from '../../src/symbols/instances/InstancedMeshSphere';
 import { InstancedMeshRings } from '../../src/symbols/instances/InstancesMeshRing';
 
@@ -65,7 +63,6 @@ export const Spheres = () => {
       nodes={simpleNodes}
       edges={simpleEdges}
       useInstances={true}
-      theme={darkTheme}
     />
   );
 };
@@ -88,7 +85,6 @@ export const Selections = () => {
       selections={selections}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
-      theme={darkTheme}
     />
   );
 };
@@ -127,7 +123,6 @@ export const LassoSelectionNotWorking = () => {
       <GraphCanvas
         ref={graphRef}
         useInstances={true}
-        theme={darkTheme}
         nodes={complexNodes}
         edges={complexEdges}
         selections={selections}
@@ -156,7 +151,6 @@ export const Draggable = () => {
       ref={graphRef}
       draggable
       useInstances={true}
-      theme={darkTheme}
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}
@@ -185,7 +179,6 @@ export const HighlightHover = () => {
   return (
     <GraphCanvas
       ref={graphRef}
-      theme={darkTheme}
       useInstances={true}
       nodes={complexNodes}
       edges={complexEdges}
@@ -211,7 +204,6 @@ export const HighlightClick = () => {
   return (
     <GraphCanvas
       ref={graphRef}
-      theme={darkTheme}
       useInstances={true}
       nodes={complexNodes}
       edges={complexEdges}
@@ -239,7 +231,6 @@ export const IconInstances = () => {
   return (
     <GraphCanvas
       ref={graphRef}
-      theme={darkTheme}
       useInstances={true}
       draggable={true}
       nodes={nodes}
@@ -271,7 +262,6 @@ export const CustomInstances = () => {
       ref={graphRef}
       draggable
       useInstances={true}
-      theme={darkTheme}
       nodes={nodes}
       edges={complexEdges}
       selections={selections}
@@ -651,10 +641,7 @@ export const Performance = () => {
         nodes={nodes}
         edges={edges}
         theme={darkTheme}
-        // cameraMode="orbit"
-        // layoutType='forceDirected3d'
         labelType="all"
-        // labelType="none"
         animated={true}
         draggable={true}
         useInstances={useInstances}
