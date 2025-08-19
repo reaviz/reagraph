@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { ReactNode, useLayoutEffect, useRef } from 'react';
 import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Vector3 } from 'three';
 import { ThreeEvent } from '@react-three/fiber';
@@ -6,6 +6,7 @@ import { useCursor } from '@react-three/drei';
 
 import {
   CollapseProps,
+  InstancesRendererProps,
   InternalGraphNode,
   InternalGraphPosition
 } from '../../types';
@@ -15,7 +16,7 @@ import { useCameraControls } from '../../CameraControls/useCameraControls';
 import { InstancedMeshSphere } from './InstancedMeshSphere';
 import { InstancedMeshRings } from './InstancesMeshRing';
 import { useStore } from '../../store';
-import { Instance } from './types';
+import { Instance } from '../../types';
 import { useHoverIntent } from '../../utils/useHoverIntent';
 import { updateInstancePosition } from '../../utils/instances';
 import { CulledLabels } from '../CulledLabels';
@@ -27,7 +28,7 @@ interface InstancedNodesProps {
   animated?: boolean;
   draggable?: boolean;
   disabled?: boolean;
-  onDrag?: (node: InternalGraphNode) => void;
+  renderInstances?: (args: InstancesRendererProps) => ReactNode;
   onPointerOver?: (
     node: InternalGraphNode,
     event: ThreeEvent<PointerEvent>
@@ -54,11 +55,12 @@ export const InstancedNodes = ({
   selections = [],
   actives = [],
   disabled = false,
-  onDrag,
+  renderInstances,
   onClick,
   onPointerOver,
   onPointerOut
 }: InstancedNodesProps) => {
+  const instancesRefs = useRef<InstancedMesh2<Instance>[]>([]);
   const sphereRef = useRef<InstancedMesh2<Instance> | null>(null);
   const ringMeshRef = useRef<InstancedMesh2<Instance> | null>(null);
   const nodeInstances = useRef<Map<string, Instance[]>>(new Map());
@@ -91,15 +93,15 @@ export const InstancedNodes = ({
     onDragStart: (nodeId?: string) => {
       cameraControls.freeze();
 
-      [
-        ...(sphereRef.current?.instances || []),
-        ...(ringMeshRef.current?.instances || [])
-      ].forEach(inst => {
-        nodeInstances.current.set(inst.nodeId, [
-          ...(nodeInstances.current.get(inst.nodeId) || []),
-          inst
-        ]);
-      });
+      instancesRefs.current
+        .map(inst => inst?.instances)
+        .flat()
+        .forEach(inst => {
+          nodeInstances.current.set(inst.nodeId, [
+            ...(nodeInstances.current.get(inst.nodeId) || []),
+            inst
+          ]);
+        });
       nodeInstances.current.get(nodeId)?.forEach(inst => {
         inst.isDragging = true;
       });
@@ -150,6 +152,58 @@ export const InstancedNodes = ({
     }
   });
 
+  useLayoutEffect(() => {
+    if (!renderInstances) {
+      instancesRefs.current = [sphereRef.current, ringMeshRef.current];
+    }
+  }, [renderInstances]);
+
+  if (renderInstances) {
+    return renderInstances({
+      instancesRef: instancesRefs,
+      nodes,
+      selections,
+      actives,
+      animated,
+      draggable,
+      disabled,
+      theme,
+      draggingIds,
+      hoveredNodeId,
+      onPointerOver: pointerOver,
+      onPointerOut: pointerOut,
+      onPointerDown: (
+        event: ThreeEvent<PointerEvent>,
+        node: InternalGraphNode,
+        instance?: Instance
+      ) => {
+        handleDragStart(
+          instance?.id,
+          event.point,
+          new Vector3(
+            node.position?.x || 0,
+            node.position?.y || 0,
+            node.position?.z || 0
+          ),
+          node.id
+        );
+      },
+      onClick: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode) => {
+        if (!disabled && draggedNodeIdRef.current !== node.id) {
+          onClick?.(
+            node,
+            {
+              canCollapse: false,
+              isCollapsed: false
+            },
+            event
+          );
+        }
+        draggedNodeIdRef.current = null;
+      }
+    });
+  }
+
   return (
     <>
       <InstancedMeshSphere
@@ -162,23 +216,18 @@ export const InstancedNodes = ({
         actives={actives}
         draggingIds={draggingIds}
         hoveredNodeId={hoveredNodeId}
-        onPointerDown={(event, instance) => {
+        onPointerDown={(event, node, instance) => {
           if (instance) {
             handleDragStart(
               instance.id,
               event.point,
               instance.position,
-              instance.nodeId
+              node.id
             );
           }
         }}
-        onClick={(event, instance) => {
-          const node = instance.node;
-          if (
-            !disabled &&
-            !instance.isDragging &&
-            draggedNodeIdRef.current !== instance.nodeId
-          ) {
+        onClick={(event, node) => {
+          if (!disabled && draggedNodeIdRef.current !== node.id) {
             onClick?.(
               node,
               {
@@ -205,13 +254,13 @@ export const InstancedNodes = ({
         draggable={draggable}
         selections={selections}
         draggingIds={draggingIds}
-        onPointerDown={(event, instance) => {
+        onPointerDown={(event, node, instance) => {
           if (instance) {
             handleDragStart(
               instance.id,
               event.point,
               instance.position,
-              instance.nodeId
+              node.id
             );
           }
         }}

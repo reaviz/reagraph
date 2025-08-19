@@ -1,6 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, RefObject } from 'react';
 import { Theme } from './themes';
 import { ColorRepresentation } from 'three';
+import { ThreeEvent } from '@react-three/fiber';
+import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
 
 export interface GraphElementBaseAttributes<T = any> {
   /**
@@ -266,6 +268,25 @@ export interface ContextMenuEvent extends NodeContextMenuProps {
   onClose: () => void;
 }
 
+export type InstancedData = {
+  nodeId: string;
+  node: InternalGraphNode;
+  isDragging: boolean;
+  hasAnimated: boolean;
+};
+
+export type Instance = InstancedEntity & InstancedData;
+
+export interface InstancedEvents {
+  onPointerEnter?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+  onPointerLeave?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+  onPointerDown?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+  onPointerOver?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+  onPointerOut?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+  onPointerUp?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+  onClick?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
+}
+
 export interface NodeRendererProps {
   /**
    * Color of the node. Handles selected/etc.
@@ -306,6 +327,58 @@ export interface NodeRendererProps {
    * ID of the node.
    */
   id: string;
+}
+
+export interface InstancesRendererProps extends InstancedEvents {
+  /**
+   * The instances ref.
+   */
+  instancesRef: RefObject<InstancedMesh2<Instance>[]>;
+
+  /**
+   * The nodes to render.
+   */
+  nodes: InternalGraphNode[];
+
+  /**
+   * The theme of the graph.
+   */
+  theme: Theme;
+
+  /**
+   * The selections of the graph.
+   */
+  selections: string[];
+
+  /**
+   * The actives of the graph.
+   */
+  actives: string[];
+
+  /**
+   * The dragging ids of the graph.
+   */
+  draggingIds: string[];
+
+  /**
+   * The hovered node id of the graph.
+   */
+  hoveredNodeId: string;
+
+  /**
+   * The animated of the graph.
+   */
+  animated: boolean;
+
+  /**
+   * The draggable of the graph.
+   */
+  draggable: boolean;
+
+  /**
+   * The disabled of the graph.
+   */
+  disabled: boolean;
 }
 
 export type NodeRenderer = (args: NodeRendererProps) => ReactNode;

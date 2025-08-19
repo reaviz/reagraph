@@ -23,7 +23,8 @@ import {
   getInstanceColor,
   updateInstancePosition
 } from '../../utils/instances';
-import { InstancedData, InstancedMeshProps } from './types';
+import { InstancedMeshProps } from './types';
+import { InstancedData } from '../../types';
 
 // Add InstancedMesh2 to the jsx catalog
 extend({ InstancedMesh2 });
@@ -110,7 +111,9 @@ export const InstancedMeshRings = forwardRef<
 
     // Initialize mesh and update instances when data changes
     useLayoutEffect(() => {
-      const mesh = (ref as RefObject<InstancedMesh2<InstancedData>>)?.current;
+      const mesh =
+        (ref as RefObject<InstancedMesh2<InstancedData>>)?.current ||
+        meshRef.current;
       if (!mesh) return;
 
       mesh.clearInstances();
@@ -165,7 +168,7 @@ export const InstancedMeshRings = forwardRef<
           if (!draggable) return;
           const instance = getMesh()?.instances?.[e.instanceId];
           if (instance) {
-            onPointerDown?.(e, instance);
+            onPointerDown?.(e, instance.node, instance);
           }
         }}
       />

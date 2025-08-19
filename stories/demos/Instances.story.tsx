@@ -1,4 +1,5 @@
 import React, {
+  RefObject,
   useCallback,
   useEffect,
   useMemo,
@@ -31,6 +32,11 @@ import trumpSvg from '../assets/trump.svg';
 import govSvg from '../assets/gov.svg';
 import productSvg from '../assets/product.svg';
 import missleSvg from '../assets/missle.svg';
+import { InstancedIcon } from '../../src/symbols/instances/InstancedIcon';
+import { InstancedMesh2 } from '@three.ez/instanced-mesh';
+import { Instance } from '@react-three/fiber';
+import { InstancedMeshSphere } from '../../src/symbols/instances/InstancedMeshSphere';
+import { InstancedMeshRings } from '../../src/symbols/instances/InstancesMeshRing';
 
 export default {
   title: 'Demos/Instances',
@@ -211,6 +217,98 @@ export const HighlightClick = () => {
       edges={complexEdges}
       selections={selections}
       actives={actives}
+      onCanvasClick={onCanvasClick}
+      onNodeClick={onNodeClick}
+    />
+  );
+};
+
+export const CustomInstances = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const nodes = complexNodes.map((node, index) => ({
+    ...node,
+    icon: iconMap[Object.keys(iconMap)[index % Object.keys(iconMap).length]]
+  }));
+
+  const { selections, onNodeClick, onCanvasClick } = useSelection({
+    ref: graphRef,
+    nodes: nodes,
+    edges: complexEdges,
+    type: 'multi'
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      draggable
+      useInstances={true}
+      theme={darkTheme}
+      nodes={nodes}
+      edges={complexEdges}
+      selections={selections}
+      renderInstances={({
+        instancesRef,
+        nodes,
+        selections,
+        actives,
+        animated,
+        draggable,
+        theme,
+        draggingIds,
+        hoveredNodeId,
+        onPointerOver,
+        onPointerOut,
+        onPointerDown,
+        onClick
+      }) => {
+        return (
+          <>
+            <InstancedMeshSphere
+              ref={instancesRef[0]}
+              nodes={nodes}
+              selections={selections}
+              actives={actives}
+              animated={animated}
+              draggable={draggable}
+              theme={theme}
+              draggingIds={draggingIds}
+              hoveredNodeId={hoveredNodeId}
+              onPointerOver={onPointerOver}
+              onPointerOut={onPointerOut}
+              onPointerDown={onPointerDown}
+              onClick={onClick}
+            />
+            <InstancedIcon
+              nodes={nodes}
+              selections={selections}
+              actives={actives}
+              animated={animated}
+              draggable={draggable}
+              theme={theme}
+              draggingIds={draggingIds}
+              hoveredNodeId={hoveredNodeId}
+              onPointerOver={onPointerOver}
+              onPointerOut={onPointerOut}
+              onPointerDown={onPointerDown}
+              onClick={onClick}
+            />
+            <InstancedMeshRings
+              ref={instancesRef[1]}
+              theme={theme}
+              nodes={
+                selections.length
+                  ? nodes.filter(node => selections?.includes(node.id))
+                  : []
+              }
+              animated={false}
+              draggable={draggable}
+              selections={selections}
+              draggingIds={draggingIds}
+              onPointerDown={onPointerDown}
+            />
+          </>
+        );
+      }}
       onCanvasClick={onCanvasClick}
       onNodeClick={onNodeClick}
     />

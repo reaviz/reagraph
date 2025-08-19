@@ -20,7 +20,8 @@ import {
   InternalGraphNode,
   NodeRenderer,
   CollapseProps,
-  ClusterRenderer
+  ClusterRenderer,
+  InstancesRendererProps
 } from './types';
 import type { SizingType } from './sizing';
 import type { ClusterEventArgs } from './symbols/Cluster';
@@ -160,6 +161,11 @@ export interface GraphSceneProps {
    * Use instanced rendering for nodes. Default is `false`.
    */
   useInstances?: boolean;
+
+  /**
+   * Custom instances renderer
+   */
+  renderInstances?: (args: InstancesRendererProps) => ReactNode;
 
   /**
    * Render a custom node
@@ -358,6 +364,7 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         edgeInterpolation = 'linear',
         labelFontUrl,
         renderNode,
+        renderInstances,
         onRenderCluster,
         aggregateEdges,
         ...rest
@@ -449,8 +456,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
               actives={rest.actives}
               animated={animated}
               draggable={draggable}
+              renderInstances={renderInstances}
               onClick={onNodeClick}
-              onDrag={onNodeDraggedHandler}
               onPointerOver={onNodePointerOver}
               onPointerOut={onNodePointerOut}
             />
@@ -494,7 +501,8 @@ export const GraphScene: FC<GraphSceneProps & { ref?: Ref<GraphSceneRef> }> =
         renderNode,
         rest.selections,
         rest.actives,
-        useInstances
+        useInstances,
+        renderInstances
       ]);
 
       const edgeComponents = useMemo(

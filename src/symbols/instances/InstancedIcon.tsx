@@ -4,24 +4,38 @@ import React, {
   useRef,
   useLayoutEffect,
   useState,
-  useEffect
+  useEffect,
+  useCallback
 } from 'react';
 import { Instances, Instance } from '@react-three/drei';
-import { InternalGraphNode } from '../../types';
+import { ThreeEvent } from '@react-three/fiber';
+import { Controller } from '@react-spring/three';
+
 import {
   Color,
   DoubleSide,
   ShaderMaterial,
   InstancedBufferAttribute,
   CanvasTexture,
-  NearestFilter
+  NearestFilter,
+  Vector3
 } from 'three';
 
-interface InstancedIconProps {
+import { InternalGraphNode } from '../../types';
+import { Theme } from '../../themes';
+import { InstancedEvents } from '../../types';
+import { getInstanceColor } from '../../utils/instances';
+import { animationConfig } from '../../utils';
+
+interface InstancedIconProps extends InstancedEvents {
   nodes: InternalGraphNode[];
   selections?: string[];
   actives?: string[];
   animated?: boolean;
+  draggable?: boolean;
+  theme?: Theme;
+  draggingIds?: string[];
+  hoveredNodeId?: string;
 }
 
 // Helper function to create icon atlases from image URLs
@@ -115,12 +129,15 @@ const createIconSpriteShaderMaterial = (texture: CanvasTexture) => {
     vertexShader: `
       attribute float customOpacity;
       attribute vec4 uvOffset;
+      attribute vec3 customColor;
       varying vec2 vUv;
       varying float vOpacity;
+      varying vec3 vColor;
 
       void main() {
         vUv = uv * uvOffset.zw + uvOffset.xy;
         vOpacity = customOpacity;
+        vColor = customColor;
 
         // Simple and reliable billboard approach
         // Get the center position from instance matrix
@@ -145,12 +162,13 @@ const createIconSpriteShaderMaterial = (texture: CanvasTexture) => {
 
       varying vec2 vUv;
       varying float vOpacity;
+      varying vec3 vColor;
 
       void main() {
         vec4 iconColor = texture2D(iconTexture, vUv);
         if (iconColor.a < 0.1) discard;
 
-        gl_FragColor = vec4(iconColor.rgb, iconColor.a * vOpacity * opacity);
+        gl_FragColor = vec4(iconColor.rgb * vColor, iconColor.a * vOpacity * opacity);
       }
     `,
     uniforms: {
@@ -168,11 +186,21 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
   nodes,
   selections = [],
   actives = [],
-  animated = true
+  animated = true,
+  draggable = false,
+  theme,
+  draggingIds = [],
+  hoveredNodeId,
+  onPointerOver,
+  onPointerOut,
+  onPointerDown,
+  onClick
 }) => {
   const instancesRef = useRef<any | null>(null);
   const iconInstancesRefs = useRef<any[]>([]);
-  const materialRef = useRef<ShaderMaterial | null>(null);
+  const instanceRefs = useRef<Map<string, any>>(new Map());
+  const activeControllers = useRef<Map<string, any>>(new Map());
+  const initializedNodes = useRef<Set<string>>(new Set());
   const [iconAtlases, setIconAtlases] = useState<{
     atlases: any[];
     uvMapping: Map<string, any>;
@@ -194,9 +222,6 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
       createIconAtlases(uniqueIconUrls)
         .then(result => {
           if (!isCancelled) {
-            console.log(
-              `Loaded ${result.atlases.length} icon atlases with ${result.uvMapping.size} icons`
-            );
             setIconAtlases(result);
           }
         })
@@ -219,16 +244,33 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
     );
   }, [iconAtlases.atlases]);
 
-  const shouldShowLabels = true;
-
-  // Prepare instance data with opacity values
   const instanceData = useMemo(() => {
-    return nodes.map(node => ({
-      ...node,
-      opacity: actives.includes(node.id) ? 1.0 : 0.5,
-      color: node.fill
-    }));
-  }, [nodes, actives]);
+    return nodes.map(node => {
+      const isActive = actives.includes(node.id);
+      const hasSelections = selections.length > 0;
+      const isSelected = selections.includes(node.id);
+      const isDragging = draggingIds.includes(node.id);
+      const shouldHighlight = isSelected || isActive;
+      const selectionOpacity = hasSelections
+        ? shouldHighlight
+          ? theme.node.selectedOpacity
+          : theme.node.inactiveOpacity
+        : theme.node.opacity;
+
+      return {
+        ...node,
+        opacity: selectionOpacity,
+        color: getInstanceColor(
+          node,
+          theme,
+          actives,
+          selections,
+          isDragging,
+          hoveredNodeId === node.id
+        )
+      };
+    });
+  }, [nodes, actives, selections, draggingIds, hoveredNodeId, theme]);
 
   // Group nodes by icon atlas index
   const nodesByIconAtlas = useMemo(() => {
@@ -249,6 +291,61 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
 
     return groups;
   }, [instanceData, iconAtlases.uvMapping]);
+
+  // Helper function to animate instance position
+  const animateInstancePosition = useCallback((
+    instanceRef: any,
+    targetPosition: { x: number; y: number; z: number },
+    nodeId: string,
+    isDragging: boolean = false
+  ) => {
+    if (!animated || !instanceRef || isDragging) return;
+
+    // Stop any existing animation for this node
+    const existingController = activeControllers.current.get(nodeId);
+    if (existingController) {
+      existingController.stop();
+    }
+
+    // Use current instance position as starting point
+    const currentPos = instanceRef.position;
+    const isInitial = !initializedNodes.current.has(nodeId);
+
+    const startPosition = {
+      x: isInitial ? 0 : currentPos.x,
+      y: isInitial ? 0 : currentPos.y,
+      z: isInitial ? 0 : currentPos.z
+    };
+
+    const controller = new Controller({
+      x: startPosition.x,
+      y: startPosition.y,
+      z: startPosition.z,
+      config: animationConfig
+    });
+
+    // Store the controller so we can stop it later if needed
+    activeControllers.current.set(nodeId, controller);
+
+    controller.start({
+      x: targetPosition.x,
+      y: targetPosition.y,
+      z: targetPosition.z,
+      onChange: () => {
+        const x = controller.springs.x.get();
+        const y = controller.springs.y.get();
+        const z = controller.springs.z.get();
+
+        if (instanceRef.position) {
+          instanceRef.position.set(x, y, z);
+        }
+      },
+      onFinish: () => {
+        // Clean up the controller when animation finishes
+        activeControllers.current.delete(nodeId);
+      }
+    });
+  }, [animated]);
 
   // Set up custom instance attributes for spheres
   useLayoutEffect(() => {
@@ -296,6 +393,7 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
 
         const opacityArray = new Float32Array(atlasNodes.length);
         const uvOffsetArray = new Float32Array(atlasNodes.length * 4);
+        const colorArray = new Float32Array(atlasNodes.length * 3);
 
         atlasNodes.forEach((node, i) => {
           const iconUvData = iconAtlases.uvMapping.get(node.icon!);
@@ -305,6 +403,12 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
             uvOffsetArray[i * 4 + 1] = iconUvData.v;
             uvOffsetArray[i * 4 + 2] = iconUvData.width;
             uvOffsetArray[i * 4 + 3] = iconUvData.height;
+
+            // Convert color to RGB values
+            const color = new Color(node.color);
+            colorArray[i * 3] = color.r;
+            colorArray[i * 3 + 1] = color.g;
+            colorArray[i * 3 + 2] = color.b;
           }
         });
 
@@ -316,12 +420,56 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
           'uvOffset',
           new InstancedBufferAttribute(uvOffsetArray, 4)
         );
+        geometry.setAttribute(
+          'customColor',
+          new InstancedBufferAttribute(colorArray, 3)
+        );
 
         geometry.attributes.customOpacity.needsUpdate = true;
         geometry.attributes.uvOffset.needsUpdate = true;
+        geometry.attributes.customColor.needsUpdate = true;
       }
     });
   }, [nodesByIconAtlas, iconAtlases]);
+
+  // Handle position updates with animation
+  useLayoutEffect(() => {
+    instanceData.forEach(node => {
+      const instanceRef = instanceRefs.current.get(node.id);
+      const pos = node.position || { x: 0, y: 0, z: 0 };
+      const isDragging = draggingIds.includes(node.id);
+
+      if (instanceRef) {
+        const currentPos = instanceRef.position;
+        const hasPositionChanged = 
+          currentPos.x !== pos.x || 
+          currentPos.y !== pos.y || 
+          currentPos.z !== pos.z;
+
+        // Stop any ongoing animation if node starts being dragged
+        if (isDragging) {
+          const existingController = activeControllers.current.get(node.id);
+          if (existingController) {
+            existingController.stop();
+            activeControllers.current.delete(node.id);
+          }
+        }
+
+        if (hasPositionChanged) {
+          if (isDragging) {
+            // During dragging: update position immediately
+            instanceRef.position.set(pos.x, pos.y, pos.z);
+          } else if (animated) {
+            // Not dragging and animation enabled: use animation
+            animateInstancePosition(instanceRef, pos, node.id, isDragging);
+          } else {
+            // Animation disabled: update position immediately
+            instanceRef.position.set(pos.x, pos.y, pos.z);
+          }
+        }
+      }
+    });
+  }, [instanceData, animated, draggingIds, animateInstancePosition]);
 
   return (
     iconAtlases.atlases.length > 0 &&
@@ -344,13 +492,35 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
             return (
               <Instance
                 key={`icon-${node.id}`}
-                position={[pos.x, pos.y, pos.z]}
+                ref={ref => {
+                  if (ref && (ref as any).position) {
+                    instanceRefs.current.set(node.id, ref);
+                    const isInitial = !initializedNodes.current.has(node.id);
+                    const isDragging = draggingIds.includes(node.id);
+                    
+                    if (isInitial && animated && !isDragging) {
+                      // Initial animation from origin
+                      (ref as any).position.set(0, 0, 0);
+                      animateInstancePosition(ref, pos, node.id, isDragging);
+                      initializedNodes.current.add(node.id);
+                    } else {
+                      // Set position immediately
+                      (ref as any).position.set(pos.x, pos.y, pos.z);
+                      initializedNodes.current.add(node.id);
+                    }
+                  }
+                }}
+                position={animated ? [0, 0, 0] : [pos.x, pos.y, pos.z]}
                 scale={[node.size * 1.0, node.size * 1.0, 1]}
                 userData={{
-                  nodeId: node.id,
+                  node: node,
                   isIcon: true,
                   atlasIndex
                 }}
+                onClick={event => onClick?.(event, node)}
+                onPointerOver={event => onPointerOver?.(event, node)}
+                onPointerOut={event => onPointerOut?.(event, node)}
+                onPointerDown={event => onPointerDown?.(event, node)}
               />
             );
           })}

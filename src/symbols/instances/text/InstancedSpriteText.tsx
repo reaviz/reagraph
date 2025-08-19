@@ -18,7 +18,7 @@ import { animationConfig } from '../../../utils/animation';
 import { Theme } from '../../../themes/theme';
 import { fragmentShader } from './shaders/fragmentShader';
 import { vertexShader } from './shaders/vertexShader';
-import { InstancedEvents, InstancedMeshProps } from '../types';
+import { InstancedMeshProps } from '../types';
 
 // Texture cache to prevent memory leaks and WebGL context loss
 const textureCache = new Map<

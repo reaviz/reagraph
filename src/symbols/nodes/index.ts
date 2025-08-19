@@ -5,4 +5,3 @@ export * from './Svg';
 export * from './SphereWithSvg';
 export * from './Badge';
 export * from './InstancedSpheres';
-export * from './InstancedIcon';

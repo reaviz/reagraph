@@ -1,9 +1,8 @@
 import { Color, Vector3 } from 'three';
 import { Controller } from '@react-spring/three';
 
-import { Instance } from '../symbols/instances/types';
 import { animationConfig } from './animation';
-import { InternalGraphNode } from '../types';
+import { Instance, InternalGraphNode } from '../types';
 import { Theme } from '../themes/theme';
 
 export const updateInstancePosition = (

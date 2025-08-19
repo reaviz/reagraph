@@ -12,7 +12,8 @@ import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { IcosahedronGeometry, MeshBasicMaterial } from 'three';
 
 import { nodeToInstance } from '../../utils/instances';
-import { InstancedData, InstancedMeshProps } from './types';
+import { InstancedMeshProps } from './types';
+import { InstancedData } from '../../types';
 
 // add InstancedMesh2 to the jsx catalog i.e use it as a jsx component
 extend({ InstancedMesh2 });
@@ -133,7 +134,16 @@ export const InstancedMeshSphere = forwardRef<
       // disable frustum culling to avoid flickering when camera zooming (wrongly culled)
       mesh.frustumCulled = false;
       mesh.computeBVH();
-    }, [nodes, actives, animated, ref, selections, draggingIds, theme, hoveredNodeId]);
+    }, [
+      nodes,
+      actives,
+      animated,
+      ref,
+      selections,
+      draggingIds,
+      theme,
+      hoveredNodeId
+    ]);
 
     return (
       <>
@@ -141,21 +151,28 @@ export const InstancedMeshSphere = forwardRef<
           key="instanced-mesh-sphere"
           ref={ref || meshRef}
           args={meshArgs}
-          onClick={e => onClick?.(e, getMesh()?.instances?.[e.instanceId])}
+          onClick={e => {
+            const instance = getMesh()?.instances?.[e.instanceId];
+            onClick?.(e, instance?.node, instance);
+          }}
           onPointerDown={e => {
             if (!draggable) return;
-            onPointerDown?.(e, getMesh()?.instances?.[e.instanceId]);
+            const instance = getMesh()?.instances?.[e.instanceId];
+            onPointerDown?.(e, instance?.node, instance);
           }}
           onPointerUp={e => {
             if (!draggable) return;
-            onPointerUp?.(e, getMesh()?.instances?.[e.instanceId]);
+            const instance = getMesh()?.instances?.[e.instanceId];
+            onPointerUp?.(e, instance?.node, instance);
           }}
-          onPointerOver={e =>
-            onPointerOver?.(e, getMesh()?.instances?.[e.instanceId])
-          }
-          onPointerOut={e =>
-            onPointerOut?.(e, getMesh()?.instances?.[e.instanceId])
-          }
+          onPointerOver={e => {
+            const instance = getMesh()?.instances?.[e.instanceId];
+            onPointerOver?.(e, instance?.node, instance);
+          }}
+          onPointerOut={e => {
+            const instance = getMesh()?.instances?.[e.instanceId];
+            onPointerOut?.(e, instance?.node, instance);
+          }}
         />
       </>
     );
