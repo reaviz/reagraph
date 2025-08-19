@@ -9,22 +9,19 @@ import React, {
 import { type ThreeElement } from '@react-three/fiber';
 import { useCursor } from '@react-three/drei';
 import { InstancedEntity, InstancedMesh2 } from '@three.ez/instanced-mesh';
-import {
-  RingGeometry,
-  MeshBasicMaterial,
-  Color,
-  DoubleSide,
-  Vector3
-} from 'three';
+import { RingGeometry, MeshBasicMaterial, DoubleSide, Vector3 } from 'three';
 import { extend } from '@react-three/fiber';
 
-import { InternalGraphNode } from '../../types';
 import {
   getInstanceColor,
   updateInstancePosition
 } from '../../utils/instances';
-import { InstancedMeshProps } from './types';
-import { InstancedData } from '../../types';
+import {
+  InstancedData,
+  InternalGraphNode,
+  InstancedMeshProps
+} from '../../types';
+import { Theme } from '../../themes';
 
 // Add InstancedMesh2 to the jsx catalog
 extend({ InstancedMesh2 });
@@ -48,7 +45,7 @@ const ringToInstance = (
   node: InternalGraphNode,
   instance: InstancedEntity & InstancedData,
   animated: boolean = false,
-  theme: any,
+  theme: Theme,
   actives: string[] = [],
   selections: string[] = []
 ) => {

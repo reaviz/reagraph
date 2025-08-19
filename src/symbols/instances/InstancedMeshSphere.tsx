@@ -1,5 +1,4 @@
 import React, {
-  FC,
   useMemo,
   useRef,
   useLayoutEffect,
@@ -9,11 +8,15 @@ import React, {
 import { extend } from '@react-three/fiber';
 import { type ThreeElement } from '@react-three/fiber';
 import { InstancedMesh2 } from '@three.ez/instanced-mesh';
-import { IcosahedronGeometry, MeshBasicMaterial } from 'three';
+import {
+  BufferGeometry,
+  IcosahedronGeometry,
+  Material,
+  MeshBasicMaterial
+} from 'three';
 
-import { nodeToInstance } from '../../utils/instances';
-import { InstancedMeshProps } from './types';
-import { InstancedData } from '../../types';
+import { nodeToInstance } from '../../utils';
+import { InstancedData, InstancedMeshProps } from '../../types';
 
 // add InstancedMesh2 to the jsx catalog i.e use it as a jsx component
 extend({ InstancedMesh2 });
@@ -62,7 +65,7 @@ export const InstancedMeshSphere = forwardRef<
     const meshArgs = useMemo(
       () => [geometry, material, { createEntities: true }],
       [geometry, material]
-    ) as any;
+    ) as [BufferGeometry, Material, { createEntities: boolean }];
 
     // Initialize mesh and update instances when data changes
     useLayoutEffect(() => {

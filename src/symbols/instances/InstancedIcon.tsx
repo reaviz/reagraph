@@ -8,7 +8,6 @@ import React, {
   useCallback
 } from 'react';
 import { Instances, Instance } from '@react-three/drei';
-import { ThreeEvent } from '@react-three/fiber';
 import { Controller } from '@react-spring/three';
 
 import {
@@ -18,14 +17,28 @@ import {
   InstancedBufferAttribute,
   CanvasTexture,
   NearestFilter,
-  Vector3
+  InstancedMesh
 } from 'three';
 
 import { InternalGraphNode } from '../../types';
 import { Theme } from '../../themes';
 import { InstancedEvents } from '../../types';
-import { getInstanceColor } from '../../utils/instances';
-import { animationConfig } from '../../utils';
+import { animationConfig, getInstanceColor } from '../../utils';
+import { iconFragmentShader, iconVertexShader } from './shaders/iconShaders';
+
+interface IconAtlas {
+  texture: CanvasTexture;
+  canvas: HTMLCanvasElement;
+  iconCount: number;
+}
+
+interface IconAtlasUV {
+  u: number;
+  v: number;
+  width: number;
+  height: number;
+  atlasIndex: number;
+}
 
 interface InstancedIconProps extends InstancedEvents {
   nodes: InternalGraphNode[];
@@ -126,51 +139,8 @@ const createIconAtlases = async (iconUrls: string[]) => {
 // Custom shader material for instanced icon sprites (billboard effect)
 const createIconSpriteShaderMaterial = (texture: CanvasTexture) => {
   return new ShaderMaterial({
-    vertexShader: `
-      attribute float customOpacity;
-      attribute vec4 uvOffset;
-      attribute vec3 customColor;
-      varying vec2 vUv;
-      varying float vOpacity;
-      varying vec3 vColor;
-
-      void main() {
-        vUv = uv * uvOffset.zw + uvOffset.xy;
-        vOpacity = customOpacity;
-        vColor = customColor;
-
-        // Simple and reliable billboard approach
-        // Get the center position from instance matrix
-        vec3 center = instanceMatrix[3].xyz;
-
-        // Get scale from instance matrix
-        float scale = length(instanceMatrix[0].xyz);
-
-        // Transform center to view space
-        vec4 mvCenter = modelViewMatrix * vec4(center, 1.0);
-
-        // Apply billboard effect: add vertex position in view space
-        vec4 mvPosition = mvCenter;
-        mvPosition.xy += position.xy * scale;
-
-        gl_Position = projectionMatrix * mvPosition;
-      }
-    `,
-    fragmentShader: `
-      uniform sampler2D iconTexture;
-      uniform float opacity;
-
-      varying vec2 vUv;
-      varying float vOpacity;
-      varying vec3 vColor;
-
-      void main() {
-        vec4 iconColor = texture2D(iconTexture, vUv);
-        if (iconColor.a < 0.1) discard;
-
-        gl_FragColor = vec4(iconColor.rgb * vColor, iconColor.a * vOpacity * opacity);
-      }
-    `,
+    vertexShader: iconVertexShader,
+    fragmentShader: iconFragmentShader,
     uniforms: {
       iconTexture: { value: texture },
       opacity: { value: 1.0 }
@@ -196,14 +166,14 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
   onPointerDown,
   onClick
 }) => {
-  const instancesRef = useRef<any | null>(null);
-  const iconInstancesRefs = useRef<any[]>([]);
-  const instanceRefs = useRef<Map<string, any>>(new Map());
-  const activeControllers = useRef<Map<string, any>>(new Map());
+  const instancesRef = useRef<InstancedMesh | null>(null);
+  const iconInstancesRefs = useRef<InstancedMesh[]>([]);
+  const instanceRefs = useRef<Map<string, InstancedMesh>>(new Map());
+  const activeControllers = useRef<Map<string, Controller>>(new Map());
   const initializedNodes = useRef<Set<string>>(new Set());
   const [iconAtlases, setIconAtlases] = useState<{
-    atlases: any[];
-    uvMapping: Map<string, any>;
+    atlases: IconAtlas[];
+    uvMapping: Map<string, IconAtlasUV>;
   }>({ atlases: [], uvMapping: new Map() });
 
   // Memoize unique icon URLs to prevent unnecessary recomputation
@@ -295,7 +265,7 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
   // Helper function to animate instance position
   const animateInstancePosition = useCallback(
     (
-      instanceRef: any,
+      instanceRef: InstancedMesh,
       targetPosition: { x: number; y: number; z: number },
       nodeId: string,
       isDragging: boolean = false
@@ -495,20 +465,20 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
             return (
               <Instance
                 key={`icon-${node.id}`}
-                ref={ref => {
-                  if (ref && (ref as any).position) {
+                ref={(ref: InstancedMesh) => {
+                  if (ref && ref.position) {
                     instanceRefs.current.set(node.id, ref);
                     const isInitial = !initializedNodes.current.has(node.id);
                     const isDragging = draggingIds.includes(node.id);
 
                     if (isInitial && animated && !isDragging) {
                       // Initial animation from origin
-                      (ref as any).position.set(0, 0, 0);
+                      ref.position.set(0, 0, 0);
                       animateInstancePosition(ref, pos, node.id, isDragging);
                       initializedNodes.current.add(node.id);
                     } else {
                       // Set position immediately
-                      (ref as any).position.set(pos.x, pos.y, pos.z);
+                      ref.position.set(pos.x, pos.y, pos.z);
                       initializedNodes.current.add(node.id);
                     }
                   }

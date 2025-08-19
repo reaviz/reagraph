@@ -287,6 +287,19 @@ export interface InstancedEvents {
   onClick?: (event: ThreeEvent<MouseEvent>, node: InternalGraphNode, instance?: Instance) => void;
 }
 
+export interface InstancedMeshProps extends InstancedEvents {
+  nodes: InternalGraphNode[];
+  theme: Theme;
+  hoveredNodeId?: string;
+  actives?: string[];
+  selections?: string[];
+  animated?: boolean;
+  draggable?: boolean;
+  disabled?: boolean;
+  draggingIds?: string[];
+}
+
+
 export interface NodeRendererProps {
   /**
    * Color of the node. Handles selected/etc.
