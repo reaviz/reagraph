@@ -1,4 +1,4 @@
-import { Color, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { Controller } from '@react-spring/three';
 
 import { animationConfig } from './animation';
@@ -113,4 +113,8 @@ export const nodeToInstance = (
   instance.scale.setScalar(node.size);
   instance.opacity = selectionOpacity;
   instance.visible = true;
+  (instance as any).userData = {
+    id: node.id,
+    type: 'node'
+  };
 };

@@ -6,6 +6,9 @@ import { InternalGraphNode } from '../../types';
 import { Theme } from '../../themes/theme';
 import { AnimatedLabel } from './AnimatedLabel';
 
+const MAX_VISIBLE_NODES = 500;
+const DISTANCE_TO_HIDE = 10000;
+
 export interface CulledLabelProps {
   nodes: InternalGraphNode[];
   selections?: string[];
@@ -124,7 +127,7 @@ export const CulledLabels: FC<CulledLabelProps> = ({
       }
 
       const distance = camera.position.distanceTo(nodePosition);
-      if (distance > 8000) {
+      if (distance > DISTANCE_TO_HIDE) {
         return false;
       }
 
@@ -179,7 +182,7 @@ export const CulledLabels: FC<CulledLabelProps> = ({
         return { node, distance, priority };
       })
       .sort((a, b) => b.priority - a.priority)
-      .slice(0, 500)
+      .slice(0, MAX_VISIBLE_NODES)
       .map(item => item.node);
 
     setVisibleNodes(prioritizedVisible);
