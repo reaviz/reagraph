@@ -44,6 +44,8 @@ import { useThree } from '@react-three/fiber';
 import { aggregateEdges as aggregateEdgesUtil } from './utils/aggregateEdges';
 import { InstancedNodes } from './symbols/instances/instancedNodes';
 
+
+
 export interface GraphSceneProps {
   /**
    * Type of layout.

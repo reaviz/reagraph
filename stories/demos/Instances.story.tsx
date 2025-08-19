@@ -223,6 +223,35 @@ export const HighlightClick = () => {
   );
 };
 
+export const IconInstances = () => {
+  const graphRef = useRef<GraphCanvasRef | null>(null);
+  const nodes = complexNodes.map((node, index) => ({
+    ...node,
+    icon: iconMap[Object.keys(iconMap)[index % Object.keys(iconMap).length]]
+  }));
+  const { selections, actives, onNodeClick, onCanvasClick } = useSelection({
+    ref: graphRef,
+    nodes: nodes,
+    edges: complexEdges,
+    pathSelectionType: 'all'
+  });
+
+  return (
+    <GraphCanvas
+      ref={graphRef}
+      theme={darkTheme}
+      useInstances={true}
+      draggable={true}
+      nodes={nodes}
+      edges={complexEdges}
+      selections={selections}
+      actives={actives}
+      onCanvasClick={onCanvasClick}
+      onNodeClick={onNodeClick}
+    />
+  );
+};
+
 export const CustomInstances = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const nodes = complexNodes.map((node, index) => ({

@@ -441,9 +441,9 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
 
       if (instanceRef) {
         const currentPos = instanceRef.position;
-        const hasPositionChanged = 
-          currentPos.x !== pos.x || 
-          currentPos.y !== pos.y || 
+        const hasPositionChanged =
+          currentPos.x !== pos.x ||
+          currentPos.y !== pos.y ||
           currentPos.z !== pos.z;
 
         // Stop any ongoing animation if node starts being dragged
@@ -497,7 +497,7 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
                     instanceRefs.current.set(node.id, ref);
                     const isInitial = !initializedNodes.current.has(node.id);
                     const isDragging = draggingIds.includes(node.id);
-                    
+
                     if (isInitial && animated && !isDragging) {
                       // Initial animation from origin
                       (ref as any).position.set(0, 0, 0);

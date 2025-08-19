@@ -1,4 +1,4 @@
-import React, { ReactNode, useLayoutEffect, useRef } from 'react';
+import React, { ReactNode, useLayoutEffect, useMemo, useRef } from 'react';
 import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import { Vector3 } from 'three';
 import { ThreeEvent } from '@react-three/fiber';
@@ -20,6 +20,7 @@ import { Instance } from '../../types';
 import { useHoverIntent } from '../../utils/useHoverIntent';
 import { updateInstancePosition } from '../../utils/instances';
 import { CulledLabels } from '../CulledLabels';
+import { InstancedIcon } from './InstancedIcon';
 
 interface InstancedNodesProps {
   nodes: InternalGraphNode[];
@@ -72,6 +73,11 @@ export const InstancedNodes = ({
   const hoveredNodeId = useStore(state => state.hoveredNodeId);
   const draggingIds = useStore(state => state.draggingIds);
   const draggedNodeIdRef = useRef<string | null>(null);
+  const nodesWithIcon = useMemo(() => nodes.filter(node => node.icon), [nodes]);
+  const nodesWithoutIcon = useMemo(
+    () => nodes.filter(node => !node.icon),
+    [nodes]
+  );
 
   useCursor(hoveredNodeId !== null);
   useCursor(draggingIds.length > 0, 'grabbing');
@@ -96,6 +102,7 @@ export const InstancedNodes = ({
       instancesRefs.current
         .map(inst => inst?.instances)
         .flat()
+        .filter(Boolean)
         .forEach(inst => {
           nodeInstances.current.set(inst.nodeId, [
             ...(nodeInstances.current.get(inst.nodeId) || []),
@@ -206,42 +213,84 @@ export const InstancedNodes = ({
 
   return (
     <>
-      <InstancedMeshSphere
-        ref={sphereRef}
-        theme={theme}
-        nodes={nodes}
-        animated={animated}
-        draggable={draggable}
-        selections={selections}
-        actives={actives}
-        draggingIds={draggingIds}
-        hoveredNodeId={hoveredNodeId}
-        onPointerDown={(event, node, instance) => {
-          if (instance) {
-            handleDragStart(
-              instance.id,
-              event.point,
-              instance.position,
-              node.id
-            );
-          }
-        }}
-        onClick={(event, node) => {
-          if (!disabled && draggedNodeIdRef.current !== node.id) {
-            onClick?.(
-              node,
-              {
-                canCollapse: false,
-                isCollapsed: false
-              },
-              event
-            );
-          }
-          draggedNodeIdRef.current = null;
-        }}
-        onPointerOver={pointerOver}
-        onPointerOut={pointerOut}
-      />
+      {nodesWithoutIcon.length > 0 && (
+        <InstancedMeshSphere
+          ref={sphereRef}
+          theme={theme}
+          nodes={nodes}
+          animated={animated}
+          draggable={draggable}
+          selections={selections}
+          actives={actives}
+          draggingIds={draggingIds}
+          hoveredNodeId={hoveredNodeId}
+          onPointerDown={(event, node, instance) => {
+            if (instance) {
+              handleDragStart(
+                instance.id,
+                event.point,
+                instance.position,
+                node.id
+              );
+            }
+          }}
+          onClick={(event, node) => {
+            if (!disabled && draggedNodeIdRef.current !== node.id) {
+              onClick?.(
+                node,
+                {
+                  canCollapse: false,
+                  isCollapsed: false
+                },
+                event
+              );
+            }
+            draggedNodeIdRef.current = null;
+          }}
+          onPointerOver={pointerOver}
+          onPointerOut={pointerOut}
+        />
+      )}
+      {nodesWithIcon.length > 0 && (
+        <InstancedIcon
+          nodes={nodesWithIcon}
+          selections={selections}
+          actives={actives}
+          animated={animated}
+          draggable={draggable}
+          theme={theme}
+          draggingIds={draggingIds}
+          hoveredNodeId={hoveredNodeId}
+          onPointerOver={pointerOver}
+          onPointerOut={pointerOut}
+          onPointerDown={(event, node) => {
+            if (draggable) {
+              handleDragStart(
+                undefined,
+                event.point,
+                new Vector3(
+                  node.position?.x || 0,
+                  node.position?.y || 0,
+                  node.position?.z || 0
+                ),
+                node.id
+              );
+            }
+          }}
+          onClick={(event, node) => {
+            if (!disabled && draggedNodeIdRef.current !== node.id) {
+              onClick?.(
+                node,
+                {
+                  canCollapse: false,
+                  isCollapsed: false
+                },
+                event
+              );
+            }
+          }}
+        />
+      )}
       <InstancedMeshRings
         ref={ringMeshRef}
         theme={theme}
