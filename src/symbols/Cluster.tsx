@@ -272,7 +272,6 @@ export const Cluster: FC<ClusterProps> = ({
                     fontUrl={labelFontUrl}
                     stroke={theme.cluster.label.stroke}
                     active={false}
-                    isActive={isSelected || active || isActive}
                     color={theme.cluster?.label.color}
                     fontSize={theme.cluster?.label.fontSize ?? 12}
                   />
