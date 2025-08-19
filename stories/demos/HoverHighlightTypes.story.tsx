@@ -66,6 +66,7 @@ export const Outwards = () => {
   return (
     <GraphCanvas
       ref={graphRef}
+      animated={false}
       nodes={complexNodes}
       edges={complexEdges}
       selections={selections}

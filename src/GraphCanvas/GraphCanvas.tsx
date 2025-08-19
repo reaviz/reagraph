@@ -6,7 +6,8 @@ import React, {
   Suspense,
   useImperativeHandle,
   useRef,
-  useMemo
+  useMemo,
+  useEffect
 } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { GraphScene } from '../GraphScene';
@@ -148,8 +149,38 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           rendererRef.current?.centerGraph(nodeIds, opts),
         fitNodesInView: (nodeIds, opts) =>
           rendererRef.current?.fitNodesInView(nodeIds, opts),
-        zoomIn: () => controlsRef.current?.zoomIn(),
-        zoomOut: () => controlsRef.current?.zoomOut(),
+        zoomIn: () => {
+          const controls = controlsRef.current?.controls;
+          if (!controls) return;
+
+          const currentDistance = controls.distance;
+          const currentZoom = controls.camera.zoom;
+
+          // Calculate what the new zoom would be has to match CameraControls logic
+          const newZoom = currentZoom + currentZoom / 2;
+          const newEffectiveDistance = currentDistance / newZoom;
+
+          // Check if zooming in would violate minDistance constraint
+          if (!minDistance || newEffectiveDistance >= minDistance) {
+            controlsRef.current?.zoomIn();
+          }
+        },
+        zoomOut: () => {
+          const controls = controlsRef.current?.controls;
+          if (!controls) return;
+
+          const currentDistance = controls.distance;
+          const currentZoom = controls.camera.zoom;
+
+          // Calculate what the new zoom would be (matches CameraControls logic)
+          const newZoom = currentZoom - currentZoom / 2;
+          const newEffectiveDistance = currentDistance / newZoom;
+
+          // Check if zooming out would violate maxDistance constraint
+          if (!maxDistance || newEffectiveDistance <= maxDistance) {
+            controlsRef.current?.zoomOut();
+          }
+        },
         dollyIn: distance => controlsRef.current?.dollyIn(distance),
         dollyOut: distance => controlsRef.current?.dollyOut(distance),
         panLeft: () => controlsRef.current?.panLeft(),
@@ -185,6 +216,11 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           collapsedNodeIds
         })
       ).current;
+
+      // Update store theme when theme prop changes
+      useEffect(() => {
+        store.getState().setTheme(theme);
+      }, [theme, store]);
 
       // NOTE: The legacy/linear/flat flags are for color issues
       // Reference: https://github.com/protectwise/troika/discussions/213#discussioncomment-3086666

@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import {
   BoxGeometry,
   BufferGeometry,
+  CatmullRomCurve3,
   CylinderGeometry,
   Quaternion,
   TubeGeometry,
@@ -15,7 +16,8 @@ import {
   getArrowSize,
   getArrowVectors,
   getVector,
-  getCurve
+  getCurve,
+  getSelfLoopCurve
 } from '../../utils';
 import { EdgeArrowPosition } from '../Arrow';
 import { EdgeInterpolation } from '../Edge';
@@ -82,6 +84,8 @@ export function useEdgeGeometry(
         // Improved hash function to include size
         const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size}`;
 
+        // Detect self-loop
+        const isSelfLoop = from.id === to.id;
         // Determine interpolation for this specific edge
         const edgeInterpolation = edge.interpolation || interpolation;
         const curved = edgeInterpolation === 'curved';
@@ -93,18 +97,19 @@ export function useEdgeGeometry(
           geometries.push(cache.get(hash));
           return;
         }
-
         const fromVector = getVector(from);
         const fromOffset = from.size;
         const toVector = getVector(to);
         const toOffset = to.size;
-        let curve = getCurve(
-          fromVector,
-          fromOffset,
-          toVector,
-          toOffset,
-          curved
-        );
+
+        let curve;
+        if (isSelfLoop) {
+          // Self-loop curve
+          curve = getSelfLoopCurve(from);
+        } else {
+          // Regular edge curve
+          curve = getCurve(fromVector, fromOffset, toVector, toOffset, curved);
+        }
 
         let edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
 
@@ -118,11 +123,31 @@ export function useEdgeGeometry(
         const [arrowLength, arrowSize] = getArrowSize(size);
         const arrowGeometry = baseArrowGeometryRef.current.clone();
         arrowGeometry.scale(arrowSize, arrowLength, arrowSize);
-        const [arrowPosition, arrowRotation] = getArrowVectors(
-          edgeArrowPlacement,
-          curve,
-          arrowLength
-        );
+
+        let arrowPosition: Vector3;
+        let arrowRotation: Vector3;
+
+        if (isSelfLoop) {
+          // Arrow positioning for self-loop
+          const uEnd = 0.58;
+          const uMid = 0.25;
+          if (edgeArrowPlacement === 'mid') {
+            arrowPosition = curve.getPointAt(uMid);
+            arrowRotation = curve.getTangentAt(uMid);
+          } else {
+            // end is default
+            arrowPosition = curve.getPointAt(uEnd);
+            arrowRotation = curve.getTangentAt(uEnd);
+          }
+        } else {
+          // Regular arrow positioning
+          [arrowPosition, arrowRotation] = getArrowVectors(
+            edgeArrowPlacement,
+            curve,
+            arrowLength
+          );
+        }
+
         const quaternion = new Quaternion();
         quaternion.setFromUnitVectors(new Vector3(0, 1, 0), arrowRotation);
         arrowGeometry.applyQuaternion(quaternion);
@@ -133,7 +158,7 @@ export function useEdgeGeometry(
         );
 
         // Move edge so it doesn't stick through the arrow:
-        if (edgeArrowPlacement && edgeArrowPlacement === 'end') {
+        if (edgeArrowPlacement && edgeArrowPlacement === 'end' && !isSelfLoop) {
           const curve = getCurve(
             fromVector,
             fromOffset,

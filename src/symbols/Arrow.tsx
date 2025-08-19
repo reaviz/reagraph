@@ -101,13 +101,16 @@ export const Arrow: FC<ArrowProps> = ({
       scale={[1, 1, 1]}
       onPointerOver={() => onActive(true)}
       onPointerOut={() => onActive(false)}
+      // context menu controls
       onPointerDown={event => {
-        // context menu controls
         if (event.nativeEvent.buttons === 2) {
-          event.nativeEvent.preventDefault();
           event.stopPropagation();
-          onContextMenu();
         }
+      }}
+      onContextMenu={event => {
+        event.nativeEvent.preventDefault();
+        event.stopPropagation();
+        onContextMenu();
       }}
     >
       <cylinderGeometry
