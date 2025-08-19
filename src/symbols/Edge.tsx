@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useSpring, a } from '@react-spring/three';
 import { Arrow, EdgeArrowPosition } from './Arrow';
-import { Label } from './Label';
+import { Label } from './labels';
 import {
   animationConfig,
   calculateEdgeCurveOffset,

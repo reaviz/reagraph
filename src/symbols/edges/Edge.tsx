@@ -10,7 +10,7 @@ import {
   getLabelOffsetByType,
   getMidPoint
 } from '../../utils';
-import { Label } from '../Label';
+import { Label } from '../labels';
 
 /**
  * Label positions relatively edge

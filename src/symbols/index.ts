@@ -1,4 +1,4 @@
-export * from './Label';
+export * from './labels';
 export * from './Node';
 export * from './Edge';
 export * from './Arrow';

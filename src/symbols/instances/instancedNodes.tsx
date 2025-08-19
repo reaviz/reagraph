@@ -19,7 +19,7 @@ import { useStore } from '../../store';
 import { Instance } from '../../types';
 import { useHoverIntent } from '../../utils/useHoverIntent';
 import { updateInstancePosition } from '../../utils/instances';
-import { CulledLabels } from '../CulledLabels';
+import { CulledLabels } from '../labels';
 import { InstancedIcon } from './InstancedIcon';
 
 interface InstancedNodesProps {
@@ -320,7 +320,6 @@ export const InstancedNodes = ({
         actives={actives}
         animated={animated}
         draggable={draggable}
-        fontSize={7}
         theme={theme}
         hoveredNodeId={hoveredNodeId}
         draggingIds={draggingIds}

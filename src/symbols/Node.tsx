@@ -10,7 +10,7 @@ import { Group } from 'three';
 import { animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
 import { Sphere } from './nodes/Sphere';
-import { Label } from './Label';
+import { Label } from './labels';
 import {
   NodeContextMenuProps,
   ContextMenuEvent,

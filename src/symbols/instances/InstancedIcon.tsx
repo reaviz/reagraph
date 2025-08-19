@@ -293,59 +293,62 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
   }, [instanceData, iconAtlases.uvMapping]);
 
   // Helper function to animate instance position
-  const animateInstancePosition = useCallback((
-    instanceRef: any,
-    targetPosition: { x: number; y: number; z: number },
-    nodeId: string,
-    isDragging: boolean = false
-  ) => {
-    if (!animated || !instanceRef || isDragging) return;
+  const animateInstancePosition = useCallback(
+    (
+      instanceRef: any,
+      targetPosition: { x: number; y: number; z: number },
+      nodeId: string,
+      isDragging: boolean = false
+    ) => {
+      if (!animated || !instanceRef || isDragging) return;
 
-    // Stop any existing animation for this node
-    const existingController = activeControllers.current.get(nodeId);
-    if (existingController) {
-      existingController.stop();
-    }
-
-    // Use current instance position as starting point
-    const currentPos = instanceRef.position;
-    const isInitial = !initializedNodes.current.has(nodeId);
-
-    const startPosition = {
-      x: isInitial ? 0 : currentPos.x,
-      y: isInitial ? 0 : currentPos.y,
-      z: isInitial ? 0 : currentPos.z
-    };
-
-    const controller = new Controller({
-      x: startPosition.x,
-      y: startPosition.y,
-      z: startPosition.z,
-      config: animationConfig
-    });
-
-    // Store the controller so we can stop it later if needed
-    activeControllers.current.set(nodeId, controller);
-
-    controller.start({
-      x: targetPosition.x,
-      y: targetPosition.y,
-      z: targetPosition.z,
-      onChange: () => {
-        const x = controller.springs.x.get();
-        const y = controller.springs.y.get();
-        const z = controller.springs.z.get();
-
-        if (instanceRef.position) {
-          instanceRef.position.set(x, y, z);
-        }
-      },
-      onFinish: () => {
-        // Clean up the controller when animation finishes
-        activeControllers.current.delete(nodeId);
+      // Stop any existing animation for this node
+      const existingController = activeControllers.current.get(nodeId);
+      if (existingController) {
+        existingController.stop();
       }
-    });
-  }, [animated]);
+
+      // Use current instance position as starting point
+      const currentPos = instanceRef.position;
+      const isInitial = !initializedNodes.current.has(nodeId);
+
+      const startPosition = {
+        x: isInitial ? 0 : currentPos.x,
+        y: isInitial ? 0 : currentPos.y,
+        z: isInitial ? 0 : currentPos.z
+      };
+
+      const controller = new Controller({
+        x: startPosition.x,
+        y: startPosition.y,
+        z: startPosition.z,
+        config: animationConfig
+      });
+
+      // Store the controller so we can stop it later if needed
+      activeControllers.current.set(nodeId, controller);
+
+      controller.start({
+        x: targetPosition.x,
+        y: targetPosition.y,
+        z: targetPosition.z,
+        onChange: () => {
+          const x = controller.springs.x.get();
+          const y = controller.springs.y.get();
+          const z = controller.springs.z.get();
+
+          if (instanceRef.position) {
+            instanceRef.position.set(x, y, z);
+          }
+        },
+        onFinish: () => {
+          // Clean up the controller when animation finishes
+          activeControllers.current.delete(nodeId);
+        }
+      });
+    },
+    [animated]
+  );
 
   // Set up custom instance attributes for spheres
   useLayoutEffect(() => {
@@ -520,7 +523,10 @@ export const InstancedIcon: FC<InstancedIconProps> = ({
                 onClick={event => onClick?.(event, node)}
                 onPointerOver={event => onPointerOver?.(event, node)}
                 onPointerOut={event => onPointerOut?.(event, node)}
-                onPointerDown={event => onPointerDown?.(event, node)}
+                onPointerDown={event => {
+                  if (!draggable) return;
+                  onPointerDown?.(event, node);
+                }}
               />
             );
           })}

@@ -3,7 +3,7 @@ import { ClusterGroup, animationConfig } from '../utils';
 import { useSpring, a } from '@react-spring/three';
 import { Color } from 'three';
 import { useStore } from '../store';
-import { Label } from './Label';
+import { Label } from './labels';
 import { useCursor } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
 import { useDrag } from '../utils/useDrag';
