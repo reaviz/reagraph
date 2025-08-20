@@ -7,10 +7,13 @@ import React, {
 } from 'react';
 import { useThree } from '@react-three/fiber';
 import { SelectionBox } from 'three-stdlib';
-import { Mesh, Scene, TubeGeometry, Vector2 } from 'three';
+import { InstancedMesh2 } from '@three.ez/instanced-mesh';
+import { Box2, Mesh, Scene, TubeGeometry, Vector2 } from 'three';
+
 import { useCameraControls } from '../CameraControls/useCameraControls';
 import { useStore } from '../store';
-import { createElement, prepareRay } from './utils';
+import { createElement, getInstancesInBounds, prepareRay } from './utils';
+import { Instance } from '../types';
 
 export type LassoType = 'none' | 'all' | 'node' | 'edge';
 
@@ -70,6 +73,16 @@ export const Lasso: FC<LassoProps> = ({
     cameraControls.controls?.enabled
   );
 
+  const instancedMeshesRef = useRef<InstancedMesh2<Instance>[]>([]);
+  const collectInstancedMeshes = useCallback(() => {
+    instancedMeshesRef.current = [];
+    scene.traverse(object => {
+      if (object instanceof InstancedMesh2 && object.instances) {
+        instancedMeshesRef.current.push(object as InstancedMesh2<Instance>);
+      }
+    });
+  }, [scene]);
+
   const onPointerMove = useCallback(
     event => {
       if (isDownRef.current) {
@@ -112,6 +125,24 @@ export const Lasso: FC<LassoProps> = ({
           .map(o => o.userData.id);
         allSelected.push(...selected);
 
+        // Handle instanced meshes selection
+        if (type === 'node' || type === 'all') {
+          const selectionBounds = new Box2(
+            new Vector2(pointTopLeft.x, pointTopLeft.y),
+            new Vector2(pointBottomRight.x, pointBottomRight.y)
+          );
+
+          instancedMeshesRef.current.forEach(instancedMesh => {
+            const instanceIds = getInstancesInBounds(
+              instancedMesh,
+              selectionBounds,
+              camera,
+              size
+            );
+            allSelected.push(...instanceIds);
+          });
+        }
+
         // Note: This probably isn't the best solution but
         // it prevents the render thrashing and causing flickering
         requestAnimationFrame(() => {
@@ -126,7 +157,7 @@ export const Lasso: FC<LassoProps> = ({
         });
       }
     },
-    [size, edges, edgeMeshes, type, setActives, onLasso]
+    [size, edges, edgeMeshes, type, setActives, onLasso, camera]
   );
 
   const onPointerUp = useCallback(() => {
@@ -148,6 +179,9 @@ export const Lasso: FC<LassoProps> = ({
         // Let's capture the old props to restore them later
         oldRaycasterEnabledRef.current = get().events.enabled;
         oldControlsEnabledRef.current = cameraControls.controls?.enabled;
+
+        // Collect instanced meshes from scene
+        collectInstancedMeshes();
 
         // SelectionBox for all meshes
         selectionBoxRef.current = new SelectionBox(camera, scene);
@@ -202,7 +236,8 @@ export const Lasso: FC<LassoProps> = ({
       onPointerUp,
       scene,
       setEvents,
-      size
+      size,
+      collectInstancedMeshes
     ]
   );
 

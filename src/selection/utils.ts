@@ -1,5 +1,10 @@
-import { Theme } from '../themes';
+import { InstancedMesh2 } from '@three.ez/instanced-mesh';
 import Graph from 'graphology';
+import { Box2, Vector2, Vector3 } from 'three';
+import { Camera } from '@react-three/fiber';
+
+import { Theme } from '../themes';
+import { Instance } from '../types';
 
 export type PathSelectionTypes = 'direct' | 'out' | 'in' | 'all';
 
@@ -86,3 +91,40 @@ export function createElement(theme: Theme) {
   element.style.position = 'fixed';
   return element;
 }
+
+/**
+ * Helper function to get instances within selection bounds for InstancedMesh2
+ */
+export const getInstancesInBounds = (
+  instancedMesh: InstancedMesh2<Instance>,
+  selectionBounds: Box2,
+  camera: Camera,
+  size: { width: number; height: number }
+): string[] => {
+  const selectedIds: string[] = [];
+  const tempVector = new Vector3();
+  const tempVector2 = new Vector2();
+
+  if (!instancedMesh.instances) return selectedIds;
+
+  for (const instance of instancedMesh.instances) {
+    if (!instance.visible || !instance.position) continue;
+
+    // Project 3D position to 2D screen coordinates
+    tempVector.copy(instance.position);
+    tempVector.project(camera);
+
+    // Convert from NDC (-1 to 1) to screen coordinates (0 to width/height)
+    tempVector2.set(
+      ((tempVector.x + 1) / 2) * size.width,
+      ((-tempVector.y + 1) / 2) * size.height
+    );
+
+    // Check if screen position is within selection bounds
+    if (selectionBounds.containsPoint(tempVector2)) {
+      selectedIds.push(instance.nodeId);
+    }
+  }
+
+  return selectedIds;
+};

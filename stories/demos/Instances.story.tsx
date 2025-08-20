@@ -306,7 +306,7 @@ export const Selections = () => {
   );
 };
 
-export const LassoSelectionNotWorking = () => {
+export const LassoSelection = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
   const {
     actives,
