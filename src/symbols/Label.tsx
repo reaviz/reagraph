@@ -125,8 +125,11 @@ export const Label: FC<LabelProps> = ({
     height: estimatedHeight
   };
 
+  // Dynamic z-position based on active state
+  const zPosition = active ? 2 : 1;
+
   return (
-    <Billboard position={[0, 0, 11]} renderOrder={1}>
+    <Billboard position={[0, 0, zPosition]} renderOrder={1}>
       {/* Stroke layer - rendered behind the background */}
       {strokeWidth > 0 &&
         normalizedStrokeColor &&

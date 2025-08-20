@@ -64,6 +64,11 @@ export interface EdgeProps {
    * The opacity of the edge.
    */
   opacity?: number;
+
+  /**
+   * Whether the edge is active.
+   */
+  active?: boolean;
 }
 
 export const Edge: FC<EdgeProps> = ({
@@ -73,7 +78,8 @@ export const Edge: FC<EdgeProps> = ({
   edge,
   labelFontUrl,
   labelPlacement = 'inline',
-  opacity
+  opacity,
+  active
 }) => {
   const theme = useStore(state => state.theme);
   const { target, source, label, labelVisible = false, size = 1 } = edge;
@@ -169,7 +175,8 @@ export const Edge: FC<EdgeProps> = ({
       color,
       opacity,
       fontSize: theme.edge.label.fontSize,
-      rotation: labelRotation
+      rotation: labelRotation,
+      active
     }),
     [
       label,
@@ -178,7 +185,8 @@ export const Edge: FC<EdgeProps> = ({
       color,
       opacity,
       theme.edge.label.fontSize,
-      labelRotation
+      labelRotation,
+      active
     ]
   );
 

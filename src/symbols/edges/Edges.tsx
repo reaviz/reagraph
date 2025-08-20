@@ -279,18 +279,29 @@ export const Edges: FC<EdgesProps> = ({
           transparent={true}
         />
       </mesh>
-      {edges.map(edge => (
-        <Edge
-          animated={animated}
-          contextMenu={contextMenu}
-          color={theme.edge.label.color}
-          disabled={disabled}
-          edge={edge}
-          key={edge.id}
-          labelFontUrl={labelFontUrl}
-          labelPlacement={labelPlacement}
-        />
-      ))}
+      {edges.map(edge => {
+        const isSelected = selections.includes(edge.id);
+        const isActive = actives.includes(edge.id);
+        const isHovered = hoveredEdgeIds.includes(edge.id);
+
+        return (
+          <Edge
+            animated={animated}
+            contextMenu={contextMenu}
+            color={
+              isSelected || isActive || isHovered
+                ? theme.edge.label.activeColor
+                : theme.edge.label.color
+            }
+            disabled={disabled}
+            edge={edge}
+            key={edge.id}
+            labelFontUrl={labelFontUrl}
+            labelPlacement={labelPlacement}
+            active={isSelected || isActive || isHovered}
+          />
+        );
+      })}
     </group>
   );
 };

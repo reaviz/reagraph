@@ -417,6 +417,7 @@ export const Edge: FC<EdgeProps> = ({
             opacity={selectionOpacity}
             fontSize={theme.edge.label.fontSize}
             rotation={labelRotation}
+            active={isSelected || active || isActive}
           />
 
           {subLabel && (
@@ -426,6 +427,7 @@ export const Edge: FC<EdgeProps> = ({
                 ellipsis={15}
                 fontUrl={labelFontUrl}
                 stroke={theme.edge.subLabel?.stroke || theme.edge.label.stroke}
+                active={isSelected || active || isActive}
                 color={
                   isSelected || active || isActive
                     ? theme.edge.subLabel?.activeColor ||
