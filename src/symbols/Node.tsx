@@ -242,9 +242,10 @@ export const Node: FC<NodeProps> = ({
   useCursor(isDraggingCurrent, 'grabbing');
 
   const combinedActiveState = shouldHighlight || isDraggingCurrent;
-  const color = combinedActiveState
-    ? theme.node.activeFill
-    : node.fill || theme.node.fill;
+  const color =
+    combinedActiveState && !theme.disableActiveFill
+      ? theme.node.activeFill
+      : node.fill || theme.node.fill;
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDraggingCurrent,
@@ -335,7 +336,8 @@ export const Node: FC<NodeProps> = ({
             radius={theme.node.label.radius}
             active={isSelected || active || isDraggingCurrent || isActive}
             color={
-              isSelected || active || isDraggingCurrent || isActive
+              (isSelected || active || isDraggingCurrent || isActive) &&
+              !theme.disableActiveFill
                 ? theme.node.label.activeColor
                 : theme.node.label.color
             }
@@ -350,7 +352,8 @@ export const Node: FC<NodeProps> = ({
                 stroke={theme.node.subLabel?.stroke}
                 active={isSelected || active || isDraggingCurrent || isActive}
                 color={
-                  isSelected || active || isDraggingCurrent || isActive
+                  (isSelected || active || isDraggingCurrent || isActive) &&
+                  !theme.disableActiveFill
                     ? theme.node.subLabel?.activeColor
                     : theme.node.subLabel?.color
                 }
@@ -382,7 +385,8 @@ export const Node: FC<NodeProps> = ({
       theme.node.label.radius,
       theme.node.subLabel?.activeColor,
       theme.node.subLabel?.color,
-      theme.node.subLabel?.stroke
+      theme.node.subLabel?.stroke,
+      theme.disableActiveFill
     ]
   );
 

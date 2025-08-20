@@ -350,7 +350,7 @@ export const Edge: FC<EdgeProps> = ({
       <Arrow
         animated={animated}
         color={
-          isSelected || active || isActive
+          (isSelected || active || isActive) && !theme.disableActiveFill
             ? theme.arrow.activeFill
             : fill || theme.arrow.fill
         }
@@ -386,7 +386,8 @@ export const Edge: FC<EdgeProps> = ({
     theme.arrow.activeFill,
     theme.arrow.fill,
     isSelfLoop,
-    selfLoopCurve
+    selfLoopCurve,
+    theme.disableActiveFill
   ]);
 
   const labelComponent = useMemo(
@@ -410,7 +411,7 @@ export const Edge: FC<EdgeProps> = ({
             fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
-              isSelected || active || isActive
+              (isSelected || active || isActive) && !theme.disableActiveFill
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }
@@ -429,7 +430,7 @@ export const Edge: FC<EdgeProps> = ({
                 stroke={theme.edge.subLabel?.stroke || theme.edge.label.stroke}
                 active={isSelected || active || isActive}
                 color={
-                  isSelected || active || isActive
+                  (isSelected || active || isActive) && !theme.disableActiveFill
                     ? theme.edge.subLabel?.activeColor ||
                       theme.edge.label.activeColor
                     : theme.edge.subLabel?.color || theme.edge.label.color
@@ -469,7 +470,8 @@ export const Edge: FC<EdgeProps> = ({
       theme.edge.subLabel?.stroke,
       theme.edge.subLabel?.activeColor,
       theme.edge.subLabel?.color,
-      theme.edge.subLabel?.fontSize
+      theme.edge.subLabel?.fontSize,
+      theme.disableActiveFill
     ]
   );
 
@@ -493,7 +495,7 @@ export const Edge: FC<EdgeProps> = ({
           size={size}
           animated={animated}
           color={
-            isSelected || active || isActive
+            (isSelected || active || isActive) && !theme.disableActiveFill
               ? theme.edge.activeFill
               : fill || theme.edge.fill
           }
@@ -517,7 +519,7 @@ export const Edge: FC<EdgeProps> = ({
           curveOffset={curveOffset}
           animated={animated}
           color={
-            isSelected || active || isActive
+            (isSelected || active || isActive) && !theme.disableActiveFill
               ? theme.edge.activeFill
               : fill || theme.edge.fill
           }
