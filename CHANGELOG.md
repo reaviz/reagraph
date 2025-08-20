@@ -1,3 +1,15 @@
+# 4.30.0 - 8/20/25
+- [feature] Circular (self-loop) edge when node source equals target #357
+- [feature] Display edge label on top when active / hover / selected #370
+- [feature] 3D concentric layout #367
+- [chore] Add story for custom colors on edges #371
+- [fix] Changing Theme during runtime #360
+- [fix] Remove hover effect on invisible rings #369
+- [fix] Min/MaxDistance applying to manual zoom control #368
+- [fix] Hover/Active State on Edge with disabled animation #365
+- [fix] Prevent default browser context menu from appearing on edge right click #363
+- [fix] Draggable nodes on the resized canvas #359
+
 # 4.29.0 - 8/5/25
 - [feature] Added `dashArray` prop to edges, allowing individual control over dash patterns.  
   The `dashArray` prop accepts a tuple `[dashSize, gapSize]`, letting you specify the length of dashes and the spacing between them for each edge.
