@@ -250,7 +250,9 @@ export const Edges: FC<EdgesProps> = ({
         />
         <a.meshBasicMaterial
           attach="material-1"
-          color={theme.edge.activeFill}
+          color={
+            theme.disableActiveFill ? theme.edge.fill : theme.edge.activeFill
+          }
           depthTest={false}
           fog={true}
           opacity={activeOpacity}
@@ -271,7 +273,9 @@ export const Edges: FC<EdgesProps> = ({
         />
         <a.meshBasicMaterial
           attach="material-1"
-          color={theme.edge.activeFill}
+          color={
+            theme.disableActiveFill ? theme.edge.fill : theme.edge.activeFill
+          }
           depthTest={false}
           fog={true}
           opacity={activeOpacity}
@@ -289,7 +293,7 @@ export const Edges: FC<EdgesProps> = ({
             animated={animated}
             contextMenu={contextMenu}
             color={
-              isSelected || isActive || isHovered
+              (isSelected || isActive || isHovered) && !theme.disableActiveFill
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }
