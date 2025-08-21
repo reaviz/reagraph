@@ -99,7 +99,8 @@ export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
 
 const GL_DEFAULTS = {
   alpha: true,
-  antialias: true
+  antialias: true,
+  preserveDrawingBuffer: true
 };
 
 // TODO: Fix type
