@@ -137,6 +137,7 @@ export const Node: FC<NodeProps> = ({
 }) => {
   const cameraControls = useCameraControls();
   const theme = useStore(state => state.theme);
+  const disableActiveFill = useStore(state => state.disableActiveFill);
   const node = useStore(state => state.nodes.find(n => n.id === id));
   const edges = useStore(state => state.edges);
   const draggingIds = useStore(state => state.draggingIds);
@@ -242,9 +243,10 @@ export const Node: FC<NodeProps> = ({
   useCursor(isDraggingCurrent, 'grabbing');
 
   const combinedActiveState = shouldHighlight || isDraggingCurrent;
-  const color = combinedActiveState
-    ? theme.node.activeFill
-    : node.fill || theme.node.fill;
+  const color =
+    combinedActiveState && !disableActiveFill
+      ? theme.node.activeFill
+      : node.fill || theme.node.fill;
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDraggingCurrent,
@@ -316,8 +318,11 @@ export const Node: FC<NodeProps> = ({
     ]
   );
 
-  const labelComponent = useMemo(
-    () =>
+  const labelComponent = useMemo(() => {
+    const combinedActiveState =
+      isSelected || active || isDraggingCurrent || isActive;
+
+    return (
       labelVisible &&
       (labelVisible || isSelected || active) &&
       label && (
@@ -335,7 +340,7 @@ export const Node: FC<NodeProps> = ({
             radius={theme.node.label.radius}
             active={isSelected || active || isDraggingCurrent || isActive}
             color={
-              isSelected || active || isDraggingCurrent || isActive
+              combinedActiveState && !disableActiveFill
                 ? theme.node.label.activeColor
                 : theme.node.label.color
             }
@@ -350,7 +355,7 @@ export const Node: FC<NodeProps> = ({
                 stroke={theme.node.subLabel?.stroke}
                 active={isSelected || active || isDraggingCurrent || isActive}
                 color={
-                  isSelected || active || isDraggingCurrent || isActive
+                  combinedActiveState && !disableActiveFill
                     ? theme.node.subLabel?.activeColor
                     : theme.node.subLabel?.color
                 }
@@ -358,33 +363,34 @@ export const Node: FC<NodeProps> = ({
             </group>
           )}
         </a.group>
-      ),
-    [
-      active,
-      isActive,
-      isDraggingCurrent,
-      isSelected,
-      label,
-      labelFontUrl,
-      labelPosition,
-      labelVisible,
-      nodeSize,
-      selectionOpacity,
-      subLabel,
-      theme.node.label.activeColor,
-      theme.node.label.color,
-      theme.node.label.stroke,
-      theme.node.label.backgroundColor,
-      theme.node.label.backgroundOpacity,
-      theme.node.label.padding,
-      theme.node.label.strokeColor,
-      theme.node.label.strokeWidth,
-      theme.node.label.radius,
-      theme.node.subLabel?.activeColor,
-      theme.node.subLabel?.color,
-      theme.node.subLabel?.stroke
-    ]
-  );
+      )
+    );
+  }, [
+    active,
+    isActive,
+    isDraggingCurrent,
+    isSelected,
+    label,
+    labelFontUrl,
+    labelPosition,
+    labelVisible,
+    nodeSize,
+    selectionOpacity,
+    subLabel,
+    theme.node.label.activeColor,
+    theme.node.label.color,
+    theme.node.label.stroke,
+    theme.node.label.backgroundColor,
+    theme.node.label.backgroundOpacity,
+    theme.node.label.padding,
+    theme.node.label.strokeColor,
+    theme.node.label.strokeWidth,
+    theme.node.label.radius,
+    theme.node.subLabel?.activeColor,
+    theme.node.subLabel?.color,
+    theme.node.subLabel?.stroke,
+    disableActiveFill
+  ]);
 
   const menuComponent = useMemo(
     () =>

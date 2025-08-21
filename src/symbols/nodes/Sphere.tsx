@@ -14,6 +14,7 @@ export const Sphere: FC<NodeRendererProps> = ({
   opacity = 1,
   animated
 }) => {
+  const disableActiveFill = useStore(state => state.disableActiveFill);
   const { scale, nodeOpacity } = useSpring({
     from: {
       // Note: This prevents incorrect scaling w/ 0
@@ -51,7 +52,11 @@ export const Sphere: FC<NodeRendererProps> = ({
         opacity={selected ? 0.5 : 0}
         size={size}
         animated={animated}
-        color={selected ? theme.ring.activeFill : theme.ring.fill}
+        color={
+          selected && !disableActiveFill
+            ? theme.ring.activeFill
+            : theme.ring.fill
+        }
       />
     </>
   );

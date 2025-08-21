@@ -77,6 +77,11 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * Whether to aggregate edges with the same source and target.
    */
   aggregateEdges?: boolean;
+
+  /**
+   * Disable all activeFill, elements will not change color on hover/selection
+   */
+  disableActiveFill?: boolean;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
@@ -135,6 +140,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         onLasso,
         onLassoEnd,
         aggregateEdges,
+        disableActiveFill = false,
         ...rest
       },
       ref: Ref<GraphCanvasRef>
@@ -212,7 +218,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
           selections,
           actives,
           theme,
-          collapsedNodeIds
+          collapsedNodeIds,
+          disableActiveFill
         })
       ).current;
 

@@ -1,12 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { GraphCanvas, GraphCanvasRef, lightTheme } from '../../src';
-import {
-  parentEdges,
-  parentNodes,
-  simpleEdges,
-  simpleNodes,
-  random
-} from '../assets/demo';
+import { simpleEdges, simpleNodes, random } from '../assets/demo';
 import { range } from 'd3-array';
 
 export default {
@@ -297,5 +291,18 @@ export const Circular = () => (
         arrowPlacement: 'none'
       }
     ]}
+  />
+);
+
+export const DisableActiveFill = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    theme={lightTheme}
+    layoutType="forceDirected2d"
+    sizingType="none"
+    labelType="auto"
+    disableActiveFill={true}
+    animated={false}
   />
 );
