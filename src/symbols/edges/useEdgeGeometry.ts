@@ -170,6 +170,7 @@ export function useEdgeGeometry(
         }
 
         const merged = mergeBufferGeometries([edgeGeometry, arrowGeometry]);
+        merged.userData = { ...merged.userData, type: 'edge' };
         geometries.push(merged);
         cache.set(hash, merged);
       });

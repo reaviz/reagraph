@@ -95,6 +95,7 @@ export const Lasso: FC<LassoProps> = ({
         const edgesSelected = edgeMeshSelectionBoxRef.current
           .select()
           .sort(o => (o as any).uuid)
+          .filter(o => o.geometry?.userData?.type === type || type === 'all')
           .map(
             edge => edges[edgeMeshes.indexOf(edge as Mesh<TubeGeometry>)].id
           );
