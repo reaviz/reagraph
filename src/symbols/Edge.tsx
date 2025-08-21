@@ -139,6 +139,7 @@ export const Edge: FC<EdgeProps> = ({
   subLabelPlacement = 'below'
 }) => {
   const theme = useStore(state => state.theme);
+  const disableActiveFill = useStore(state => state.disableActiveFill);
   const isDragging = useStore(state => state.draggingIds.length > 0);
 
   // UI states
@@ -253,6 +254,7 @@ export const Edge: FC<EdgeProps> = ({
   const hasSelections = useStore(state => state.selections?.length);
   const isActive = useStore(state => state.actives?.includes(id));
   const center = useStore(state => state.centerPosition);
+  const combinedActiveState = isSelected || active || isActive;
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
@@ -350,7 +352,7 @@ export const Edge: FC<EdgeProps> = ({
       <Arrow
         animated={animated}
         color={
-          (isSelected || active || isActive) && !theme.disableActiveFill
+          combinedActiveState && !disableActiveFill
             ? theme.arrow.activeFill
             : fill || theme.arrow.fill
         }
@@ -370,7 +372,6 @@ export const Edge: FC<EdgeProps> = ({
     );
   }, [
     fill,
-    active,
     animated,
     arrowLength,
     effectiveArrowPlacement,
@@ -379,15 +380,14 @@ export const Edge: FC<EdgeProps> = ({
     arrowSize,
     disabled,
     edge,
-    isActive,
-    isSelected,
     onContextMenu,
     selectionOpacity,
     theme.arrow.activeFill,
     theme.arrow.fill,
     isSelfLoop,
     selfLoopCurve,
-    theme.disableActiveFill
+    disableActiveFill,
+    combinedActiveState
   ]);
 
   const labelComponent = useMemo(
@@ -411,14 +411,14 @@ export const Edge: FC<EdgeProps> = ({
             fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
-              (isSelected || active || isActive) && !theme.disableActiveFill
+              combinedActiveState && !disableActiveFill
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }
             opacity={selectionOpacity}
             fontSize={theme.edge.label.fontSize}
             rotation={labelRotation}
-            active={isSelected || active || isActive}
+            active={combinedActiveState}
           />
 
           {subLabel && (
@@ -428,9 +428,9 @@ export const Edge: FC<EdgeProps> = ({
                 ellipsis={15}
                 fontUrl={labelFontUrl}
                 stroke={theme.edge.subLabel?.stroke || theme.edge.label.stroke}
-                active={isSelected || active || isActive}
+                active={combinedActiveState}
                 color={
-                  (isSelected || active || isActive) && !theme.disableActiveFill
+                  combinedActiveState && !disableActiveFill
                     ? theme.edge.subLabel?.activeColor ||
                       theme.edge.label.activeColor
                     : theme.edge.subLabel?.color || theme.edge.label.color
@@ -447,11 +447,8 @@ export const Edge: FC<EdgeProps> = ({
         </a.group>
       ),
     [
-      active,
       disabled,
       edge,
-      isActive,
-      isSelected,
       label,
       subLabel,
       labelFontUrl,
@@ -471,7 +468,8 @@ export const Edge: FC<EdgeProps> = ({
       theme.edge.subLabel?.activeColor,
       theme.edge.subLabel?.color,
       theme.edge.subLabel?.fontSize,
-      theme.disableActiveFill
+      disableActiveFill,
+      combinedActiveState
     ]
   );
 
@@ -495,7 +493,7 @@ export const Edge: FC<EdgeProps> = ({
           size={size}
           animated={animated}
           color={
-            (isSelected || active || isActive) && !theme.disableActiveFill
+            combinedActiveState && !disableActiveFill
               ? theme.edge.activeFill
               : fill || theme.edge.fill
           }
@@ -519,7 +517,7 @@ export const Edge: FC<EdgeProps> = ({
           curveOffset={curveOffset}
           animated={animated}
           color={
-            (isSelected || active || isActive) && !theme.disableActiveFill
+            combinedActiveState && !disableActiveFill
               ? theme.edge.activeFill
               : fill || theme.edge.fill
           }

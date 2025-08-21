@@ -45,6 +45,8 @@ export interface GraphState {
   panning?: boolean;
   theme: Theme;
   setTheme: (theme: Theme) => void;
+  disableActiveFill: boolean;
+  setDisableActiveFill: (disableActiveFill: boolean) => void;
   setClusters: (clusters: Map<string, ClusterGroup>) => void;
   setPanning: (panning: boolean) => void;
   setDrags: (drags: DragReferences) => void;
@@ -66,7 +68,8 @@ export const createStore = ({
   actives = [],
   selections = [],
   collapsedNodeIds = [],
-  theme
+  theme,
+  disableActiveFill = false
 }: Partial<GraphState>) =>
   create<GraphState>(set => ({
     theme: {
@@ -79,6 +82,7 @@ export const createStore = ({
         }
       }
     },
+    disableActiveFill,
     edges: [],
     nodes: [],
     collapsedNodeIds,
@@ -94,6 +98,8 @@ export const createStore = ({
     drags: {},
     graph: new Graph({ multi: true }),
     setTheme: theme => set(state => ({ ...state, theme })),
+    setDisableActiveFill: disableActiveFill =>
+      set(state => ({ ...state, disableActiveFill })),
     setClusters: clusters => set(state => ({ ...state, clusters })),
     setEdgeContextMenus: edgeContextMenus =>
       set(state => ({

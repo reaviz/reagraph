@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { GraphCanvas } from '../../src';
 
 export default {
@@ -43,13 +43,13 @@ export const AggregateEdgesSimple = () => {
   ];
 
   // Calculate how many visual edges would be displayed when aggregated
-  const aggregatedCount = useMemo(() => {
+  const aggregatedCount = () => {
     const sourceTargetPairs = new Set();
     edges.forEach(edge => {
       sourceTargetPairs.add(`${edge.source}-${edge.target}`);
     });
     return sourceTargetPairs.size;
-  }, [edges]);
+  };
 
   return (
     <div>
@@ -66,7 +66,7 @@ export const AggregateEdgesSimple = () => {
       >
         <div style={{ marginBottom: '8px' }}>
           <strong>Edges:</strong>{' '}
-          {aggregateEdges ? aggregatedCount : edges.length}
+          {aggregateEdges ? aggregatedCount() : edges.length}
           {aggregateEdges && ` (aggregated from ${edges.length})`}
         </div>
         <button
@@ -129,13 +129,13 @@ export const AggregateEdgesOneDirection = () => {
   ];
 
   // Calculate how many visual edges would be displayed when aggregated
-  const aggregatedCount = useMemo(() => {
+  const aggregatedCount = () => {
     const sourceTargetPairs = new Set();
     edges.forEach(edge => {
       sourceTargetPairs.add(`${edge.source}-${edge.target}`);
     });
     return sourceTargetPairs.size;
-  }, [edges]);
+  };
 
   return (
     <div>
@@ -152,7 +152,7 @@ export const AggregateEdgesOneDirection = () => {
       >
         <div style={{ marginBottom: '8px' }}>
           <strong>Edges:</strong>{' '}
-          {aggregateEdges ? aggregatedCount : edges.length}
+          {aggregateEdges ? aggregatedCount() : edges.length}
           {aggregateEdges && ` (aggregated from ${edges.length})`}
         </div>
         <button
@@ -226,13 +226,13 @@ export const ComplexExample = () => {
   ];
 
   // Calculate how many visual edges would be displayed when aggregated
-  const aggregatedCount = useMemo(() => {
+  const aggregatedCount = () => {
     const sourceTargetPairs = new Set();
     edges.forEach(edge => {
       sourceTargetPairs.add(`${edge.source}-${edge.target}`);
     });
     return sourceTargetPairs.size;
-  }, [edges]);
+  };
 
   return (
     <div>
@@ -249,7 +249,7 @@ export const ComplexExample = () => {
       >
         <div style={{ marginBottom: '8px' }}>
           <strong>Edges:</strong>{' '}
-          {aggregateEdges ? aggregatedCount : edges.length}
+          {aggregateEdges ? aggregatedCount() : edges.length}
           {aggregateEdges && ` (aggregated from ${edges.length})`}
         </div>
         <button

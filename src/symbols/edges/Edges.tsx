@@ -96,6 +96,7 @@ export const Edges: FC<EdgesProps> = ({
   onPointerOver
 }) => {
   const theme = useStore(state => state.theme);
+  const disableActiveFill = useStore(state => state.disableActiveFill);
   const { getGeometries, getGeometry } = useEdgeGeometry(
     arrowPlacement,
     interpolation
@@ -250,9 +251,7 @@ export const Edges: FC<EdgesProps> = ({
         />
         <a.meshBasicMaterial
           attach="material-1"
-          color={
-            theme.disableActiveFill ? theme.edge.fill : theme.edge.activeFill
-          }
+          color={disableActiveFill ? theme.edge.fill : theme.edge.activeFill}
           depthTest={false}
           fog={true}
           opacity={activeOpacity}
@@ -273,9 +272,7 @@ export const Edges: FC<EdgesProps> = ({
         />
         <a.meshBasicMaterial
           attach="material-1"
-          color={
-            theme.disableActiveFill ? theme.edge.fill : theme.edge.activeFill
-          }
+          color={disableActiveFill ? theme.edge.fill : theme.edge.activeFill}
           depthTest={false}
           fog={true}
           opacity={activeOpacity}
@@ -287,13 +284,14 @@ export const Edges: FC<EdgesProps> = ({
         const isSelected = selections.includes(edge.id);
         const isActive = actives.includes(edge.id);
         const isHovered = hoveredEdgeIds.includes(edge.id);
+        const combinedActiveState = isSelected || isActive || isHovered;
 
         return (
           <Edge
             animated={animated}
             contextMenu={contextMenu}
             color={
-              (isSelected || isActive || isHovered) && !theme.disableActiveFill
+              combinedActiveState && !disableActiveFill
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }
@@ -302,7 +300,7 @@ export const Edges: FC<EdgesProps> = ({
             key={edge.id}
             labelFontUrl={labelFontUrl}
             labelPlacement={labelPlacement}
-            active={isSelected || isActive || isHovered}
+            active={combinedActiveState}
           />
         );
       })}

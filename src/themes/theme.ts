@@ -5,10 +5,6 @@ export interface Theme {
     background?: ColorRepresentation;
     fog?: ColorRepresentation | null;
   };
-  /**
-   * Disable all activeFill, elements will not change color on hover/selection
-   */
-  disableActiveFill?: boolean;
   node: {
     fill: ColorRepresentation;
     activeFill: ColorRepresentation;
