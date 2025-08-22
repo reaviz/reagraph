@@ -1,3 +1,6 @@
+# 4.30.1 - 8/22/25
+- [fix] Fix lasso selection for edges with disabled animation #372
+
 # 4.30.0 - 8/20/25
 - [feature] Circular (self-loop) edge when node source equals target #357
 - [feature] Display edge label on top when active / hover / selected #370
