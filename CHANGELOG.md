@@ -1,3 +1,6 @@
+# 4.30.2 - 8/26/25
+- [chore] Add sample with draggable custom layout #375
+
 # 4.30.1 - 8/22/25
 - [fix] Fix lasso selection for edges with disabled animation #372
 
