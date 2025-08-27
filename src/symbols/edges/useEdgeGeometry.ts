@@ -1,13 +1,12 @@
 import { useCallback, useRef } from 'react';
 import {
-  BoxGeometry,
   BufferGeometry,
   Color,
   CylinderGeometry,
-  Float32BufferAttribute,
   Quaternion,
   TubeGeometry,
-  Vector3
+  Vector3,
+  Curve
 } from 'three';
 import { mergeBufferGeometries } from 'three-stdlib';
 
@@ -18,7 +17,10 @@ import {
   getArrowVectors,
   getVector,
   getCurve,
-  getSelfLoopCurve
+  getSelfLoopCurve,
+  createNullGeometry,
+  addColorAttribute,
+  createDashedGeometry
 } from '../../utils';
 import { EdgeArrowPosition } from '../Arrow';
 import { EdgeInterpolation } from '../Edge';
@@ -31,33 +33,7 @@ export type UseEdgeGeometry = {
   ): BufferGeometry;
 };
 
-// Create NULL_GEOMETRY with consistent attributes
-const createNullGeometry = () => {
-  const nullGeom = new BoxGeometry(0, 0, 0);
-  // Add color attribute to match other geometries
-  const vertexCount = nullGeom.attributes.position.count;
-  const colorArray = new Float32Array(vertexCount * 3);
-  for (let i = 0; i < vertexCount; i++) {
-    colorArray[i * 3] = 1; // white
-    colorArray[i * 3 + 1] = 1;
-    colorArray[i * 3 + 2] = 1;
-  }
-  nullGeom.setAttribute('color', new Float32BufferAttribute(colorArray, 3));
-  return nullGeom;
-};
 const NULL_GEOMETRY = createNullGeometry();
-
-// Helper function to add color attribute to geometry
-const addColorAttribute = (geometry: BufferGeometry, color: Color): void => {
-  const vertexCount = geometry.attributes.position.count;
-  const colorArray = new Float32Array(vertexCount * 3);
-  for (let i = 0; i < vertexCount; i++) {
-    colorArray[i * 3] = color.r;
-    colorArray[i * 3 + 1] = color.g;
-    colorArray[i * 3 + 2] = color.b;
-  }
-  geometry.setAttribute('color', new Float32BufferAttribute(colorArray, 3));
-};
 
 export function useEdgeGeometry(
   arrowPlacement: EdgeArrowPosition,
@@ -74,8 +50,7 @@ export function useEdgeGeometry(
 
   const geometryCacheRef = useRef(new Map<string, BufferGeometry>());
 
-  // Add memoized geometries for arrows and null geometry
-  const nullGeometryRef = useRef(new BoxGeometry(0, 0, 0));
+  // Add memoized geometry for arrows
   const baseArrowGeometryRef = useRef<CylinderGeometry | null>(null);
 
   const getGeometries = useCallback(
@@ -86,7 +61,6 @@ export function useEdgeGeometry(
       // Pre-compute values outside the loop
       const { nodes } = stateRef.current;
       const nodesMap = new Map(nodes.map(node => [node.id, node]));
-      const labelFontSize = theme.edge.label.fontSize;
 
       // Initialize base arrow geometry if needed
       if (arrowPlacement !== 'none' && !baseArrowGeometryRef.current) {
@@ -129,7 +103,7 @@ export function useEdgeGeometry(
         const toVector = getVector(to);
         const toOffset = to.size;
 
-        let curve;
+        let curve: Curve<Vector3>;
         if (isSelfLoop) {
           // Self-loop curve
           curve = getSelfLoopCurve(from);
@@ -138,12 +112,28 @@ export function useEdgeGeometry(
           curve = getCurve(fromVector, fromOffset, toVector, toOffset, curved);
         }
 
-        let edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
+        // Use smaller radius for dashed edges to match Line.tsx behavior
+        const isDashedEdge = edge.dashed;
+        const radius = isDashedEdge ? size * 0.4 : size / 2;
+
+        let edgeGeometry: BufferGeometry;
+        if (isDashedEdge) {
+          edgeGeometry = createDashedGeometry(
+            curve,
+            radius,
+            new Color(edge.fill ?? theme.edge.fill),
+            edge.dashArray
+          );
+        } else {
+          edgeGeometry = new TubeGeometry(curve, 20, radius, 5, false);
+        }
 
         if (edgeArrowPlacement === 'none') {
-          // Add color to edge geometry for edges without arrows
-          const edgeOnlyColor = new Color(edge.fill ?? theme.edge.fill);
-          addColorAttribute(edgeGeometry, edgeOnlyColor);
+          // Add color to edge geometry for edges without arrows (only if not dashed, dashed already have colors)
+          if (!isDashedEdge) {
+            const edgeOnlyColor = new Color(edge.fill ?? theme.edge.fill);
+            addColorAttribute(edgeGeometry, edgeOnlyColor);
+          }
 
           geometries.push(edgeGeometry);
           cache.set(hash, edgeGeometry);
@@ -190,19 +180,38 @@ export function useEdgeGeometry(
 
         // Move edge so it doesn't stick through the arrow:
         if (edgeArrowPlacement && edgeArrowPlacement === 'end' && !isSelfLoop) {
-          const curve = getCurve(
+          const adjustedCurve = getCurve(
             fromVector,
             fromOffset,
             arrowPosition,
             0,
             curved
           );
-          edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
+
+          if (isDashedEdge) {
+            edgeGeometry = createDashedGeometry(
+              adjustedCurve,
+              radius,
+              new Color(edge.fill ?? theme.edge.fill),
+              edge.dashArray
+            );
+          } else {
+            edgeGeometry = new TubeGeometry(
+              adjustedCurve,
+              20,
+              radius,
+              5,
+              false
+            );
+          }
         }
 
-        // Add color attributes to both geometries
+        // Add color attributes to both geometries (only for non-dashed, dashed already have colors)
         const finalColor = new Color(edge.fill ?? theme.edge.fill);
-        addColorAttribute(edgeGeometry, finalColor);
+
+        if (!isDashedEdge) {
+          addColorAttribute(edgeGeometry, finalColor);
+        }
         addColorAttribute(arrowGeometry, finalColor);
 
         const merged = mergeBufferGeometries([edgeGeometry, arrowGeometry]);
@@ -212,7 +221,7 @@ export function useEdgeGeometry(
       });
       return geometries;
     },
-    [arrowPlacement, interpolation, theme.edge.fill, theme.edge.label.fontSize]
+    [arrowPlacement, interpolation, theme.edge.fill]
   );
 
   const getGeometry = useCallback(
