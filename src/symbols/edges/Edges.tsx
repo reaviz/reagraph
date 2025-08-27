@@ -241,12 +241,12 @@ export const Edges: FC<EdgesProps> = ({
       <mesh ref={staticEdgesRef}>
         <a.meshBasicMaterial
           attach="material-0"
-          color={theme.edge.fill}
           depthTest={false}
           fog={true}
           opacity={inactiveOpacity}
           side={DoubleSide}
           transparent={true}
+          vertexColors={true}
         />
         <a.meshBasicMaterial
           attach="material-1"

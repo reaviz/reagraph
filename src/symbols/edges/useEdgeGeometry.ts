@@ -2,8 +2,9 @@ import { useCallback, useRef } from 'react';
 import {
   BoxGeometry,
   BufferGeometry,
-  CatmullRomCurve3,
+  Color,
   CylinderGeometry,
+  Float32BufferAttribute,
   Quaternion,
   TubeGeometry,
   Vector3
@@ -30,7 +31,33 @@ export type UseEdgeGeometry = {
   ): BufferGeometry;
 };
 
-const NULL_GEOMETRY = new BoxGeometry(0, 0, 0);
+// Create NULL_GEOMETRY with consistent attributes
+const createNullGeometry = () => {
+  const nullGeom = new BoxGeometry(0, 0, 0);
+  // Add color attribute to match other geometries
+  const vertexCount = nullGeom.attributes.position.count;
+  const colorArray = new Float32Array(vertexCount * 3);
+  for (let i = 0; i < vertexCount; i++) {
+    colorArray[i * 3] = 1; // white
+    colorArray[i * 3 + 1] = 1;
+    colorArray[i * 3 + 2] = 1;
+  }
+  nullGeom.setAttribute('color', new Float32BufferAttribute(colorArray, 3));
+  return nullGeom;
+};
+const NULL_GEOMETRY = createNullGeometry();
+
+// Helper function to add color attribute to geometry
+const addColorAttribute = (geometry: BufferGeometry, color: Color): void => {
+  const vertexCount = geometry.attributes.position.count;
+  const colorArray = new Float32Array(vertexCount * 3);
+  for (let i = 0; i < vertexCount; i++) {
+    colorArray[i * 3] = color.r;
+    colorArray[i * 3 + 1] = color.g;
+    colorArray[i * 3 + 2] = color.b;
+  }
+  geometry.setAttribute('color', new Float32BufferAttribute(colorArray, 3));
+};
 
 export function useEdgeGeometry(
   arrowPlacement: EdgeArrowPosition,
@@ -114,6 +141,10 @@ export function useEdgeGeometry(
         let edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
 
         if (edgeArrowPlacement === 'none') {
+          // Add color to edge geometry for edges without arrows
+          const edgeOnlyColor = new Color(edge.fill ?? theme.edge.fill);
+          addColorAttribute(edgeGeometry, edgeOnlyColor);
+
           geometries.push(edgeGeometry);
           cache.set(hash, edgeGeometry);
           return;
@@ -169,6 +200,11 @@ export function useEdgeGeometry(
           edgeGeometry = new TubeGeometry(curve, 20, size / 2, 5, false);
         }
 
+        // Add color attributes to both geometries
+        const finalColor = new Color(edge.fill ?? theme.edge.fill);
+        addColorAttribute(edgeGeometry, finalColor);
+        addColorAttribute(arrowGeometry, finalColor);
+
         const merged = mergeBufferGeometries([edgeGeometry, arrowGeometry]);
         merged.userData = { ...merged.userData, type: 'edge' };
         geometries.push(merged);
@@ -176,7 +212,7 @@ export function useEdgeGeometry(
       });
       return geometries;
     },
-    [arrowPlacement, interpolation, theme.edge.label.fontSize]
+    [arrowPlacement, interpolation, theme.edge.fill, theme.edge.label.fontSize]
   );
 
   const getGeometry = useCallback(
