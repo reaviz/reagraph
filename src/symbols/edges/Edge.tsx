@@ -137,25 +137,26 @@ export const Edge: FC<EdgeProps> = ({
     [edgeContextMenus, setEdgeContextMenus]
   );
 
-  const labelRotation = useMemo(() => {
-    if (labelPlacement === 'natural') {
-      return new Euler(0, 0, 0);
-    }
-    return new Euler(
-      0,
-      0,
-      Math.atan2(
-        to.position.y - from.position.y,
-        to.position.x - from.position.x
-      )
-    );
-  }, [
-    labelPlacement,
-    to.position.y,
-    to.position.x,
-    from.position.y,
-    from.position.x
-  ]);
+  const labelRotation = useMemo(
+    () =>
+      new Euler(
+        0,
+        0,
+        labelPlacement === 'natural'
+          ? 0
+          : Math.atan(
+            (to.position.y - from.position.y) /
+                (to.position.x - from.position.x)
+          )
+      ),
+    [
+      to.position.x,
+      to.position.y,
+      from.position.x,
+      from.position.y,
+      labelPlacement
+    ]
+  );
 
   const htmlProps = useMemo(
     () => ({
