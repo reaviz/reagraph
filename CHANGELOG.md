@@ -1,3 +1,8 @@
+# 4.30.3 - 8/28/25
+- [fix] Fix edge label rotation when animated=false #379
+- [fix] Add dash style for edges without animation #378
+- [fix] Add color to edges geometries (animated=false) #377
+
 # 4.30.2 - 8/26/25
 - [chore] Add sample with draggable custom layout #375
 
