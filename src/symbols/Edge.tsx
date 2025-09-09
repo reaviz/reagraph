@@ -485,7 +485,7 @@ export const Edge: FC<EdgeProps> = ({
   );
 
   return (
-    <group>
+    <group position={[0, 0, active ? 1 : 0]}>
       {isSelfLoop && selfLoopCurve ? (
         <SelfLoop
           id={id}
