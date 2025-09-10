@@ -120,7 +120,6 @@ export const Line: FC<LineProps> = ({
   curve,
   curved = false,
   dashed = false,
-  depthTest = false,
   dashArray = [3, 1],
   id,
   opacity = 1,
