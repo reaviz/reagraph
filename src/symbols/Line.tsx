@@ -237,7 +237,6 @@ export const Line: FC<LineProps> = ({
           opacity={lineOpacity}
           fog={true}
           transparent={true}
-          depthTest={false}
           color={normalizedColor}
         />
       )}
