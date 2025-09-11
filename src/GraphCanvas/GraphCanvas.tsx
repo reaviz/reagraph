@@ -34,6 +34,11 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   cameraMode?: CameraMode;
 
   /**
+   * Whether to use an orthographic camera.
+   */
+  orthographic?: boolean;
+
+  /**
    * The maximum distance for the camera. Default is 50000.
    */
   maxDistance?: number;
@@ -130,6 +135,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         nodes,
         minDistance,
         maxDistance,
+        orthographic,
         onCanvasClick,
         disabled,
         onLasso,
@@ -226,6 +232,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       return (
         <div className={css.canvas}>
           <Canvas
+            orthographic={orthographic}
             legacy
             linear
             ref={canvasRef}

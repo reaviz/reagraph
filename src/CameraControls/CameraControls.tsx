@@ -269,6 +269,8 @@ export const CameraControls: FC<
     ]);
 
     useEffect(() => {
+      const isOrthographic = (camera as any)?.isOrthographicCamera;
+
       if (disabled) {
         cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
         cameraRef.current.mouseButtons.middle = ThreeCameraControls.ACTION.NONE;
@@ -277,9 +279,11 @@ export const CameraControls: FC<
         cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
         cameraRef.current.mouseButtons.middle =
           ThreeCameraControls.ACTION.TRUCK;
-        cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.DOLLY;
+        cameraRef.current.mouseButtons.wheel = isOrthographic
+          ? ThreeCameraControls.ACTION.ZOOM
+          : ThreeCameraControls.ACTION.DOLLY;
       }
-    }, [disabled]);
+    }, [disabled, camera]);
 
     useEffect(() => {
       const onControl = () => setPanning(true);
