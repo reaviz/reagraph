@@ -58,7 +58,7 @@ export const useDrag = ({
         const { eventObject, point } = event;
 
         // Save the offset of click point from object origin
-        eventObject.getWorldPosition(offset).sub(point);
+        offset.setFromMatrixPosition(eventObject.matrixWorld).sub(point);
 
         // Set initial 3D cursor position (needed for onDrag plane calculation)
         mouse3D.copy(point);
