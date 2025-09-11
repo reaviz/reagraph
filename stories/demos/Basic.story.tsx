@@ -299,3 +299,7 @@ export const Circular = () => (
     ]}
   />
 );
+
+export const OrthographicCamera = () => (
+  <GraphCanvas nodes={simpleNodes} edges={simpleEdges} cameraMode="orthographic" />
+);

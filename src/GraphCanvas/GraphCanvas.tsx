@@ -226,6 +226,7 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
       return (
         <div className={css.canvas}>
           <Canvas
+            orthographic={cameraMode === 'orthographic'}
             legacy
             linear
             ref={canvasRef}
