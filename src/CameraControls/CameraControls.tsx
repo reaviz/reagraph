@@ -57,7 +57,7 @@ ThreeCameraControls.install({
 // Extend r3f with the new controls
 extend({ ThreeCameraControls });
 
-export type CameraMode = 'pan' | 'rotate' | 'orbit';
+export type CameraMode = 'pan' | 'rotate' | 'orbit' | 'orthographic';
 
 export interface CameraControlsProps {
   /**
@@ -269,7 +269,7 @@ export const CameraControls: FC<
     ]);
 
     useEffect(() => {
-      const isOrthographic = (camera as any)?.isOrthographicCamera;
+      const isOrthographic = mode === 'orthographic';
 
       if (disabled) {
         cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
@@ -283,7 +283,7 @@ export const CameraControls: FC<
           ? ThreeCameraControls.ACTION.ZOOM
           : ThreeCameraControls.ACTION.DOLLY;
       }
-    }, [disabled, camera]);
+    }, [disabled, mode]);
 
     useEffect(() => {
       const onControl = () => setPanning(true);
