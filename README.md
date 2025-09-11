@@ -76,6 +76,7 @@ with the following built in layouts:
 - No Overlap 2D
 - Force Atlas2 2D
 - Concentric 2D
+- Concentric 3D
 
 ## 📦 Usage
 

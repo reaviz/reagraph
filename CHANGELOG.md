@@ -1,3 +1,7 @@
+# 4.30.4 - 9/11/25
+- [fix] add orthographic option for the Canvas #382
+- [fix] z-index-fix #380
+
 # 4.30.3 - 8/28/25
 - [fix] Fix edge label rotation when animated=false #379
 - [fix] Add dash style for edges without animation #378
