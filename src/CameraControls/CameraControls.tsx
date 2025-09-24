@@ -283,7 +283,18 @@ export const CameraControls: FC<
           ? ThreeCameraControls.ACTION.ZOOM
           : ThreeCameraControls.ACTION.DOLLY;
       }
-    }, [disabled, mode]);
+
+      // For orthographic cameras, use distance parameters as zoom limits
+      if (isOrthographic && cameraRef.current) {
+        // Convert distance to zoom values (inverse relationship)
+        cameraRef.current.maxZoom = maxDistance
+          ? 50000 / minDistance
+          : undefined;
+        cameraRef.current.minZoom = minDistance
+          ? 50000 / maxDistance
+          : undefined;
+      }
+    }, [disabled, mode, minDistance, maxDistance]);
 
     useEffect(() => {
       const onControl = () => setPanning(true);
