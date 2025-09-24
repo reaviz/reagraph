@@ -528,6 +528,7 @@ export const Edge: FC<EdgeProps> = ({
           id={id}
           opacity={selectionOpacity}
           size={size}
+          renderOrder={isActive || active || isSelected ? 0 : -1}
           onClick={event => {
             if (!disabled) {
               onClick?.(edge, event);

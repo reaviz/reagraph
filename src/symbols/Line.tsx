@@ -59,6 +59,11 @@ export interface LineProps {
   size?: number;
 
   /**
+   * The render order of the line. Useful when edges are rendered on top of each other.
+   */
+  renderOrder?: number;
+
+  /**
    * A function that is called when the line is clicked.
    */
   onClick?: (event: ThreeEvent<MouseEvent>) => void;
@@ -124,6 +129,7 @@ export const Line: FC<LineProps> = ({
   id,
   opacity = 1,
   size = 1,
+  renderOrder = -1,
   onContextMenu,
   onClick,
   onPointerOver,
@@ -212,7 +218,7 @@ export const Line: FC<LineProps> = ({
   return (
     <mesh
       userData={{ id, type: 'edge' }}
-      renderOrder={-1}
+      renderOrder={renderOrder}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut}
       onClick={onClick}
