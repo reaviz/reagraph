@@ -44,6 +44,16 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   minDistance?: number;
 
   /**
+   * The minimum zoom level for the camera. Default is 1.
+   */
+  minZoom?: number;
+
+  /**
+   * The maximum zoom level for the camera. Default is 100.
+   */
+  maxZoom?: number;
+
+  /**
    * The type of lasso selection.
    */
   lassoType?: LassoType;
@@ -130,6 +140,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
         nodes,
         minDistance,
         maxDistance,
+        minZoom,
+        maxZoom,
         onCanvasClick,
         disabled,
         onLasso,
@@ -250,6 +262,8 @@ export const GraphCanvas: FC<GraphCanvasProps & { ref?: Ref<GraphCanvasRef> }> =
                 disabled={disabled}
                 minDistance={minDistance}
                 maxDistance={maxDistance}
+                minZoom={minZoom}
+                maxZoom={maxZoom}
                 animated={animated}
               >
                 <Lasso

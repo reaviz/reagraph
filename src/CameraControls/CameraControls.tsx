@@ -81,14 +81,24 @@ export interface CameraControlsProps {
   disabled?: boolean;
 
   /**
-   * The maximum distance for the camera.
+   * The maximum distance for the camera (perspective mode).
    */
   maxDistance?: number;
 
   /**
-   * The minimum distance for the camera.
+   * The minimum distance for the camera (perspective mode).
    */
   minDistance?: number;
+
+  /**
+   * The maximum zoom level for orthographic cameras.
+   */
+  maxZoom?: number;
+
+  /**
+   * The minimum zoom level for orthographic cameras.
+   */
+  minZoom?: number;
 }
 
 export type CameraControlsRef = CameraControlsContextProps;
@@ -103,7 +113,9 @@ export const CameraControls: FC<
       animated,
       disabled,
       minDistance = 1000,
-      maxDistance = 50000
+      maxDistance = 50000,
+      minZoom = 1,
+      maxZoom = 100
     },
     ref: Ref<CameraControlsRef>
   ) => {
@@ -284,17 +296,12 @@ export const CameraControls: FC<
           : ThreeCameraControls.ACTION.DOLLY;
       }
 
-      // For orthographic cameras, use distance parameters as zoom limits
+      // For orthographic cameras, use dedicated zoom props
       if (isOrthographic && cameraRef.current) {
-        // Convert distance to zoom values (inverse relationship)
-        cameraRef.current.maxZoom = maxDistance
-          ? 50000 / minDistance
-          : undefined;
-        cameraRef.current.minZoom = minDistance
-          ? 50000 / maxDistance
-          : undefined;
+        cameraRef.current.maxZoom = maxZoom;
+        cameraRef.current.minZoom = minZoom;
       }
-    }, [disabled, mode, minDistance, maxDistance]);
+    }, [disabled, mode, minDistance, maxDistance, minZoom, maxZoom]);
 
     useEffect(() => {
       const onControl = () => setPanning(true);
