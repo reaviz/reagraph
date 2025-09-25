@@ -301,7 +301,7 @@ export const CameraControls: FC<
         cameraRef.current.maxZoom = maxZoom;
         cameraRef.current.minZoom = minZoom;
       }
-    }, [disabled, mode, minDistance, maxDistance, minZoom, maxZoom]);
+    }, [disabled, mode, minZoom, maxZoom]);
 
     useEffect(() => {
       const onControl = () => setPanning(true);
