@@ -249,10 +249,12 @@ export const Edge: FC<EdgeProps> = ({
     return newMidPoint;
   }, [from.position, to.position, labelOffset, labelPlacement, curved, curve]);
 
+  const center = useStore(state => state.centerPosition);
+
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length);
   const isActive = useStore(state => state.actives?.includes(id));
-  const center = useStore(state => state.centerPosition);
+  const isActiveState = active || isActive || isSelected;
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
@@ -350,9 +352,7 @@ export const Edge: FC<EdgeProps> = ({
       <Arrow
         animated={animated}
         color={
-          isSelected || active || isActive
-            ? theme.arrow.activeFill
-            : fill || theme.arrow.fill
+          isActiveState ? theme.arrow.activeFill : fill || theme.arrow.fill
         }
         length={arrowLength}
         opacity={selectionOpacity}
@@ -370,7 +370,6 @@ export const Edge: FC<EdgeProps> = ({
     );
   }, [
     fill,
-    active,
     animated,
     arrowLength,
     effectiveArrowPlacement,
@@ -379,8 +378,7 @@ export const Edge: FC<EdgeProps> = ({
     arrowSize,
     disabled,
     edge,
-    isActive,
-    isSelected,
+    isActiveState,
     onContextMenu,
     selectionOpacity,
     theme.arrow.activeFill,
@@ -410,14 +408,14 @@ export const Edge: FC<EdgeProps> = ({
             fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
-              isSelected || active || isActive
+              isActiveState
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }
             opacity={selectionOpacity}
             fontSize={theme.edge.label.fontSize}
             rotation={labelRotation}
-            active={isSelected || active || isActive}
+            active={isActiveState}
           />
 
           {subLabel && (
@@ -427,9 +425,9 @@ export const Edge: FC<EdgeProps> = ({
                 ellipsis={15}
                 fontUrl={labelFontUrl}
                 stroke={theme.edge.subLabel?.stroke || theme.edge.label.stroke}
-                active={isSelected || active || isActive}
+                active={isActiveState}
                 color={
-                  isSelected || active || isActive
+                  isActiveState
                     ? theme.edge.subLabel?.activeColor ||
                       theme.edge.label.activeColor
                     : theme.edge.subLabel?.color || theme.edge.label.color
@@ -446,11 +444,9 @@ export const Edge: FC<EdgeProps> = ({
         </a.group>
       ),
     [
-      active,
       disabled,
       edge,
-      isActive,
-      isSelected,
+      isActiveState,
       label,
       subLabel,
       labelFontUrl,
@@ -485,7 +481,7 @@ export const Edge: FC<EdgeProps> = ({
   );
 
   return (
-    <group position={[0, 0, active ? 1 : 0]}>
+    <group position={[0, 0, isActiveState ? 1 : 0]}>
       {isSelfLoop && selfLoopCurve ? (
         <SelfLoop
           id={id}
@@ -493,9 +489,7 @@ export const Edge: FC<EdgeProps> = ({
           size={size}
           animated={animated}
           color={
-            isSelected || active || isActive
-              ? theme.edge.activeFill
-              : fill || theme.edge.fill
+            isActiveState ? theme.edge.activeFill : fill || theme.edge.fill
           }
           opacity={selectionOpacity}
           onClick={event => {
@@ -517,9 +511,7 @@ export const Edge: FC<EdgeProps> = ({
           curveOffset={curveOffset}
           animated={animated}
           color={
-            isSelected || active || isActive
-              ? theme.edge.activeFill
-              : fill || theme.edge.fill
+            isActiveState ? theme.edge.activeFill : fill || theme.edge.fill
           }
           curve={curve}
           curved={curved}
@@ -528,6 +520,7 @@ export const Edge: FC<EdgeProps> = ({
           id={id}
           opacity={selectionOpacity}
           size={size}
+          renderOrder={isActiveState ? 0 : -1}
           onClick={event => {
             if (!disabled) {
               onClick?.(edge, event);
