@@ -129,7 +129,7 @@ export const Line: FC<LineProps> = ({
   id,
   opacity = 1,
   size = 1,
-  renderOrder = -1,
+  renderOrder = 0,
   onContextMenu,
   onClick,
   onPointerOver,
