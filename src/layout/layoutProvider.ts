@@ -1,13 +1,19 @@
-import { concentric3d } from 'layout/concentric3d';
 import { concentric2d } from 'layout/concentric2d';
-import { LayoutFactoryProps, LayoutStrategy } from './types';
-import { forceDirected, ForceDirectedLayoutInputs } from './forceDirected';
-import { circular2d, CircularLayoutInputs } from './circular2d';
-import { ConcentricLayoutInputs } from './concentric2d';
-import { hierarchical, HierarchicalLayoutInputs } from './hierarchical';
-import { NoOverlapLayoutInputs, nooverlap } from './nooverlap';
-import { ForceAtlas2LayoutInputs, forceAtlas2 } from './forceatlas2';
+import { concentric3d } from 'layout/concentric3d';
+
+import type { CircularLayoutInputs } from './circular2d';
+import { circular2d } from './circular2d';
+import type { ConcentricLayoutInputs } from './concentric2d';
 import { custom } from './custom';
+import type { ForceAtlas2LayoutInputs } from './forceatlas2';
+import { forceAtlas2 } from './forceatlas2';
+import type { ForceDirectedLayoutInputs } from './forceDirected';
+import { forceDirected } from './forceDirected';
+import type { HierarchicalLayoutInputs } from './hierarchical';
+import { hierarchical } from './hierarchical';
+import type { NoOverlapLayoutInputs } from './nooverlap';
+import { nooverlap } from './nooverlap';
+import type { LayoutFactoryProps, LayoutStrategy } from './types';
 
 export type LayoutOverrides = Partial<
   | Omit<ForceDirectedLayoutInputs, 'dimensions' | 'mode'>

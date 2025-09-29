@@ -1,5 +1,6 @@
 import pagerank from 'graphology-metrics/centrality/pagerank.js';
-import { SizingStrategy, SizingStrategyInputs } from './types';
+
+import type { SizingStrategy, SizingStrategyInputs } from './types';
 
 export function pageRankSizing({
   graph

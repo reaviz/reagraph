@@ -1,5 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { getVisibleEntities, GraphCanvas, RadialMenu, useCollapse } from '../../src';
+
+import {
+  getVisibleEntities,
+  GraphCanvas,
+  RadialMenu,
+  useCollapse
+} from '../../src';
 import { parentEdges, parentNodes } from '../assets/demo';
 
 export default {
@@ -13,7 +19,17 @@ export const Basic = () => {
 
   return (
     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
-      <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 10, color: 'white' }}>
+      <div
+        style={{
+          zIndex: 9,
+          position: 'absolute',
+          top: 15,
+          right: 15,
+          background: 'rgba(0, 0, 0, .5)',
+          padding: 10,
+          color: 'white'
+        }}
+      >
         <h3>Node Actions</h3>
         {active ? (
           <>
@@ -41,15 +57,11 @@ export const Basic = () => {
             </button>
           </>
         ) : (
-          <>
-            Click a node to see options
-          </>
+          <>Click a node to see options</>
         )}
         <h3>Collapsed Nodes</h3>
         <code>
-          <pre>
-            {JSON.stringify(collapsed, null, 2)}
-          </pre>
+          <pre>{JSON.stringify(collapsed, null, 2)}</pre>
         </code>
       </div>
       <GraphCanvas
@@ -85,10 +97,12 @@ export const RadialContextMenu = () => (
             }
           },
           ...(canCollapse
-            ? [{
-              label: isCollapsed ? 'Expand' : 'Collapse',
-              onClick: onCollapse
-            }]
+            ? [
+                {
+                  label: isCollapsed ? 'Expand' : 'Collapse',
+                  onClick: onCollapse
+                }
+              ]
             : [])
         ]}
       />
@@ -99,7 +113,11 @@ export const RadialContextMenu = () => (
 export const ExpandToHiddenNode = () => {
   const [active, setActive] = useState<any>(null);
   const [collapsed, setCollapsed] = useState<string[]>(['n-2']);
-  const { getExpandPathIds } = useCollapse({ collapsedNodeIds: collapsed, nodes: parentNodes, edges: parentEdges });
+  const { getExpandPathIds } = useCollapse({
+    collapsedNodeIds: collapsed,
+    nodes: parentNodes,
+    edges: parentEdges
+  });
   const hiddenNodeIds = useMemo(() => {
     const { visibleNodes } = getVisibleEntities({
       collapsedIds: collapsed,
@@ -114,69 +132,77 @@ export const ExpandToHiddenNode = () => {
 
   return (
     <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
-    <div style={{ zIndex: 9, position: 'absolute', top: 15, right: 15, background: 'rgba(0, 0, 0, .5)', padding: 10, color: 'white' }}>
-      <h3>Node Actions</h3>
-      {active ? (
-        <>
-          Selected: {active.node.id}
-          <br />
-          <button
-            style={{ display: 'block', width: '100%' }}
-            onClick={() => {
-              if (!collapsed.includes(active.node.id)) {
-                setCollapsed([...collapsed, active.node.id]);
-              }
-            }}
-          >
-            Collapse Node
-          </button>
-          <button
-            style={{ display: 'block', width: '100%' }}
-            onClick={() => {
-              if (collapsed.includes(active.node.id)) {
-                setCollapsed(collapsed.filter(n => n !== active.node.id));
-              }
-            }}
-          >
-            Expand Node
-          </button>
-        </>
-      ) : (
-        <>
-          Click a node to see options
-        </>
-      )}
-      <h3>Collapsed Nodes</h3>
-      <code>
-        <pre>
-          {JSON.stringify(collapsed, null, 2)}
-        </pre>
-      </code>
-      <h3>Hidden Nodes</h3>
-      <ul>
-        {hiddenNodeIds.map(id => (
-          <li key={id}>
-            {id}
+      <div
+        style={{
+          zIndex: 9,
+          position: 'absolute',
+          top: 15,
+          right: 15,
+          background: 'rgba(0, 0, 0, .5)',
+          padding: 10,
+          color: 'white'
+        }}
+      >
+        <h3>Node Actions</h3>
+        {active ? (
+          <>
+            Selected: {active.node.id}
+            <br />
             <button
               style={{ display: 'block', width: '100%' }}
               onClick={() => {
-                const toExpandIds = getExpandPathIds(id);
-                const newCollapsed = collapsed.filter(id => !toExpandIds.includes(id));
-                setCollapsed(newCollapsed);
+                if (!collapsed.includes(active.node.id)) {
+                  setCollapsed([...collapsed, active.node.id]);
+                }
               }}
             >
-              View Node
+              Collapse Node
             </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-    <GraphCanvas
-      collapsedNodeIds={collapsed}
-      nodes={parentNodes}
-      edges={parentEdges}
-      onNodeClick={(node, props) => setActive({ node, props })}
-    />
+            <button
+              style={{ display: 'block', width: '100%' }}
+              onClick={() => {
+                if (collapsed.includes(active.node.id)) {
+                  setCollapsed(collapsed.filter(n => n !== active.node.id));
+                }
+              }}
+            >
+              Expand Node
+            </button>
+          </>
+        ) : (
+          <>Click a node to see options</>
+        )}
+        <h3>Collapsed Nodes</h3>
+        <code>
+          <pre>{JSON.stringify(collapsed, null, 2)}</pre>
+        </code>
+        <h3>Hidden Nodes</h3>
+        <ul>
+          {hiddenNodeIds.map(id => (
+            <li key={id}>
+              {id}
+              <button
+                style={{ display: 'block', width: '100%' }}
+                onClick={() => {
+                  const toExpandIds = getExpandPathIds(id);
+                  const newCollapsed = collapsed.filter(
+                    id => !toExpandIds.includes(id)
+                  );
+                  setCollapsed(newCollapsed);
+                }}
+              >
+                View Node
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <GraphCanvas
+        collapsedNodeIds={collapsed}
+        nodes={parentNodes}
+        edges={parentEdges}
+        onNodeClick={(node, props) => setActive({ node, props })}
+      />
     </div>
   );
 };

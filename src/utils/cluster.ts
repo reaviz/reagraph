@@ -1,5 +1,6 @@
-import { InternalGraphNode } from '../types';
-import { CenterPositionVector, getLayoutCenter } from './layout';
+import type { InternalGraphNode } from '../types';
+import type { CenterPositionVector } from './layout';
+import { getLayoutCenter } from './layout';
 
 /**
  * Given nodes and a attribute, find all the cluster groups.

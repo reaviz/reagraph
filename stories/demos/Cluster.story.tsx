@@ -1,19 +1,19 @@
-import React, { useCallback, useState } from 'react';
-import { Html } from '@react-three/drei';
-import { Color } from 'three';
 import { a } from '@react-spring/three';
-import { GraphCanvas, lightTheme } from '../../src';
-import {
-  clusterNodes,
-  clusterEdges,
-  random,
-  singleNodeClusterNodes,
-  imbalancedClusterNodes,
-  manyClusterNodes
-} from '../assets/demo';
+import { Html } from '@react-three/drei';
+import React, { useCallback, useState } from 'react';
+import { Color } from 'three';
 
+import { GraphCanvas, lightTheme } from '../../src';
+import { Icon, Ring, Sphere } from '../../src/symbols';
+import {
+  clusterEdges,
+  clusterNodes,
+  imbalancedClusterNodes,
+  manyClusterNodes,
+  random,
+  singleNodeClusterNodes
+} from '../assets/demo';
 import demonSvg from '../assets/twitter.svg';
-import { Icon, Sphere, Ring } from '../../src/symbols';
 
 export default {
   title: 'Demos/Cluster',

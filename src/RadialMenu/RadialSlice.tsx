@@ -1,5 +1,7 @@
 import classNames from 'classnames';
-import React, { FC, ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
+import React from 'react';
+
 import css from './RadialSlice.module.css';
 
 export interface MenuItem {

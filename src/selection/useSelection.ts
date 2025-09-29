@@ -1,15 +1,12 @@
-import React, {
-  RefObject,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+import type { RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import type { GraphCanvasRef } from '../GraphCanvas';
+import type { GraphEdge, GraphNode } from '../types';
 import { isNotEditableElement } from '../utils/dom';
-import { GraphCanvasRef } from '../GraphCanvas';
-import { GraphEdge, GraphNode } from '../types';
 import { findPath } from '../utils/paths';
-import { getAdjacents, PathSelectionTypes } from './utils';
+import type { PathSelectionTypes } from './utils';
+import { getAdjacents } from './utils';
 
 export type HotkeyTypes = 'selectAll' | 'deselect' | 'delete';
 

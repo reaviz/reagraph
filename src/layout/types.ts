@@ -1,10 +1,11 @@
-import { DragReferences } from '../store';
-import {
+import type Graph from 'graphology';
+
+import type { DragReferences } from '../store';
+import type {
   InternalGraphEdge,
   InternalGraphNode,
   InternalGraphPosition
 } from '../types';
-import Graph from 'graphology';
 
 export type LayoutTypes =
   | 'forceDirected2d'

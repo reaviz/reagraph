@@ -1,19 +1,21 @@
 import {
-  forceSimulation as d3ForceSimulation,
-  forceLink as d3ForceLink,
+  forceCenter as d3ForceCenter,
   forceCollide,
+  forceLink as d3ForceLink,
   forceManyBody as d3ForceManyBody,
+  forceSimulation as d3ForceSimulation,
   forceX as d3ForceX,
   forceY as d3ForceY,
-  forceZ as d3ForceZ,
-  forceCenter as d3ForceCenter
+  forceZ as d3ForceZ
 } from 'd3-force-3d';
-import { forceRadial, DagMode } from './forceUtils';
-import { LayoutFactoryProps, LayoutStrategy } from './types';
-import { buildNodeEdges } from './layoutUtils';
+
+import type { ClusterGroup } from '../utils/cluster';
 import { forceInABox } from './forceInABox';
-import { FORCE_LAYOUTS } from './layoutProvider';
-import { ClusterGroup } from '../utils/cluster';
+import type { DagMode } from './forceUtils';
+import { forceRadial } from './forceUtils';
+import type { FORCE_LAYOUTS } from './layoutProvider';
+import { buildNodeEdges } from './layoutUtils';
+import type { LayoutFactoryProps, LayoutStrategy } from './types';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**

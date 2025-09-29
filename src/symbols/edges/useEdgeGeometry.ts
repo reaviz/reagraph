@@ -1,29 +1,29 @@
 import { useCallback, useRef } from 'react';
+import type { BufferGeometry, Curve } from 'three';
 import {
-  BufferGeometry,
   Color,
   CylinderGeometry,
   Quaternion,
   TubeGeometry,
-  Vector3,
-  Curve
+  Vector3
 } from 'three';
 import { mergeBufferGeometries } from 'three-stdlib';
 
-import { GraphState, useStore } from '../../store';
-import { InternalGraphEdge } from '../../types';
+import type { GraphState } from '../../store';
+import { useStore } from '../../store';
+import type { InternalGraphEdge } from '../../types';
 import {
+  addColorAttribute,
+  createDashedGeometry,
+  createNullGeometry,
   getArrowSize,
   getArrowVectors,
-  getVector,
   getCurve,
   getSelfLoopCurve,
-  createNullGeometry,
-  addColorAttribute,
-  createDashedGeometry
+  getVector
 } from '../../utils';
-import { EdgeArrowPosition } from '../Arrow';
-import { EdgeInterpolation } from '../Edge';
+import type { EdgeArrowPosition } from '../Arrow';
+import type { EdgeInterpolation } from '../Edge';
 
 export type UseEdgeGeometry = {
   getGeometries(edges: Array<InternalGraphEdge>): Array<BufferGeometry>;

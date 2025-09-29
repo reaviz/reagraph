@@ -1,17 +1,20 @@
-import React, { FC, useMemo, useState } from 'react';
-import { ClusterGroup, animationConfig } from '../utils';
-import { useSpring, a } from '@react-spring/three';
-import { Color } from 'three';
-import { useStore } from '../store';
-import { Label } from './Label';
+import { a, useSpring } from '@react-spring/three';
 import { useCursor } from '@react-three/drei';
 import type { ThreeEvent } from '@react-three/fiber';
+import type { FC } from 'react';
+import React, { useMemo, useState } from 'react';
+import type { Vector3 } from 'three';
+import { Color } from 'three';
+
+import { useCameraControls } from '../CameraControls/useCameraControls';
+import { useStore } from '../store';
+import type { ClusterRenderer } from '../types';
+import type { ClusterGroup } from '../utils';
+import { animationConfig } from '../utils';
 import { useDrag } from '../utils/useDrag';
 import { useHoverIntent } from '../utils/useHoverIntent';
-import { useCameraControls } from '../CameraControls/useCameraControls';
-import { Vector3 } from 'three';
-import { ClusterRenderer } from '../types';
 import { Ring } from './clusters/Ring';
+import { Label } from './Label';
 
 export type ClusterEventArgs = Omit<ClusterGroup, 'position'>;
 

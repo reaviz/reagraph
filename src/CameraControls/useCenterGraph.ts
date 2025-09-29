@@ -1,15 +1,17 @@
 import { useThree } from '@react-three/fiber';
-import { useCameraControls } from '../CameraControls/useCameraControls';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { Vector3, Box3, PerspectiveCamera } from 'three';
-import { getLayoutCenter } from '../utils/layout';
-import { InternalGraphNode } from '../types';
-import { useStore } from '../store';
+import type { PerspectiveCamera } from 'three';
+import { Box3, Vector3 } from 'three';
+
+import { useCameraControls } from '../CameraControls/useCameraControls';
 import {
-  isNodeInView,
-  getDegreesToClosest2dAxis
+  getDegreesToClosest2dAxis,
+  isNodeInView
 } from '../CameraControls/utils';
-import { LayoutTypes } from '../layout/types';
+import type { LayoutTypes } from '../layout/types';
+import { useStore } from '../store';
+import type { InternalGraphNode } from '../types';
+import { getLayoutCenter } from '../utils/layout';
 
 const PADDING = 50;
 
