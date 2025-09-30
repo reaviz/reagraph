@@ -1,13 +1,14 @@
 import {
-  forceSimulation,
-  forceX,
-  forceY,
+  forceCollide,
   forceLink,
   forceManyBody,
-  forceCollide
+  forceSimulation,
+  forceX,
+  forceY
 } from 'd3-force-3d';
-import { treemap, hierarchy } from 'd3-hierarchy';
-import { ClusterGroup } from '../utils/cluster';
+import { hierarchy, treemap } from 'd3-hierarchy';
+
+import type { ClusterGroup } from '../utils/cluster';
 
 /**
  * Used for calculating clusterings of nodes.
@@ -36,7 +37,7 @@ export function forceInABox() {
   let forceCharge = constant(-1);
   let forceLinkDistance = constant(100);
   let forceLinkStrength = constant(0.1);
-  let foci = {};
+  const foci = {};
   let linkStrengthIntraCluster = 0.1;
   let linkStrengthInterCluster = 0.001;
   let templateNodes = [];
@@ -83,7 +84,7 @@ export function forceInABox() {
   };
 
   function getLinkKey(l) {
-    let sourceID = groupBy(l.source),
+    const sourceID = groupBy(l.source),
       targetID = groupBy(l.target);
 
     return sourceID <= targetID
@@ -116,7 +117,7 @@ export function forceInABox() {
 
   //Returns
   function computeClustersLinkCounts(links) {
-    let dClusterLinks = new Map(),
+    const dClusterLinks = new Map(),
       clusterLinks = [];
 
     links.forEach(function (l) {
@@ -149,9 +150,9 @@ export function forceInABox() {
 
   //Returns the metagraph of the clusters
   function getGroupsGraph() {
-    let gnodes = [];
-    let glinks = [];
-    let dNodes = new Map();
+    const gnodes = [];
+    const glinks = [];
+    const dNodes = new Map();
     let c;
     let i;
     let cc;
@@ -172,7 +173,7 @@ export function forceInABox() {
     }
 
     clustersLinks.forEach(function (l) {
-      let source = dNodes.get(l.source),
+      const source = dNodes.get(l.source),
         target = dNodes.get(l.target);
       if (source !== undefined && target !== undefined) {
         glinks.push({
@@ -187,7 +188,7 @@ export function forceInABox() {
   }
 
   function getGroupsTree() {
-    let children = [];
+    const children = [];
     let c;
     let cc;
     let clustersCounts;
@@ -224,7 +225,7 @@ export function forceInABox() {
 
   function initializeWithTreemap() {
     // @ts-ignore
-    let sim = treemap().size(force.size());
+    const sim = treemap().size(force.size());
 
     tree = hierarchy(getGroupsTree())
       .sum((d: any) => d.radius)
@@ -436,8 +437,8 @@ export function forceInABox() {
   force.forceNodeSize = function (_) {
     return arguments.length
       ? ((forceNodeSize = typeof _ === 'function' ? _ : constant(+_)),
-      initialize(),
-      force)
+        initialize(),
+        force)
       : forceNodeSize;
   };
 
@@ -447,24 +448,24 @@ export function forceInABox() {
   force.forceCharge = function (_) {
     return arguments.length
       ? ((forceCharge = typeof _ === 'function' ? _ : constant(+_)),
-      initialize(),
-      force)
+        initialize(),
+        force)
       : forceCharge;
   };
 
   force.forceLinkDistance = function (_) {
     return arguments.length
       ? ((forceLinkDistance = typeof _ === 'function' ? _ : constant(+_)),
-      initialize(),
-      force)
+        initialize(),
+        force)
       : forceLinkDistance;
   };
 
   force.forceLinkStrength = function (_) {
     return arguments.length
       ? ((forceLinkStrength = typeof _ === 'function' ? _ : constant(+_)),
-      initialize(),
-      force)
+        initialize(),
+        force)
       : forceLinkStrength;
   };
 

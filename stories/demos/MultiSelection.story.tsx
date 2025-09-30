@@ -1,5 +1,7 @@
 import React, { Fragment, useRef } from 'react';
-import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
+
+import type { GraphCanvasRef } from '../../src';
+import { GraphCanvas, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {

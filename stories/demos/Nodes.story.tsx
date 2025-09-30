@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
-import { GraphCanvas, LayoutTypes } from '../../src';
-import { Svg, SphereWithIcon, SphereWithSvg } from '../../src/symbols';
+
+import type { LayoutTypes } from '../../src';
+import { GraphCanvas } from '../../src';
+import { SphereWithIcon, SphereWithSvg, Svg } from '../../src/symbols';
 import {
   iconNodes,
   manyNodes,
@@ -17,10 +19,7 @@ export default {
 export const NoEdges = () => <GraphCanvas nodes={manyNodes} edges={[]} />;
 
 export const Icons = () => (
-  <GraphCanvas
-    nodes={iconNodes}
-    edges={simpleEdges}
-  />
+  <GraphCanvas nodes={iconNodes} edges={simpleEdges} />
 );
 
 export const DragOverrides = () => {
@@ -34,8 +33,8 @@ export const DragOverrides = () => {
         nodes={nodes}
         edges={simpleEdges}
         layoutOverrides={{
-          getNodePosition: (id) => {
-            console.log('custom position', nodeRef.current.get(id))
+          getNodePosition: id => {
+            console.log('custom position', nodeRef.current.get(id));
             return nodeRef.current.get(id)?.position;
           }
         }}
@@ -49,7 +48,7 @@ export const DragOverrides = () => {
           type="button"
           onClick={() => {
             const next = nodes.length + 2;
-            setNodes([...nodes, { id: `${next}`, label: `Node ${next}` }])
+            setNodes([...nodes, { id: `${next}`, label: `Node ${next}` }]);
           }}
         >
           Reset Graph
@@ -85,12 +84,8 @@ export const SphereWithIconNode = () => (
     nodes={iconNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({  node, ...rest }) => (
-      <SphereWithIcon
-        {...rest}
-        node={node}
-        image={node.icon || ''}
-      />
+    renderNode={({ node, ...rest }) => (
+      <SphereWithIcon {...rest} node={node} image={node.icon || ''} />
     )}
   />
 );
@@ -100,12 +95,8 @@ export const SphereSvgIconNode = () => (
     nodes={iconNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({  node, ...rest }) => (
-      <SphereWithSvg
-        {...rest}
-        node={node}
-        image={node.icon || ''}
-      />
+    renderNode={({ node, ...rest }) => (
+      <SphereWithSvg {...rest} node={node} image={node.icon || ''} />
     )}
   />
 );
@@ -115,12 +106,8 @@ export const SvgIconNode = () => (
     nodes={iconNodes}
     edges={simpleEdges}
     cameraMode="rotate"
-    renderNode={({  node, ...rest }) => (
-      <Svg
-        {...rest}
-        node={node}
-        image={node.icon || ''}
-      />
+    renderNode={({ node, ...rest }) => (
+      <Svg {...rest} node={node} image={node.icon || ''} />
     )}
   />
 );

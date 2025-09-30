@@ -1,4 +1,5 @@
-import { expect, test, describe } from 'vitest';
+import { describe, expect, test } from 'vitest';
+
 import { getClosestAxis, getDegreesToClosest2dAxis } from './utils';
 
 describe('getDegreesToClosest2dAxis', () => {

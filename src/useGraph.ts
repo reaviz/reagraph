@@ -1,20 +1,19 @@
-import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
-import { PerspectiveCamera } from 'three';
-import { SizingType } from './sizing';
-import {
-  LayoutTypes,
-  layoutProvider,
-  LayoutStrategy,
-  LayoutOverrides
-} from './layout';
-import { LabelVisibilityType, calcLabelVisibility } from './utils/visibility';
-import { tick } from './layout/layoutUtils';
-import { GraphEdge, GraphNode, InternalGraphNode } from './types';
-import { buildGraph, transformGraph } from './utils/graph';
-import { DragReferences, useStore } from './store';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { PerspectiveCamera } from 'three';
+
 import { getVisibleEntities } from './collapse';
+import type { LayoutOverrides, LayoutStrategy, LayoutTypes } from './layout';
+import { layoutProvider } from './layout';
+import { tick } from './layout/layoutUtils';
+import type { SizingType } from './sizing';
+import type { DragReferences } from './store';
+import { useStore } from './store';
+import type { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { calculateClusters } from './utils/cluster';
+import { buildGraph, transformGraph } from './utils/graph';
+import type { LabelVisibilityType } from './utils/visibility';
+import { calcLabelVisibility } from './utils/visibility';
 
 export interface GraphInputs {
   nodes: GraphNode[];

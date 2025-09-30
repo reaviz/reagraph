@@ -1,6 +1,7 @@
 import React from 'react';
+
 import { GraphCanvas, RadialMenu } from '../../src';
-import { parentEdges, parentNodes, simpleEdges, simpleNodes } from '../assets/demo';
+import { simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Context Menu/Radial',

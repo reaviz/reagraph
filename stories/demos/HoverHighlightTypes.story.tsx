@@ -1,5 +1,7 @@
 import React, { useRef } from 'react';
-import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
+
+import type { GraphCanvasRef } from '../../src';
+import { GraphCanvas, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {
@@ -9,7 +11,13 @@ export default {
 
 export const Direct = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+  const {
+    selections,
+    onNodeClick,
+    onCanvasClick,
+    onNodePointerOver,
+    onNodePointerOut
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -32,7 +40,14 @@ export const Direct = () => {
 
 export const Inwards = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+  const {
+    selections,
+    actives,
+    onNodeClick,
+    onCanvasClick,
+    onNodePointerOver,
+    onNodePointerOut
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -56,7 +71,14 @@ export const Inwards = () => {
 
 export const Outwards = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+  const {
+    selections,
+    actives,
+    onNodeClick,
+    onCanvasClick,
+    onNodePointerOver,
+    onNodePointerOut
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -81,7 +103,14 @@ export const Outwards = () => {
 
 export const All = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { selections, actives, onNodeClick, onCanvasClick, onNodePointerOver, onNodePointerOut } = useSelection({
+  const {
+    selections,
+    actives,
+    onNodeClick,
+    onCanvasClick,
+    onNodePointerOver,
+    onNodePointerOut
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,

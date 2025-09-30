@@ -1,6 +1,12 @@
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
-import { parentEdges, parentNodes, simpleEdges, simpleNodes } from '../assets/demo';
+import {
+  parentEdges,
+  parentNodes,
+  simpleEdges,
+  simpleNodes
+} from '../assets/demo';
 
 export default {
   title: 'Demos/Context Menu',
@@ -46,7 +52,9 @@ export const Collapsible = () => (
       >
         <h1>{data.label}</h1>
         {canCollapse && (
-          <button onClick={onCollapse}>{isCollapsed ? 'Expand Node' : 'Collapse Node'}</button>
+          <button onClick={onCollapse}>
+            {isCollapsed ? 'Expand Node' : 'Collapse Node'}
+          </button>
         )}
         <button onClick={onClose}>Close Menu</button>
       </div>

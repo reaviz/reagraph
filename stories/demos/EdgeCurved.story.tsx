@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 

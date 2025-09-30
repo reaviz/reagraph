@@ -1,19 +1,22 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import { a } from '@react-spring/three';
 import { useFrame } from '@react-three/fiber';
-import { DoubleSide, Mesh, Raycaster, TubeGeometry } from 'three';
+import type { FC } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { Raycaster, TubeGeometry } from 'three';
+import { DoubleSide, Mesh } from 'three';
 
 import { useStore } from '../../store';
-import { ContextMenuEvent, InternalGraphEdge } from '../../types';
-import { EdgeArrowPosition } from '../Arrow';
-import { EdgeLabelPosition, EdgeInterpolation } from '../Edge';
-import { useEdgeGeometry } from './useEdgeGeometry';
-import { EdgeEvents, useEdgeEvents } from './useEdgeEvents';
-import {
-  useEdgePositionAnimation,
-  useEdgeOpacityAnimation
-} from './useEdgeAnimations';
+import type { ContextMenuEvent, InternalGraphEdge } from '../../types';
+import type { EdgeArrowPosition } from '../Arrow';
+import type { EdgeInterpolation, EdgeLabelPosition } from '../Edge';
 import { Edge } from './Edge';
+import {
+  useEdgeOpacityAnimation,
+  useEdgePositionAnimation
+} from './useEdgeAnimations';
+import type { EdgeEvents } from './useEdgeEvents';
+import { useEdgeEvents } from './useEdgeEvents';
+import { useEdgeGeometry } from './useEdgeGeometry';
 
 export type EdgesProps = {
   /**

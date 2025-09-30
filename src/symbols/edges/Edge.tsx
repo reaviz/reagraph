@@ -1,10 +1,12 @@
-import React, { FC, useCallback, useMemo } from 'react';
-import { useSpring, a } from '@react-spring/three';
+import { a, useSpring } from '@react-spring/three';
 import { Html } from '@react-three/drei';
-import { ColorRepresentation, Euler } from 'three';
+import type { FC } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import type { ColorRepresentation } from 'three';
+import { Euler } from 'three';
 
 import { useStore } from '../../store';
-import { ContextMenuEvent, InternalGraphEdge } from '../../types';
+import type { ContextMenuEvent, InternalGraphEdge } from '../../types';
 import {
   animationConfig,
   getLabelOffsetByType,
@@ -145,9 +147,9 @@ export const Edge: FC<EdgeProps> = ({
         labelPlacement === 'natural'
           ? 0
           : Math.atan(
-            (to.position.y - from.position.y) /
+              (to.position.y - from.position.y) /
                 (to.position.x - from.position.x)
-          )
+            )
       ),
     [
       to.position.x,

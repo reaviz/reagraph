@@ -1,6 +1,7 @@
-import { ConcentricLayoutInputs } from 'layout/concentric2d';
-import { buildNodeEdges } from './layoutUtils';
+import type { ConcentricLayoutInputs } from 'layout/concentric2d';
 import { Vector3 } from 'three';
+
+import { buildNodeEdges } from './layoutUtils';
 
 /**
  * Generates a point on a Fibonacci sphere.

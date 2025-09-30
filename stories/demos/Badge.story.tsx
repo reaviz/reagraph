@@ -1,7 +1,8 @@
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
 import { Badge, Sphere } from '../../src/symbols';
-import { simpleNodes, simpleEdges } from '../assets/demo';
+import { simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Badge',

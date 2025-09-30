@@ -1,5 +1,7 @@
 import React, { Fragment, useRef } from 'react';
-import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
+
+import type { GraphCanvasRef } from '../../src';
+import { GraphCanvas, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {
@@ -9,7 +11,14 @@ export default {
 
 export const NodesAndEdges = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
+  const {
+    actives,
+    selections,
+    onNodeClick,
+    onCanvasClick,
+    onLasso,
+    onLassoEnd
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -18,7 +27,17 @@ export const NodesAndEdges = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div
+        style={{
+          zIndex: 9,
+          userSelect: 'none',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'rgba(0, 0, 0, .5)',
+          color: 'white'
+        }}
+      >
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
@@ -39,7 +58,14 @@ export const NodesAndEdges = () => {
 
 export const NodesOnly = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
+  const {
+    actives,
+    selections,
+    onNodeClick,
+    onCanvasClick,
+    onLasso,
+    onLassoEnd
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -48,7 +74,17 @@ export const NodesOnly = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div
+        style={{
+          zIndex: 9,
+          userSelect: 'none',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'rgba(0, 0, 0, .5)',
+          color: 'white'
+        }}
+      >
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
@@ -69,7 +105,14 @@ export const NodesOnly = () => {
 
 export const Dragging = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
+  const {
+    actives,
+    selections,
+    onNodeClick,
+    onCanvasClick,
+    onLasso,
+    onLassoEnd
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -78,7 +121,17 @@ export const Dragging = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div
+        style={{
+          zIndex: 9,
+          userSelect: 'none',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'rgba(0, 0, 0, .5)',
+          color: 'white'
+        }}
+      >
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas
@@ -100,7 +153,14 @@ export const Dragging = () => {
 
 export const EdgesOnly = () => {
   const graphRef = useRef<GraphCanvasRef | null>(null);
-  const { actives, selections, onNodeClick, onCanvasClick, onLasso, onLassoEnd } = useSelection({
+  const {
+    actives,
+    selections,
+    onNodeClick,
+    onCanvasClick,
+    onLasso,
+    onLassoEnd
+  } = useSelection({
     ref: graphRef,
     nodes: complexNodes,
     edges: complexEdges,
@@ -109,7 +169,17 @@ export const EdgesOnly = () => {
 
   return (
     <>
-      <div style={{ zIndex: 9, userSelect: 'none', position: 'absolute', top: 0, right: 0, background: 'rgba(0, 0, 0, .5)', color: 'white' }}>
+      <div
+        style={{
+          zIndex: 9,
+          userSelect: 'none',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'rgba(0, 0, 0, .5)',
+          color: 'white'
+        }}
+      >
         <h3 style={{ margin: 5 }}>Hold Shift and Drag to Lasso</h3>
       </div>
       <GraphCanvas

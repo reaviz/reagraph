@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 
@@ -12,11 +13,20 @@ export const None = () => (
 );
 
 export const Centrality = () => (
-  <GraphCanvas sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas
+    sizingType="centrality"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );
 
-const MinMaxSizesStory = (props) => (
-  <GraphCanvas {...props} sizingType="centrality" nodes={simpleNodes} edges={simpleEdges} />
+const MinMaxSizesStory = props => (
+  <GraphCanvas
+    {...props}
+    sizingType="centrality"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );
 
 export const MinMaxSizes = MinMaxSizesStory.bind({});

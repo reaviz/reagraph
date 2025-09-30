@@ -1,6 +1,6 @@
-import { Curve, Vector3 } from 'three';
+import type { Curve, Vector3 } from 'three';
 
-import { EdgeArrowPosition } from '../symbols/Arrow';
+import type { EdgeArrowPosition } from '../symbols/Arrow';
 
 // Calculate the correct position for an arrow along a curve,
 // as well as the tangent to the curve at that point.

@@ -1,8 +1,10 @@
-import { InternalGraphNode } from '../types';
-import { DepthNode, getNodeDepth } from './depthUtils';
-import { LayoutFactoryProps, LayoutStrategy } from './types';
 import { hierarchy, stratify, tree } from 'd3-hierarchy';
+
+import type { InternalGraphNode } from '../types';
+import type { DepthNode } from './depthUtils';
+import { getNodeDepth } from './depthUtils';
 import { buildNodeEdges } from './layoutUtils';
+import type { LayoutFactoryProps, LayoutStrategy } from './types';
 
 export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
   /**

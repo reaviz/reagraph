@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
 
@@ -165,7 +166,7 @@ export const Dashed = () => (
         target: '2',
         id: '1-2',
         label: '1-2',
-        dashed: true,
+        dashed: true
       },
       {
         source: '2',
@@ -173,7 +174,7 @@ export const Dashed = () => (
         id: '2-3',
         label: '2-3',
         size: 5,
-        dashed: true,
+        dashed: true
       },
       {
         source: '3',
@@ -181,7 +182,7 @@ export const Dashed = () => (
         id: '3-4',
         label: '3-4',
         size: 3,
-        dashed: true,
+        dashed: true
       },
       {
         source: '4',
@@ -189,7 +190,7 @@ export const Dashed = () => (
         id: '4-5',
         label: '4-5',
         size: 10,
-        dashed: true,
+        dashed: true
       }
     ]}
   />

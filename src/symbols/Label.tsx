@@ -1,7 +1,9 @@
-import React, { FC, useMemo } from 'react';
-import { Billboard, Text, RoundedBox } from '@react-three/drei';
-import { Color, ColorRepresentation, Euler } from 'three';
+import { Billboard, RoundedBox, Text } from '@react-three/drei';
 import ellipsize from 'ellipsize';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
+import type { ColorRepresentation, Euler } from 'three';
+import { Color } from 'three';
 
 export interface LabelProps {
   /**
@@ -134,21 +136,21 @@ export const Label: FC<LabelProps> = ({
       {strokeWidth > 0 &&
         normalizedStrokeColor &&
         normalizedBackgroundColor && (
-        <mesh position={[0, 0, 10]}>
-          <RoundedBox
-            args={[
-              backgroundDimensions.width + strokeWidth,
-              backgroundDimensions.height + strokeWidth,
-              0.1
-            ]}
-            radius={normalizedRadius}
-            smoothness={8}
-            material-color={normalizedStrokeColor}
-            material-transparent={true}
-            material-opacity={backgroundOpacity}
-          />
-        </mesh>
-      )}
+          <mesh position={[0, 0, 10]}>
+            <RoundedBox
+              args={[
+                backgroundDimensions.width + strokeWidth,
+                backgroundDimensions.height + strokeWidth,
+                0.1
+              ]}
+              radius={normalizedRadius}
+              smoothness={8}
+              material-color={normalizedStrokeColor}
+              material-transparent={true}
+              material-opacity={backgroundOpacity}
+            />
+          </mesh>
+        )}
       {/* Background layer */}
       {normalizedBackgroundColor && (
         <mesh position={[0, 0, 10]}>

@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest';
 import { PerspectiveCamera } from 'three';
+import { describe, expect, it } from 'vitest';
+
 import { calcLabelVisibility } from './visibility';
 
 describe('calcLabelVisibility', () => {

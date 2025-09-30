@@ -1,9 +1,11 @@
-import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
 import { Billboard, RoundedBox, Text } from '@react-three/drei';
-import { animationConfig } from '../../utils';
-import { NodeRendererProps } from '../../types';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 import { Color } from 'three';
+
+import type { NodeRendererProps } from '../../types';
+import { animationConfig } from '../../utils';
 
 export type BadgePosition =
   | 'top-right'
@@ -94,18 +96,18 @@ export const Badge: FC<BadgeProps> = ({
 
     const offset = size * 0.65;
     switch (position) {
-    case 'top-right':
-      return [offset, offset, 11];
-    case 'top-left':
-      return [-offset, offset, 11];
-    case 'bottom-right':
-      return [offset, -offset, 11];
-    case 'bottom-left':
-      return [-offset, -offset, 11];
-    case 'center':
-      return [0, 0, 11];
-    default:
-      return [offset, offset, 11];
+      case 'top-right':
+        return [offset, offset, 11];
+      case 'top-left':
+        return [-offset, offset, 11];
+      case 'bottom-right':
+        return [offset, -offset, 11];
+      case 'bottom-left':
+        return [-offset, -offset, 11];
+      case 'center':
+        return [0, 0, 11];
+      default:
+        return [offset, offset, 11];
     }
   }, [position, size]);
 

@@ -1,5 +1,6 @@
-import { SizingStrategy, SizingStrategyInputs } from './types';
 import { degreeCentrality } from 'graphology-metrics/centrality/degree.js';
+
+import type { SizingStrategy, SizingStrategyInputs } from './types';
 
 export function centralitySizing({
   graph

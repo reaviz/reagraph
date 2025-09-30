@@ -1,9 +1,10 @@
 import { useThree } from '@react-three/fiber';
-import { useMemo } from 'react';
 import { useGesture } from '@use-gesture/react';
-import { Vector2, Vector3, Plane } from 'three';
-import { InternalGraphPosition } from '../types';
-import { CenterPositionVector } from '../utils/layout';
+import { useMemo } from 'react';
+import { Plane, Vector2, Vector3 } from 'three';
+
+import type { InternalGraphPosition } from '../types';
+import type { CenterPositionVector } from '../utils/layout';
 
 interface DragParams {
   draggable: boolean;

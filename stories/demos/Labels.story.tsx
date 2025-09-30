@@ -1,7 +1,7 @@
 import React from 'react';
-import { GraphCanvas, Sphere, Label } from '../../src';
+
+import { GraphCanvas, Label, Sphere } from '../../src';
 import { simpleEdges, simpleNodes } from '../assets/demo';
-import { lightTheme } from '../../src/themes';
 
 export default { title: 'Demos/Labels', component: GraphCanvas };
 

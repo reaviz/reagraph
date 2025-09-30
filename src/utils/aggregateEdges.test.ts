@@ -1,8 +1,9 @@
-import { describe, test, expect, beforeEach } from 'vitest';
 import Graph from 'graphology';
+import { beforeEach, describe, expect, test } from 'vitest';
+
+import type { GraphEdge, GraphNode } from '../types';
 import { aggregateEdges } from './aggregateEdges';
 import { buildGraph } from './graph';
-import { GraphNode, GraphEdge } from '../types';
 
 describe('aggregateEdges', () => {
   let graph: Graph;

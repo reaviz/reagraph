@@ -1,6 +1,13 @@
 import React, { useRef } from 'react';
-import { GraphCanvas, GraphCanvasRef, useSelection } from '../../src';
-import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
+
+import type { GraphCanvasRef } from '../../src';
+import { GraphCanvas, useSelection } from '../../src';
+import {
+  complexEdges,
+  complexNodes,
+  simpleEdges,
+  simpleNodes
+} from '../assets/demo';
 
 export default {
   title: 'Demos/Selection/Single',

@@ -1,7 +1,9 @@
-import React, { FC } from 'react';
-import { NodeRendererProps } from '../../types';
-import { Sphere } from './Sphere';
+import type { FC } from 'react';
+import React from 'react';
+
+import type { NodeRendererProps } from '../../types';
 import { Icon } from './Icon';
+import { Sphere } from './Sphere';
 
 export interface SphereWithIconProps extends NodeRendererProps {
   /**

@@ -1,6 +1,7 @@
 import noverlapLayout from 'graphology-layout-noverlap';
-import { LayoutFactoryProps } from './types';
+
 import { buildNodeEdges } from './layoutUtils';
+import type { LayoutFactoryProps } from './types';
 
 export interface NoOverlapLayoutInputs extends LayoutFactoryProps {
   /**

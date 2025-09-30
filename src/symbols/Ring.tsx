@@ -1,8 +1,11 @@
-import React, { FC, useMemo } from 'react';
-import { Color, ColorRepresentation, DoubleSide } from 'three';
-import { animationConfig } from '../utils/animation';
-import { useSpring, a } from '@react-spring/three';
+import { a, useSpring } from '@react-spring/three';
 import { Billboard } from '@react-three/drei';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
+import type { ColorRepresentation } from 'three';
+import { Color, DoubleSide } from 'three';
+
+import { animationConfig } from '../utils/animation';
 
 export interface RingProps {
   /**

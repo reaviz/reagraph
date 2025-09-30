@@ -1,5 +1,6 @@
-import { PerspectiveCamera } from 'three';
-import { InternalGraphPosition } from '../types';
+import type { PerspectiveCamera } from 'three';
+
+import type { InternalGraphPosition } from '../types';
 
 /**
  * Get the visible height at the z depth.

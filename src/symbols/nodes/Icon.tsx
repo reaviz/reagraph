@@ -1,8 +1,10 @@
-import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
-import { TextureLoader, LinearFilter, DoubleSide } from 'three';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
+import { DoubleSide, LinearFilter, TextureLoader } from 'three';
+
+import type { NodeRendererProps } from '../../types';
 import { animationConfig } from '../../utils';
-import { NodeRendererProps } from '../../types';
 
 export interface IconProps extends NodeRendererProps {
   /**

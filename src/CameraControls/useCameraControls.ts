@@ -1,4 +1,4 @@
-import CameraControls from 'camera-controls';
+import type CameraControls from 'camera-controls';
 import { createContext, useContext } from 'react';
 
 export interface CameraControlsContextProps {

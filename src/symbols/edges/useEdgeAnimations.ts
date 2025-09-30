@@ -1,8 +1,10 @@
-import { SpringValue, useSpring } from '@react-spring/three';
+import type { SpringValue } from '@react-spring/three';
+import { useSpring } from '@react-spring/three';
 import { useCallback, useEffect, useRef } from 'react';
-import { BufferAttribute, BufferGeometry } from 'three';
+import type { BufferGeometry } from 'three';
+import { BufferAttribute } from 'three';
 
-import { Theme } from '../../themes';
+import type { Theme } from '../../themes';
 import { animationConfig } from '../../utils';
 
 export function useEdgePositionAnimation(

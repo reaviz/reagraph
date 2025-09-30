@@ -1,4 +1,4 @@
-import { GraphEdge, GraphNode } from '../types';
+import type { GraphEdge, GraphNode } from '../types';
 
 interface GetHiddenChildrenInput {
   nodeId: string;

@@ -1,8 +1,10 @@
-import React, { FC, useMemo } from 'react';
-import { Color, ColorRepresentation } from 'three';
-import { useSpring, a } from '@react-spring/three';
+import { a, useSpring } from '@react-spring/three';
+import type { ThreeEvent } from '@react-three/fiber';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
+import type { ColorRepresentation } from 'three';
+import { Color } from 'three';
 import { animationConfig } from 'utils/animation';
-import { ThreeEvent } from '@react-three/fiber';
 
 export interface SelfLoopProps {
   /**

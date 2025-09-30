@@ -1,7 +1,7 @@
-import { useCallback, useRef, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useStore } from '../../store';
-import { InternalGraphEdge } from '../../types';
+import type { InternalGraphEdge } from '../../types';
 
 export type EdgeEvents = {
   onClick?: (edge: InternalGraphEdge) => void;

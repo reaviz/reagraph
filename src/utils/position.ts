@@ -1,12 +1,13 @@
+import type { EdgeSubLabelPosition } from 'symbols/Edge';
+import type { Curve } from 'three';
 import {
   CatmullRomCurve3,
-  Curve,
   LineCurve3,
   QuadraticBezierCurve3,
   Vector3
 } from 'three';
-import { InternalGraphNode, InternalVector3 } from '../types';
-import { EdgeSubLabelPosition } from 'symbols/Edge';
+
+import type { InternalGraphNode, InternalVector3 } from '../types';
 
 const MULTI_EDGE_OFFSET_FACTOR = 0.7;
 
@@ -70,8 +71,8 @@ export function getCurve(
   const offsetTo = getPointBetween(to, from, toOffset);
   return curved
     ? new QuadraticBezierCurve3(
-      ...getCurvePoints(offsetFrom, offsetTo, curveOffset)
-    )
+        ...getCurvePoints(offsetFrom, offsetTo, curveOffset)
+      )
     : new LineCurve3(offsetFrom, offsetTo);
 }
 

@@ -1,11 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useHotkeys } from 'reakeys';
-import {
-  GraphCanvas,
-  GraphCanvasRef,
-  lightTheme,
-  useSelection
-} from '../../src';
+
+import type { GraphCanvasRef } from '../../src';
+import { GraphCanvas, useSelection } from '../../src';
 import { complexEdges, complexNodes } from '../assets/demo';
 
 export default {

@@ -1,23 +1,22 @@
-import { createContext, useContext, FC, ReactNode } from 'react';
+import Graph from 'graphology';
+import type { FC, ReactNode } from 'react';
+import { createContext, useContext } from 'react';
 import React from 'react';
-import { StoreApi, create, useStore as useZustandStore } from 'zustand';
+import type { BufferGeometry, Mesh } from 'three';
+import { Vector3 } from 'three';
+import type { StoreApi } from 'zustand';
+import { create, useStore as useZustandStore } from 'zustand';
 import { useShallow } from 'zustand/shallow';
-import {
+
+import type { Theme } from './themes';
+import type {
   InternalGraphEdge,
   InternalGraphNode,
   InternalGraphPosition
 } from './types';
-import { BufferGeometry, Mesh, Vector3 } from 'three';
-import {
-  CenterPositionVector,
-  ClusterGroup,
-  getLayoutCenter,
-  getVector,
-  updateNodePosition
-} from './utils';
+import type { CenterPositionVector, ClusterGroup } from './utils';
+import { getLayoutCenter, getVector, updateNodePosition } from './utils';
 import { isServerRender } from './utils/visibility';
-import Graph from 'graphology';
-import { Theme } from './themes';
 
 export type DragReferences = {
   [key: string]: InternalGraphNode;

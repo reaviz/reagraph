@@ -1,4 +1,4 @@
-import { MenuItem } from './RadialSlice';
+import type { MenuItem } from './RadialSlice';
 
 export function calculateRadius(items: MenuItem[], startOffsetAngle: number) {
   const centralAngle = 360 / items.length || 360;

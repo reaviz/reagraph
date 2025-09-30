@@ -1,6 +1,7 @@
-import forceAtlas2Layout from 'graphology-layout-forceatlas2';
-import { LayoutFactoryProps } from './types';
 import random from 'graphology-layout/random.js';
+import forceAtlas2Layout from 'graphology-layout-forceatlas2';
+
+import type { LayoutFactoryProps } from './types';
 
 export interface ForceAtlas2LayoutInputs extends LayoutFactoryProps {
   /**

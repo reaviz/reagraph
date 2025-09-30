@@ -1,7 +1,10 @@
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
+import type { ColorRepresentation } from 'three';
+
 import { Sphere } from './Sphere';
-import { Svg, SvgProps } from './Svg';
-import { ColorRepresentation } from 'three';
+import type { SvgProps } from './Svg';
+import { Svg } from './Svg';
 
 export interface SphereWithSvgProps extends SvgProps {
   /**

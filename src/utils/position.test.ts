@@ -1,7 +1,8 @@
-import { expect, test, describe } from 'vitest';
+import { describe, expect, test } from 'vitest';
+
+import type { EdgeSubLabelPosition } from '../symbols/Edge';
+import type { InternalGraphNode } from '../types';
 import { calculateSubLabelOffset, getSelfLoopCurve } from './position';
-import { EdgeSubLabelPosition } from '../symbols/Edge';
-import { InternalGraphNode } from '../types';
 
 describe('calculateSubLabelOffset', () => {
   // Test case 1: Edge going from left to right with 'below' placement
