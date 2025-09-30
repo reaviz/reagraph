@@ -121,6 +121,7 @@
     "react-docgen-typescript": "^2.4.0",
     "react-dom": "^19.1.1",
     "reakeys": "^2.0.6",
+    "reaviz-lint-rules": "^1.0.3",
     "stats.js": "^0.17.0",
     "storybook": "^9.1.8",
     "typescript": "^5.9.2",
