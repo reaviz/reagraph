@@ -1,7 +1,8 @@
 import { Stats } from '@react-three/drei';
-import theme from './theme';
-import { Preview } from '@storybook/react-vite';
+import type { Preview } from '@storybook/react-vite';
 import React from 'react';
+
+import theme from './theme';
 
 const withProvider = (Story, context) => (
   <>

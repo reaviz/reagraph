@@ -1,6 +1,6 @@
-import { GraphEdge, GraphNode } from '../types';
+import type { GraphEdge, GraphNode } from '../types';
 import { getNodeDepth } from './depthUtils';
-import { LayoutTypes } from './types';
+import type { LayoutTypes } from './types';
 
 /**
  * Given a set of nodes and edges, determine the type of layout that

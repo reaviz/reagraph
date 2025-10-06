@@ -1,13 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { GraphCanvas, GraphCanvasRef, lightTheme } from '../../src';
-import {
-  parentEdges,
-  parentNodes,
-  simpleEdges,
-  simpleNodes,
-  random
-} from '../assets/demo';
 import { range } from 'd3-array';
+import React, { useEffect, useRef, useState } from 'react';
+
+import type { GraphCanvasRef } from '../../src';
+import { GraphCanvas, lightTheme } from '../../src';
+import { random, simpleEdges, simpleNodes } from '../assets/demo';
 
 export default {
   title: 'Demos/Basic',
@@ -301,5 +297,9 @@ export const Circular = () => (
 );
 
 export const OrthographicCamera = () => (
-  <GraphCanvas nodes={simpleNodes} edges={simpleEdges} cameraMode="orthographic" />
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    cameraMode="orthographic"
+  />
 );

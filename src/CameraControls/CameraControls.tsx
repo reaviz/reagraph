@@ -1,37 +1,34 @@
+import { extend, useFrame, useThree } from '@react-three/fiber';
+import ThreeCameraControls from 'camera-controls';
+import * as holdEvent from 'hold-event';
+import type { ReactNode, Ref } from 'react';
 import React, {
-  FC,
-  useRef,
-  useEffect,
-  useCallback,
   forwardRef,
-  Ref,
+  useCallback,
+  useEffect,
   useImperativeHandle,
   useMemo,
-  ReactNode,
+  useRef,
   useState
 } from 'react';
-import { useThree, useFrame, extend } from '@react-three/fiber';
 import {
+  Box3,
+  MathUtils,
+  Matrix4,
   MOUSE,
+  Quaternion,
+  Raycaster,
+  Sphere,
+  Spherical,
   Vector2,
   Vector3,
-  Vector4,
-  Quaternion,
-  Matrix4,
-  Spherical,
-  Box3,
-  Sphere,
-  Raycaster,
-  MathUtils
+  Vector4
 } from 'three';
-import ThreeCameraControls from 'camera-controls';
-import {
-  CameraControlsContext,
-  CameraControlsContextProps
-} from './useCameraControls';
-import * as holdEvent from 'hold-event';
+
 import { useStore } from '../store';
 import { isServerRender } from '../utils/visibility';
+import type { CameraControlsContextProps } from './useCameraControls';
+import { CameraControlsContext } from './useCameraControls';
 
 // Install the camera controls
 // Use a subset for better three shaking
@@ -103,9 +100,10 @@ export interface CameraControlsProps {
 
 export type CameraControlsRef = CameraControlsContextProps;
 
-export const CameraControls: FC<
-  CameraControlsProps & { ref?: Ref<CameraControlsRef> }
-> = forwardRef(
+export const CameraControls = forwardRef<
+  CameraControlsRef,
+  CameraControlsProps
+>(
   (
     {
       mode = 'rotate',

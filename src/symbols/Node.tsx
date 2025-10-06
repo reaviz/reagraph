@@ -1,30 +1,25 @@
-import React, {
-  FC,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
-import { Group } from 'three';
-import { animationConfig } from '../utils';
-import { useSpring, a } from '@react-spring/three';
-import { Sphere } from './nodes/Sphere';
-import { Label } from './Label';
-import {
-  NodeContextMenuProps,
-  ContextMenuEvent,
-  InternalGraphNode,
-  NodeRenderer,
-  CollapseProps
-} from '../types';
+import { a, useSpring } from '@react-spring/three';
 import { Html, useCursor } from '@react-three/drei';
+import type { ThreeEvent } from '@react-three/fiber';
+import type { FC, ReactNode } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import type { Group } from 'three';
+
 import { useCameraControls } from '../CameraControls/useCameraControls';
 import { useStore } from '../store';
+import type {
+  CollapseProps,
+  ContextMenuEvent,
+  InternalGraphNode,
+  NodeContextMenuProps,
+  NodeRenderer
+} from '../types';
+import { animationConfig } from '../utils';
 import { useDrag } from '../utils/useDrag';
 import { useHoverIntent } from '../utils/useHoverIntent';
+import { Label } from './Label';
 import { Icon } from './nodes';
-import type { ThreeEvent } from '@react-three/fiber';
+import { Sphere } from './nodes/Sphere';
 
 export interface NodeProps {
   /**
@@ -202,10 +197,10 @@ export const Node: FC<NodeProps> = ({
       to: {
         nodePosition: position
           ? [
-            position.x,
-            position.y,
-            shouldHighlight ? position.z + 1 : position.z
-          ]
+              position.x,
+              position.y,
+              shouldHighlight ? position.z + 1 : position.z
+            ]
           : [0, 0, 0],
         labelPosition: [0, -(nodeSize + 7), 2]
       },

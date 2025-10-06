@@ -1,5 +1,6 @@
-import { PerspectiveCamera } from 'three';
-import { EdgeLabelPosition } from '../symbols';
+import type { PerspectiveCamera } from 'three';
+
+import type { EdgeLabelPosition } from '../symbols';
 
 export type LabelVisibilityType = 'all' | 'auto' | 'none' | 'nodes' | 'edges';
 
@@ -53,14 +54,14 @@ export function getLabelOffsetByType(
   position: EdgeLabelPosition
 ): number {
   switch (position) {
-  case 'above':
-    return offset;
-  case 'below':
-    return -offset;
-  case 'inline':
-  case 'natural':
-  default:
-    return 0;
+    case 'above':
+      return offset;
+    case 'below':
+      return -offset;
+    case 'inline':
+    case 'natural':
+    default:
+      return 0;
   }
 }
 

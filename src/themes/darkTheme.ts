@@ -1,4 +1,4 @@
-import { Theme } from './theme';
+import type { Theme } from './theme';
 
 export const darkTheme: Theme = {
   canvas: { background: '#1E2026' },

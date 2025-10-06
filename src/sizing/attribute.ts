@@ -1,4 +1,4 @@
-import { SizingStrategy, SizingStrategyInputs } from './types';
+import type { SizingStrategy, SizingStrategyInputs } from './types';
 
 export function attributeSizing({
   graph,

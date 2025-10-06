@@ -1,20 +1,20 @@
 import { range } from 'd3-array';
-import { GraphEdge, GraphNode } from '../../src';
-import demonSvg from './demon.svg';
+
+import type { GraphEdge, GraphNode } from '../../src';
 import computerSvg from './computer.svg';
+import demonSvg from './demon.svg';
 
 export const random = (floor, ceil) => Math.floor(Math.random() * ceil) + floor;
 
 const counts = [5, 100, 5843, 9992, 1000000];
-export const simpleNodes: GraphNode[] =
-  range(5).map(i => ({
-    id: `n-${i}`,
-    label: `Node ${i}`,
-    data: {
-      priority: random(0, 10),
-      count: counts[i]
-    }
-  }));
+export const simpleNodes: GraphNode[] = range(5).map(i => ({
+  id: `n-${i}`,
+  label: `Node ${i}`,
+  data: {
+    priority: random(0, 10),
+    count: counts[i]
+  }
+}));
 
 export const parentNodes: GraphNode[] = [
   ...range(5).map(i => {
@@ -72,73 +72,78 @@ export const parentNodes: GraphNode[] = [
       priority: random(0, 10)
     }
   }
-]
+];
 
 const types = ['IP', 'URL', 'Email', 'MD5'];
 const colors = ['#3730a3', '#c2410c', '#166534', '#075985'];
 
-export const clusterNodes: GraphNode[] =
-  range(25).map(i => {
-    const idx = random(0, types.length);
-    const type = types[idx];
+export const clusterNodes: GraphNode[] = range(25).map(i => {
+  const idx = random(0, types.length);
+  const type = types[idx];
 
-    return {
+  return {
     id: `n-${i}`,
     label: `${type} ${i}`,
     fill: colors[idx],
     data: {
       type,
-      segment: i %2 === 0 ? 'A' : undefined
+      segment: i % 2 === 0 ? 'A' : undefined
     }
-  }
+  };
 });
 
-export const singleNodeClusterNodes: GraphNode[] =
-  range(2).map(i => {
+export const singleNodeClusterNodes: GraphNode[] = range(2).map(i => {
+  const idx = i;
+  const type = i;
 
-    const idx = i
-    const type = i;
-
-    return {
+  return {
     id: `n-${i}`,
     label: `${type} ${i}`,
     fill: colors[idx],
     data: {
       type
     }
-  }
+  };
 });
 
-export const imbalancedClusterNodes: GraphNode[] =
-  range(20).map(i => {
-    const idx = (i == 0) ? 2: (i % 2);
-    const type = types[idx];
+export const imbalancedClusterNodes: GraphNode[] = range(20).map(i => {
+  const idx = i == 0 ? 2 : i % 2;
+  const type = types[idx];
 
-    return {
+  return {
     id: `n-${i}`,
     label: `${type} ${i}`,
     fill: colors[idx],
     data: {
       type
     }
-  }
+  };
 });
 
-const manyTypes = ['IPV4', 'URL', 'Email', 'MD5', 'SHA256', 'Domain', 'IPV6', 'CRC32', 'SHA512'];
+const manyTypes = [
+  'IPV4',
+  'URL',
+  'Email',
+  'MD5',
+  'SHA256',
+  'Domain',
+  'IPV6',
+  'CRC32',
+  'SHA512'
+];
 
-export const manyClusterNodes: GraphNode[] =
-  range(500).map(i => {
-    const idx = random(0, manyTypes.length);
-    const type = manyTypes[idx];
+export const manyClusterNodes: GraphNode[] = range(500).map(i => {
+  const idx = random(0, manyTypes.length);
+  const type = manyTypes[idx];
 
-    return {
+  return {
     id: `n-${i}`,
     label: `${type} ${i}`,
-    fill: colors[idx%colors.length],
+    fill: colors[idx % colors.length],
     data: {
       type
     }
-  }
+  };
 });
 
 export const clusterEdges: GraphEdge[] = range(random(5, 25)).map(i => ({
@@ -148,32 +153,29 @@ export const clusterEdges: GraphEdge[] = range(random(5, 25)).map(i => ({
   label: '0-1'
 }));
 
-export const simpleNodesColors: GraphNode[] =
-  range(5).map(i => ({
-    id: `n-${i}`,
-    label: `Node ${i}`,
-    fill: `hsl(${random(0, 360)}, 100%, 50%)`,
-  }));
+export const simpleNodesColors: GraphNode[] = range(5).map(i => ({
+  id: `n-${i}`,
+  label: `Node ${i}`,
+  fill: `hsl(${random(0, 360)}, 100%, 50%)`
+}));
 
-export const iconNodes: GraphNode[] =
-  range(5).map(i => ({
-    id: `n-${i}`,
-    label: `Node ${i}`,
-    size: i % 2 === 0 ? 50 : 25,
-    icon: i % 2 === 0 ? computerSvg : demonSvg,
-    data: {
-      priority: random(0, 10)
-    }
-  }));
+export const iconNodes: GraphNode[] = range(5).map(i => ({
+  id: `n-${i}`,
+  label: `Node ${i}`,
+  size: i % 2 === 0 ? 50 : 25,
+  icon: i % 2 === 0 ? computerSvg : demonSvg,
+  data: {
+    priority: random(0, 10)
+  }
+}));
 
-export const manyNodes: GraphNode[] =
-  range(100).map(i => ({
-    id: `n-${i}`,
-    label: `Node ${i}`,
-    data: {
-      priority: Math.floor(Math.random() * 10) + 1
-    }
-  }));
+export const manyNodes: GraphNode[] = range(100).map(i => ({
+  id: `n-${i}`,
+  label: `Node ${i}`,
+  data: {
+    priority: Math.floor(Math.random() * 10) + 1
+  }
+}));
 
 export const simpleEdges: GraphEdge[] = [
   {
@@ -234,7 +236,7 @@ export const parentEdges: GraphEdge[] = [
     target: 'n-2-n-0-n-0',
     label: 'Edge 3-2-0'
   }
-]
+];
 
 export const treeEdges: GraphEdge[] = [
   {
@@ -263,11 +265,10 @@ export const treeEdges: GraphEdge[] = [
   }
 ];
 
-export const complexNodes: GraphNode[] =
-  range(25).map(i => ({
-    id: `${i}`,
-    label: `Node ${i}`
-  }));
+export const complexNodes: GraphNode[] = range(25).map(i => ({
+  id: `${i}`,
+  label: `Node ${i}`
+}));
 
 export const complexEdges = [
   { id: '0->2', source: '0', target: '2', label: 'Edge 0-2' },
@@ -310,5 +311,5 @@ export const complexEdges = [
   { id: '12->15', source: '12', target: '15', label: 'Edge 12-15' },
   { id: '13->16', source: '13', target: '16', label: 'Edge 13-16' },
   { id: '14->17', source: '14', target: '17', label: 'Edge 14-17' },
-  { id: '15->18', source: '15', target: '18', label: 'Edge 15-18' },
+  { id: '15->18', source: '15', target: '18', label: 'Edge 15-18' }
 ];

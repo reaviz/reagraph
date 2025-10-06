@@ -1,4 +1,4 @@
-import { ColorRepresentation } from 'three';
+import type { ColorRepresentation } from 'three';
 
 export interface Theme {
   canvas?: {

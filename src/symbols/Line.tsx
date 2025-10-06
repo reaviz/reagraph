@@ -1,16 +1,12 @@
-import React, { FC, useEffect, useMemo, useRef } from 'react';
-import { useSpring, a } from '@react-spring/three';
-import { animationConfig, getCurve } from '../utils';
-import {
-  Vector3,
-  TubeGeometry,
-  ColorRepresentation,
-  Color,
-  Curve,
-  ShaderMaterial
-} from 'three';
-import { useStore } from '../store';
+import { a, useSpring } from '@react-spring/three';
 import type { ThreeEvent } from '@react-three/fiber';
+import type { FC } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import type { ColorRepresentation, Curve } from 'three';
+import { Color, ShaderMaterial, TubeGeometry, Vector3 } from 'three';
+
+import { useStore } from '../store';
+import { animationConfig, getCurve } from '../utils';
 
 export interface LineProps {
   /**

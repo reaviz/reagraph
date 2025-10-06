@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
 
 export default {
@@ -22,22 +23,22 @@ export const Above = () => (
       {
         id: '3',
         label: '3'
-      },
+      }
     ]}
     edges={[
       {
         source: '1',
         target: '2',
         id: '1-2',
-        label: '1-2',
+        label: '1-2'
       },
       {
         source: '2',
         target: '3',
         id: '2-3',
         label: '2-3',
-        size: 5,
-      },
+        size: 5
+      }
     ]}
   />
 );
@@ -65,14 +66,14 @@ export const Below = () => (
         source: '1',
         target: '2',
         id: '1-2',
-        label: '1-2',
+        label: '1-2'
       },
       {
         source: '2',
         target: '3',
         id: '2-3',
         label: '2-3',
-        size: 5,
+        size: 5
       }
     ]}
   />
@@ -101,14 +102,14 @@ export const Inline = () => (
         source: '1',
         target: '2',
         id: '1-2',
-        label: '1-2',
+        label: '1-2'
       },
       {
         source: '2',
         target: '3',
         id: '2-3',
         label: '2-3',
-        size: 5,
+        size: 5
       }
     ]}
   />
@@ -137,14 +138,14 @@ export const Natural = () => (
         source: '1',
         target: '2',
         id: '1-2',
-        label: '1-2',
+        label: '1-2'
       },
       {
         source: '2',
         target: '3',
         id: '2-3',
         label: '2-3',
-        size: 5,
+        size: 5
       }
     ]}
   />

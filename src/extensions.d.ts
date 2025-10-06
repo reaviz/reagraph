@@ -1,5 +1,5 @@
-import ThreeCameraControls from 'camera-controls';
-import * as THREE from 'three';
+import type ThreeCameraControls from 'camera-controls';
+import type * as THREE from 'three';
 
 declare module '@react-three/fiber' {
   interface ThreeElements {

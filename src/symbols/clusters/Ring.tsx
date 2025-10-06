@@ -1,8 +1,10 @@
-import React, { FC } from 'react';
 import { a, useSpring } from '@react-spring/three';
-import { Color, DoubleSide } from 'three';
+import type { FC } from 'react';
+import React from 'react';
+import type { Color } from 'three';
+import { DoubleSide } from 'three';
 
-import { Theme } from '../../themes';
+import type { Theme } from '../../themes';
 import { animationConfig } from '../../utils';
 
 export interface RingProps {

@@ -1,13 +1,12 @@
-import React, { FC, useMemo } from 'react';
 import { a, useSpring } from '@react-spring/three';
-import { animationConfig } from '../../utils';
-import { NodeRendererProps } from '../../types';
-import {
-  Billboard,
-  Svg as DreiSvg,
-  SvgProps as DreiSvgProps
-} from '@react-three/drei';
+import type { SvgProps as DreiSvgProps } from '@react-three/drei';
+import { Billboard, Svg as DreiSvg } from '@react-three/drei';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 import { Color, DoubleSide } from 'three';
+
+import type { NodeRendererProps } from '../../types';
+import { animationConfig } from '../../utils';
 
 export type SvgProps = NodeRendererProps &
   Omit<DreiSvgProps, 'src' | 'id'> & {

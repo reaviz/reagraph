@@ -1,4 +1,4 @@
-import { InternalGraphEdge, InternalGraphNode } from '../types';
+import type { InternalGraphEdge, InternalGraphNode } from '../types';
 
 export interface DepthNode {
   data: InternalGraphNode;
@@ -56,10 +56,11 @@ export function getNodeDepth(
       const from = link.source;
       const to = link.target;
 
+      /* eslint-disable no-prototype-builtins */
       if (!graph.hasOwnProperty(from)) {
         throw new Error(`Missing source Node ${from}`);
       }
-
+      /* eslint-disable no-prototype-builtins */
       if (!graph.hasOwnProperty(to)) {
         throw new Error(`Missing target Node ${to}`);
       }

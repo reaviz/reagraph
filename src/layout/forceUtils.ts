@@ -1,5 +1,6 @@
 import { forceRadial as d3ForceRadial } from 'd3-force-3d';
-import { InternalGraphEdge, InternalGraphNode } from '../types';
+
+import type { InternalGraphEdge, InternalGraphNode } from '../types';
 import { getNodeDepth } from './depthUtils';
 
 const RADIALS: DagMode[] = ['radialin', 'radialout'];
@@ -63,10 +64,10 @@ export function forceRadial({
 
   return RADIALS.includes(mode)
     ? d3ForceRadial(node => {
-      const nodeDepth = depths[node.id];
-      const depth =
+        const nodeDepth = depths[node.id];
+        const depth =
           mode === 'radialin' ? maxDepth - nodeDepth.depth : nodeDepth.depth;
-      return depth * dagLevelDistance;
-    }).strength(1)
+        return depth * dagLevelDistance;
+      }).strength(1)
     : null;
 }
