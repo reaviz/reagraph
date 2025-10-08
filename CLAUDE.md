@@ -119,9 +119,11 @@ Reagraph is a high-performance WebGL network graph visualization library for Rea
 - Custom hooks start with `use` and contain complex stateful logic
 
 ## Key Dependencies
-- React Three Fiber - React renderer for Three.js
 - Three.js - WebGL 3D graphics  
-- Graphology - Graph data structure and algorithms
 - D3 modules - Layout calculations and data manipulation
-- Zustand - State management
-- React Spring - Animation library
+- React Three Fiber - React renderer for Three.js - https://github.com/pmndrs/react-three-fiber
+- Graphology - Graph data structure and algorithms - https://github.com/graphology/graphology
+- Zustand - State management - https://github.com/pmndrs/zustand
+- React Spring - Animation library - https://github.com/pmndrs/react-spring
+- camera-controls - https://github.com/yomotsu/camera-controls
+- drei - react-three-fiber helpers - https://github.com/pmndrs/drei
