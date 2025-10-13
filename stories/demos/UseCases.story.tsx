@@ -1,27 +1,20 @@
 import React, { useMemo, useRef } from 'react';
-import {
-  darkTheme,
-  GraphCanvas,
-  GraphCanvasRef,
-  GraphEdge,
-  GraphNode,
-  useSelection
-} from '../../src';
 
+import type { GraphCanvasRef, GraphEdge, GraphNode } from '../../src';
+import { darkTheme, GraphCanvas, useSelection } from '../../src';
 import cyberJson from '../assets/cyber.json';
-import mitreTools from '../assets/mitre-tools.json';
-import mitreTechniques from '../assets/mitre-techniques.json';
-import mitreTechniquesAll from '../assets/mitre-techniques-all.json';
-
 import fireSvg from '../assets/fire.svg';
 import flagSvg from '../assets/flag.svg';
-import userSvg from '../assets/user.svg';
-import twitterSvg from '../assets/twitter.svg';
-import keySvg from '../assets/key.svg';
-import trumpSvg from '../assets/trump.svg';
 import govSvg from '../assets/gov.svg';
-import productSvg from '../assets/product.svg';
+import keySvg from '../assets/key.svg';
 import missleSvg from '../assets/missle.svg';
+import mitreTechniques from '../assets/mitre-techniques.json';
+import mitreTechniquesAll from '../assets/mitre-techniques-all.json';
+import mitreTools from '../assets/mitre-tools.json';
+import productSvg from '../assets/product.svg';
+import trumpSvg from '../assets/trump.svg';
+import twitterSvg from '../assets/twitter.svg';
+import userSvg from '../assets/user.svg';
 
 export default {
   title: 'Demos/Use Cases',
@@ -83,10 +76,7 @@ export const CyberInvestigation = () => {
       }
     }
 
-    return [
-      n,
-      e
-    ];
+    return [n, e];
   }, []);
 
   const {
@@ -137,11 +127,14 @@ export const MitreTools = () => {
     }
 
     for (const edge of mitreTools.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }
@@ -199,11 +192,14 @@ export const MitreTechniques = () => {
     }
 
     for (const edge of mitreTechniques.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }
@@ -261,11 +257,14 @@ export const MitreAllTechniques = () => {
     }
 
     for (const edge of mitreTechniquesAll.links) {
-      if (n.find(nn => nn.id === edge.source) && n.find(nn => nn.id === edge.target)) {
+      if (
+        n.find(nn => nn.id === edge.source) &&
+        n.find(nn => nn.id === edge.target)
+      ) {
         e.push({
           id: `${edge.source}-${edge.target}`,
           source: edge.source,
-          target: edge.target,
+          target: edge.target
         });
       }
     }

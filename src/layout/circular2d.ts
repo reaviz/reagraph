@@ -1,6 +1,7 @@
 import circular from 'graphology-layout/circular.js';
-import { LayoutFactoryProps } from './types';
+
 import { buildNodeEdges } from './layoutUtils';
+import type { LayoutFactoryProps } from './types';
 
 export interface CircularLayoutInputs extends LayoutFactoryProps {
   /**

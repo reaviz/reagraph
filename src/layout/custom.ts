@@ -1,5 +1,5 @@
-import { LayoutFactoryProps } from './types';
 import { buildNodeEdges } from './layoutUtils';
+import type { LayoutFactoryProps } from './types';
 
 export function custom({ graph, drags, getNodePosition }: LayoutFactoryProps) {
   const { nodes, edges } = buildNodeEdges(graph);

@@ -1,13 +1,16 @@
-import Graph from 'graphology';
-import { nodeSizeProvider, SizingType } from '../sizing';
-import {
+import type Graph from 'graphology';
+
+import type { LayoutStrategy } from '../layout';
+import type { SizingType } from '../sizing';
+import { nodeSizeProvider } from '../sizing';
+import type {
   GraphEdge,
   GraphNode,
   InternalGraphEdge,
   InternalGraphNode
 } from '../types';
-import { calcLabelVisibility, LabelVisibilityType } from './visibility';
-import { LayoutStrategy } from '../layout';
+import type { LabelVisibilityType } from './visibility';
+import { calcLabelVisibility } from './visibility';
 
 /**
  * Initialize the graph with the nodes/edges.

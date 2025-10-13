@@ -1,6 +1,7 @@
-import { InternalGraphEdge } from '../types';
-import Graph from 'graphology';
-import { LabelVisibilityType } from './visibility';
+import type Graph from 'graphology';
+
+import type { InternalGraphEdge } from '../types';
+import type { LabelVisibilityType } from './visibility';
 
 /**
  * Graphology-native approach using reduceEdges for optimal performance

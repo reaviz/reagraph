@@ -1,8 +1,11 @@
-import React, { FC, useMemo, useRef, useEffect, useCallback } from 'react';
-import { useSpring, a } from '@react-spring/three';
-import { Color, ColorRepresentation, Mesh, DoubleSide, Vector3 } from 'three';
-import { animationConfig } from '../utils';
+import { a, useSpring } from '@react-spring/three';
+import type { FC } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import type { ColorRepresentation, Mesh } from 'three';
+import { Color, DoubleSide, Vector3 } from 'three';
+
 import { useStore } from '../store';
+import { animationConfig } from '../utils';
 
 export type EdgeArrowPosition = 'none' | 'mid' | 'end';
 

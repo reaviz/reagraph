@@ -1,7 +1,13 @@
 import { range } from 'd3-array';
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
-import { complexEdges, complexNodes, simpleEdges, simpleNodes } from '../assets/demo';
+import {
+  complexEdges,
+  complexNodes,
+  simpleEdges,
+  simpleNodes
+} from '../assets/demo';
 
 export default {
   title: 'Demos/Layouts/3D',
@@ -29,11 +35,19 @@ function getConcentricLevel(current, total, ratio) {
 }
 
 export const ForceDirected = () => (
-  <GraphCanvas layoutType="forceDirected3d" nodes={complexNodes} edges={complexEdges} />
+  <GraphCanvas
+    layoutType="forceDirected3d"
+    nodes={complexNodes}
+    edges={complexEdges}
+  />
 );
 
 export const RadialOut = () => (
-  <GraphCanvas layoutType="radialOut3d" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas
+    layoutType="radialOut3d"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );
 
 export const TreeLeftRight = () => (
@@ -45,10 +59,14 @@ export const TreeTopDown = () => (
 );
 
 export const Concentric = () => (
-  <GraphCanvas layoutType="concentric3d" nodes={range(300).map(i => ({
-    id: `${i}`,
-    label: `Node ${i}`,
-    fill: `hsl(${getConcentricLevel(i, 300, 7) * 100}, 100%, 50%)`,
-    data: { level: getConcentricLevel(i, 300, 7)}
-  }))} edges={complexEdges} />
+  <GraphCanvas
+    layoutType="concentric3d"
+    nodes={range(300).map(i => ({
+      id: `${i}`,
+      label: `Node ${i}`,
+      fill: `hsl(${getConcentricLevel(i, 300, 7) * 100}, 100%, 50%)`,
+      data: { level: getConcentricLevel(i, 300, 7) }
+    }))}
+    edges={complexEdges}
+  />
 );

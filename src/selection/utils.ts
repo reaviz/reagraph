@@ -1,5 +1,6 @@
-import { Theme } from '../themes';
-import Graph from 'graphology';
+import type Graph from 'graphology';
+
+import type { Theme } from '../themes';
 
 export type PathSelectionTypes = 'direct' | 'out' | 'in' | 'all';
 

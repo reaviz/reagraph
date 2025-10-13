@@ -1,13 +1,10 @@
-import React, {
-  FC,
-  PropsWithChildren,
-  useCallback,
-  useEffect,
-  useRef
-} from 'react';
 import { useThree } from '@react-three/fiber';
+import type { FC, PropsWithChildren } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
+import type { Mesh, TubeGeometry } from 'three';
+import { Scene, Vector2 } from 'three';
 import { SelectionBox } from 'three-stdlib';
-import { Mesh, Scene, TubeGeometry, Vector2 } from 'three';
+
 import { useCameraControls } from '../CameraControls/useCameraControls';
 import { useStore } from '../store';
 import { createElement, prepareRay } from './utils';

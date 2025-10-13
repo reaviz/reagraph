@@ -1,7 +1,12 @@
-import React, { FC, useMemo, useState } from 'react';
-import { useSpring, a } from '@react-spring/three';
-import { Arrow, EdgeArrowPosition } from './Arrow';
-import { Label } from './Label';
+import { a, useSpring } from '@react-spring/three';
+import { Html, useCursor } from '@react-three/drei';
+import type { ThreeEvent } from '@react-three/fiber';
+import type { FC } from 'react';
+import React, { useMemo, useState } from 'react';
+import { Euler, Vector3 } from 'three';
+
+import { useStore } from '../store';
+import type { ContextMenuEvent, InternalGraphEdge } from '../types';
 import {
   animationConfig,
   calculateEdgeCurveOffset,
@@ -12,15 +17,13 @@ import {
   getMidPoint,
   getVector
 } from '../utils';
-import { Line } from './Line';
-import { useStore } from '../store';
-import type { ContextMenuEvent, InternalGraphEdge } from '../types';
-import { Html, useCursor } from '@react-three/drei';
-import { useHoverIntent } from '../utils/useHoverIntent';
-import { CatmullRomCurve3, Euler, Vector3 } from 'three';
-import type { ThreeEvent } from '@react-three/fiber';
 import { calculateSubLabelOffset, getSelfLoopCurve } from '../utils/position';
+import { useHoverIntent } from '../utils/useHoverIntent';
+import type { EdgeArrowPosition } from './Arrow';
+import { Arrow } from './Arrow';
 import { SelfLoop } from './edges/SelfLoop';
+import { Label } from './Label';
+import { Line } from './Line';
 
 /**
  * Label positions relatively edge.
@@ -236,12 +239,12 @@ export const Edge: FC<EdgeProps> = ({
       // Offset the label to the mid point of the curve
       const offset = new Vector3().subVectors(newMidPoint, curve.getPoint(0.5));
       switch (labelPlacement) {
-      case 'above':
-        offset.y = offset.y - LABEL_PLACEMENT_OFFSET;
-        break;
-      case 'below':
-        offset.y = offset.y + LABEL_PLACEMENT_OFFSET;
-        break;
+        case 'above':
+          offset.y = offset.y - LABEL_PLACEMENT_OFFSET;
+          break;
+        case 'below':
+          offset.y = offset.y + LABEL_PLACEMENT_OFFSET;
+          break;
       }
       newMidPoint = newMidPoint.sub(offset);
     }
@@ -249,10 +252,12 @@ export const Edge: FC<EdgeProps> = ({
     return newMidPoint;
   }, [from.position, to.position, labelOffset, labelPlacement, curved, curve]);
 
+  const center = useStore(state => state.centerPosition);
+
   const isSelected = useStore(state => state.selections?.includes(id));
   const hasSelections = useStore(state => state.selections?.length);
   const isActive = useStore(state => state.actives?.includes(id));
-  const center = useStore(state => state.centerPosition);
+  const isActiveState = active || isActive || isSelected;
 
   const selectionOpacity = hasSelections
     ? isSelected || isActive
@@ -293,9 +298,9 @@ export const Edge: FC<EdgeProps> = ({
         labelPlacement === 'natural'
           ? 0
           : Math.atan(
-            (to.position.y - from.position.y) /
+              (to.position.y - from.position.y) /
                 (to.position.x - from.position.x)
-          )
+            )
       ),
     [
       to.position.x,
@@ -350,9 +355,7 @@ export const Edge: FC<EdgeProps> = ({
       <Arrow
         animated={animated}
         color={
-          isSelected || active || isActive
-            ? theme.arrow.activeFill
-            : fill || theme.arrow.fill
+          isActiveState ? theme.arrow.activeFill : fill || theme.arrow.fill
         }
         length={arrowLength}
         opacity={selectionOpacity}
@@ -370,7 +373,6 @@ export const Edge: FC<EdgeProps> = ({
     );
   }, [
     fill,
-    active,
     animated,
     arrowLength,
     effectiveArrowPlacement,
@@ -379,8 +381,7 @@ export const Edge: FC<EdgeProps> = ({
     arrowSize,
     disabled,
     edge,
-    isActive,
-    isSelected,
+    isActiveState,
     onContextMenu,
     selectionOpacity,
     theme.arrow.activeFill,
@@ -410,14 +411,14 @@ export const Edge: FC<EdgeProps> = ({
             fontUrl={labelFontUrl}
             stroke={theme.edge.label.stroke}
             color={
-              isSelected || active || isActive
+              isActiveState
                 ? theme.edge.label.activeColor
                 : theme.edge.label.color
             }
             opacity={selectionOpacity}
             fontSize={theme.edge.label.fontSize}
             rotation={labelRotation}
-            active={isSelected || active || isActive}
+            active={isActiveState}
           />
 
           {subLabel && (
@@ -427,9 +428,9 @@ export const Edge: FC<EdgeProps> = ({
                 ellipsis={15}
                 fontUrl={labelFontUrl}
                 stroke={theme.edge.subLabel?.stroke || theme.edge.label.stroke}
-                active={isSelected || active || isActive}
+                active={isActiveState}
                 color={
-                  isSelected || active || isActive
+                  isActiveState
                     ? theme.edge.subLabel?.activeColor ||
                       theme.edge.label.activeColor
                     : theme.edge.subLabel?.color || theme.edge.label.color
@@ -446,11 +447,9 @@ export const Edge: FC<EdgeProps> = ({
         </a.group>
       ),
     [
-      active,
       disabled,
       edge,
-      isActive,
-      isSelected,
+      isActiveState,
       label,
       subLabel,
       labelFontUrl,
@@ -485,7 +484,7 @@ export const Edge: FC<EdgeProps> = ({
   );
 
   return (
-    <group position={[0, 0, active ? 1 : 0]}>
+    <group position={[0, 0, isActiveState ? 1 : 0]}>
       {isSelfLoop && selfLoopCurve ? (
         <SelfLoop
           id={id}
@@ -493,9 +492,7 @@ export const Edge: FC<EdgeProps> = ({
           size={size}
           animated={animated}
           color={
-            isSelected || active || isActive
-              ? theme.edge.activeFill
-              : fill || theme.edge.fill
+            isActiveState ? theme.edge.activeFill : fill || theme.edge.fill
           }
           opacity={selectionOpacity}
           onClick={event => {
@@ -517,9 +514,7 @@ export const Edge: FC<EdgeProps> = ({
           curveOffset={curveOffset}
           animated={animated}
           color={
-            isSelected || active || isActive
-              ? theme.edge.activeFill
-              : fill || theme.edge.fill
+            isActiveState ? theme.edge.activeFill : fill || theme.edge.fill
           }
           curve={curve}
           curved={curved}
@@ -528,6 +523,7 @@ export const Edge: FC<EdgeProps> = ({
           id={id}
           opacity={selectionOpacity}
           size={size}
+          renderOrder={isActiveState ? 0 : -1}
           onClick={event => {
             if (!disabled) {
               onClick?.(edge, event);

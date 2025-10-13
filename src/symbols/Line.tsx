@@ -1,16 +1,12 @@
-import React, { FC, useEffect, useMemo, useRef } from 'react';
-import { useSpring, a } from '@react-spring/three';
-import { animationConfig, getCurve } from '../utils';
-import {
-  Vector3,
-  TubeGeometry,
-  ColorRepresentation,
-  Color,
-  Curve,
-  ShaderMaterial
-} from 'three';
-import { useStore } from '../store';
+import { a, useSpring } from '@react-spring/three';
 import type { ThreeEvent } from '@react-three/fiber';
+import type { FC } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import type { ColorRepresentation, Curve } from 'three';
+import { Color, ShaderMaterial, TubeGeometry, Vector3 } from 'three';
+
+import { useStore } from '../store';
+import { animationConfig, getCurve } from '../utils';
 
 export interface LineProps {
   /**
@@ -57,6 +53,11 @@ export interface LineProps {
    * The size of the line.
    */
   size?: number;
+
+  /**
+   * The render order of the line. Useful when edges are rendered on top of each other.
+   */
+  renderOrder?: number;
 
   /**
    * A function that is called when the line is clicked.
@@ -124,6 +125,7 @@ export const Line: FC<LineProps> = ({
   id,
   opacity = 1,
   size = 1,
+  renderOrder = -1,
   onContextMenu,
   onClick,
   onPointerOver,
@@ -212,7 +214,7 @@ export const Line: FC<LineProps> = ({
   return (
     <mesh
       userData={{ id, type: 'edge' }}
-      renderOrder={-1}
+      renderOrder={renderOrder}
       onPointerOver={onPointerOver}
       onPointerOut={onPointerOut}
       onClick={onClick}

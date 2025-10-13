@@ -1,12 +1,10 @@
+import type { Color, Curve, Vector3 } from 'three';
 import {
   BoxGeometry,
   BufferGeometry,
   CatmullRomCurve3,
-  Color,
-  Curve,
   Float32BufferAttribute,
-  TubeGeometry,
-  Vector3
+  TubeGeometry
 } from 'three';
 import { mergeBufferGeometries } from 'three-stdlib';
 

@@ -1,5 +1,5 @@
-import { LayoutFactoryProps } from './types';
 import { buildNodeEdges } from './layoutUtils';
+import type { LayoutFactoryProps } from './types';
 
 export interface ConcentricLayoutInputs extends LayoutFactoryProps {
   /**

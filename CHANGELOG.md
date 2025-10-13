@@ -1,3 +1,7 @@
+# 4.30.5 - 9/25/25
+- [feature] Add dedicated `minZoom` and `maxZoom` props for orthographic camera mode
+- [fix] Fix active state z-index positioning and render order for edges
+
 # 4.30.4 - 9/11/25
 - [fix] add orthographic option for the Canvas #382
 - [fix] z-index-fix #380

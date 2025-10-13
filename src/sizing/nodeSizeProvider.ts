@@ -1,8 +1,9 @@
-import { pageRankSizing } from './pageRank';
-import { centralitySizing } from './centrality';
-import { attributeSizing } from './attribute';
-import { SizingStrategyInputs } from './types';
 import { scaleLinear } from 'd3-scale';
+
+import { attributeSizing } from './attribute';
+import { centralitySizing } from './centrality';
+import { pageRankSizing } from './pageRank';
+import type { SizingStrategyInputs } from './types';
 
 export type SizingType =
   | 'none'

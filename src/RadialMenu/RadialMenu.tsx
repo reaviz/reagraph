@@ -1,8 +1,11 @@
-import React, { FC, useLayoutEffect, useMemo, useRef } from 'react';
-import { RadialSlice, MenuItem } from './RadialSlice';
-import { calculateRadius } from './utils';
-import css from './RadialMenu.module.css';
 import classNames from 'classnames';
+import type { FC } from 'react';
+import React, { useLayoutEffect, useMemo, useRef } from 'react';
+
+import css from './RadialMenu.module.css';
+import type { MenuItem } from './RadialSlice';
+import { RadialSlice } from './RadialSlice';
+import { calculateRadius } from './utils';
 
 interface RadialMenuProps {
   /**

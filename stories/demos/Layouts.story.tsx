@@ -1,10 +1,7 @@
 import React, { useCallback, useState } from 'react';
-import {
-  GraphCanvas,
-  NodePositionArgs,
-  recommendLayout,
-  LayoutFactoryProps
-} from '../../src';
+
+import type { LayoutFactoryProps, NodePositionArgs } from '../../src';
+import { GraphCanvas, recommendLayout } from '../../src';
 import {
   complexEdges,
   complexNodes,

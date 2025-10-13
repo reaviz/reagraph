@@ -1,7 +1,14 @@
 import { range } from 'd3-array';
 import React from 'react';
+
 import { GraphCanvas } from '../../src';
-import { complexEdges, complexNodes, simpleEdges, simpleNodes, treeEdges } from '../assets/demo';
+import {
+  complexEdges,
+  complexNodes,
+  simpleEdges,
+  simpleNodes,
+  treeEdges
+} from '../assets/demo';
 
 export default {
   title: 'Demos/Layouts/2D',
@@ -9,26 +16,46 @@ export default {
 };
 
 export const ForceDirected = () => (
-  <GraphCanvas layoutType="forceDirected2d" nodes={complexNodes} edges={complexEdges} />
+  <GraphCanvas
+    layoutType="forceDirected2d"
+    nodes={complexNodes}
+    edges={complexEdges}
+  />
 );
 
 export const HierarchicalTopDown = () => (
-  <GraphCanvas layoutType="hierarchicalTd" nodes={simpleNodes} edges={treeEdges} />
+  <GraphCanvas
+    layoutType="hierarchicalTd"
+    nodes={simpleNodes}
+    edges={treeEdges}
+  />
 );
 
 export const HierarchicalLeftRight = () => (
-  <GraphCanvas layoutType="hierarchicalLr" nodes={simpleNodes} edges={treeEdges} />
+  <GraphCanvas
+    layoutType="hierarchicalLr"
+    nodes={simpleNodes}
+    edges={treeEdges}
+  />
 );
 
 export const Circular = () => (
-  <GraphCanvas layoutType="circular2d" nodes={complexNodes} edges={complexEdges} />
+  <GraphCanvas
+    layoutType="circular2d"
+    nodes={complexNodes}
+    edges={complexEdges}
+  />
 );
 
 export const Concentric = () => (
-  <GraphCanvas layoutType="concentric2d" nodes={range(117).map(i => ({
-    id: `${i}`,
-    label: `Node ${i}`
-  }))} edges={complexEdges} />
+  <GraphCanvas
+    layoutType="concentric2d"
+    nodes={range(117).map(i => ({
+      id: `${i}`,
+      label: `Node ${i}`
+    }))}
+    edges={complexEdges}
+  />
 );
 
 export const NoOverlap = () => (
@@ -36,11 +63,19 @@ export const NoOverlap = () => (
 );
 
 export const ForceAtlas2 = () => (
-  <GraphCanvas layoutType="forceatlas2" nodes={complexNodes} edges={complexEdges} />
+  <GraphCanvas
+    layoutType="forceatlas2"
+    nodes={complexNodes}
+    edges={complexEdges}
+  />
 );
 
 export const RadialOut = () => (
-  <GraphCanvas layoutType="radialOut2d" nodes={simpleNodes} edges={simpleEdges} />
+  <GraphCanvas
+    layoutType="radialOut2d"
+    nodes={simpleNodes}
+    edges={simpleEdges}
+  />
 );
 
 export const TreeLeftRight = () => (
