@@ -1,5 +1,5 @@
 import { a, useSpring } from '@react-spring/three';
-import { Billboard, RoundedBox, Text, Image } from '@react-three/drei';
+import { Billboard, Image, RoundedBox, Text } from '@react-three/drei';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 import { Color } from 'three';
