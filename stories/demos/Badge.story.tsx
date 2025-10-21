@@ -3,8 +3,8 @@ import React from 'react';
 import { GraphCanvas } from '../../src';
 import { Badge, Sphere } from '../../src/symbols';
 import { simpleEdges, simpleNodes } from '../assets/demo';
-import userSvg from '../assets/user.svg';
 import fireSvg from '../assets/fire.svg';
+import userSvg from '../assets/user.svg';
 
 export default {
   title: 'Demos/Badge',
