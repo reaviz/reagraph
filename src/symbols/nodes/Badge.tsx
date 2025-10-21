@@ -7,6 +7,10 @@ import { Color } from 'three';
 import type { NodeRendererProps } from '../../types';
 import { animationConfig } from '../../utils';
 
+// Layout constants
+const CHAR_WIDTH_ESTIMATE = 0.15;
+const ICON_TEXT_GAP = 0.15;
+
 export type BadgePosition =
   | 'top-right'
   | 'top-left'
@@ -74,6 +78,10 @@ export interface BadgeProps extends NodeRendererProps {
 
   /**
    * Position of the icon relative to the text or custom coordinates [x, y].
+   * - 'start': Icon appears before the text (left side)
+   * - 'end': Icon appears after the text (right side)
+   * - [x, y]: Custom coordinates within the badge. When using custom coordinates,
+   *   the text remains centered and only the icon moves to the specified position.
    */
   iconPosition?: IconPosition | [number, number];
 }
@@ -141,7 +149,7 @@ export const Badge: FC<BadgeProps> = ({
     const charCount = label.length;
     let estimatedWidth = Math.max(
       minWidth,
-      Math.min(charCount * 0.15 + padding, 2.0 + padding)
+      Math.min(charCount * CHAR_WIDTH_ESTIMATE + padding, 2.0 + padding)
     ); // Add padding to width
 
     // Add icon width if icon is present
@@ -196,21 +204,22 @@ export const Badge: FC<BadgeProps> = ({
       };
     }
 
-    const totalContentWidth = iconSize + (label.length * 0.15);
+    const estimatedTextWidth = label.length * CHAR_WIDTH_ESTIMATE;
+    const totalContentWidth = iconSize + estimatedTextWidth;
     const startX = -totalContentWidth / 2;
 
     if (iconPosition === 'start') {
       return {
         iconX: startX + iconSize - 0.5 / 2,
         iconY: 0,
-        textX: startX + iconSize + (label.length * 0.15) / 2,
+        textX: startX + iconSize + estimatedTextWidth / 2,
         textY: 0
       };
     } else {
       return {
-        textX: startX + (label.length * 0.15) / 2,
+        textX: startX + estimatedTextWidth / 2,
         textY: 0,
-        iconX: startX + (label.length * 0.15) + 0.15 + iconSize / 2,
+        iconX: startX + estimatedTextWidth + ICON_TEXT_GAP + iconSize / 2,
         iconY: 0
       };
     }

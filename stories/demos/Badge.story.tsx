@@ -3,9 +3,7 @@ import React from 'react';
 import { GraphCanvas } from '../../src';
 import { Badge, Sphere } from '../../src/symbols';
 import { simpleEdges, simpleNodes } from '../assets/demo';
-// @ts-expect-error - SVG import handled by Vite
 import userSvg from '../assets/user.svg';
-// @ts-expect-error - SVG import handled by Vite
 import fireSvg from '../assets/fire.svg';
 
 export default {
@@ -99,7 +97,7 @@ export const WithIcon = () => (
           padding={0.5}
           radius={0.15}
           iconPosition="start"
-          position={[0, -10 ,0]}
+          position={[0, -10, 0]}
         />
       </group>
     )}
