@@ -3,6 +3,10 @@ import React from 'react';
 import { GraphCanvas } from '../../src';
 import { Badge, Sphere } from '../../src/symbols';
 import { simpleEdges, simpleNodes } from '../assets/demo';
+// @ts-expect-error - SVG import handled by Vite
+import userSvg from '../assets/user.svg';
+// @ts-expect-error - SVG import handled by Vite
+import fireSvg from '../assets/fire.svg';
 
 export default {
   title: 'Demos/Badge',
@@ -70,6 +74,86 @@ export const DifferentSizes = () => (
           strokeWidth={0.3}
           radius={0.15}
           position="bottom-left"
+        />
+      </group>
+    )}
+  />
+);
+
+export const WithIcon = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    cameraMode="rotate"
+    renderNode={({ node, ...rest }) => (
+      <group>
+        <Sphere {...rest} node={node} />
+        <Badge
+          {...rest}
+          node={node}
+          label="6"
+          backgroundColor="#6366f1"
+          textColor="#ffffff"
+          icon={userSvg}
+          iconSize={0.35}
+          padding={0.5}
+          radius={0.15}
+          iconPosition="start"
+          position={[0, -10 ,0]}
+        />
+      </group>
+    )}
+  />
+);
+
+export const WithIconEnd = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    cameraMode="rotate"
+    renderNode={({ node, ...rest }) => (
+      <group>
+        <Sphere {...rest} node={node} />
+        <Badge
+          {...rest}
+          node={node}
+          label="Team"
+          backgroundColor="#10b981"
+          textColor="#ffffff"
+          icon={userSvg}
+          iconSize={0.3}
+          iconPosition="end"
+          padding={0.5}
+          strokeColor="#059669"
+          strokeWidth={0.1}
+          radius={0.15}
+          position="top-left"
+        />
+      </group>
+    )}
+  />
+);
+
+export const WithCustomIconPosition = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    cameraMode="rotate"
+    renderNode={({ node, ...rest }) => (
+      <group>
+        <Sphere {...rest} node={node} />
+        <Badge
+          {...rest}
+          node={node}
+          label="Custom"
+          backgroundColor="#f59e0b"
+          textColor="#ffffff"
+          icon={fireSvg}
+          iconSize={0.6}
+          iconPosition={[0.7, 0.3]}
+          strokeWidth={0.2}
+          radius={0.15}
+          position="bottom-right"
         />
       </group>
     )}

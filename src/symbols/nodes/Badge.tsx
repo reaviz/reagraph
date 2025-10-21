@@ -1,5 +1,5 @@
 import { a, useSpring } from '@react-spring/three';
-import { Billboard, RoundedBox, Text } from '@react-three/drei';
+import { Billboard, RoundedBox, Text, Image } from '@react-three/drei';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 import { Color } from 'three';
@@ -12,8 +12,9 @@ export type BadgePosition =
   | 'top-left'
   | 'bottom-right'
   | 'bottom-left'
-  | 'center'
-  | 'custom';
+  | 'center';
+
+export type IconPosition = 'start' | 'end';
 
 export interface BadgeProps extends NodeRendererProps {
   /**
@@ -60,6 +61,21 @@ export interface BadgeProps extends NodeRendererProps {
    * Padding around the badge text.
    */
   padding?: number;
+
+  /**
+   * SVG icon path or URL to display in the badge.
+   */
+  icon?: string;
+
+  /**
+   * Size of the icon in the badge.
+   */
+  iconSize?: number;
+
+  /**
+   * Position of the icon relative to the text or custom coordinates [x, y].
+   */
+  iconPosition?: IconPosition | [number, number];
 }
 
 export const Badge: FC<BadgeProps> = ({
@@ -74,7 +90,10 @@ export const Badge: FC<BadgeProps> = ({
   radius = 0.12,
   badgeSize = 1.5,
   position = 'top-right',
-  padding = 0.3
+  padding = 0.3,
+  icon,
+  iconSize = 0.35,
+  iconPosition = 'start'
 }) => {
   const normalizedBgColor = useMemo(
     () => new Color(backgroundColor),
@@ -111,7 +130,7 @@ export const Badge: FC<BadgeProps> = ({
     }
   }, [position, size]);
 
-  // Calculate dynamic badge dimensions based on text length
+  // Calculate dynamic badge dimensions based on text length and icon
   const badgeDimensions = useMemo(() => {
     const baseWidth = 0.5;
     const baseHeight = 0.5;
@@ -120,10 +139,16 @@ export const Badge: FC<BadgeProps> = ({
 
     // Estimate text width based on character count
     const charCount = label.length;
-    const estimatedWidth = Math.max(
+    let estimatedWidth = Math.max(
       minWidth,
       Math.min(charCount * 0.15 + padding, 2.0 + padding)
     ); // Add padding to width
+
+    // Add icon width if icon is present
+    if (icon) {
+      estimatedWidth += iconSize;
+    }
+
     const estimatedHeight = Math.max(
       minHeight,
       Math.min(charCount * 0.05 + padding * 0.5, 0.8 + padding * 0.5)
@@ -133,7 +158,7 @@ export const Badge: FC<BadgeProps> = ({
       width: estimatedWidth,
       height: estimatedHeight
     };
-  }, [label, padding]);
+  }, [label, padding, icon, iconSize]);
 
   const { scale, badgeOpacity } = useSpring({
     from: {
@@ -149,6 +174,47 @@ export const Badge: FC<BadgeProps> = ({
       duration: animated ? undefined : 0
     }
   });
+
+  // Calculate content layout positions for icon and text
+  const contentLayout = useMemo(() => {
+    if (!icon) {
+      return {
+        textX: 0,
+        textY: 0,
+        iconX: 0,
+        iconY: 0
+      };
+    }
+
+    // If custom position is provided as an array
+    if (Array.isArray(iconPosition)) {
+      return {
+        iconX: iconPosition[0],
+        iconY: iconPosition[1],
+        textX: 0,
+        textY: 0
+      };
+    }
+
+    const totalContentWidth = iconSize + (label.length * 0.15);
+    const startX = -totalContentWidth / 2;
+
+    if (iconPosition === 'start') {
+      return {
+        iconX: startX + iconSize - 0.5 / 2,
+        iconY: 0,
+        textX: startX + iconSize + (label.length * 0.15) / 2,
+        textY: 0
+      };
+    } else {
+      return {
+        textX: startX + (label.length * 0.15) / 2,
+        textY: 0,
+        iconX: startX + (label.length * 0.15) + 0.15 + iconSize / 2,
+        iconY: 0
+      };
+    }
+  }, [icon, iconSize, iconPosition, label.length]);
 
   return (
     <Billboard position={badgePosition}>
@@ -179,8 +245,20 @@ export const Badge: FC<BadgeProps> = ({
             material-transparent={true}
           />
         </a.mesh>
+        {/* Icon */}
+        {icon && (
+          <Image
+            url={icon}
+            position={[contentLayout.iconX, contentLayout.iconY, 1.1]}
+            scale={[iconSize, iconSize]}
+            transparent
+            material-depthTest={false}
+            material-depthWrite={false}
+          />
+        )}
+        {/* Text */}
         <Text
-          position={[0, 0, 1.1]}
+          position={[contentLayout.textX, contentLayout.textY, 1.1]}
           fontSize={0.3}
           color={normalizedTextColor}
           anchorX="center"
