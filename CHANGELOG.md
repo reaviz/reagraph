@@ -1,3 +1,9 @@
+# 4.30.6 - 10/22/25
+- [feature] Add SVG icon support to Badge component with `icon`, `iconSize`, and `iconPosition` props
+  - `icon`: Path or URL to SVG icon
+  - `iconSize`: Size of the icon (default: 0.35)
+  - `iconPosition`: Position relative to text (`'start'`, `'end'`) or custom coordinates `[x, y]`
+
 # 4.30.5 - 9/25/25
 - [feature] Add dedicated `minZoom` and `maxZoom` props for orthographic camera mode
 - [fix] Fix active state z-index positioning and render order for edges
