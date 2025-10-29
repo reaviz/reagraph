@@ -158,7 +158,7 @@ export const WithCustomIconPosition = () => (
   />
 );
 
-export const WithCustomTextAndColor = () => (
+export const WithCustomTextAndOpacity = () => (
   <GraphCanvas
     nodes={simpleNodes}
     edges={simpleEdges}
@@ -179,10 +179,13 @@ export const WithCustomTextAndColor = () => (
           radius={0.3}
           iconPosition="start"
           position={[0, -10, 0]}
-          opacity={0.6}
+          opacity={0.4}
           strokeWidth={0.03}
+          fontWeight={700}
+          fontSize={0.4}
         />
       </group>
     )}
   />
 );
+
