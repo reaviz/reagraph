@@ -65,6 +65,7 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
 
   /**
    * Padding around the badge text.
+   * Default: 0.15
    */
   padding?: number;
 
@@ -112,6 +113,8 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
   iconTextGap?: number;
 }
 
+const DEFAULT_FONT_SIZE = 0.3;
+
 export const Badge: FC<BadgeProps> = ({
   label,
   size,
@@ -128,7 +131,7 @@ export const Badge: FC<BadgeProps> = ({
   icon,
   iconSize = 0.35,
   iconPosition = 'start',
-  fontSize = 0.3,
+  fontSize = DEFAULT_FONT_SIZE,
   fontWeight,
   charWidthEstimate = 0.2,
   iconTextGap = 0.01
@@ -145,11 +148,11 @@ export const Badge: FC<BadgeProps> = ({
   // Guard for radius
   const normalizedRadius = Math.min(radius, 0.2);
 
-  // Normalize fontWeight to valid CSS range (100-900)
+  // Normalize fontWeight to valid CSS font-weight values (100-900 in increments of 100)
   const normalizedFontWeight = useMemo(() => {
     if (fontWeight === undefined) return undefined;
-    // Clamp numeric values to 100-900 range
-    return Math.max(100, Math.min(900, fontWeight));
+    // Round to nearest hundred and clamp to 100-900 range
+    return Math.max(100, Math.min(900, Math.round(fontWeight / 100) * 100));
   }, [fontWeight]);
 
   // Calculate position based on preset or custom coordinates
@@ -177,9 +180,8 @@ export const Badge: FC<BadgeProps> = ({
 
   // Shared text size calculations (used by both badgeDimensions and contentLayout)
   const textSizeCalculations = useMemo(() => {
-    const fontSizeScale = fontSize / 0.3;
-    const fontWeightMultiplier =
-      normalizedFontWeight && normalizedFontWeight >= 700 ? 1.1 : 1;
+    const fontSizeScale = fontSize / DEFAULT_FONT_SIZE;
+    const fontWeightMultiplier = (normalizedFontWeight ?? 0) >= 700 ? 1.1 : 1;
     const adjustedCharWidth =
       charWidthEstimate * fontSizeScale * fontWeightMultiplier;
     const estimatedTextWidth = label.length * adjustedCharWidth;
@@ -224,16 +226,21 @@ export const Badge: FC<BadgeProps> = ({
       width: estimatedWidth,
       height: estimatedHeight
     };
-  }, [textSizeCalculations, label.length, padding, icon, iconSize, iconTextGap]);
+  }, [
+    textSizeCalculations,
+    label.length,
+    padding,
+    icon,
+    iconSize,
+    iconTextGap
+  ]);
 
   const { scale } = useSpring({
     from: {
-      scale: [0.00001, 0.00001, 0.00001],
-      badgeOpacity: 0
+      scale: [0.00001, 0.00001, 0.00001]
     },
     to: {
-      scale: [size * badgeSize, size * badgeSize, size * badgeSize],
-      badgeOpacity: opacity
+      scale: [size * badgeSize, size * badgeSize, size * badgeSize]
     },
     config: {
       ...animationConfig,
