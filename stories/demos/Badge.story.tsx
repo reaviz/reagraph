@@ -89,12 +89,12 @@ export const WithIcon = () => (
         <Badge
           {...rest}
           node={node}
-          label="6"
+          label="16"
           backgroundColor="#6366f1"
           textColor="#ffffff"
           icon={userSvg}
           iconSize={0.35}
-          padding={0.5}
+          padding={0.2}
           radius={0.15}
           iconPosition="start"
           position={[0, -10, 0]}
@@ -120,6 +120,7 @@ export const WithIconEnd = () => (
           textColor="#ffffff"
           icon={userSvg}
           iconSize={0.3}
+          iconTextGap={0.1}
           iconPosition="end"
           strokeColor="#059669"
           strokeWidth={0.1}
@@ -170,6 +171,7 @@ export const WithCustomTextAndOpacity = () => (
           {...rest}
           node={node}
           label="User"
+          iconTextGap={0.1}
           backgroundColor="#f59e0b"
           strokeColor="red"
           textColor="#ffffff"
@@ -182,7 +184,7 @@ export const WithCustomTextAndOpacity = () => (
           opacity={0.4}
           strokeWidth={0.03}
           fontWeight={700}
-          fontSize={0.4}
+          fontSize={0.3}
         />
       </group>
     )}

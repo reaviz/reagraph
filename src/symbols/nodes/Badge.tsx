@@ -6,6 +6,7 @@ import { Color } from 'three';
 
 import type { NodeRendererProps } from '../../types';
 import { animationConfig } from '../../utils';
+import { measureText } from '../../utils/textMeasurement';
 
 export type BadgePosition =
   | 'top-right'
@@ -101,12 +102,6 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
   fontWeight?: number;
 
   /**
-   * Character width estimate for calculating text width.
-   * Default: 0.2
-   */
-  charWidthEstimate?: number;
-
-  /**
    * Gap between icon and text.
    * Default: 0.01
    */
@@ -133,7 +128,6 @@ export const Badge: FC<BadgeProps> = ({
   iconPosition = 'start',
   fontSize = DEFAULT_FONT_SIZE,
   fontWeight,
-  charWidthEstimate = 0.2,
   iconTextGap = 0.01
 }) => {
   const normalizedBgColor = useMemo(
@@ -182,17 +176,21 @@ export const Badge: FC<BadgeProps> = ({
   const textSizeCalculations = useMemo(() => {
     const fontSizeScale = fontSize / DEFAULT_FONT_SIZE;
     const fontWeightMultiplier = (normalizedFontWeight ?? 0) >= 700 ? 1.1 : 1;
-    const adjustedCharWidth =
-      charWidthEstimate * fontSizeScale * fontWeightMultiplier;
-    const estimatedTextWidth = label.length * adjustedCharWidth;
+
+    // Use Canvas measureText for accurate width when charWidthEstimate is not provided
+    const measured = measureText({
+      text: label,
+      fontSize,
+      fontWeight: normalizedFontWeight
+    });
+    const estimatedTextWidth = measured.width;
 
     return {
       fontSizeScale,
       fontWeightMultiplier,
-      adjustedCharWidth,
       estimatedTextWidth
     };
-  }, [fontSize, normalizedFontWeight, charWidthEstimate, label.length]);
+  }, [fontSize, normalizedFontWeight, label]);
 
   // Calculate dynamic badge dimensions based on text length and icon
   const badgeDimensions = useMemo(() => {
