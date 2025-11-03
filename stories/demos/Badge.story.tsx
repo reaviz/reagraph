@@ -89,12 +89,12 @@ export const WithIcon = () => (
         <Badge
           {...rest}
           node={node}
-          label="6"
+          label="16"
           backgroundColor="#6366f1"
           textColor="#ffffff"
           icon={userSvg}
           iconSize={0.35}
-          padding={0.5}
+          padding={0.2}
           radius={0.15}
           iconPosition="start"
           position={[0, -10, 0]}
@@ -120,8 +120,8 @@ export const WithIconEnd = () => (
           textColor="#ffffff"
           icon={userSvg}
           iconSize={0.3}
+          iconTextGap={0.1}
           iconPosition="end"
-          padding={0.5}
           strokeColor="#059669"
           strokeWidth={0.1}
           radius={0.15}
@@ -150,8 +150,41 @@ export const WithCustomIconPosition = () => (
           iconSize={0.6}
           iconPosition={[0.7, 0.3]}
           strokeWidth={0.2}
+          padding={0}
           radius={0.15}
           position="bottom-right"
+        />
+      </group>
+    )}
+  />
+);
+
+export const WithCustomTextAndOpacity = () => (
+  <GraphCanvas
+    nodes={simpleNodes}
+    edges={simpleEdges}
+    cameraMode="rotate"
+    renderNode={({ node, ...rest }) => (
+      <group>
+        <Sphere {...rest} node={node} />
+        <Badge
+          {...rest}
+          node={node}
+          label="User"
+          iconTextGap={0.1}
+          backgroundColor="#f59e0b"
+          strokeColor="red"
+          textColor="#ffffff"
+          icon={userSvg}
+          iconSize={0.35}
+          padding={0.1}
+          radius={0.3}
+          iconPosition="start"
+          position={[0, -10, 0]}
+          opacity={0.4}
+          strokeWidth={0.03}
+          fontWeight={700}
+          fontSize={0.3}
         />
       </group>
     )}

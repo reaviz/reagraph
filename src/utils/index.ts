@@ -7,4 +7,5 @@ export * from './graph';
 export * from './layout';
 export * from './paths';
 export * from './position';
+export * from './textMeasurement';
 export * from './visibility';
