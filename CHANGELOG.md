@@ -1,3 +1,10 @@
+# 4.30.7 - 11/3/25
+- [feature] Add new props to Badge component for enhanced customization
+  - `opacity`: Control badge background and stroke opacity (0-1)
+  - `fontSize`: Adjust badge text font size
+  - `fontWeight`: Set text weight (100-900)
+  - `iconTextGap`: Control spacing between icon and text
+
 # 4.30.6 - 10/22/25
 - [feature] Add SVG icon support to Badge component with `icon`, `iconSize`, and `iconPosition` props
   - `icon`: Path or URL to SVG icon
