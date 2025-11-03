@@ -36,7 +36,12 @@ function getCanvasContext(): CanvasRenderingContext2D {
  * Generate a cache key from measurement options.
  */
 function getCacheKey(options: TextMeasurementOptions): string {
-  const { text, fontSize, fontWeight = 400, fontFamily = 'sans-serif' } = options;
+  const {
+    text,
+    fontSize,
+    fontWeight = 400,
+    fontFamily = 'sans-serif'
+  } = options;
   return `${text}|${fontSize}|${fontWeight}|${fontFamily}`;
 }
 
@@ -56,7 +61,12 @@ export function measureText(options: TextMeasurementOptions): TextDimensions {
     return cached;
   }
 
-  const { text, fontSize, fontWeight = 400, fontFamily = 'sans-serif' } = options;
+  const {
+    text,
+    fontSize,
+    fontWeight = 400,
+    fontFamily = 'sans-serif'
+  } = options;
 
   try {
     const context = getCanvasContext();

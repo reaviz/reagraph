@@ -1,9 +1,9 @@
-import { describe, expect, test, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 
 import {
-  measureText,
   clearMeasurementCache,
-  getMeasurementCacheSize
+  getMeasurementCacheSize,
+  measureText
 } from './textMeasurement';
 
 // Mock canvas context for testing
@@ -34,7 +34,7 @@ beforeEach(() => {
 
   // Mock canvas getContext
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
-    new MockCanvasRenderingContext2D() as any
+    new MockCanvasRenderingContext2D() as unknown as CanvasRenderingContext2D
   );
 });
 
