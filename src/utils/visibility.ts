@@ -1,6 +1,6 @@
 import type { PerspectiveCamera } from 'three';
 
-import type { EdgeLabelPosition } from '../symbols';
+import type { EdgeLabelPosition } from '../symbols/Edge';
 
 export type LabelVisibilityType = 'all' | 'auto' | 'none' | 'nodes' | 'edges';
 
