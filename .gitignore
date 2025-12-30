@@ -69,3 +69,4 @@ src/**/*.css.d.ts
 
 # IDE
 .idea
+/.claude/settings.local.json
