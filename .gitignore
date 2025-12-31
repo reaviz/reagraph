@@ -71,3 +71,4 @@ src/**/*.css.d.ts
 .idea
 /.claude/settings.local.json
 .playwright-mcp/
+/nul
