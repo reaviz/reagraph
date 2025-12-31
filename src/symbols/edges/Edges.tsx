@@ -7,8 +7,13 @@ import { DoubleSide, Mesh } from 'three';
 
 import { useStore } from '../../store';
 import type { ContextMenuEvent, InternalGraphEdge } from '../../types';
+import { calculateEdgeCurveOffset } from '../../utils';
 import type { EdgeArrowPosition } from '../Arrow';
-import type { EdgeInterpolation, EdgeLabelPosition } from '../Edge';
+import type {
+  EdgeInterpolation,
+  EdgeLabelPosition,
+  EdgeSubLabelPosition
+} from '../Edge';
 import { Edge } from './Edge';
 import {
   useEdgeOpacityAnimation,
@@ -55,6 +60,11 @@ export type EdgesProps = {
   labelPlacement?: EdgeLabelPosition;
 
   /**
+   * The placement of the edge subLabel relative to the main label.
+   */
+  subLabelPlacement?: EdgeSubLabelPosition;
+
+  /**
    * The type of interpolation used to draw the edge.
    */
   interpolation?: EdgeInterpolation;
@@ -88,6 +98,7 @@ export const Edges: FC<EdgesProps> = ({
   interpolation = 'linear',
   arrowPlacement = 'end',
   labelPlacement = 'inline',
+  subLabelPlacement = 'below',
   animated,
   contextMenu,
   disabled,
@@ -99,6 +110,7 @@ export const Edges: FC<EdgesProps> = ({
   onPointerOver
 }) => {
   const theme = useStore(state => state.theme);
+  const nodes = useStore(state => state.nodes);
   const { getGeometries, getGeometry } = useEdgeGeometry(
     arrowPlacement,
     interpolation
@@ -147,19 +159,43 @@ export const Edges: FC<EdgesProps> = ({
   }, [edges, actives, selections, draggingIds, hoveredEdgeIds]);
 
   const hasSelections = !!selections.length;
+  const edgeContextMenus = useStore(state => state.edgeContextMenus);
 
-  const staticEdgesGeometry = useMemo(
-    () => getGeometry(active, inactive),
-    [getGeometry, active, inactive]
+  // Performance: Pre-filter edges that need Label components (only ~30% typically have visible labels)
+  const edgesNeedingLabels = useMemo(
+    () => edges.filter(edge => (edge.labelVisible && edge.label) || edgeContextMenus.has(edge.id)),
+    [edges, edgeContextMenus]
   );
 
-  const { activeOpacity, inactiveOpacity } = useEdgeOpacityAnimation(
+  // Performance: Pre-compute curve offsets for all labeled edges in a single pass
+  // This avoids O(n*m) complexity from calling calculateEdgeCurveOffset per-edge
+  const curveOffsetMap = useMemo(() => {
+    const map = new Map<string, { curved: boolean; curveOffset: number | undefined }>();
+
+    edgesNeedingLabels.forEach(edge => {
+      const edgeInterpolation = edge.interpolation || interpolation;
+      const { curved, curveOffset } = calculateEdgeCurveOffset({
+        edge,
+        edges,
+        curved: edgeInterpolation === 'curved'
+      });
+      map.set(edge.id, { curved, curveOffset });
+    });
+
+    return map;
+  }, [edgesNeedingLabels, edges, interpolation]);
+
+  // Recalculate geometry when nodes move (for animation) or edge groups change
+  const staticEdgesGeometry = useMemo(
+    () => getGeometry(active, inactive),
+    [getGeometry, active, inactive, nodes]
+  );
+
+  const { activeOpacity, inactiveOpacity, scale } = useEdgeOpacityAnimation(
     animated,
     hasSelections,
     theme
   );
-
-  useEdgePositionAnimation(staticEdgesGeometry, animated);
 
   useEffect(() => {
     if (draggingIds.length === 0) {
@@ -203,10 +239,17 @@ export const Edges: FC<EdgesProps> = ({
 
   const draggingIdRef = useRef<string[]>([]);
   const intersectingRef = useRef<Array<InternalGraphEdge>>([]);
+  const lastIntersectTimeRef = useRef(0);
+  const INTERSECT_THROTTLE_MS = 50; // Only check intersections every 50ms (20 times/sec max)
+
+  // Pass the mesh ref to animation hook so it can update the actual rendered geometry
+  useEdgePositionAnimation(
+    staticEdgesRef,
+    staticEdgesGeometry,
+    animated
+  );
 
   useFrame(state => {
-    staticEdgesRef.current.geometry = staticEdgesGeometry;
-
     if (disabled) {
       return;
     }
@@ -227,6 +270,13 @@ export const Edges: FC<EdgesProps> = ({
       return;
     }
 
+    // Performance: Throttle intersection checks - raycasting against 2000+ meshes is expensive
+    const now = performance.now();
+    if (now - lastIntersectTimeRef.current < INTERSECT_THROTTLE_MS) {
+      return;
+    }
+    lastIntersectTimeRef.current = now;
+
     const previousIntersecting = intersectingRef.current;
     const intersecting = intersect(state.raycaster);
     handleIntersections(previousIntersecting, intersecting);
@@ -240,52 +290,60 @@ export const Edges: FC<EdgesProps> = ({
 
   return (
     <group onClick={handleClick} onContextMenu={handleContextMenu}>
-      {/* Static edges */}
-      <mesh ref={staticEdgesRef}>
-        <a.meshBasicMaterial
-          attach="material-0"
-          depthTest={false}
-          fog={true}
-          opacity={inactiveOpacity}
-          side={DoubleSide}
-          transparent={true}
-          vertexColors={true}
-        />
-        <a.meshBasicMaterial
-          attach="material-1"
-          color={theme.edge.activeFill}
-          depthTest={false}
-          fog={true}
-          opacity={activeOpacity}
-          side={DoubleSide}
-          transparent={true}
-        />
-      </mesh>
-      {/* Dynamic edges */}
-      <mesh ref={dynamicEdgesRef}>
-        <a.meshBasicMaterial
-          attach="material-0"
-          color={theme.edge.fill}
-          depthTest={false}
-          fog={true}
-          opacity={inactiveOpacity}
-          side={DoubleSide}
-          transparent={true}
-        />
-        <a.meshBasicMaterial
-          attach="material-1"
-          color={theme.edge.activeFill}
-          depthTest={false}
-          fog={true}
-          opacity={activeOpacity}
-          side={DoubleSide}
-          transparent={true}
-        />
-      </mesh>
-      {edges.map(edge => {
+      {/* Static edges - animated scale for "grow in" effect */}
+      <a.group scale={scale}>
+        <mesh ref={staticEdgesRef}>
+          <a.meshBasicMaterial
+            attach="material-0"
+            depthTest={false}
+            fog={true}
+            opacity={inactiveOpacity}
+            side={DoubleSide}
+            transparent={true}
+            vertexColors={true}
+          />
+          <a.meshBasicMaterial
+            attach="material-1"
+            color={theme.edge.activeFill}
+            depthTest={false}
+            fog={true}
+            opacity={activeOpacity}
+            side={DoubleSide}
+            transparent={true}
+          />
+        </mesh>
+      </a.group>
+      {/* Dynamic edges - animated scale for "grow in" effect */}
+      <a.group scale={scale}>
+        <mesh ref={dynamicEdgesRef}>
+          <a.meshBasicMaterial
+            attach="material-0"
+            color={theme.edge.fill}
+            depthTest={false}
+            fog={true}
+            opacity={inactiveOpacity}
+            side={DoubleSide}
+            transparent={true}
+          />
+          <a.meshBasicMaterial
+            attach="material-1"
+            color={theme.edge.activeFill}
+            depthTest={false}
+            fog={true}
+            opacity={activeOpacity}
+            side={DoubleSide}
+            transparent={true}
+          />
+        </mesh>
+      </a.group>
+      {/* Performance: Only render Edge components for edges that need labels or context menus */}
+      {edgesNeedingLabels.map(edge => {
         const isSelected = selections.includes(edge.id);
         const isActive = actives.includes(edge.id);
         const isHovered = hoveredEdgeIds.includes(edge.id);
+
+        // Use pre-computed curve offset from memoized map
+        const curveData = curveOffsetMap.get(edge.id);
 
         return (
           <Edge
@@ -301,7 +359,10 @@ export const Edges: FC<EdgesProps> = ({
             key={edge.id}
             labelFontUrl={labelFontUrl}
             labelPlacement={labelPlacement}
+            subLabelPlacement={subLabelPlacement}
             active={isSelected || isActive || isHovered}
+            curved={curveData?.curved ?? false}
+            curveOffset={curveData?.curveOffset}
           />
         );
       })}

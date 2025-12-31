@@ -1,6 +1,5 @@
 import type { Color, Curve, Vector3 } from 'three';
 import {
-  BoxGeometry,
   BufferGeometry,
   CatmullRomCurve3,
   Float32BufferAttribute,
@@ -9,20 +8,29 @@ import {
 import { mergeBufferGeometries } from 'three-stdlib';
 
 /**
- * Create a null geometry with consistent attributes
- * @returns A BufferGeometry with a null appearance
+ * Create a minimal geometry for use as a placeholder when no edges exist.
+ * Must be compatible with TubeGeometry for mergeBufferGeometries to work.
+ * TubeGeometry has: position, normal, uv attributes + index buffer
+ * @returns A BufferGeometry compatible with TubeGeometry
  */
 export const createNullGeometry = (): BufferGeometry => {
-  const nullGeom = new BoxGeometry(0, 0, 0);
-  // Add color attribute to match other geometries
-  const vertexCount = nullGeom.attributes.position.count;
-  const colorArray = new Float32Array(vertexCount * 3);
-  for (let i = 0; i < vertexCount; i++) {
-    colorArray[i * 3] = 1; // white
-    colorArray[i * 3 + 1] = 1;
-    colorArray[i * 3 + 2] = 1;
-  }
-  nullGeom.setAttribute('color', new Float32BufferAttribute(colorArray, 3));
+  // Create a minimal indexed geometry - a single degenerate triangle (3 vertices at origin)
+  // This matches TubeGeometry's attribute structure for merge compatibility
+  const nullGeom = new BufferGeometry();
+
+  // 3 vertices for a degenerate triangle (all at origin, not visible)
+  const positions = new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const normals = new Float32Array([0, 1, 0, 0, 1, 0, 0, 1, 0]);
+  const uvs = new Float32Array([0, 0, 0, 0, 0, 0]); // uv is vec2
+  const colors = new Float32Array([1, 1, 1, 1, 1, 1, 1, 1, 1]); // white
+
+  nullGeom.setAttribute('position', new Float32BufferAttribute(positions, 3));
+  nullGeom.setAttribute('normal', new Float32BufferAttribute(normals, 3));
+  nullGeom.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+  nullGeom.setAttribute('color', new Float32BufferAttribute(colors, 3));
+
+  // Add index buffer to match TubeGeometry's indexed geometry
+  nullGeom.setIndex([0, 1, 2]);
 
   return nullGeom;
 };
@@ -87,11 +95,12 @@ export const createDashedGeometry = (
       if (points.length >= 2) {
         // Create a curve from these points
         const segmentCurve = new CatmullRomCurve3(points);
+        // Performance: Use reduced radial segments (3 instead of 5)
         const segmentGeometry = new TubeGeometry(
           segmentCurve,
           Math.max(2, points.length - 1),
           radius,
-          5,
+          3,
           false
         );
 

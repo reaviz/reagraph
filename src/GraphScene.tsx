@@ -22,8 +22,11 @@ import { useStore } from './store';
 import { Node } from './symbols';
 import type { ClusterEventArgs } from './symbols/Cluster';
 import { Cluster } from './symbols/Cluster';
-import type { EdgeInterpolation, EdgeLabelPosition } from './symbols/Edge';
-import { Edge } from './symbols/Edge';
+import type {
+  EdgeInterpolation,
+  EdgeLabelPosition,
+  EdgeSubLabelPosition
+} from './symbols/Edge';
 import { Edges } from './symbols/edges';
 import type { EdgeArrowPosition } from './symbols/edges/Edge';
 import type {
@@ -96,6 +99,11 @@ export interface GraphSceneProps {
    * Place of visibility for edge labels.
    */
   edgeLabelPosition?: EdgeLabelPosition;
+
+  /**
+   * Place of visibility for edge sub-labels.
+   */
+  edgeSubLabelPosition?: EdgeSubLabelPosition;
 
   /**
    * Placement of edge arrows.
@@ -345,6 +353,7 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
       draggable,
       constrainDragging = false,
       edgeLabelPosition,
+      edgeSubLabelPosition,
       edgeArrowPosition,
       edgeInterpolation = 'linear',
       labelFontUrl,
@@ -468,42 +477,26 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
       ]
     );
 
+    // Always use the unified Edges component for better performance
+    // The Edges component supports animations and handles all edge rendering efficiently
     const edgeComponents = useMemo(
-      () =>
-        animated ? (
-          edges.map(e => (
-            <Edge
-              key={e.id}
-              id={e.id}
-              disabled={disabled}
-              animated={animated}
-              labelFontUrl={labelFontUrl}
-              labelPlacement={edgeLabelPosition}
-              arrowPlacement={edgeArrowPosition}
-              interpolation={edgeInterpolation}
-              contextMenu={contextMenu}
-              onClick={onEdgeClick}
-              onContextMenu={onEdgeContextMenu}
-              onPointerOver={onEdgePointerOver}
-              onPointerOut={onEdgePointerOut}
-            />
-          ))
-        ) : (
-          <Edges
-            edges={edges}
-            disabled={disabled}
-            animated={animated}
-            labelFontUrl={labelFontUrl}
-            labelPlacement={edgeLabelPosition}
-            arrowPlacement={edgeArrowPosition}
-            interpolation={edgeInterpolation}
-            contextMenu={contextMenu}
-            onClick={onEdgeClick}
-            onContextMenu={onEdgeContextMenu}
-            onPointerOver={onEdgePointerOver}
-            onPointerOut={onEdgePointerOut}
-          />
-        ),
+      () => (
+        <Edges
+          edges={edges}
+          disabled={disabled}
+          animated={animated}
+          labelFontUrl={labelFontUrl}
+          labelPlacement={edgeLabelPosition}
+          subLabelPlacement={edgeSubLabelPosition}
+          arrowPlacement={edgeArrowPosition}
+          interpolation={edgeInterpolation}
+          contextMenu={contextMenu}
+          onClick={onEdgeClick}
+          onContextMenu={onEdgeContextMenu}
+          onPointerOver={onEdgePointerOver}
+          onPointerOut={onEdgePointerOut}
+        />
+      ),
       [
         animated,
         contextMenu,
@@ -511,6 +504,7 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
         edgeArrowPosition,
         edgeInterpolation,
         edgeLabelPosition,
+        edgeSubLabelPosition,
         edges,
         labelFontUrl,
         onEdgeClick,

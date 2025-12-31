@@ -1,6 +1,6 @@
 import { a, useSpring } from '@react-spring/three';
 import { Html, useCursor } from '@react-three/drei';
-import type { ThreeEvent } from '@react-three/fiber';
+import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import type { FC, ReactNode } from 'react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import type { Group } from 'three';
@@ -20,6 +20,12 @@ import { useHoverIntent } from '../utils/useHoverIntent';
 import { Label } from './Label';
 import { Icon } from './nodes';
 import { Sphere } from './nodes/Sphere';
+
+// LOD: Maximum camera distance at which node labels are visible
+// At distances greater than this, labels would be too small to read anyway
+// For large graphs (1000+ nodes), default view can be 25000+ units away
+// This threshold allows labels to appear after moderate zooming
+const LABEL_VISIBILITY_DISTANCE = 15000;
 
 export interface NodeProps {
   /**
@@ -257,6 +263,56 @@ export const Node: FC<NodeProps> = ({
     }
   });
 
+  // LOD: Track whether label should be visible based on camera distance
+  const [isLabelInRange, setIsLabelInRange] = useState(true);
+  const wasInRangeRef = useRef(true);
+  const lastUpdateTimeRef = useRef(0);
+  const pendingUpdateRef = useRef<boolean | null>(null);
+  const { camera } = useThree();
+
+  // Check camera distance and update label visibility
+  // Debounced to prevent staggering during fast zoom with mouse wheel
+  const LOD_UPDATE_DEBOUNCE_MS = 150;
+
+  useFrame(() => {
+    if (!label || !position) return;
+
+    // Calculate distance from camera to node position
+    const dx = camera.position.x - position.x;
+    const dy = camera.position.y - position.y;
+    const dz = camera.position.z - (position.z || 0);
+    const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+    // Account for camera zoom (orthographic cameras use zoom instead of position)
+    const zoom = 'zoom' in camera ? (camera as any).zoom : 1;
+    const effectiveDistance = distance / zoom;
+
+    const isInRange = effectiveDistance < LABEL_VISIBILITY_DISTANCE;
+
+    // Only update state when visibility changes, with debouncing
+    if (isInRange !== wasInRangeRef.current) {
+      const now = performance.now();
+      pendingUpdateRef.current = isInRange;
+
+      // Debounce: only apply the update after the debounce period
+      if (now - lastUpdateTimeRef.current >= LOD_UPDATE_DEBOUNCE_MS) {
+        wasInRangeRef.current = isInRange;
+        setIsLabelInRange(isInRange);
+        lastUpdateTimeRef.current = now;
+        pendingUpdateRef.current = null;
+      }
+    } else if (pendingUpdateRef.current !== null) {
+      // Apply any pending update after debounce period
+      const now = performance.now();
+      if (now - lastUpdateTimeRef.current >= LOD_UPDATE_DEBOUNCE_MS) {
+        wasInRangeRef.current = pendingUpdateRef.current;
+        setIsLabelInRange(pendingUpdateRef.current);
+        lastUpdateTimeRef.current = now;
+        pendingUpdateRef.current = null;
+      }
+    }
+  });
+
   const nodeComponent = useMemo(
     () =>
       renderNode ? (
@@ -311,11 +367,13 @@ export const Node: FC<NodeProps> = ({
     ]
   );
 
+  // LOD: Only show label when camera is close enough AND labelVisible is true
+  const shouldShowLabel = labelVisible && label && isLabelInRange;
+
   const labelComponent = useMemo(
     () =>
-      labelVisible &&
-      (labelVisible || isSelected || active) &&
-      label && (
+      shouldShowLabel &&
+      (labelVisible || isSelected || active) && (
         <a.group position={labelPosition as any}>
           <Label
             text={label}
@@ -365,6 +423,7 @@ export const Node: FC<NodeProps> = ({
       labelVisible,
       nodeSize,
       selectionOpacity,
+      shouldShowLabel,
       subLabel,
       theme.node.label.activeColor,
       theme.node.label.color,

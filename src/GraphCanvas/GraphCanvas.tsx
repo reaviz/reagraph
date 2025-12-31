@@ -212,8 +212,9 @@ export const GraphCanvas = forwardRef<GraphCanvasRef, GraphCanvasProps>(
     // Defaults to pass to the store
     const { selections, actives, collapsedNodeIds } = rest;
 
-    // It's pretty hard to get good animation performance with large n of edges/nodes
-    const finalAnimated = edges.length + nodes.length > 400 ? false : animated;
+    // The unified edge implementation performs well with larger graphs
+    // Raise threshold significantly since batched rendering handles animations efficiently
+    const finalAnimated = edges.length + nodes.length > 2000 ? false : animated;
 
     const gl = useMemo(() => ({ ...glOptions, ...GL_DEFAULTS }), [glOptions]);
     // zustand/context migration (https://github.com/pmndrs/zustand/discussions/1180)
