@@ -183,6 +183,14 @@ export interface GraphSceneProps {
   aggregateEdges?: boolean;
 
   /**
+   * Enable web workers for layout calculations.
+   * This moves heavy layout computations off the main thread,
+   * improving UI responsiveness especially for large graphs.
+   * Default: false
+   */
+  webWorkers?: boolean;
+
+  /**
    * When a node was clicked.
    */
   onNodeClick?: (

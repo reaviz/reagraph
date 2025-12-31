@@ -87,6 +87,14 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
    * Whether to aggregate edges with the same source and target.
    */
   aggregateEdges?: boolean;
+
+  /**
+   * Enable web workers for layout calculations.
+   * This moves heavy layout computations off the main thread,
+   * improving UI responsiveness especially for large graphs.
+   * Default: false
+   */
+  webWorkers?: boolean;
 }
 
 export type GraphCanvasRef = Omit<GraphSceneRef, 'graph' | 'renderScene'> &
