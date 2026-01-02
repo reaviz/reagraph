@@ -20,6 +20,7 @@ import type { LayoutOverrides, LayoutTypes } from './layout';
 import type { SizingType } from './sizing';
 import { useStore } from './store';
 import { Node } from './symbols';
+import { Nodes } from './symbols/nodes';
 import type { ClusterEventArgs } from './symbols/Cluster';
 import { Cluster } from './symbols/Cluster';
 import type {
@@ -446,27 +447,28 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
       [clusterAttribute, onNodeDragged, updateLayout]
     );
 
+    // Use batched Nodes component for better performance with large graphs
+    // Individual Node components are used internally for custom renderers and dragging
     const nodeComponents = useMemo(
-      () =>
-        nodes.map(n => (
-          <Node
-            key={n?.id}
-            id={n?.id}
-            labelFontUrl={labelFontUrl}
-            draggable={draggable}
-            constrainDragging={constrainDragging}
-            disabled={disabled}
-            animated={animated}
-            contextMenu={contextMenu}
-            renderNode={renderNode}
-            onClick={onNodeClick}
-            onDoubleClick={onNodeDoubleClick}
-            onContextMenu={onNodeContextMenu}
-            onPointerOver={onNodePointerOver}
-            onPointerOut={onNodePointerOut}
-            onDragged={onNodeDraggedHandler}
-          />
-        )),
+      () => (
+        <Nodes
+          nodes={nodes}
+          animated={animated}
+          disabled={disabled}
+          draggable={draggable}
+          constrainDragging={constrainDragging}
+          labelFontUrl={labelFontUrl}
+          renderNode={renderNode}
+          contextMenu={contextMenu}
+          defaultNodeSize={rest.defaultNodeSize}
+          onClick={onNodeClick}
+          onDoubleClick={onNodeDoubleClick}
+          onContextMenu={onNodeContextMenu}
+          onPointerOver={onNodePointerOver}
+          onPointerOut={onNodePointerOut}
+          onDragged={onNodeDraggedHandler}
+        />
+      ),
       [
         constrainDragging,
         animated,
@@ -481,7 +483,8 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
         onNodeDraggedHandler,
         onNodePointerOut,
         onNodePointerOver,
-        renderNode
+        renderNode,
+        rest.defaultNodeSize
       ]
     );
 
