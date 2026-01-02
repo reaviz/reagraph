@@ -126,6 +126,17 @@ export interface EdgeProps {
 
 const LABEL_PLACEMENT_OFFSET = 3;
 
+/**
+ * Individual Edge component for rendering a single edge with full features.
+ *
+ * @deprecated This component is deprecated in favor of the unified `Edges` component
+ * from `src/symbols/edges/Edges.tsx` which provides better performance through
+ * geometry batching. The Edges component now supports all features including
+ * animations, subLabels, and curved interpolation.
+ *
+ * This component may be removed in a future major version.
+ * Use `<Edges edges={[edge]} />` instead for single edge rendering.
+ */
 export const Edge: FC<EdgeProps> = ({
   animated,
   arrowPlacement = 'end',

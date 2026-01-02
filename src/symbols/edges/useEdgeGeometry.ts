@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { BufferGeometry, Curve } from 'three';
 import {
   Color,
@@ -35,6 +35,14 @@ export type UseEdgeGeometry = {
 
 const NULL_GEOMETRY = createNullGeometry();
 
+// Performance: Reduced geometry complexity for better performance with many edges
+// Tubular segments: 20 -> 8 (still smooth enough for most zoom levels)
+// Radial segments: 5 -> 3 (edges are thin, don't need high detail)
+// Arrow radial segments: 20 -> 6 (cones look fine with fewer segments)
+const TUBE_TUBULAR_SEGMENTS = 8;
+const TUBE_RADIAL_SEGMENTS = 3;
+const ARROW_RADIAL_SEGMENTS = 6;
+
 export function useEdgeGeometry(
   arrowPlacement: EdgeArrowPosition,
   interpolation: EdgeInterpolation
@@ -44,13 +52,28 @@ export function useEdgeGeometry(
   // or `getGeometry` is run, so we store it in a ref:
   const stateRef = useRef<GraphState | null>(null);
   const theme = useStore(state => state.theme);
+  const edges = useStore(state => state.edges);
   useStore(state => {
     stateRef.current = state;
   });
 
   const geometryCacheRef = useRef(new Map<string, BufferGeometry>());
+  const prevEdgeIdsRef = useRef<Set<string>>(new Set());
 
-  // Add memoized geometry for arrows
+  // Clear geometry cache when topology changes (edges added/removed)
+  useEffect(() => {
+    const currentIds = new Set(edges.map(e => e.id));
+    const hasTopologyChange =
+      currentIds.size !== prevEdgeIdsRef.current.size ||
+      [...currentIds].some(id => !prevEdgeIdsRef.current.has(id));
+
+    if (hasTopologyChange) {
+      geometryCacheRef.current.clear();
+      prevEdgeIdsRef.current = currentIds;
+    }
+  }, [edges]);
+
+  // Add memoized geometry for arrows with reduced segments
   const baseArrowGeometryRef = useRef<CylinderGeometry | null>(null);
 
   const getGeometries = useCallback(
@@ -62,13 +85,13 @@ export function useEdgeGeometry(
       const { nodes } = stateRef.current;
       const nodesMap = new Map(nodes.map(node => [node.id, node]));
 
-      // Initialize base arrow geometry if needed
+      // Initialize base arrow geometry if needed (with reduced segments for performance)
       if (arrowPlacement !== 'none' && !baseArrowGeometryRef.current) {
         baseArrowGeometryRef.current = new CylinderGeometry(
           0,
           1,
           1,
-          20,
+          ARROW_RADIAL_SEGMENTS,
           1,
           true
         );
@@ -82,8 +105,8 @@ export function useEdgeGeometry(
         if (!from || !to) {
           return;
         }
-        // Improved hash function to include size
-        const hash = `${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size}`;
+        // Include edge ID and key properties in hash for better cache management
+        const hash = `${edge.id}:${from.position.x},${from.position.y},${to.position.x},${to.position.y},${size}`;
 
         // Detect self-loop
         const isSelfLoop = from.id === to.id;
@@ -125,7 +148,7 @@ export function useEdgeGeometry(
             edge.dashArray
           );
         } else {
-          edgeGeometry = new TubeGeometry(curve, 20, radius, 5, false);
+          edgeGeometry = new TubeGeometry(curve, TUBE_TUBULAR_SEGMENTS, radius, TUBE_RADIAL_SEGMENTS, false);
         }
 
         if (edgeArrowPlacement === 'none') {
@@ -198,9 +221,9 @@ export function useEdgeGeometry(
           } else {
             edgeGeometry = new TubeGeometry(
               adjustedCurve,
-              20,
+              TUBE_TUBULAR_SEGMENTS,
               radius,
-              5,
+              TUBE_RADIAL_SEGMENTS,
               false
             );
           }
@@ -232,17 +255,16 @@ export function useEdgeGeometry(
       const activeGeometries = getGeometries(active);
       const inactiveGeometries = getGeometries(inactive);
 
-      return mergeBufferGeometries(
-        [
-          inactiveGeometries.length
-            ? mergeBufferGeometries(inactiveGeometries)
-            : NULL_GEOMETRY,
-          activeGeometries.length
-            ? mergeBufferGeometries(activeGeometries)
-            : NULL_GEOMETRY
-        ],
-        true
-      );
+      // Performance: Single merge operation instead of nested merges
+      // We still need to separate active/inactive into material groups
+      const inactiveGeometry = inactiveGeometries.length
+        ? mergeBufferGeometries(inactiveGeometries)
+        : NULL_GEOMETRY;
+      const activeGeometry = activeGeometries.length
+        ? mergeBufferGeometries(activeGeometries)
+        : NULL_GEOMETRY;
+
+      return mergeBufferGeometries([inactiveGeometry, activeGeometry], true);
     },
     [getGeometries]
   );

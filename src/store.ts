@@ -33,10 +33,15 @@ export interface GraphState {
   selections?: string[];
   // The node that is currently hovered, used to disable cluster dragging
   hoveredNodeId?: string;
+  // The nodes that are currently hovered over (for batched node rendering)
+  hoveredNodeIds?: string[];
   // The edges that are currently hovered over, required for cases when animation is disabled
   hoveredEdgeIds?: string[];
   edgeContextMenus?: Set<string>;
   setEdgeContextMenus: (edges: Set<string>) => void;
+  // Node context menus (for batched node rendering)
+  nodeContextMenus?: Set<string>;
+  setNodeContextMenus: (nodes: Set<string>) => void;
   edgeMeshes: Array<Mesh<BufferGeometry>>;
   setEdgeMeshes: (edgeMeshes: Array<Mesh<BufferGeometry>>) => void;
   draggingIds?: string[];
@@ -52,6 +57,7 @@ export interface GraphState {
   setActives: (actives: string[]) => void;
   setSelections: (selections: string[]) => void;
   setHoveredNodeId: (hoveredNodeId: string | null) => void;
+  setHoveredNodeIds: (hoveredNodeIds: string[] | null) => void;
   setHoveredEdgeIds: (hoveredEdgeIds: string[] | null) => void;
   setNodes: (nodes: InternalGraphNode[]) => void;
   setEdges: (edges: InternalGraphEdge[]) => void;
@@ -86,7 +92,9 @@ export const createStore = ({
     draggingIds: [],
     actives,
     hoveredEdgeIds: [],
+    hoveredNodeIds: [],
     edgeContextMenus: new Set(),
+    nodeContextMenus: new Set(),
     edgeMeshes: [],
     selections,
     hoveredNodeId: null,
@@ -98,6 +106,11 @@ export const createStore = ({
       set(state => ({
         ...state,
         edgeContextMenus
+      })),
+    setNodeContextMenus: nodeContextMenus =>
+      set(state => ({
+        ...state,
+        nodeContextMenus
       })),
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
     setPanning: panning => set(state => ({ ...state, panning })),
@@ -113,6 +126,8 @@ export const createStore = ({
     setSelections: selections => set(state => ({ ...state, selections })),
     setHoveredNodeId: hoveredNodeId =>
       set(state => ({ ...state, hoveredNodeId })),
+    setHoveredNodeIds: hoveredNodeIds =>
+      set(state => ({ ...state, hoveredNodeIds })),
     setHoveredEdgeIds: hoveredEdgeIds =>
       set(state => ({ ...state, hoveredEdgeIds })),
     setNodes: nodes =>

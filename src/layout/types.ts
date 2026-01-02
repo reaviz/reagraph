@@ -85,7 +85,7 @@ export interface LayoutStrategy {
   getNodePosition: (id: string) => InternalGraphPosition;
 
   /**
-   * Async stepper.
+   * Async stepper. Can return a boolean synchronously or a Promise<boolean> for web worker support.
    */
-  step: () => boolean | undefined;
+  step: () => boolean | undefined | Promise<boolean | undefined>;
 }

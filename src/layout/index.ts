@@ -12,3 +12,5 @@ export * from './layoutUtils';
 export * from './nooverlap';
 export * from './recommender';
 export * from './types';
+export * from './useForceAtlas2Worker';
+export * from './graphPositionAdapter';

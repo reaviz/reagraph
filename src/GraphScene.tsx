@@ -20,10 +20,14 @@ import type { LayoutOverrides, LayoutTypes } from './layout';
 import type { SizingType } from './sizing';
 import { useStore } from './store';
 import { Node } from './symbols';
+import { Nodes } from './symbols/nodes';
 import type { ClusterEventArgs } from './symbols/Cluster';
 import { Cluster } from './symbols/Cluster';
-import type { EdgeInterpolation, EdgeLabelPosition } from './symbols/Edge';
-import { Edge } from './symbols/Edge';
+import type {
+  EdgeInterpolation,
+  EdgeLabelPosition,
+  EdgeSubLabelPosition
+} from './symbols/Edge';
 import { Edges } from './symbols/edges';
 import type { EdgeArrowPosition } from './symbols/edges/Edge';
 import type {
@@ -96,6 +100,11 @@ export interface GraphSceneProps {
    * Place of visibility for edge labels.
    */
   edgeLabelPosition?: EdgeLabelPosition;
+
+  /**
+   * Place of visibility for edge sub-labels.
+   */
+  edgeSubLabelPosition?: EdgeSubLabelPosition;
 
   /**
    * Placement of edge arrows.
@@ -173,6 +182,14 @@ export interface GraphSceneProps {
    * Whether to aggregate edges with the same source and target.
    */
   aggregateEdges?: boolean;
+
+  /**
+   * Enable web workers for layout calculations.
+   * This moves heavy layout computations off the main thread,
+   * improving UI responsiveness especially for large graphs.
+   * Default: false
+   */
+  webWorkers?: boolean;
 
   /**
    * When a node was clicked.
@@ -345,6 +362,7 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
       draggable,
       constrainDragging = false,
       edgeLabelPosition,
+      edgeSubLabelPosition,
       edgeArrowPosition,
       edgeInterpolation = 'linear',
       labelFontUrl,
@@ -429,27 +447,28 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
       [clusterAttribute, onNodeDragged, updateLayout]
     );
 
+    // Use batched Nodes component for better performance with large graphs
+    // Individual Node components are used internally for custom renderers and dragging
     const nodeComponents = useMemo(
-      () =>
-        nodes.map(n => (
-          <Node
-            key={n?.id}
-            id={n?.id}
-            labelFontUrl={labelFontUrl}
-            draggable={draggable}
-            constrainDragging={constrainDragging}
-            disabled={disabled}
-            animated={animated}
-            contextMenu={contextMenu}
-            renderNode={renderNode}
-            onClick={onNodeClick}
-            onDoubleClick={onNodeDoubleClick}
-            onContextMenu={onNodeContextMenu}
-            onPointerOver={onNodePointerOver}
-            onPointerOut={onNodePointerOut}
-            onDragged={onNodeDraggedHandler}
-          />
-        )),
+      () => (
+        <Nodes
+          nodes={nodes}
+          animated={animated}
+          disabled={disabled}
+          draggable={draggable}
+          constrainDragging={constrainDragging}
+          labelFontUrl={labelFontUrl}
+          renderNode={renderNode}
+          contextMenu={contextMenu}
+          defaultNodeSize={rest.defaultNodeSize}
+          onClick={onNodeClick}
+          onDoubleClick={onNodeDoubleClick}
+          onContextMenu={onNodeContextMenu}
+          onPointerOver={onNodePointerOver}
+          onPointerOut={onNodePointerOut}
+          onDragged={onNodeDraggedHandler}
+        />
+      ),
       [
         constrainDragging,
         animated,
@@ -464,46 +483,31 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
         onNodeDraggedHandler,
         onNodePointerOut,
         onNodePointerOver,
-        renderNode
+        renderNode,
+        rest.defaultNodeSize
       ]
     );
 
+    // Always use the unified Edges component for better performance
+    // The Edges component supports animations and handles all edge rendering efficiently
     const edgeComponents = useMemo(
-      () =>
-        animated ? (
-          edges.map(e => (
-            <Edge
-              key={e.id}
-              id={e.id}
-              disabled={disabled}
-              animated={animated}
-              labelFontUrl={labelFontUrl}
-              labelPlacement={edgeLabelPosition}
-              arrowPlacement={edgeArrowPosition}
-              interpolation={edgeInterpolation}
-              contextMenu={contextMenu}
-              onClick={onEdgeClick}
-              onContextMenu={onEdgeContextMenu}
-              onPointerOver={onEdgePointerOver}
-              onPointerOut={onEdgePointerOut}
-            />
-          ))
-        ) : (
-          <Edges
-            edges={edges}
-            disabled={disabled}
-            animated={animated}
-            labelFontUrl={labelFontUrl}
-            labelPlacement={edgeLabelPosition}
-            arrowPlacement={edgeArrowPosition}
-            interpolation={edgeInterpolation}
-            contextMenu={contextMenu}
-            onClick={onEdgeClick}
-            onContextMenu={onEdgeContextMenu}
-            onPointerOver={onEdgePointerOver}
-            onPointerOut={onEdgePointerOut}
-          />
-        ),
+      () => (
+        <Edges
+          edges={edges}
+          disabled={disabled}
+          animated={animated}
+          labelFontUrl={labelFontUrl}
+          labelPlacement={edgeLabelPosition}
+          subLabelPlacement={edgeSubLabelPosition}
+          arrowPlacement={edgeArrowPosition}
+          interpolation={edgeInterpolation}
+          contextMenu={contextMenu}
+          onClick={onEdgeClick}
+          onContextMenu={onEdgeContextMenu}
+          onPointerOver={onEdgePointerOver}
+          onPointerOut={onEdgePointerOut}
+        />
+      ),
       [
         animated,
         contextMenu,
@@ -511,6 +515,7 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
         edgeArrowPosition,
         edgeInterpolation,
         edgeLabelPosition,
+        edgeSubLabelPosition,
         edges,
         labelFontUrl,
         onEdgeClick,
