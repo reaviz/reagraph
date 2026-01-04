@@ -192,6 +192,13 @@ export interface GraphSceneProps {
   webWorkers?: boolean;
 
   /**
+   * Maximum number of instanced nodes for batched rendering.
+   * Nodes beyond this limit won't render. A warning will be logged
+   * if this limit is exceeded. Default: 10000
+   */
+  maxNodeCount?: number;
+
+  /**
    * When a node was clicked.
    */
   onNodeClick?: (
@@ -461,6 +468,7 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
           renderNode={renderNode}
           contextMenu={contextMenu}
           defaultNodeSize={rest.defaultNodeSize}
+          maxNodeCount={rest.maxNodeCount}
           onClick={onNodeClick}
           onDoubleClick={onNodeDoubleClick}
           onContextMenu={onNodeContextMenu}
@@ -484,7 +492,8 @@ export const GraphScene = forwardRef<GraphSceneRef, GraphSceneProps>(
         onNodePointerOut,
         onNodePointerOver,
         renderNode,
-        rest.defaultNodeSize
+        rest.defaultNodeSize,
+        rest.maxNodeCount
       ]
     );
 

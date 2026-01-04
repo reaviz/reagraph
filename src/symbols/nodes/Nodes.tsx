@@ -29,6 +29,9 @@ import { createIndexToNodeIdMap, useNodeEvents } from './useNodeEvents';
 // LOD: Maximum camera distance at which node labels are visible
 const LABEL_VISIBILITY_DISTANCE = 15000;
 
+// Default maximum number of instanced nodes
+const DEFAULT_MAX_NODE_COUNT = 10000;
+
 export interface NodesProps {
   /** Nodes to render */
   nodes: InternalGraphNode[];
@@ -48,6 +51,8 @@ export interface NodesProps {
   contextMenu?: (event: ContextMenuEvent) => ReactNode;
   /** Default node size */
   defaultNodeSize?: number;
+  /** Maximum number of instanced nodes (default: 10000). Nodes beyond this limit won't render. */
+  maxNodeCount?: number;
   /** Click handler */
   onClick?: (
     node: InternalGraphNode,
@@ -93,6 +98,7 @@ export const Nodes: FC<NodesProps> = ({
   renderNode,
   contextMenu,
   defaultNodeSize = 7,
+  maxNodeCount = DEFAULT_MAX_NODE_COUNT,
   onClick,
   onDoubleClick,
   onContextMenu,
@@ -121,7 +127,18 @@ export const Nodes: FC<NodesProps> = ({
   );
 
   // Create instanced mesh for sphere nodes
-  const instancing = useNodeInstancing(5000);
+  const instancing = useNodeInstancing(maxNodeCount);
+
+  // Warn if nodes exceed the maximum count
+  useEffect(() => {
+    if (sphereNodes.length > maxNodeCount) {
+      console.warn(
+        `[reagraph] Node count (${sphereNodes.length}) exceeds maxNodeCount (${maxNodeCount}). ` +
+        `${sphereNodes.length - maxNodeCount} nodes will not be rendered. ` +
+        `Increase maxNodeCount prop to render all nodes.`
+      );
+    }
+  }, [sphereNodes.length, maxNodeCount]);
 
   // Create index-to-nodeId map for raycasting
   const indexToNodeId = useMemo(

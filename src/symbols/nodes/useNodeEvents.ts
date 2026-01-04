@@ -100,8 +100,8 @@ export function useNodeEvents(
   const hoveredNodeIdRef = useRef<string | null>(null);
   const lastIntersectTimeRef = useRef(0);
 
-  // Store for updating hovered state
-  const setHoveredNodeIds = useStore(state => state.setHoveredNodeIds);
+  // Store for updating hovered state (use singular for Cluster.tsx compatibility)
+  const setHoveredNodeId = useStore(state => state.setHoveredNodeId);
   const nodeContextMenus = useStore(state => state.nodeContextMenus);
   const setNodeContextMenus = useStore(state => state.setNodeContextMenus);
 
@@ -255,9 +255,9 @@ export function useNodeEvents(
         eventsRef.current.onPointerOver(intersectedNode!);
       }
 
-      // Update hovered state
+      // Update hovered state (singular for Cluster.tsx compatibility)
       hoveredNodeIdRef.current = currentHoveredId;
-      setHoveredNodeIds?.(currentHoveredId ? [currentHoveredId] : []);
+      setHoveredNodeId?.(currentHoveredId);
     }
   });
 
