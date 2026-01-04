@@ -7,7 +7,8 @@ import type {
   GraphEdge,
   GraphNode,
   InternalGraphEdge,
-  InternalGraphNode
+  InternalGraphNode,
+  InternalVector3
 } from '../types';
 import type { LabelVisibilityType } from './visibility';
 import { calcLabelVisibility } from './visibility';
@@ -140,6 +141,121 @@ export function transformGraph({
       const labelVisible = checkVisibility('edge', size);
 
       // TODO: Fix type
+      edges.push({
+        ...link,
+        id,
+        label,
+        labelVisible,
+        size,
+        data: {
+          ...rest,
+          id,
+          ...(data || {})
+        }
+      } as any);
+    }
+  });
+
+  return {
+    nodes,
+    edges
+  };
+}
+
+interface TransformGraphWithPositionsInput {
+  graph: Graph;
+  positions: Map<string, InternalVector3>;
+  drags?: Record<string, { position: InternalVector3 } | undefined>;
+  sizingType?: SizingType;
+  labelType?: LabelVisibilityType;
+  sizingAttribute?: string;
+  minNodeSize?: number;
+  maxNodeSize?: number;
+  defaultNodeSize?: number;
+  clusterAttribute?: string;
+}
+
+/**
+ * Transform the graph using pre-computed positions (from worker).
+ * This is used when layout is calculated off the main thread.
+ */
+export function transformGraphWithPositions({
+  graph,
+  positions,
+  drags,
+  sizingType,
+  labelType,
+  sizingAttribute,
+  defaultNodeSize,
+  minNodeSize,
+  maxNodeSize,
+  clusterAttribute
+}: TransformGraphWithPositionsInput) {
+  const nodes: InternalGraphNode[] = [];
+  const edges: InternalGraphEdge[] = [];
+  const map = new Map<string, InternalGraphNode>();
+
+  const sizes = nodeSizeProvider({
+    graph,
+    type: sizingType,
+    attribute: sizingAttribute,
+    minSize: minNodeSize,
+    maxSize: maxNodeSize,
+    defaultSize: defaultNodeSize
+  });
+
+  const nodeCount = graph.nodes().length;
+  const checkVisibility = calcLabelVisibility({ nodeCount, labelType });
+
+  graph.forEachNode((id, node) => {
+    // Use drag position if available, otherwise use worker-computed position
+    let position: InternalVector3;
+    if (drags?.[id]?.position) {
+      position = drags[id].position;
+    } else {
+      position = positions.get(id) || { x: 0, y: 0, z: 0 };
+    }
+
+    const { data, fill, icon, label, size, ...rest } = node;
+    const nodeSize = sizes.get(node.id);
+    const labelVisible = checkVisibility('node', nodeSize);
+
+    const nodeLinks = graph.inboundNeighbors(node.id) || [];
+    const parents = nodeLinks.map(n => graph.getNodeAttributes(n));
+
+    const n: InternalGraphNode = {
+      ...(node as any),
+      size: nodeSize,
+      labelVisible,
+      label,
+      icon,
+      fill,
+      cluster: clusterAttribute ? data[clusterAttribute] : undefined,
+      parents,
+      data: {
+        ...rest,
+        ...(data ?? {})
+      },
+      position: {
+        ...position,
+        x: position.x || 0,
+        y: position.y || 0,
+        z: position.z || 1
+      }
+    };
+
+    map.set(node.id, n);
+    nodes.push(n);
+  });
+
+  graph.forEachEdge((_id, link) => {
+    const from = map.get(link.source);
+    const to = map.get(link.target);
+
+    if (from && to) {
+      const { data, id, label, size, ...rest } = link;
+      const labelVisible = checkVisibility('edge', size);
+
       edges.push({
         ...link,
         id,

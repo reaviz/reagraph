@@ -7,13 +7,18 @@ import type { LayoutStrategy } from './types';
  * Promise based tick helper.
  */
 export function tick(layout: LayoutStrategy) {
-  return new Promise((resolve, _reject) => {
+  return new Promise(async (resolve, _reject) => {
     let stable: boolean | undefined;
 
-    function run() {
+    async function run() {
       if (!stable) {
-        stable = layout.step();
-        run();
+        stable = await layout.step();
+        if (!stable) {
+          // Use requestAnimationFrame for better performance in async scenarios
+          requestAnimationFrame(run);
+        } else {
+          resolve(stable);
+        }
       } else {
         resolve(stable);
       }

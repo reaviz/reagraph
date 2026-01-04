@@ -4,16 +4,23 @@ import type { PerspectiveCamera } from 'three';
 
 import { getVisibleEntities } from './collapse';
 import type { LayoutOverrides, LayoutStrategy, LayoutTypes } from './layout';
-import { layoutProvider } from './layout';
+import {
+  layoutProvider,
+  useForceAtlas2Worker,
+  supportsFA2Worker,
+  createGraphPositionAdapter,
+  createPositionMapAdapter
+} from './layout';
 import { tick } from './layout/layoutUtils';
 import type { SizingType } from './sizing';
 import type { DragReferences } from './store';
 import { useStore } from './store';
-import type { GraphEdge, GraphNode, InternalGraphNode } from './types';
+import type { GraphEdge, GraphNode, InternalGraphNode, InternalVector3 } from './types';
 import { calculateClusters } from './utils/cluster';
 import { buildGraph, transformGraph } from './utils/graph';
 import type { LabelVisibilityType } from './utils/visibility';
 import { calcLabelVisibility } from './utils/visibility';
+import { useLayoutWorker, supportsWebWorkers } from './workers';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -31,6 +38,13 @@ export interface GraphInputs {
   maxNodeSize?: number;
   constrainDragging?: boolean;
   layoutOverrides?: LayoutOverrides;
+  /**
+   * Enable web workers for layout calculations.
+   * This moves heavy layout computations off the main thread,
+   * improving UI responsiveness especially for large graphs.
+   * Default: false
+   */
+  webWorkers?: boolean;
 }
 
 export const useGraph = ({
@@ -48,7 +62,8 @@ export const useGraph = ({
   maxNodeSize,
   minNodeSize,
   layoutOverrides,
-  constrainDragging
+  constrainDragging,
+  webWorkers = false
 }: GraphInputs) => {
   const graph = useStore(state => state.graph);
   const clusters = useStore(state => state.clusters);
@@ -68,6 +83,14 @@ export const useGraph = ({
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const dragRef = useRef<DragReferences>(drags);
   const clustersRef = useRef<any>([]);
+
+  // Worker layout support
+  const workerEnabled = webWorkers && supportsWebWorkers();
+  const { calculateLayout: workerCalculateLayout } = useLayoutWorker();
+
+  // ForceAtlas2 worker (uses graphology's native worker implementation)
+  const fa2WorkerEnabled = webWorkers && supportsFA2Worker() && layoutType === 'forceatlas2';
+  const { runLayout: runFA2Layout } = useForceAtlas2Worker();
 
   // When a new node is added, remove the dragged position of the cluster nodes to put new node in the right place
   useEffect(() => {
@@ -113,6 +136,185 @@ export const useGraph = ({
 
   const updateLayout = useCallback(
     async (curLayout?: any) => {
+      // Use graphology's ForceAtlas2 worker if available and layout type matches
+      if (fa2WorkerEnabled && !curLayout) {
+        try {
+          // Extract FA2 settings from layoutOverrides
+          const fa2Options: any = {};
+          if (layoutOverrides) {
+            const overridesAny = layoutOverrides as any;
+            const fa2Keys = [
+              'adjustSizes', 'barnesHutOptimize', 'barnesHutTheta',
+              'edgeWeightInfluence', 'gravity', 'linLogMode',
+              'outboundAttractionDistribution', 'scalingRatio', 'slowDown',
+              'strongGravityMode', 'iterations'
+            ];
+            fa2Keys.forEach(key => {
+              if (overridesAny[key] !== undefined) {
+                fa2Options[key] = overridesAny[key];
+              }
+            });
+          }
+
+          // Run ForceAtlas2 in web worker (updates graph node attributes directly)
+          await runFA2Layout(graph, fa2Options);
+
+          // Create layout adapter that reads positions from graph attributes
+          // FA2 worker stores x/y directly on node attributes
+          const workerLayout = createGraphPositionAdapter({
+            graph,
+            drags: dragRef.current,
+            is3d: false // FA2 is 2D only
+          });
+
+          // Transform the graph using the adapter
+          const result = transformGraph({
+            graph,
+            layout: workerLayout,
+            sizingType,
+            labelType,
+            sizingAttribute,
+            maxNodeSize,
+            minNodeSize,
+            defaultNodeSize,
+            clusterAttribute
+          });
+
+          // Calculate clusters
+          const newClusters = calculateClusters({
+            nodes: result.nodes,
+            clusterAttribute
+          });
+
+          // Handle constrained dragging
+          if (constrainDragging) {
+            newClusters.forEach(cluster => {
+              const prevCluster = clustersRef.current.get(cluster.label);
+              if (prevCluster?.nodes.length === cluster.nodes.length) {
+                cluster.position =
+                  clustersRef.current?.get(cluster.label)?.position ??
+                  cluster.position;
+              }
+            });
+          }
+
+          // Set our store outputs
+          setEdges(result.edges);
+          setNodes(result.nodes);
+          setClusters(newClusters);
+          if (clusterAttribute) {
+            updateDrags(result.nodes);
+          }
+          return;
+        } catch (error) {
+          console.warn('ForceAtlas2 worker failed, falling back to main thread:', error);
+          // Fall through to main-thread layout
+        }
+      }
+
+      // Use custom worker-based layout for other layout types if enabled
+      if (workerEnabled && !fa2WorkerEnabled && !curLayout) {
+        try {
+          // Get visible nodes and edges for worker
+          const graphNodes = graph.nodes().map(id => ({
+            ...graph.getNodeAttributes(id),
+            id
+          }));
+          const graphEdges: GraphEdge[] = [];
+          graph.forEachEdge((_id, attrs, source, target) => {
+            graphEdges.push({ ...attrs, id: _id, source, target });
+          });
+
+          // Calculate layout in worker
+          // Extract only number values from layoutOverrides (worker doesn't support functions)
+          const workerOptions: any = {
+            layoutType,
+            clusterAttribute,
+            drags: dragRef.current,
+            clusters: clustersRef?.current
+          };
+
+          // Copy numeric overrides (filter out functions)
+          if (layoutOverrides) {
+            const overridesAny = layoutOverrides as any;
+            const numericKeys = [
+              'nodeStrength', 'linkDistance', 'clusterStrength',
+              'nodeLevelRatio', 'forceLinkDistance', 'forceLinkStrength', 'forceCharge'
+            ];
+            numericKeys.forEach(key => {
+              const value = overridesAny[key];
+              if (typeof value === 'number') {
+                workerOptions[key] = value;
+              }
+            });
+            if (overridesAny.clusterType) {
+              workerOptions.clusterType = overridesAny.clusterType;
+            }
+            if (overridesAny.mode) {
+              workerOptions.mode = overridesAny.mode;
+            }
+          }
+
+          const workerResult = await workerCalculateLayout(
+            graphNodes,
+            graphEdges,
+            workerOptions
+          );
+
+          // Create layout adapter from worker-computed positions
+          const is3d = layoutType?.includes('3d') ?? false;
+          const workerLayout = createPositionMapAdapter(
+            workerResult.positions,
+            dragRef.current,
+            is3d
+          );
+
+          // Transform the graph using the adapter
+          const result = transformGraph({
+            graph,
+            layout: workerLayout,
+            sizingType,
+            labelType,
+            sizingAttribute,
+            maxNodeSize,
+            minNodeSize,
+            defaultNodeSize,
+            clusterAttribute
+          });
+
+          // Calculate clusters
+          const newClusters = calculateClusters({
+            nodes: result.nodes,
+            clusterAttribute
+          });
+
+          // Handle constrained dragging
+          if (constrainDragging) {
+            newClusters.forEach(cluster => {
+              const prevCluster = clustersRef.current.get(cluster.label);
+              if (prevCluster?.nodes.length === cluster.nodes.length) {
+                cluster.position =
+                  clustersRef.current?.get(cluster.label)?.position ??
+                  cluster.position;
+              }
+            });
+          }
+
+          // Set our store outputs
+          setEdges(result.edges);
+          setNodes(result.nodes);
+          setClusters(newClusters);
+          if (clusterAttribute) {
+            updateDrags(result.nodes);
+          }
+          return;
+        } catch (error) {
+          console.warn('Worker layout failed, falling back to main thread:', error);
+          // Fall through to main-thread layout
+        }
+      }
+
+      // Main-thread layout (fallback or when worker not enabled)
       // Cache the layout provider
       layout.current =
         curLayout ||
@@ -170,6 +372,10 @@ export const useGraph = ({
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
+      fa2WorkerEnabled,
+      runFA2Layout,
+      workerEnabled,
+      workerCalculateLayout,
       layoutOverrides,
       layoutType,
       clusterAttribute,
@@ -181,7 +387,8 @@ export const useGraph = ({
       defaultNodeSize,
       setEdges,
       setNodes,
-      setClusters
+      setClusters,
+      constrainDragging
     ]
   );
 

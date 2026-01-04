@@ -37,6 +37,9 @@ export interface GraphState {
   hoveredEdgeIds?: string[];
   edgeContextMenus?: Set<string>;
   setEdgeContextMenus: (edges: Set<string>) => void;
+  // Node context menus (for batched node rendering)
+  nodeContextMenus?: Set<string>;
+  setNodeContextMenus: (nodes: Set<string>) => void;
   edgeMeshes: Array<Mesh<BufferGeometry>>;
   setEdgeMeshes: (edgeMeshes: Array<Mesh<BufferGeometry>>) => void;
   draggingIds?: string[];
@@ -87,6 +90,7 @@ export const createStore = ({
     actives,
     hoveredEdgeIds: [],
     edgeContextMenus: new Set(),
+    nodeContextMenus: new Set(),
     edgeMeshes: [],
     selections,
     hoveredNodeId: null,
@@ -98,6 +102,11 @@ export const createStore = ({
       set(state => ({
         ...state,
         edgeContextMenus
+      })),
+    setNodeContextMenus: nodeContextMenus =>
+      set(state => ({
+        ...state,
+        nodeContextMenus
       })),
     setEdgeMeshes: edgeMeshes => set(state => ({ ...state, edgeMeshes })),
     setPanning: panning => set(state => ({ ...state, panning })),
