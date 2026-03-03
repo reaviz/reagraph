@@ -1,6 +1,11 @@
 import React, { useCallback, useRef, useState } from 'react';
 
-import type { GraphCanvasRef, GraphEdge, GraphNode, InternalGraphEdge } from '../../src';
+import type {
+  GraphCanvasRef,
+  GraphEdge,
+  GraphNode,
+  InternalGraphEdge
+} from '../../src';
 import { darkTheme, GraphCanvas, useSelection } from '../../src';
 
 export default {
@@ -378,10 +383,7 @@ export const Basic = () => {
     []
   );
 
-  const handleEdgePointerOut = useCallback(
-    () => setHoveredEdge(null),
-    []
-  );
+  const handleEdgePointerOut = useCallback(() => setHoveredEdge(null), []);
 
   const facets = hoveredEdge ? edgeFacets[hoveredEdge.id] : null;
 
@@ -433,10 +435,7 @@ export const WithSelectionHighlighting = () => {
     []
   );
 
-  const handleEdgePointerOut = useCallback(
-    () => setHoveredEdge(null),
-    []
-  );
+  const handleEdgePointerOut = useCallback(() => setHoveredEdge(null), []);
 
   const facets = hoveredEdge ? edgeFacets[hoveredEdge.id] : null;
 
