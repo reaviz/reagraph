@@ -78,7 +78,7 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   children?: ReactNode;
 
   /**
-   * Ability to extend Cavas gl options. For example { preserveDrawingBuffer: true }
+   * Ability to extend Canvas gl options. For example `{ preserveDrawingBuffer: true }`
    *
    * @default {}
    */
