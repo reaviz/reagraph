@@ -53,6 +53,7 @@
   },
   "homepage": "https://github.com/reaviz/reagraph#readme",
   "dependencies": {
+    "@cosmos.gl/graph": "^2.6.4",
     "@react-spring/three": "10.0.3",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",

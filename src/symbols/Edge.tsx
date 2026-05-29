@@ -18,6 +18,7 @@ import {
   getVector
 } from '../utils';
 import { calculateSubLabelOffset, getSelfLoopCurve } from '../utils/position';
+import { getEdgeRenderStyle } from '../utils/renderStyles';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import type { EdgeArrowPosition } from './Arrow';
 import { Arrow } from './Arrow';
@@ -264,12 +265,13 @@ export const Edge: FC<EdgeProps> = ({
   const hasSelections = useStore(state => state.selections?.length);
   const isActive = useStore(state => state.actives?.includes(id));
   const isActiveState = active || isActive || isSelected;
-
-  const selectionOpacity = hasSelections
-    ? isSelected || isActive
-      ? theme.edge.selectedOpacity
-      : theme.edge.inactiveOpacity
-    : theme.edge.opacity;
+  const { color, opacity: selectionOpacity } = getEdgeRenderStyle({
+    edge,
+    theme,
+    active: isSelected || isActive,
+    colorActive: isActiveState,
+    hasSelections: Boolean(hasSelections)
+  });
 
   // Calculate subLabel position based on edge orientation and subLabelPlacement
   const subLabelOffset = useMemo(() => {
@@ -497,9 +499,7 @@ export const Edge: FC<EdgeProps> = ({
           curve={selfLoopCurve}
           size={size}
           animated={animated}
-          color={
-            isActiveState ? theme.edge.activeFill : fill || theme.edge.fill
-          }
+          color={color}
           opacity={selectionOpacity}
           onClick={event => {
             if (!disabled) {
@@ -519,9 +519,7 @@ export const Edge: FC<EdgeProps> = ({
         <Line
           curveOffset={curveOffset}
           animated={animated}
-          color={
-            isActiveState ? theme.edge.activeFill : fill || theme.edge.fill
-          }
+          color={color}
           curve={curve}
           curved={curved}
           dashed={dashed}

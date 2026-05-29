@@ -15,6 +15,7 @@ import type {
   NodeRenderer
 } from '../types';
 import { animationConfig } from '../utils';
+import { getNodeRenderStyle } from '../utils/renderStyles';
 import { useDrag } from '../utils/useDrag';
 import { useHoverIntent } from '../utils/useHoverIntent';
 import { Label } from './Label';
@@ -167,12 +168,6 @@ export const Node: FC<NodeProps> = ({
 
   const shouldHighlight = active || isSelected || isActive;
 
-  const selectionOpacity = hasSelections
-    ? shouldHighlight
-      ? theme.node.selectedOpacity
-      : theme.node.inactiveOpacity
-    : theme.node.opacity;
-
   const canCollapse = useMemo(() => {
     // If the node has outgoing edges, it can collapse via context menu
     const outboundLinks = edges.filter(l => l.source === id);
@@ -239,9 +234,13 @@ export const Node: FC<NodeProps> = ({
   useCursor(isDraggingCurrent, 'grabbing');
 
   const combinedActiveState = shouldHighlight || isDraggingCurrent;
-  const color = combinedActiveState
-    ? theme.node.activeFill
-    : node.fill || theme.node.fill;
+  const { color, opacity: selectionOpacity } = getNodeRenderStyle({
+    node,
+    theme,
+    active: shouldHighlight,
+    colorActive: combinedActiveState,
+    hasSelections
+  });
 
   const { pointerOver, pointerOut } = useHoverIntent({
     disabled: disabled || isDraggingCurrent,
