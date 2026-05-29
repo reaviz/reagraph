@@ -6,16 +6,22 @@ import { getExpandPath, getVisibleEntities } from './utils';
 export interface UseCollapseProps {
   /**
    * Current collapsed node ids.
+   *
+   * @default []
    */
   collapsedNodeIds?: string[];
 
   /**
    * Node data.
+   *
+   * @default []
    */
   nodes?: GraphNode[];
 
   /**
    * Edge data.
+   *
+   * @default []
    */
   edges?: GraphEdge[];
 }

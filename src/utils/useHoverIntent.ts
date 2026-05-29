@@ -2,11 +2,40 @@ import type { ThreeEvent } from '@react-three/fiber';
 import { useCallback, useRef } from 'react';
 
 export interface HoverIntentOptions {
+  /**
+   * Interval in milliseconds between pointer position checks.
+   *
+   * @default 50
+   */
   interval?: number;
+
+  /**
+   * Pixel movement threshold below which hover intent is confirmed.
+   *
+   * @default 7
+   */
   sensitivity?: number;
+
+  /**
+   * Delay in milliseconds before hover intent is evaluated.
+   *
+   * @default 0
+   */
   timeout?: number;
+
+  /**
+   * Whether the hover intent handlers are disabled.
+   */
   disabled?: boolean;
+
+  /**
+   * Called when hover intent over is confirmed.
+   */
   onPointerOver: (event: ThreeEvent<PointerEvent>) => void;
+
+  /**
+   * Called when hover intent out is confirmed.
+   */
   onPointerOut: (event: ThreeEvent<PointerEvent>) => void;
 }
 

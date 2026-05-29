@@ -18,7 +18,19 @@ export type DagMode =
 export interface ForceRadialInputs {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
+
+  /**
+   * Mode for the dag layout.
+   *
+   * @default 'lr'
+   */
   mode: DagMode;
+
+  /**
+   * Ratio of the distance between nodes on the same level.
+   *
+   * @default 2
+   */
   nodeLevelRatio: number;
 }
 

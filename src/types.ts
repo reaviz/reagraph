@@ -91,29 +91,39 @@ export interface GraphEdge extends GraphElementBaseAttributes {
   /**
    * Whether the edge should be rendered with a dashed line pattern.
    * When true, the edge will display with alternating dash and gap segments.
-   * Default is false (solid line).
+   * Renders a solid line when false.
+   *
+   * @default false
    */
   dashed?: boolean;
 
   /**
    * Dash pattern for the line: [dashSize, gapSize]
+   *
+   * @default [3, 1]
    */
   dashArray?: [number, number];
 
   /**
    * Placement of the subLabel relative to the main label.
-   * - 'below': Show subLabel below the main label (default)
+   * - 'below': Show subLabel below the main label
    * - 'above': Show subLabel above the main label
+   *
+   * @default 'below'
    */
   subLabelPlacement?: 'below' | 'above';
 
   /**
-   * Type of edge interpolation ('linear' | 'curved'). Default is 'linear'.
+   * Type of edge interpolation ('linear' | 'curved').
+   *
+   * @default 'linear'
    */
   interpolation?: 'linear' | 'curved';
 
   /**
-   * Placement of the edge arrow ('none' | 'mid' | 'end'). Default is 'end'.
+   * Placement of the edge arrow ('none' | 'mid' | 'end').
+   *
+   * @default 'end'
    */
   arrowPlacement?: 'none' | 'mid' | 'end';
 }

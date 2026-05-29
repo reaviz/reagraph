@@ -16,12 +16,34 @@ import { getLayoutCenter } from '../utils/layout';
 const PADDING = 50;
 
 export interface CenterNodesParams {
+  /**
+   * Whether to animate the centering transition.
+   *
+   * @default true
+   */
   animated?: boolean;
+
+  /**
+   * Only re-center if the nodes are not currently in view.
+   *
+   * @default false
+   */
   centerOnlyIfNodesNotInView?: boolean;
 }
 
 export interface FitNodesParams {
+  /**
+   * Whether to animate the fit transition.
+   *
+   * @default true
+   */
   animated?: boolean;
+
+  /**
+   * Only fit if the nodes are not currently in view.
+   *
+   * @default false
+   */
   fitOnlyIfNodesNotInView?: boolean;
 }
 

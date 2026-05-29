@@ -25,17 +25,22 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
 
   /**
    * Background color of the badge.
+   *
+   * @default '#ffffff'
    */
   backgroundColor?: string;
 
   /**
    * Opacity of the badge background and stroke (0-1).
-   * Default: 1
+   *
+   * @default 1
    */
   opacity?: number;
 
   /**
    * Text color of the badge.
+   *
+   * @default '#000000'
    */
   textColor?: string;
 
@@ -46,27 +51,36 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
 
   /**
    * Size of the badge border stroke.
+   *
+   * @default 0
    */
   strokeWidth?: number;
 
   /**
    * Corner radius of the badge.
+   *
+   * @default 0.12
    */
   radius?: number;
 
   /**
    * Size multiplier for the badge relative to the node size.
+   *
+   * @default 1.5
    */
   badgeSize?: number;
 
   /**
    * Position offset from the node center or preset position.
+   *
+   * @default 'top-right'
    */
   position?: [number, number, number] | BadgePosition;
 
   /**
    * Padding around the badge text.
-   * Default: 0.15
+   *
+   * @default 0.15
    */
   padding?: number;
 
@@ -77,6 +91,8 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
 
   /**
    * Size of the icon in the badge.
+   *
+   * @default 0.35
    */
   iconSize?: number;
 
@@ -86,11 +102,15 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
    * - 'end': Icon appears after the text (right side)
    * - [x, y]: Custom coordinates within the badge. When using custom coordinates,
    *   the text remains centered and only the icon moves to the specified position.
+   *
+   * @default 'start'
    */
   iconPosition?: IconPosition | [number, number];
 
   /**
    * Font size for the badge text.
+   *
+   * @default 0.3
    */
   fontSize?: number;
 
@@ -103,7 +123,8 @@ export interface BadgeProps extends Omit<NodeRendererProps, 'opacity'> {
 
   /**
    * Gap between icon and text.
-   * Default: 0.01
+   *
+   * @default 0.01
    */
   iconTextGap?: number;
 }

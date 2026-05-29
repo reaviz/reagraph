@@ -8,15 +8,21 @@ import type { LayoutFactoryProps, LayoutStrategy } from './types';
 
 export interface HierarchicalLayoutInputs extends LayoutFactoryProps {
   /**
-   * Direction of the layout. Default 'td'.
+   * Direction of the layout.
+   *
+   * @default 'td'
    */
   mode?: 'td' | 'lr';
   /**
-   * Factor of distance between nodes. Default 1.
+   * Factor of distance between nodes.
+   *
+   * @default 1
    */
   nodeSeparation?: number;
   /**
-   * Size of each node. Default [50,50]
+   * Size of each node.
+   *
+   * @default [50, 50]
    */
   nodeSize?: [number, number];
 }

@@ -6,7 +6,19 @@ export interface TextDimensions {
 export interface TextMeasurementOptions {
   text: string;
   fontSize: number;
+
+  /**
+   * Font weight used when measuring the text.
+   *
+   * @default 400
+   */
   fontWeight?: number;
+
+  /**
+   * Font family used when measuring the text.
+   *
+   * @default 'sans-serif'
+   */
   fontFamily?: string;
 }
 

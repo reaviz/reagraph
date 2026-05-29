@@ -44,26 +44,36 @@ import type { LabelVisibilityType } from './utils/visibility';
 export interface GraphSceneProps {
   /**
    * Type of layout.
+   *
+   * @default 'forceDirected2d'
    */
   layoutType?: LayoutTypes;
 
   /**
    * List of ids that are selected.
+   *
+   * @default []
    */
   selections?: string[];
 
   /**
    * List of ids that are active.
+   *
+   * @default []
    */
   actives?: string[];
 
   /**
    * List of node ids that are collapsed.
+   *
+   * @default []
    */
   collapsedNodeIds?: string[];
 
   /**
    * Animate or not the graph positions.
+   *
+   * @default true
    */
   animated?: boolean;
 
@@ -84,33 +94,43 @@ export interface GraphSceneProps {
 
   /**
    * Type of sizing for nodes.
+   *
+   * @default 'default'
    */
   sizingType?: SizingType;
 
   /**
    * Type of visibility for labels.
+   *
+   * @default 'auto'
    */
   labelType?: LabelVisibilityType;
 
   /**
    * Place of visibility for edge labels.
+   *
+   * @default 'inline'
    */
   edgeLabelPosition?: EdgeLabelPosition;
 
   /**
    * Placement of edge arrows.
+   *
+   * @default 'end'
    */
   edgeArrowPosition?: EdgeArrowPosition;
 
   /**
    * Shape of edge.
+   *
+   * @default 'linear'
    */
   edgeInterpolation?: EdgeInterpolation;
 
   /**
-   * Font of label, same as troika-three-text
-   * The URL of a custom font file to be used. Supported font formats are: * .ttf * .otf * .woff (.woff2 is not supported)
-   * Default: The Roboto font loaded from Google Fonts CDN
+   * Font of label, same as troika-three-text.
+   * The URL of a custom font file to be used. Supported font formats are: .ttf, .otf, .woff (.woff2 is not supported).
+   * If not provided, the Roboto font is loaded from the Google Fonts CDN.
    */
   labelFontUrl?: string;
 
@@ -120,17 +140,23 @@ export interface GraphSceneProps {
   sizingAttribute?: string;
 
   /**
-   * The default size to size nodes to. Default is 7.
+   * The default size to size nodes to.
+   *
+   * @default 7
    */
   defaultNodeSize?: number;
 
   /**
    * When using sizing attributes, the min size a node can be.
+   *
+   * @default 5
    */
   minNodeSize?: number;
 
   /**
    * When using sizing attributes, the max size a node can be.
+   *
+   * @default 15
    */
   maxNodeSize?: number;
 
@@ -146,11 +172,15 @@ export interface GraphSceneProps {
 
   /**
    * Allow dragging of nodes.
+   *
+   * @default false
    */
   draggable?: boolean;
 
   /**
-   * Constrain dragging to the cluster bounds. Default is `false`.
+   * Constrain dragging to the cluster bounds.
+   *
+   * @default false
    */
   constrainDragging?: boolean;
 

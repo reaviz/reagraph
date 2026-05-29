@@ -19,16 +19,22 @@ export interface SelfLoopProps {
 
   /**
    * The size of the edge.
+   *
+   * @default 1
    */
   size: number;
 
   /**
    * The color of the edge.
+   *
+   * @default '#000'
    */
   color?: ColorRepresentation;
 
   /**
    * The opacity of the edge.
+   *
+   * @default 1
    */
   opacity: number;
 

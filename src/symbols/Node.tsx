@@ -44,6 +44,8 @@ export interface NodeProps {
 
   /**
    * Whether the node is draggable.
+   *
+   * @default false
    */
   draggable?: boolean;
 
