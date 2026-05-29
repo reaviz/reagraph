@@ -19,32 +19,44 @@ import type { LayoutFactoryProps, LayoutStrategy } from './types';
 
 export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
   /**
-   * Center inertia for the layout. Default: 1.
+   * Center inertia for the layout.
+   *
+   * @default 1
    */
   centerInertia?: number;
 
   /**
    * Number of dimensions for the layout. 2d or 3d.
+   *
+   * @default 2
    */
   dimensions?: number;
 
   /**
    * Mode for the dag layout. Only applicable for dag layouts.
+   *
+   * @default null
    */
   mode?: DagMode;
 
   /**
    * Distance between links.
+   *
+   * @default 50
    */
   linkDistance?: number;
 
   /**
    * Strength of the node repulsion.
+   *
+   * @default -250
    */
   nodeStrength?: number;
 
   /**
    * Strength of the cluster repulsion.
+   *
+   * @default 0.5
    */
   clusterStrength?: number;
 
@@ -55,36 +67,50 @@ export interface ForceDirectedLayoutInputs extends LayoutFactoryProps {
 
   /**
    * The type of clustering.
+   *
+   * @default 'force'
    */
   clusterType?: 'force' | 'treemap';
 
   /**
    * Ratio of the distance between nodes on the same level.
+   *
+   * @default 2
    */
   nodeLevelRatio?: number;
 
   /**
    * LinkStrength between nodes of different clusters
+   *
+   * @default 0.01
    */
   linkStrengthInterCluster?: number | ((d: any) => number);
 
   /**
    * LinkStrength between nodes of the same cluster
+   *
+   * @default 0.5
    */
   linkStrengthIntraCluster?: number | ((d: any) => number);
 
   /**
    * Charge between the meta-nodes (Force template only)
+   *
+   * @default 100
    */
   forceLinkDistance?: number;
 
   /**
    * Used to compute the template force nodes size (Force template only)
+   *
+   * @default 0.1
    */
   forceLinkStrength?: number;
 
   /**
    * Used to compute the template force nodes size (Force template only)
+   *
+   * @default -700
    */
   forceCharge?: number;
 

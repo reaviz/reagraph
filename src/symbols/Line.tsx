@@ -16,11 +16,15 @@ export interface LineProps {
 
   /**
    * The color of the line.
+   *
+   * @default '#000'
    */
   color?: ColorRepresentation;
 
   /**
    * Whether the line should be curved.
+   *
+   * @default false
    */
   curved: boolean;
 
@@ -31,11 +35,15 @@ export interface LineProps {
 
   /**
    * Whether the line should be dashed.
+   *
+   * @default false
    */
   dashed?: boolean;
 
   /**
    * Dash pattern for the line: [dashSize, gapSize]
+   *
+   * @default [3, 1]
    */
   dashArray?: [number, number];
 
@@ -46,16 +54,22 @@ export interface LineProps {
 
   /**
    * The opacity of the line.
+   *
+   * @default 1
    */
   opacity?: number;
 
   /**
    * The size of the line.
+   *
+   * @default 1
    */
   size?: number;
 
   /**
    * The render order of the line. Useful when edges are rendered on top of each other.
+   *
+   * @default -1
    */
   renderOrder?: number;
 

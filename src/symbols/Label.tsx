@@ -19,11 +19,15 @@ export interface LabelProps {
 
   /**
    * Size of the font.
+   *
+   * @default 7
    */
   fontSize?: number;
 
   /**
    * Color of the text.
+   *
+   * @default '#2A6475'
    */
   color?: ColorRepresentation;
 
@@ -39,11 +43,15 @@ export interface LabelProps {
 
   /**
    * Opacity of the background.
+   *
+   * @default 1
    */
   backgroundOpacity?: number;
 
   /**
    * Padding around the text for background sizing.
+   *
+   * @default 1
    */
   padding?: number;
 
@@ -54,21 +62,29 @@ export interface LabelProps {
 
   /**
    * Size of the background stroke/border.
+   *
+   * @default 0
    */
   strokeWidth?: number;
 
   /**
    * Corner radius of the background.
+   *
+   * @default 0.1
    */
   radius?: number;
 
   /**
    * Opacity for the label.
+   *
+   * @default 1
    */
   opacity?: number;
 
   /**
    * The lenth of which to start the ellipsis.
+   *
+   * @default 75
    */
   ellipsis?: number;
 

@@ -25,36 +25,50 @@ import css from './GraphCanvas.module.css';
 export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
   /**
    * Theme to use for the graph.
+   *
+   * @default lightTheme
    */
   theme?: Theme;
 
   /**
    * Type of camera interaction.
+   *
+   * @default 'pan'
    */
   cameraMode?: CameraMode;
 
   /**
-   * The maximum distance for the camera. Default is 50000.
+   * The maximum distance for the camera.
+   *
+   * @default 50000
    */
   maxDistance?: number;
 
   /**
-   * The minimum distance for the camera. Default is 1000.
+   * The minimum distance for the camera.
+   *
+   * @default 1000
    */
   minDistance?: number;
 
   /**
-   * The minimum zoom level for the camera. Default is 1.
+   * The minimum zoom level for the camera.
+   *
+   * @default 1
    */
   minZoom?: number;
 
   /**
-   * The maximum zoom level for the camera. Default is 100.
+   * The maximum zoom level for the camera.
+   *
+   * @default 100
    */
   maxZoom?: number;
 
   /**
    * The type of lasso selection.
+   *
+   * @default 'none'
    */
   lassoType?: LassoType;
 
@@ -65,6 +79,8 @@ export interface GraphCanvasProps extends Omit<GraphSceneProps, 'theme'> {
 
   /**
    * Ability to extend Cavas gl options. For example { preserveDrawingBuffer: true }
+   *
+   * @default {}
    */
   glOptions?: object;
 

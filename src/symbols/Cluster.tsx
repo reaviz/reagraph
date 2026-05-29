@@ -25,12 +25,16 @@ export interface ClusterProps extends ClusterGroup {
   animated?: boolean;
 
   /**
-   * The radius of the circle. Default 1.
+   * The radius of the circle.
+   *
+   * @default 2
    */
   radius?: number;
 
   /**
-   * The padding of the circle. Default 20.
+   * The padding of the circle.
+   *
+   * @default 40
    */
   padding?: number;
 
@@ -67,6 +71,8 @@ export interface ClusterProps extends ClusterGroup {
 
   /**
    * Whether the cluster is draggable
+   *
+   * @default false
    */
   draggable?: boolean;
 

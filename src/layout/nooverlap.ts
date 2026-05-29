@@ -5,22 +5,30 @@ import type { LayoutFactoryProps } from './types';
 
 export interface NoOverlapLayoutInputs extends LayoutFactoryProps {
   /**
-   * Grid size. Default 20.
+   * Grid size.
+   *
+   * @default 20
    */
   gridSize?: number;
 
   /**
-   * Ratio of the layout. Default 10.
+   * Ratio of the layout.
+   *
+   * @default 1
    */
   ratio?: number;
 
   /**
-   * Maximum number of iterations. Default 50.
+   * Maximum number of iterations.
+   *
+   * @default 500
    */
   maxIterations?: number;
 
   /**
-   * Margin between nodes. Default 10.
+   * Margin between nodes.
+   *
+   * @default 5
    */
   margin?: number;
 }

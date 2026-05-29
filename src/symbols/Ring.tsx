@@ -10,6 +10,8 @@ import { animationConfig } from '../utils/animation';
 export interface RingProps {
   /**
    * The color of the ring.
+   *
+   * @default '#D8E6EA'
    */
   color?: ColorRepresentation;
 
@@ -20,28 +22,36 @@ export interface RingProps {
 
   /**
    * The size of the ring.
+   *
+   * @default 1
    */
   size?: number;
 
   /**
    * The opacity of the ring.
+   *
+   * @default 0.5
    */
   opacity?: number;
 
   /**
    * The stroke width of the ring.
+   *
+   * @default 5
    */
   strokeWidth?: number;
 
   /**
    * The inner radius of the ring.
-   * Default value: 4
+   *
+   * @default 4
    */
   innerRadius?: number;
 
   /**
    * The number of segments in the ring geometry.
-   * Default value: 25
+   *
+   * @default 25
    */
   segments?: number;
 }

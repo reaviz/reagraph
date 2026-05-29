@@ -4,10 +4,14 @@ import type { LayoutFactoryProps } from './types';
 export interface ConcentricLayoutInputs extends LayoutFactoryProps {
   /**
    * Base radius of the innermost circle.
+   *
+   * @default 40
    */
   radius: number;
   /**
    * Distance between circles.
+   *
+   * @default 100
    */
   concentricSpacing?: number;
 }

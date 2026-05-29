@@ -59,6 +59,8 @@ export interface EdgeProps {
 
   /**
    * The placement of the edge label.
+   *
+   * @default 'inline'
    */
   labelPlacement?: EdgeLabelPosition;
 

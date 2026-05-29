@@ -74,16 +74,22 @@ export interface EdgeProps {
 
   /**
    * The placement of the edge label.
+   *
+   * @default 'inline'
    */
   labelPlacement?: EdgeLabelPosition;
 
   /**
    * The placement of the edge subLabel relative to the main label.
+   *
+   * @default 'below'
    */
   subLabelPlacement?: EdgeSubLabelPosition;
 
   /**
    * The placement of the edge arrow.
+   *
+   * @default 'end'
    */
   arrowPlacement?: EdgeArrowPosition;
 

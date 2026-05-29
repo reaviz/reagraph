@@ -59,6 +59,8 @@ export type CameraMode = 'pan' | 'rotate' | 'orbit' | 'orthographic';
 export interface CameraControlsProps {
   /**
    * Mode of the camera.
+   *
+   * @default 'rotate'
    */
   mode?: CameraMode;
 
@@ -79,21 +81,29 @@ export interface CameraControlsProps {
 
   /**
    * The maximum distance for the camera (perspective mode).
+   *
+   * @default 50000
    */
   maxDistance?: number;
 
   /**
    * The minimum distance for the camera (perspective mode).
+   *
+   * @default 1000
    */
   minDistance?: number;
 
   /**
    * The maximum zoom level for orthographic cameras.
+   *
+   * @default 100
    */
   maxZoom?: number;
 
   /**
    * The minimum zoom level for orthographic cameras.
+   *
+   * @default 1
    */
   minZoom?: number;
 }

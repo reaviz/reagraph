@@ -17,6 +17,8 @@ export interface ArrowProps {
 
   /**
    * The color of the arrow.
+   *
+   * @default '#D8E6EA'
    */
   color?: ColorRepresentation;
 
@@ -27,6 +29,8 @@ export interface ArrowProps {
 
   /**
    * The opacity of the arrow.
+   *
+   * @default 0.5
    */
   opacity?: number;
 
@@ -42,6 +46,8 @@ export interface ArrowProps {
 
   /**
    * The size of the arrow.
+   *
+   * @default 1
    */
   size: number;
 

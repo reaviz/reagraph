@@ -22,16 +22,22 @@ export interface SelectionProps {
    * Current selections.
    *
    * Contains both nodes and edges ids.
+   *
+   * @default []
    */
   selections?: string[];
 
   /**
    * Default active selections.
+   *
+   * @default []
    */
   actives?: string[];
 
   /**
    * Node datas.
+   *
+   * @default []
    */
   nodes?: GraphNode[];
 
@@ -47,21 +53,29 @@ export interface SelectionProps {
 
   /**
    * Whether to focus on select or not.
+   *
+   * @default true
    */
   focusOnSelect?: boolean | 'singleOnly';
 
   /**
    * Type of selection.
+   *
+   * @default 'single'
    */
   type?: SelectionTypes;
 
   /**
-   * Type of selection.
+   * Type of path selection.
+   *
+   * @default 'direct'
    */
   pathSelectionType?: PathSelectionTypes;
 
   /**
    * Whether it should active on hover or not.
+   *
+   * @default 'out'
    */
   pathHoverType?: PathSelectionTypes;
 
