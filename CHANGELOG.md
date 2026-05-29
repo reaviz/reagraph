@@ -1,3 +1,6 @@
+# 4.30.9 - 5/29/26
+- [chore] update docs
+
 # 4.30.8 - 2/2/26
 - [fix] update deps for #397
 
