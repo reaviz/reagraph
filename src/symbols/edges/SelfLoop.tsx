@@ -4,7 +4,8 @@ import type { FC } from 'react';
 import React, { useMemo } from 'react';
 import type { ColorRepresentation } from 'three';
 import { Color } from 'three';
-import { animationConfig } from 'utils/animation';
+
+import { animationConfig } from '../../utils/animation';
 
 export interface SelfLoopProps {
   /**

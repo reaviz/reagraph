@@ -13,7 +13,7 @@ Reagraph is a high-performance WebGL network graph visualization library for Rea
 
 ### Core Development
 - `npm start` - Start Storybook development server on port 9009
-- `npm run build` - Build library and documentation (`vite build --mode library && npm run build:docs`)
+- `npm run build` - Build library (`vite build --mode library`)
 - `npm test` - Run tests with Vitest
 - `npm run test:coverage` - Run tests with coverage
 
@@ -24,7 +24,6 @@ Reagraph is a high-performance WebGL network graph visualization library for Rea
 
 ### Documentation
 - `npm run build-storybook` - Build Storybook for production
-- `npm run build:docs` - Generate documentation files
 
 ### Pre-commit
 - Uses Husky for git hooks with lint-staged

@@ -5,8 +5,9 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "react-jsx",
     "typeRoots": ["./types", "./node_modules/@types"],
-    "moduleResolution": "node",
-    "baseUrl": "./src",
+    "types": ["node"],
+    "moduleResolution": "bundler",
+    "rootDir": "./src",
     "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationDir": "./dist",
@@ -27,7 +28,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "types": ["node"],
   "include": [
     "types",
     "src/**/*"
