@@ -11,8 +11,12 @@ import { Color } from 'three';
 // namespace instead of the function. Unwrap it ourselves: under native ESM
 // `.default` is undefined (the import already is the function) so this is a
 // no-op, while under the UMD/Rolldown interop it recovers the actual function.
-const ellipsize = ((ellipsizeImport as any).default ??
-  ellipsizeImport) as typeof ellipsizeImport;
+const ellipsize =
+  (
+    ellipsizeImport as typeof ellipsizeImport & {
+      default?: typeof ellipsizeImport;
+    }
+  ).default ?? ellipsizeImport;
 
 export interface LabelProps {
   /**

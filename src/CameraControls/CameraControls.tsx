@@ -36,8 +36,12 @@ import { CameraControlsContext } from './useCameraControls';
 // module namespace rather than the class. Unwrap it ourselves: under native ESM
 // `.default` is undefined (the import already is the class) so this is a no-op,
 // while under the UMD/Rolldown interop it recovers the actual class.
-const CameraControlsImpl = ((ThreeCameraControls as any).default ??
-  ThreeCameraControls) as typeof ThreeCameraControls;
+const CameraControlsImpl =
+  (
+    ThreeCameraControls as typeof ThreeCameraControls & {
+      default?: typeof ThreeCameraControls;
+    }
+  ).default ?? ThreeCameraControls;
 
 // Install the camera controls
 // Use a subset for better three shaking
