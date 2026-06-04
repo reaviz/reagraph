@@ -162,8 +162,10 @@ export interface InternalGraphLink {
   target: string;
 }
 
-export interface InternalGraphEdge
-  extends Omit<GraphEdge, 'source' | 'target'> {
+export interface InternalGraphEdge extends Omit<
+  GraphEdge,
+  'source' | 'target'
+> {
   /**
    * ID of the from node.
    */
