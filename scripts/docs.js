@@ -31,7 +31,7 @@ function buildDocs() {
   };
 
   const docgenWithTSConfig = docgen.withCustomConfig(
-    './tsconfig.json',
+    resolve('./tsconfig.json'),
     options
   );
 
