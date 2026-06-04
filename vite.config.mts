@@ -1,4 +1,4 @@
-/// <reference types="vitest" />
+/// <reference types="vitest/config" />
 
 import packageJson from './package.json' with { type: 'json'};
 import { defineConfig } from 'vite';
@@ -49,7 +49,7 @@ export default defineConfig(({ mode }) =>
           name: 'reagraph',
           fileName: 'index'
         },
-        rollupOptions: {
+        rolldownOptions: {
           external: externalDeps,
         }
       }

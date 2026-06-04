@@ -84,8 +84,8 @@
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-react": "^7.29.7",
     "@babel/preset-typescript": "^7.29.7",
-    "@storybook/addon-docs": "^9.1.8",
-    "@storybook/react-vite": "^9.1.8",
+    "@storybook/addon-docs": "^10.4.2",
+    "@storybook/react-vite": "^10.4.2",
     "@types/d3-array": "^3.2.2",
     "@types/d3-hierarchy": "^3.1.7",
     "@types/d3-scale": "^4.0.9",
@@ -95,8 +95,8 @@
     "@types/three": "^0.184.1",
     "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.60.1",
-    "@vitejs/plugin-react": "^5.0.4",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitejs/plugin-react": "^6.0.2",
+    "@vitest/coverage-v8": "^4.1.8",
     "autoprefixer": "^10.5.0",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
@@ -112,7 +112,7 @@
     "graphology-types": "^0.24.8",
     "husky": "^9.1.7",
     "jiti": "^2.7.0",
-    "jsdom": "^27.0.0",
+    "jsdom": "^29.1.1",
     "lint-staged": "^16.4.0",
     "postcss-nested": "^7.0.2",
     "postcss-preset-env": "^11.3.0",
@@ -123,16 +123,21 @@
     "reakeys": "^2.0.6",
     "reaviz-lint-rules": "^1.0.3",
     "stats.js": "^0.17.0",
-    "storybook": "^9.1.8",
+    "storybook": "^10.4.2",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.60.1",
-    "vite": "^7.1.7",
-    "vite-plugin-checker": "^0.10.3",
-    "vite-plugin-css-injected-by-js": "^3.5.2",
-    "vite-plugin-dts": "^4.5.4",
-    "vite-plugin-svgr": "^4.5.0",
-    "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.2.4"
+    "vite": "^8.0.16",
+    "vite-plugin-checker": "^0.14.1",
+    "vite-plugin-css-injected-by-js": "^5.0.1",
+    "vite-plugin-dts": "^5.0.2",
+    "vite-plugin-svgr": "^5.2.0",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.8"
+  },
+  "overrides": {
+    "eslint-plugin-storybook": {
+      "storybook": "$storybook"
+    }
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
@@ -144,6 +149,6 @@
     ]
   },
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": "^20.19.0 || >=22.13.0"
   }
 }
