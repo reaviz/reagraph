@@ -4,7 +4,6 @@ import packageJson from './package.json' with { type: 'json'};
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgrPlugin from 'vite-plugin-svgr';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import checker from 'vite-plugin-checker';
 import { resolve } from 'node:path';
 import dts from 'vite-plugin-dts';
@@ -25,7 +24,6 @@ export default defineConfig(({ mode }) =>
     ? {
       plugins: [
         svgrPlugin(),
-        tsconfigPaths(),
         cssInjectedByJsPlugin(),
         react(),
         dts({
@@ -57,7 +55,6 @@ export default defineConfig(({ mode }) =>
     : {
       plugins: [
         svgrPlugin(),
-        tsconfigPaths(),
         react(),
         checker({
           typescript: true

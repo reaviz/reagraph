@@ -127,7 +127,6 @@
     "vite-plugin-css-injected-by-js": "^5.0.1",
     "vite-plugin-dts": "^5.0.2",
     "vite-plugin-svgr": "^5.2.0",
-    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.8"
   },
   "overrides": {
