@@ -1,22 +1,9 @@
 import { Billboard, RoundedBox, Text } from '@react-three/drei';
-import ellipsizeImport from 'ellipsize';
+import ellipsize from 'ellipsize';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 import type { ColorRepresentation, Euler } from 'three';
 import { Color } from 'three';
-
-// `ellipsize` is published as CJS with `__esModule: true` and the real function
-// on `.default`. Rolldown's node-mode CJS interop (`__toESM(mod, 1)`) does not
-// unwrap that `.default`, so in the UMD build the import resolves to the module
-// namespace instead of the function. Unwrap it ourselves: under native ESM
-// `.default` is undefined (the import already is the function) so this is a
-// no-op, while under the UMD/Rolldown interop it recovers the actual function.
-const ellipsize =
-  (
-    ellipsizeImport as typeof ellipsizeImport & {
-      default?: typeof ellipsizeImport;
-    }
-  ).default ?? ellipsizeImport;
 
 export interface LabelProps {
   /**

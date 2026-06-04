@@ -30,22 +30,9 @@ import { isServerRender } from '../utils/visibility';
 import type { CameraControlsContextProps } from './useCameraControls';
 import { CameraControlsContext } from './useCameraControls';
 
-// `camera-controls` is published as CJS with `__esModule: true` and the real
-// class on `.default`. Rolldown's node-mode CJS interop (`__toESM(mod, 1)`) does
-// not unwrap that `.default`, so in the UMD build `ThreeCameraControls` is the
-// module namespace rather than the class. Unwrap it ourselves: under native ESM
-// `.default` is undefined (the import already is the class) so this is a no-op,
-// while under the UMD/Rolldown interop it recovers the actual class.
-const CameraControlsImpl =
-  (
-    ThreeCameraControls as typeof ThreeCameraControls & {
-      default?: typeof ThreeCameraControls;
-    }
-  ).default ?? ThreeCameraControls;
-
 // Install the camera controls
 // Use a subset for better three shaking
-CameraControlsImpl.install({
+ThreeCameraControls.install({
   THREE: {
     MOUSE: MOUSE,
     Vector2: Vector2,
@@ -65,7 +52,7 @@ CameraControlsImpl.install({
 });
 
 // Extend r3f with the new controls
-extend({ ThreeCameraControls: CameraControlsImpl });
+extend({ ThreeCameraControls });
 
 export type CameraMode = 'pan' | 'rotate' | 'orbit' | 'orthographic';
 
@@ -224,10 +211,10 @@ export const CameraControls = forwardRef<
         if (event.code === 'Space') {
           if (mode === 'rotate') {
             cameraRef.current.mouseButtons.left =
-              CameraControlsImpl.ACTION.TRUCK;
+              ThreeCameraControls.ACTION.TRUCK;
           } else {
             cameraRef.current.mouseButtons.left =
-              CameraControlsImpl.ACTION.ROTATE;
+              ThreeCameraControls.ACTION.ROTATE;
           }
         }
       },
@@ -239,10 +226,10 @@ export const CameraControls = forwardRef<
         if (event.code === 'Space') {
           if (mode === 'rotate') {
             cameraRef.current.mouseButtons.left =
-              CameraControlsImpl.ACTION.ROTATE;
+              ThreeCameraControls.ACTION.ROTATE;
           } else {
             cameraRef.current.mouseButtons.left =
-              CameraControlsImpl.ACTION.TRUCK;
+              ThreeCameraControls.ACTION.TRUCK;
           }
         }
       },
@@ -305,15 +292,16 @@ export const CameraControls = forwardRef<
       const isOrthographic = mode === 'orthographic';
 
       if (disabled) {
-        cameraRef.current.mouseButtons.left = CameraControlsImpl.ACTION.NONE;
-        cameraRef.current.mouseButtons.middle = CameraControlsImpl.ACTION.NONE;
-        cameraRef.current.mouseButtons.wheel = CameraControlsImpl.ACTION.NONE;
+        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.mouseButtons.middle = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.mouseButtons.wheel = ThreeCameraControls.ACTION.NONE;
       } else {
-        cameraRef.current.mouseButtons.left = CameraControlsImpl.ACTION.TRUCK;
-        cameraRef.current.mouseButtons.middle = CameraControlsImpl.ACTION.TRUCK;
+        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.TRUCK;
+        cameraRef.current.mouseButtons.middle =
+          ThreeCameraControls.ACTION.TRUCK;
         cameraRef.current.mouseButtons.wheel = isOrthographic
-          ? CameraControlsImpl.ACTION.ZOOM
-          : CameraControlsImpl.ACTION.DOLLY;
+          ? ThreeCameraControls.ACTION.ZOOM
+          : ThreeCameraControls.ACTION.DOLLY;
       }
 
       // For orthographic cameras, use dedicated zoom props
@@ -344,17 +332,19 @@ export const CameraControls = forwardRef<
     useEffect(() => {
       // If a node is being dragged, disable the camera controls
       if (isDragging) {
-        cameraRef.current.mouseButtons.left = CameraControlsImpl.ACTION.NONE;
-        cameraRef.current.touches.one = CameraControlsImpl.ACTION.NONE;
+        cameraRef.current.mouseButtons.left = ThreeCameraControls.ACTION.NONE;
+        cameraRef.current.touches.one = ThreeCameraControls.ACTION.NONE;
       } else {
         if (mode === 'rotate') {
           cameraRef.current.mouseButtons.left =
-            CameraControlsImpl.ACTION.ROTATE;
+            ThreeCameraControls.ACTION.ROTATE;
           cameraRef.current.touches.one =
-            CameraControlsImpl.ACTION.TOUCH_ROTATE;
+            ThreeCameraControls.ACTION.TOUCH_ROTATE;
         } else {
-          cameraRef.current.touches.one = CameraControlsImpl.ACTION.TOUCH_TRUCK;
-          cameraRef.current.mouseButtons.left = CameraControlsImpl.ACTION.TRUCK;
+          cameraRef.current.touches.one =
+            ThreeCameraControls.ACTION.TOUCH_TRUCK;
+          cameraRef.current.mouseButtons.left =
+            ThreeCameraControls.ACTION.TRUCK;
         }
       }
     }, [isDragging, mode]);
