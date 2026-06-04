@@ -19,6 +19,40 @@ for (const dep in packageJson.dependencies) {
   externalDeps.push(new RegExp(`${dep}(/.*)?$`))
 }
 
+// Browser global names for the UMD build's externals (silences Rolldown's
+// MISSING_GLOBAL_NAME check). Canonical names where the dependency actually
+// ships a browser global (React, THREE, d3, CameraControls, classNames);
+// best-effort names elsewhere — the UMD entry is primarily consumed via
+// require(), where these names are unused.
+const umdGlobals: Record<string, string> = {
+  '@react-spring/three': 'ReactSpringThree',
+  '@react-three/drei': 'ReactThreeDrei',
+  '@react-three/fiber': 'ReactThreeFiber',
+  '@use-gesture/react': 'UseGestureReact',
+  'camera-controls': 'CameraControls',
+  classnames: 'classNames',
+  'd3-force-3d': 'd3',
+  'd3-hierarchy': 'd3',
+  'd3-scale': 'd3',
+  ellipsize: 'ellipsize',
+  graphology: 'graphology',
+  'graphology-layout-forceatlas2': 'graphologyLayoutForceAtlas2',
+  'graphology-layout-noverlap': 'graphologyLayoutNoverlap',
+  'graphology-layout/circular.js': 'graphologyLayoutCircular',
+  'graphology-layout/random.js': 'graphologyLayoutRandom',
+  'graphology-metrics/centrality/degree.js': 'graphologyMetricsCentralityDegree',
+  'graphology-metrics/centrality/pagerank.js': 'graphologyMetricsCentralityPagerank',
+  'graphology-shortest-path': 'graphologyShortestPath',
+  'hold-event': 'holdEvent',
+  react: 'React',
+  'react-dom': 'ReactDOM',
+  'react/jsx-runtime': 'ReactJSXRuntime',
+  three: 'THREE',
+  'three-stdlib': 'ThreeStdlib',
+  zustand: 'zustand',
+  'zustand/shallow': 'zustandShallow'
+};
+
 export default defineConfig(({ mode }) =>
   mode === 'library'
     ? {
@@ -49,6 +83,9 @@ export default defineConfig(({ mode }) =>
         },
         rolldownOptions: {
           external: externalDeps,
+          output: {
+            globals: umdGlobals
+          }
         }
       }
     }
