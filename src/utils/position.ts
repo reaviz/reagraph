@@ -1,4 +1,3 @@
-import type { EdgeSubLabelPosition } from 'symbols/Edge';
 import type { Curve } from 'three';
 import {
   CatmullRomCurve3,
@@ -7,6 +6,7 @@ import {
   Vector3
 } from 'three';
 
+import type { EdgeSubLabelPosition } from '../symbols/Edge';
 import type { InternalGraphNode, InternalVector3 } from '../types';
 
 const MULTI_EDGE_OFFSET_FACTOR = 0.7;

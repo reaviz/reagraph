@@ -1,9 +1,8 @@
-import { concentric2d } from 'layout/concentric2d';
-import { concentric3d } from 'layout/concentric3d';
-
 import type { CircularLayoutInputs } from './circular2d';
 import { circular2d } from './circular2d';
 import type { ConcentricLayoutInputs } from './concentric2d';
+import { concentric2d } from './concentric2d';
+import { concentric3d } from './concentric3d';
 import { custom } from './custom';
 import type { ForceAtlas2LayoutInputs } from './forceatlas2';
 import { forceAtlas2 } from './forceatlas2';

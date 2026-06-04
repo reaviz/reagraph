@@ -1,6 +1,6 @@
-import type { ConcentricLayoutInputs } from 'layout/concentric2d';
 import { Vector3 } from 'three';
 
+import type { ConcentricLayoutInputs } from './concentric2d';
 import { buildNodeEdges } from './layoutUtils';
 
 /**
