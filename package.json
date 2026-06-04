@@ -3,7 +3,7 @@
   "version": "4.30.9",
   "description": "WebGL Node-based Graph for React",
   "scripts": {
-    "build": "vite build --mode library && npm run build:docs",
+    "build": "vite build --mode library",
     "test": "vitest --passWithNoTests",
     "test:coverage": "vitest run --coverage --passWithNoTests",
     "prettier": "prettier --log-level warn --write 'src/**/*.{ts,tsx,js,jsx}'",
@@ -11,7 +11,6 @@
     "lint:fix": "eslint --ext js,ts,tsx --fix",
     "start": "storybook dev -p 9009",
     "build-storybook": "storybook build",
-    "build:docs": "node scripts/docs.js",
     "prepare": "husky install",
     "chromatic": "npx chromatic --project-token=a7098a56897c --auto-accept-changes"
   },
@@ -25,8 +24,7 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.umd.cjs"
-    },
-    "./docs/*": "./dist/docs/*"
+    }
   },
   "browser": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -108,7 +106,6 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-storybook": "^9.1.20",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "fast-glob": "^3.3.3",
     "graphology-types": "^0.24.8",
     "husky": "^9.1.7",
     "jiti": "^2.7.0",
@@ -118,7 +115,6 @@
     "postcss-preset-env": "^11.3.0",
     "prettier": "^3.8.3",
     "react": "^19.2.7",
-    "react-docgen-typescript": "^2.4.0",
     "react-dom": "^19.2.7",
     "reakeys": "^2.0.6",
     "reaviz-lint-rules": "^1.0.3",
