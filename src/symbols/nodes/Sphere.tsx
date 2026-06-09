@@ -69,12 +69,19 @@ export const Sphere: FC<NodeRendererProps> = ({
           emissiveIntensity={0.7}
         />
       </a.mesh>
-      <Ring
-        opacity={selected ? 0.5 : 0}
-        size={size}
-        animated={animated}
-        color={selected ? theme.ring.activeFill : theme.ring.fill}
-      />
+      {/* Only mount the selection ring (and its per-frame Billboard) when
+          the node is actually selected. The ring was already invisible
+          (opacity 0) when unselected, so this preserves the visible result
+          while removing one camera-facing Billboard per unselected node —
+          a large per-frame win on big graphs. */}
+      {selected && (
+        <Ring
+          opacity={0.5}
+          size={size}
+          animated={animated}
+          color={theme.ring.activeFill}
+        />
+      )}
     </>
   );
 };
