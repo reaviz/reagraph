@@ -1,9 +1,50 @@
 import type { GraphEdge, GraphNode } from '../types';
 
+interface Adjacency {
+  /** node id -> nodes's outbound edges */
+  outEdges: Map<string, GraphEdge[]>;
+  /** node id -> node's inbound edges */
+  inEdges: Map<string, GraphEdge[]>;
+  /** node id -> node */
+  nodeMap: Map<string, GraphNode>;
+}
+
+/**
+ * Build outbound/inbound adjacency lookups once so traversal can use
+ * O(degree) neighbor access instead of scanning the full edge list (O(e))
+ * on every step.
+ */
+function buildAdjacency(nodes: GraphNode[], edges: GraphEdge[]): Adjacency {
+  const outEdges = new Map<string, GraphEdge[]>();
+  const inEdges = new Map<string, GraphEdge[]>();
+  const nodeMap = new Map<string, GraphNode>();
+
+  for (const node of nodes) {
+    nodeMap.set(node.id, node);
+  }
+
+  for (const edge of edges) {
+    let out = outEdges.get(edge.source);
+    if (!out) {
+      out = [];
+      outEdges.set(edge.source, out);
+    }
+    out.push(edge);
+
+    let inbound = inEdges.get(edge.target);
+    if (!inbound) {
+      inbound = [];
+      inEdges.set(edge.target, inbound);
+    }
+    inbound.push(edge);
+  }
+
+  return { outEdges, inEdges, nodeMap };
+}
+
 interface GetHiddenChildrenInput {
   nodeId: string;
-  nodes: GraphNode[];
-  edges: GraphEdge[];
+  adjacency: Adjacency;
   currentHiddenNodes: GraphNode[];
   currentHiddenEdges: GraphEdge[];
 }
@@ -25,23 +66,23 @@ interface GetExpandPathInput {
  */
 function getHiddenChildren({
   nodeId,
-  nodes,
-  edges,
+  adjacency,
   currentHiddenNodes,
   currentHiddenEdges
 }: GetHiddenChildrenInput) {
+  const { outEdges, inEdges, nodeMap } = adjacency;
   const hiddenNodes: GraphNode[] = [];
   const hiddenEdges: GraphEdge[] = [];
-  const curHiddenNodeIds = currentHiddenNodes.map(n => n.id);
-  const curHiddenEdgeIds = currentHiddenEdges.map(e => e.id);
+  const curHiddenNodeIds = new Set(currentHiddenNodes.map(n => n.id));
+  const curHiddenEdgeIds = new Set(currentHiddenEdges.map(e => e.id));
 
-  const outboundEdges = edges.filter(l => l.source === nodeId);
+  const outboundEdges = outEdges.get(nodeId) ?? [];
   const outboundEdgeNodeIds = outboundEdges.map(l => l.target);
 
   hiddenEdges.push(...outboundEdges);
   for (const outboundEdgeNodeId of outboundEdgeNodeIds) {
-    const incomingEdges = edges.filter(
-      l => l.target === outboundEdgeNodeId && l.source !== nodeId
+    const incomingEdges = (inEdges.get(outboundEdgeNodeId) ?? []).filter(
+      l => l.source !== nodeId
     );
     let hideNode = false;
 
@@ -50,24 +91,22 @@ function getHiddenChildren({
       hideNode = true;
     } else if (
       incomingEdges.length > 0 &&
-      !curHiddenNodeIds.includes(outboundEdgeNodeId)
+      !curHiddenNodeIds.has(outboundEdgeNodeId)
     ) {
       // If all inbound links are hidden, hide this node as well
-      const inboundNodeLinkIds = incomingEdges.map(l => l.id);
-      if (inboundNodeLinkIds.every(i => curHiddenEdgeIds.includes(i))) {
+      if (incomingEdges.every(l => curHiddenEdgeIds.has(l.id))) {
         hideNode = true;
       }
     }
     if (hideNode) {
       // Need to hide this node and any children of this node
-      const node = nodes.find(n => n.id === outboundEdgeNodeId);
+      const node = nodeMap.get(outboundEdgeNodeId);
       if (node) {
         hiddenNodes.push(node);
       }
       const nested = getHiddenChildren({
         nodeId: outboundEdgeNodeId,
-        nodes,
-        edges,
+        adjacency,
         currentHiddenEdges: hiddenEdges,
         currentHiddenNodes: hiddenNodes
       });
@@ -110,14 +149,14 @@ export const getVisibleEntities = ({
   nodes,
   edges
 }: GetVisibleIdsInput) => {
-  const curHiddenNodes = [];
-  const curHiddenEdges = [];
+  const adjacency = buildAdjacency(nodes, edges);
+  const curHiddenNodes: GraphNode[] = [];
+  const curHiddenEdges: GraphEdge[] = [];
 
   for (const collapsedId of collapsedIds) {
     const { hiddenEdges, hiddenNodes } = getHiddenChildren({
       nodeId: collapsedId,
-      nodes,
-      edges,
+      adjacency,
       currentHiddenEdges: curHiddenEdges,
       currentHiddenNodes: curHiddenNodes
     });
@@ -126,10 +165,10 @@ export const getVisibleEntities = ({
     curHiddenEdges.push(...hiddenEdges);
   }
 
-  const hiddenNodeIds = curHiddenNodes.map(n => n.id);
-  const hiddenEdgeIds = curHiddenEdges.map(e => e.id);
-  const visibleNodes = nodes.filter(n => !hiddenNodeIds.includes(n.id));
-  const visibleEdges = edges.filter(e => !hiddenEdgeIds.includes(e.id));
+  const hiddenNodeIds = new Set(curHiddenNodes.map(n => n.id));
+  const hiddenEdgeIds = new Set(curHiddenEdges.map(e => e.id));
+  const visibleNodes = nodes.filter(n => !hiddenNodeIds.has(n.id));
+  const visibleEdges = edges.filter(e => !hiddenEdgeIds.has(e.id));
 
   return {
     visibleNodes,
@@ -145,36 +184,44 @@ export const getExpandPath = ({
   edges,
   visibleEdgeIds
 }: GetExpandPathInput) => {
-  const parentIds = [];
-  const inboundEdges = edges.filter(l => l.target === nodeId);
-  const inboundEdgeIds = inboundEdges.map(e => e.id);
-  const hasVisibleInboundEdge = inboundEdgeIds.some(id =>
-    visibleEdgeIds.includes(id)
-  );
-
-  if (hasVisibleInboundEdge) {
-    // If there is a visible edge to this node, that means the node is
-    // visible so no parents need to be expanded
-    return parentIds;
-  }
-
-  const inboundEdgeNodeIds = inboundEdges.map(l => l.source);
-  let addedParent = false;
-
-  for (const inboundNodeId of inboundEdgeNodeIds) {
-    if (!addedParent) {
-      // Only want to expand a single path to the node, so if there
-      // are multiple hidden incoming edges, only expand the first
-      // to reduce how many nodes are expanded to get to the node
-      parentIds.push(
-        ...[
-          inboundNodeId,
-          ...getExpandPath({ nodeId: inboundNodeId, edges, visibleEdgeIds })
-        ]
-      );
-      addedParent = true;
+  // Build the inbound adjacency + visible set once, then walk it.
+  const inEdges = new Map<string, GraphEdge[]>();
+  for (const edge of edges) {
+    let inbound = inEdges.get(edge.target);
+    if (!inbound) {
+      inbound = [];
+      inEdges.set(edge.target, inbound);
     }
+    inbound.push(edge);
   }
+  const visibleEdgeIdSet = new Set(visibleEdgeIds);
 
-  return parentIds;
+  const walk = (id: string): string[] => {
+    const parentIds: string[] = [];
+    const inboundEdges = inEdges.get(id) ?? [];
+    const hasVisibleInboundEdge = inboundEdges.some(edge =>
+      visibleEdgeIdSet.has(edge.id)
+    );
+
+    if (hasVisibleInboundEdge) {
+      // If there is a visible edge to this node, that means the node is
+      // visible so no parents need to be expanded
+      return parentIds;
+    }
+
+    let addedParent = false;
+    for (const edge of inboundEdges) {
+      if (!addedParent) {
+        // Only want to expand a single path to the node, so if there
+        // are multiple hidden incoming edges, only expand the first
+        // to reduce how many nodes are expanded to get to the node
+        parentIds.push(...[edge.source, ...walk(edge.source)]);
+        addedParent = true;
+      }
+    }
+
+    return parentIds;
+  };
+
+  return walk(nodeId);
 };

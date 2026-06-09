@@ -170,6 +170,39 @@ function runScenario(nodeCount: number, edgesPerNode: number) {
     });
   });
 
+  // --- 3c. Collapse traversal primitives (collapse/utils.ts) ---
+  // Old code scanned the full edge list per node (edges.filter source/target)
+  // and used Array.includes for the hidden-set membership. New code builds
+  // adjacency maps + Sets once. Mirror both over a chunk of nodes.
+  const sampleIds = ids.slice(0, 200);
+  const hidden = ids.slice(0, Math.floor(ids.length / 2));
+  time('collapse neighbor scan — edges.filter [old]', () => {
+    for (const id of sampleIds) {
+      void internalEdges.filter(l => l.source === id);
+    }
+  });
+  time('collapse neighbor scan — adjacency map [new]', () => {
+    const outEdges = new Map<string, any[]>();
+    for (const edge of internalEdges) {
+      let out = outEdges.get(edge.source);
+      if (!out) {
+        out = [];
+        outEdges.set(edge.source, out);
+      }
+      out.push(edge);
+    }
+    for (const id of sampleIds) {
+      void (outEdges.get(id) ?? []);
+    }
+  });
+  time('collapse visibility filter — Array.includes [old]', () => {
+    void internalNodes.filter(node => !hidden.includes(node.id));
+  });
+  time('collapse visibility filter — Set.has [new]', () => {
+    const hiddenSet = new Set(hidden);
+    void internalNodes.filter(node => !hiddenSet.has(node.id));
+  });
+
   // --- 4. A drag frame: setNodePosition + all node self-lookups ---
   let toggle = 0;
   time('drag frame (setNodePosition + N lookups)', () => {
