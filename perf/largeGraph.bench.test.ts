@@ -134,6 +134,36 @@ function runScenario(nodeCount: number, edgesPerNode: number) {
     }
   });
 
+  // --- 3b. Edge grouping (Edges.tsx) with a large selection ---
+  // Mirrors the active/inactive split. Old code did Array.includes per edge
+  // against selections/actives/hovered (O(e * s)); new code uses a Set.
+  const selection = ids
+    .slice(0, Math.floor(internalEdges.length / 5))
+    .map((_, i) => internalEdges[i].id);
+  time('edge grouping (Array.includes per edge) [old]', () => {
+    const active: any[] = [];
+    const inactive: any[] = [];
+    internalEdges.forEach(edge => {
+      if (selection.includes(edge.id)) {
+        active.push(edge);
+      } else {
+        inactive.push(edge);
+      }
+    });
+  });
+  time('edge grouping (Set.has per edge) [new]', () => {
+    const set = new Set(selection);
+    const active: any[] = [];
+    const inactive: any[] = [];
+    internalEdges.forEach(edge => {
+      if (set.has(edge.id)) {
+        active.push(edge);
+      } else {
+        inactive.push(edge);
+      }
+    });
+  });
+
   // --- 4. A drag frame: setNodePosition + all node self-lookups ---
   let toggle = 0;
   time('drag frame (setNodePosition + N lookups)', () => {

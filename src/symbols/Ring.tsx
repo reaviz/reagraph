@@ -1,11 +1,30 @@
 import { a, useSpring } from '@react-spring/three';
 import { Billboard } from '@react-three/drei';
 import type { FC } from 'react';
-import React, { useMemo } from 'react';
-import type { ColorRepresentation } from 'three';
-import { Color, DoubleSide } from 'three';
+import React, { useEffect, useMemo, useRef } from 'react';
+import type { ColorRepresentation, MeshBasicMaterial } from 'three';
+import { Color, DoubleSide, RingGeometry } from 'three';
 
 import { animationConfig } from '../utils/animation';
+
+// Ring geometries only depend on their radius/segment args, which are
+// almost always the same across every node's selection ring. Cache and
+// share one geometry per unique arg combination instead of allocating one
+// per node. Shared geometries are guarded with `dispose={null}`.
+const ringGeometryCache = new Map<string, RingGeometry>();
+const getRingGeometry = (
+  innerRadius: number,
+  outerRadius: number,
+  segments: number
+): RingGeometry => {
+  const key = `${innerRadius}|${outerRadius}|${segments}`;
+  let geometry = ringGeometryCache.get(key);
+  if (!geometry) {
+    geometry = new RingGeometry(innerRadius, outerRadius, segments);
+    ringGeometryCache.set(key, geometry);
+  }
+  return geometry;
+};
 
 export interface RingProps {
   /**
@@ -85,19 +104,28 @@ export const Ring: FC<RingProps> = ({
   const strokeWidthFraction = strokeWidth / 10;
   const outerRadius = innerRadius + strokeWidthFraction;
 
+  const geometry = useMemo(
+    () => getRingGeometry(innerRadius, outerRadius, segments),
+    [innerRadius, outerRadius, segments]
+  );
+
+  // The geometry is shared (dispose={null}), so dispose the per-ring
+  // material ourselves on unmount.
+  const materialRef = useRef<MeshBasicMaterial | null>(null);
+  useEffect(() => () => materialRef.current?.dispose(), []);
+
   return (
     <Billboard position={[0, 0, 1]}>
       <a.mesh
         scale={ringSize as any}
+        geometry={geometry}
+        dispose={null}
         // Disabling raycast/pointer events when ring is invisible (opacity = 0)
         // This prevents invisible rings highlighting parent nodes when hovered over
         raycast={opacity > 0 ? undefined : () => []}
       >
-        <ringGeometry
-          attach="geometry"
-          args={[innerRadius, outerRadius, segments]}
-        />
         <a.meshBasicMaterial
+          ref={materialRef as any}
           attach="material"
           color={normalizedColor}
           transparent={true}

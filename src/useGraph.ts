@@ -196,7 +196,14 @@ export const useGraph = ({
   }, [clusters]);
 
   useEffect(() => {
-    // When the camera position/zoom changes, update the label visibility.
+    // Camera position/zoom only affects label visibility in 'auto' mode
+    // (every other mode is always-on, always-off, or shape-gated and so is
+    // camera-independent). Skipping the rest avoids an O(n) pass over every
+    // node on every camera frame.
+    if (labelType !== 'auto') {
+      return;
+    }
+
     // First compute just the booleans (cheap) and only allocate a fresh
     // node array when something actually changed — this effect fires on
     // every camera move, so avoiding N object spreads per frame matters

@@ -116,16 +116,25 @@ export const Edges: FC<EdgesProps> = ({
     const inactive: Array<InternalGraphEdge> = [];
     const draggingActive: Array<InternalGraphEdge> = [];
     const draggingInactive: Array<InternalGraphEdge> = [];
+
+    // Build O(1) membership lookups once instead of scanning these arrays
+    // for every edge (was O(e * (s + a + d + h))).
+    const draggingSet = new Set(draggingIds);
+    const activeEdgeSet = new Set<string>();
+    for (const id of selections) {
+      activeEdgeSet.add(id);
+    }
+    for (const id of actives) {
+      activeEdgeSet.add(id);
+    }
+    for (const id of hoveredEdgeIds) {
+      activeEdgeSet.add(id);
+    }
+
     edges.forEach(edge => {
-      if (
-        draggingIds.includes(edge.source) ||
-        draggingIds.includes(edge.target)
-      ) {
-        if (
-          selections.includes(edge.id) ||
-          actives.includes(edge.id) ||
-          hoveredEdgeIds.includes(edge.id)
-        ) {
+      const isActive = activeEdgeSet.has(edge.id);
+      if (draggingSet.has(edge.source) || draggingSet.has(edge.target)) {
+        if (isActive) {
           draggingActive.push(edge);
         } else {
           draggingInactive.push(edge);
@@ -133,11 +142,7 @@ export const Edges: FC<EdgesProps> = ({
         return;
       }
 
-      if (
-        selections.includes(edge.id) ||
-        actives.includes(edge.id) ||
-        hoveredEdgeIds.includes(edge.id)
-      ) {
+      if (isActive) {
         active.push(edge);
       } else {
         inactive.push(edge);
@@ -147,6 +152,16 @@ export const Edges: FC<EdgesProps> = ({
   }, [edges, actives, selections, draggingIds, hoveredEdgeIds]);
 
   const hasSelections = !!selections.length;
+
+  // O(1) membership lookups for the per-edge render pass below.
+  const edgeStateSets = useMemo(
+    () => ({
+      selectionSet: new Set(selections),
+      activeSet: new Set(actives),
+      hoveredSet: new Set(hoveredEdgeIds)
+    }),
+    [selections, actives, hoveredEdgeIds]
+  );
 
   const staticEdgesGeometry = useMemo(
     () => getGeometry(active, inactive),
@@ -304,9 +319,9 @@ export const Edges: FC<EdgesProps> = ({
         />
       </mesh>
       {edges.map(edge => {
-        const isSelected = selections.includes(edge.id);
-        const isActive = actives.includes(edge.id);
-        const isHovered = hoveredEdgeIds.includes(edge.id);
+        const isSelected = edgeStateSets.selectionSet.has(edge.id);
+        const isActive = edgeStateSets.activeSet.has(edge.id);
+        const isHovered = edgeStateSets.hoveredSet.has(edge.id);
 
         return (
           <Edge
