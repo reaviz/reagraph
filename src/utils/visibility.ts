@@ -16,7 +16,14 @@ export function calcLabelVisibility({
   labelType,
   camera
 }: CalcLabelVisibilityArgs) {
-  return (shape: 'node' | 'edge', size: number) => {
+  return (
+    shape: 'node' | 'edge',
+    size: number,
+    // Optional per-call position override so a single closure can be
+    // reused across many nodes instead of allocating one per node.
+    nodePositionOverride?: { x: number; y: number; z: number }
+  ) => {
+    const nodePos = nodePositionOverride ?? nodePosition;
     const isAlwaysVisible =
       labelType === 'all' ||
       (labelType === 'nodes' && shape === 'node') ||
@@ -25,8 +32,8 @@ export function calcLabelVisibility({
     if (
       !isAlwaysVisible &&
       camera &&
-      nodePosition &&
-      camera?.position?.z / camera?.zoom - nodePosition?.z > 6000
+      nodePos &&
+      camera?.position?.z / camera?.zoom - nodePos?.z > 6000
     ) {
       return false;
     }
@@ -38,8 +45,8 @@ export function calcLabelVisibility({
         return true;
       } else if (
         camera &&
-        nodePosition &&
-        camera.position.z / camera.zoom - nodePosition.z < 3000
+        nodePos &&
+        camera.position.z / camera.zoom - nodePos.z < 3000
       ) {
         return true;
       }

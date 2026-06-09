@@ -124,6 +124,7 @@ export const useCenterGraph = ({
   layoutType
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
+  const nodeMap = useStore(state => state.nodeMap);
   const [isCentered, setIsCentered] = useState<boolean>(false);
   const invalidate = useThree(state => state.invalidate);
   const { controls } = useCameraControls();
@@ -215,7 +216,7 @@ export const useCenterGraph = ({
       if (nodeIds?.length) {
         // Map the node ids to the actual nodes
         mappedNodes = nodeIds.reduce((acc, id) => {
-          const node = nodes.find(n => n.id === id);
+          const node = nodeMap.get(id);
           if (node) {
             acc.push(node);
           } else {
@@ -230,7 +231,7 @@ export const useCenterGraph = ({
 
       return mappedNodes;
     },
-    [nodes]
+    [nodeMap]
   );
 
   const centerNodesById = useCallback(

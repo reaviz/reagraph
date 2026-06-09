@@ -22,9 +22,62 @@ export type DragReferences = {
   [key: string]: InternalGraphNode;
 };
 
+/**
+ * Build the id -> node lookup map used for O(1) node access.
+ */
+const buildNodeMap = (
+  nodes: InternalGraphNode[]
+): Map<string, InternalGraphNode> => {
+  const map = new Map<string, InternalGraphNode>();
+  for (const node of nodes) {
+    map.set(node.id, node);
+  }
+  return map;
+};
+
+/**
+ * Build the set of node ids that have at least one outbound edge.
+ */
+const buildOutboundSet = (edges: InternalGraphEdge[]): Set<string> => {
+  const set = new Set<string>();
+  for (const edge of edges) {
+    set.add(edge.source);
+  }
+  return set;
+};
+
+/**
+ * Build the id -> edge lookup map used for O(1) edge access.
+ */
+const buildEdgeMap = (
+  edges: InternalGraphEdge[]
+): Map<string, InternalGraphEdge> => {
+  const map = new Map<string, InternalGraphEdge>();
+  for (const edge of edges) {
+    map.set(edge.id, edge);
+  }
+  return map;
+};
+
 export interface GraphState {
   nodes: InternalGraphNode[];
   edges: InternalGraphEdge[];
+  /**
+   * O(1) lookup of a node by its id. Kept in sync with `nodes`.
+   * Avoids O(n) `nodes.find` scans inside per-node components, which
+   * otherwise make rendering/dragging O(n^2) on large graphs.
+   */
+  nodeMap: Map<string, InternalGraphNode>;
+  /**
+   * Set of node ids that have at least one outbound edge. Kept in sync
+   * with `edges`. Lets a node determine `canCollapse` in O(1) instead of
+   * filtering the entire edge list (O(n*e)) on every render.
+   */
+  nodesWithOutboundEdges: Set<string>;
+  /**
+   * O(1) lookup of an edge by its id. Kept in sync with `edges`.
+   */
+  edgeMap: Map<string, InternalGraphEdge>;
   graph: Graph;
   clusters: Map<string, ClusterGroup>;
   collapsedNodeIds?: string[];
@@ -80,6 +133,9 @@ export const createStore = ({
     },
     edges: [],
     nodes: [],
+    nodeMap: new Map(),
+    nodesWithOutboundEdges: new Set(),
+    edgeMap: new Map(),
     collapsedNodeIds,
     clusters: new Map(),
     panning: false,
@@ -119,30 +175,43 @@ export const createStore = ({
       set(state => ({
         ...state,
         nodes,
+        nodeMap: buildNodeMap(nodes),
         centerPosition: getLayoutCenter(nodes)
       })),
-    setEdges: edges => set(state => ({ ...state, edges })),
+    setEdges: edges =>
+      set(state => ({
+        ...state,
+        edges,
+        edgeMap: buildEdgeMap(edges),
+        nodesWithOutboundEdges: buildOutboundSet(edges)
+      })),
     setNodePosition: (id, position) =>
       set(state => {
-        const node = state.nodes.find(n => n.id === id);
+        const node =
+          state.nodeMap.get(id) ?? state.nodes.find(n => n.id === id);
         const originalVector = getVector(node);
         const newVector = new Vector3(position.x, position.y, position.z);
         const offset = newVector.sub(originalVector);
-        const nodes = [...state.nodes];
 
-        if (state.selections?.includes(id)) {
-          state.selections?.forEach(id => {
-            const node = state.nodes.find(n => n.id === id);
-            // Selections can contain edges:
-            if (node) {
-              const nodeIndex = state.nodes.indexOf(node);
-              nodes[nodeIndex] = updateNodePosition(node, offset);
-            }
-          });
-        } else {
-          const nodeIndex = state.nodes.indexOf(node);
-          nodes[nodeIndex] = updateNodePosition(node, offset);
-        }
+        // Determine which nodes move: a multi-selection drags all selected
+        // nodes, otherwise just the dragged node.
+        const idsToMove =
+          state.selections?.includes(id) && state.selections.length
+            ? state.selections
+            : [id];
+        const moving = new Set(idsToMove);
+
+        // Single O(n) pass producing both the new array and the new lookup map
+        // with O(1) per-node access (no nested find/indexOf scans).
+        const nodeMap = new Map(state.nodeMap);
+        const nodes = state.nodes.map(n => {
+          if (moving.has(n.id)) {
+            const updated = updateNodePosition(n, offset);
+            nodeMap.set(n.id, updated);
+            return updated;
+          }
+          return n;
+        });
 
         return {
           ...state,
@@ -150,7 +219,8 @@ export const createStore = ({
             ...state.drags,
             [id]: node
           },
-          nodes
+          nodes,
+          nodeMap
         };
       }),
     setCollapsedNodeIds: (nodeIds = []) =>
@@ -172,6 +242,7 @@ export const createStore = ({
 
           // Update all nodes in the cluster
           const nodes: InternalGraphNode[] = [...state.nodes];
+          const nodeMap = new Map(state.nodeMap);
           const drags: DragReferences = { ...state.drags };
           nodes.forEach((node, index) => {
             if (node.cluster === id) {
@@ -184,6 +255,7 @@ export const createStore = ({
                   z: node.position.z + (offset.z ?? 0)
                 } as InternalGraphPosition
               };
+              nodeMap.set(node.id, nodes[index]);
               // Update node in drag reference
               drags[node.id] = node;
             }
@@ -206,7 +278,8 @@ export const createStore = ({
               [id]: cluster
             },
             clusters,
-            nodes
+            nodes,
+            nodeMap
           };
         }
 

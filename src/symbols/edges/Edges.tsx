@@ -172,6 +172,16 @@ export const Edges: FC<EdgesProps> = ({
   const staticEdgesRef = useRef(new Mesh());
   const dynamicEdgesRef = useRef(new Mesh());
 
+  // O(1) mesh -> edge lookup so resolving raycaster hits doesn't scan the
+  // entire edge mesh array (was O(e) per intersection, every frame).
+  const meshToEdge = useMemo(() => {
+    const map = new Map<Mesh, InternalGraphEdge>();
+    for (let i = 0; i < edgeMeshes.length; i++) {
+      map.set(edgeMeshes[i], edges[i]);
+    }
+    return map;
+  }, [edgeMeshes, edges]);
+
   const intersect = useCallback(
     (raycaster: Raycaster): Array<InternalGraphEdge> => {
       // Handle initial raycaster state:
@@ -183,11 +193,11 @@ export const Edges: FC<EdgesProps> = ({
       if (!intersections.length) {
         return [];
       }
-      return intersections.map(
-        intersection => edges[edgeMeshes.indexOf(intersection.object)]
+      return intersections.map(intersection =>
+        meshToEdge.get(intersection.object)
       );
     },
-    [edgeMeshes, edges]
+    [edgeMeshes, meshToEdge]
   );
 
   const { handleClick, handleContextMenu, handleIntersections } = useEdgeEvents(
@@ -231,7 +241,18 @@ export const Edges: FC<EdgesProps> = ({
     const intersecting = intersect(state.raycaster);
     handleIntersections(previousIntersecting, intersecting);
 
-    if (intersecting.join() !== previousIntersecting.join()) {
+    // Compare by edge identity rather than Array.join() (which stringified
+    // edge objects to "[object Object]" and only effectively compared count).
+    let changed = intersecting.length !== previousIntersecting.length;
+    if (!changed) {
+      for (let i = 0; i < intersecting.length; i++) {
+        if (intersecting[i] !== previousIntersecting[i]) {
+          changed = true;
+          break;
+        }
+      }
+    }
+    if (changed) {
       dynamicEdgesRef.current.geometry = getGeometry(intersecting, []);
     }
 

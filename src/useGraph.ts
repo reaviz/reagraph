@@ -196,25 +196,36 @@ export const useGraph = ({
   }, [clusters]);
 
   useEffect(() => {
-    // When the camera position/zoom changes, update the label visibility
-    const nodes = stateNodes.map(node => ({
-      ...node,
-      labelVisible: calcLabelVisibility({
-        nodeCount: stateNodes?.length,
-        labelType,
-        camera,
-        nodePosition: node?.position
-      })('node', node?.size)
-    }));
+    // When the camera position/zoom changes, update the label visibility.
+    // First compute just the booleans (cheap) and only allocate a fresh
+    // node array when something actually changed — this effect fires on
+    // every camera move, so avoiding N object spreads per frame matters
+    // a lot on large graphs.
+    const getVisibility = calcLabelVisibility({
+      nodeCount: stateNodes?.length,
+      labelType,
+      camera
+    });
 
-    // Determine if the label visibility has changed
-    const isVisibilityUpdated = nodes.some(
-      (node, i) => node.labelVisible !== stateNodes[i].labelVisible
-    );
+    let isVisibilityUpdated = false;
+    const nextVisibility = new Array(stateNodes.length);
+    for (let i = 0; i < stateNodes.length; i++) {
+      const node = stateNodes[i];
+      const labelVisible = getVisibility('node', node?.size, node?.position);
+      nextVisibility[i] = labelVisible;
+      if (labelVisible !== node.labelVisible) {
+        isVisibilityUpdated = true;
+      }
+    }
 
     // Update the nodes if the label visibility has changed
     if (isVisibilityUpdated) {
-      setNodes(nodes);
+      setNodes(
+        stateNodes.map((node, i) => ({
+          ...node,
+          labelVisible: nextVisibility[i]
+        }))
+      );
     }
   }, [camera, camera.zoom, camera.position.z, setNodes, stateNodes, labelType]);
 

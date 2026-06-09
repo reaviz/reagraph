@@ -88,14 +88,10 @@ export const Edge: FC<EdgeProps> = ({
   const theme = useStore(state => state.theme);
   const { target, source, label, labelVisible = false, size = 1 } = edge;
 
-  const nodes = useStore(store => store.nodes);
-  const [from, to] = useMemo(
-    () => [
-      nodes.find(node => node.id === source),
-      nodes.find(node => node.id === target)
-    ],
-    [nodes, source, target]
-  );
+  // Subscribe only to the two endpoints (O(1) lookups) instead of the whole
+  // node array — otherwise every edge re-renders on every node change.
+  const from = useStore(store => store.nodeMap.get(source));
+  const to = useStore(store => store.nodeMap.get(target));
   const isDragging = useStore(state => state.draggingIds.length > 0);
 
   const labelOffset = useMemo(
