@@ -4,6 +4,18 @@ import type { EdgeLabelPosition } from '../symbols';
 
 export type LabelVisibilityType = 'all' | 'auto' | 'none' | 'nodes' | 'edges';
 
+/**
+ * Whether label visibility for a given mode depends on the camera
+ * distance/zoom. Only 'auto' re-evaluates as the camera moves; every other
+ * mode is always-on, always-off, or shape-gated and therefore camera
+ * independent. Callers use this to skip per-camera-frame recomputation.
+ */
+export function isLabelVisibilityCameraDependent(
+  labelType: LabelVisibilityType
+): boolean {
+  return labelType === 'auto';
+}
+
 interface CalcLabelVisibilityArgs {
   nodeCount: number;
   nodePosition?: { x: number; y: number; z: number };

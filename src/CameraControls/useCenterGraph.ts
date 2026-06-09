@@ -1,5 +1,5 @@
 import { useThree } from '@react-three/fiber';
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { PerspectiveCamera } from 'three';
 import { Box3, Vector3 } from 'three';
 
@@ -124,7 +124,11 @@ export const useCenterGraph = ({
   layoutType
 }: CenterGraphInput): CenterGraphOutput => {
   const nodes = useStore(state => state.nodes);
-  const nodeMap = useStore(state => state.nodeMap);
+  // Derive the id -> node lookup from the already-subscribed `nodes` rather
+  // than subscribing to the store's nodeMap as well — a second Map
+  // subscription would add an O(n) shallow comparison on every store update
+  // (including every drag frame). This rebuilds only when `nodes` changes.
+  const nodeMap = useMemo(() => new Map(nodes.map(n => [n.id, n])), [nodes]);
   const [isCentered, setIsCentered] = useState<boolean>(false);
   const invalidate = useThree(state => state.invalidate);
   const { controls } = useCameraControls();

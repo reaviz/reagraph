@@ -187,22 +187,23 @@ export const createStore = ({
       })),
     setNodePosition: (id, position) =>
       set(state => {
-        const node =
-          state.nodeMap.get(id) ?? state.nodes.find(n => n.id === id);
+        const node = state.nodeMap.get(id);
         const originalVector = getVector(node);
         const newVector = new Vector3(position.x, position.y, position.z);
         const offset = newVector.sub(originalVector);
 
         // Determine which nodes move: a multi-selection drags all selected
-        // nodes, otherwise just the dragged node.
-        const idsToMove =
-          state.selections?.includes(id) && state.selections.length
-            ? state.selections
-            : [id];
+        // nodes, otherwise just the dragged node. (selections may also contain
+        // edge ids — those simply won't match any node below and are ignored.)
+        const idsToMove = state.selections?.includes(id)
+          ? state.selections
+          : [id];
         const moving = new Set(idsToMove);
 
         // Single O(n) pass producing both the new array and the new lookup map
-        // with O(1) per-node access (no nested find/indexOf scans).
+        // with O(1) per-node access (no nested find/indexOf scans). The map is
+        // copied (not mutated) because subscribers select it by reference, so
+        // it must change identity for change detection to fire.
         const nodeMap = new Map(state.nodeMap);
         const nodes = state.nodes.map(n => {
           if (moving.has(n.id)) {

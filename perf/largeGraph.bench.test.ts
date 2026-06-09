@@ -106,31 +106,37 @@ function runScenario(nodeCount: number, edgesPerNode: number) {
   // --- 2. Per-node lookup the way <Node> resolves its own data ---
   // This selector runs once per node on EVERY store update.
   const ids = internalNodes.map(n => n.id);
-  time('node self-lookup x N (per render frame)', () => {
+  // Mirror src/symbols/Node.tsx: each node resolves its own data on every
+  // store update. Compare the old O(n) scan against the current O(1) map.
+  time('node self-lookup x N — Array.find [old]', () => {
     const state = store.getState() as any;
     for (const id of ids) {
-      // Mirror src/symbols/Node.tsx: prefer O(1) map if present.
-      const node = state.nodeMap
-        ? state.nodeMap.get(id)
-        : state.nodes.find((n: any) => n.id === id);
-      if (!node) {
+      if (!state.nodes.find((n: any) => n.id === id)) {
+        throw new Error('missing node');
+      }
+    }
+  });
+  time('node self-lookup x N — nodeMap.get [new]', () => {
+    const state = store.getState() as any;
+    for (const id of ids) {
+      if (!state.nodeMap.get(id)) {
         throw new Error('missing node');
       }
     }
   });
 
-  // --- 3. canCollapse computation the way <Node> derives it ---
-  // Mirror src/symbols/Node.tsx canCollapse.
-  time('canCollapse derivation x N', () => {
+  // --- 3. canCollapse the way <Node> derives it ---
+  // Old: O(e) edge filter per node. New: O(1) set membership.
+  time('canCollapse x N — edges.filter [old]', () => {
     const state = store.getState() as any;
     for (const id of ids) {
-      if (state.nodesWithOutboundEdges) {
-        // O(1) per node
-        const _ = state.nodesWithOutboundEdges.has(id);
-      } else {
-        // Legacy: O(E) filter per node
-        const _ = state.edges.filter((l: any) => l.source === id).length > 0;
-      }
+      void (state.edges.filter((l: any) => l.source === id).length > 0);
+    }
+  });
+  time('canCollapse x N — outboundSet.has [new]', () => {
+    const state = store.getState() as any;
+    for (const id of ids) {
+      void state.nodesWithOutboundEdges.has(id);
     }
   });
 
@@ -175,10 +181,7 @@ function runScenario(nodeCount: number, edgesPerNode: number) {
     } as any);
     const state = store.getState() as any;
     for (const id of ids) {
-      const node = state.nodeMap
-        ? state.nodeMap.get(id)
-        : state.nodes.find((n: any) => n.id === id);
-      if (!node) {
+      if (!state.nodeMap.get(id)) {
         throw new Error('missing node');
       }
     }

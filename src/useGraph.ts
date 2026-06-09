@@ -13,7 +13,10 @@ import type { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { calculateClusters } from './utils/cluster';
 import { buildGraph, transformGraph } from './utils/graph';
 import type { LabelVisibilityType } from './utils/visibility';
-import { calcLabelVisibility } from './utils/visibility';
+import {
+  calcLabelVisibility,
+  isLabelVisibilityCameraDependent
+} from './utils/visibility';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -68,6 +71,7 @@ export const useGraph = ({
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const dragRef = useRef<DragReferences>(drags);
   const clustersRef = useRef<any>([]);
+  const prevLabelType = useRef<LabelVisibilityType | undefined>(labelType);
 
   // When a new node is added, remove the dragged position of the cluster nodes to put new node in the right place
   useEffect(() => {
@@ -196,11 +200,16 @@ export const useGraph = ({
   }, [clusters]);
 
   useEffect(() => {
+    const labelTypeChanged = prevLabelType.current !== labelType;
+    prevLabelType.current = labelType;
+
     // Camera position/zoom only affects label visibility in 'auto' mode
     // (every other mode is always-on, always-off, or shape-gated and so is
-    // camera-independent). Skipping the rest avoids an O(n) pass over every
-    // node on every camera frame.
-    if (labelType !== 'auto') {
+    // camera-independent). For those modes we still need to recompute when
+    // the labelType prop itself changes (e.g. 'all' -> 'none' at runtime),
+    // but we can skip the work on pure camera moves. This avoids an O(n)
+    // pass over every node on every camera frame.
+    if (!isLabelVisibilityCameraDependent(labelType) && !labelTypeChanged) {
       return;
     }
 

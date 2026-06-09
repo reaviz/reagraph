@@ -111,28 +111,32 @@ export const Edges: FC<EdgesProps> = ({
   const selections = useStore(state => state.selections || []);
   const hoveredEdgeIds = useStore(state => state.hoveredEdgeIds || []);
 
+  // O(1) membership lookups, built once and reused by both the active/inactive
+  // grouping below and the per-edge render pass — instead of scanning these
+  // arrays for every edge (was O(e * (s + a + h))).
+  const edgeStateSets = useMemo(
+    () => ({
+      selectionSet: new Set(selections),
+      activeSet: new Set(actives),
+      hoveredSet: new Set(hoveredEdgeIds)
+    }),
+    [selections, actives, hoveredEdgeIds]
+  );
+
   const [active, inactive, draggingActive, draggingInactive] = useMemo(() => {
     const active: Array<InternalGraphEdge> = [];
     const inactive: Array<InternalGraphEdge> = [];
     const draggingActive: Array<InternalGraphEdge> = [];
     const draggingInactive: Array<InternalGraphEdge> = [];
 
-    // Build O(1) membership lookups once instead of scanning these arrays
-    // for every edge (was O(e * (s + a + d + h))).
+    const { selectionSet, activeSet, hoveredSet } = edgeStateSets;
     const draggingSet = new Set(draggingIds);
-    const activeEdgeSet = new Set<string>();
-    for (const id of selections) {
-      activeEdgeSet.add(id);
-    }
-    for (const id of actives) {
-      activeEdgeSet.add(id);
-    }
-    for (const id of hoveredEdgeIds) {
-      activeEdgeSet.add(id);
-    }
 
     edges.forEach(edge => {
-      const isActive = activeEdgeSet.has(edge.id);
+      const isActive =
+        selectionSet.has(edge.id) ||
+        activeSet.has(edge.id) ||
+        hoveredSet.has(edge.id);
       if (draggingSet.has(edge.source) || draggingSet.has(edge.target)) {
         if (isActive) {
           draggingActive.push(edge);
@@ -149,19 +153,9 @@ export const Edges: FC<EdgesProps> = ({
       }
     });
     return [active, inactive, draggingActive, draggingInactive];
-  }, [edges, actives, selections, draggingIds, hoveredEdgeIds]);
+  }, [edges, draggingIds, edgeStateSets]);
 
   const hasSelections = !!selections.length;
-
-  // O(1) membership lookups for the per-edge render pass below.
-  const edgeStateSets = useMemo(
-    () => ({
-      selectionSet: new Set(selections),
-      activeSet: new Set(actives),
-      hoveredSet: new Set(hoveredEdgeIds)
-    }),
-    [selections, actives, hoveredEdgeIds]
-  );
 
   const staticEdgesGeometry = useMemo(
     () => getGeometry(active, inactive),
@@ -256,12 +250,15 @@ export const Edges: FC<EdgesProps> = ({
     const intersecting = intersect(state.raycaster);
     handleIntersections(previousIntersecting, intersecting);
 
-    // Compare by edge identity rather than Array.join() (which stringified
-    // edge objects to "[object Object]" and only effectively compared count).
+    // Compare the hovered set by edge id rather than Array.join() (which
+    // stringified edge objects to "[object Object]" and only effectively
+    // compared count). Comparing by id (not object identity) avoids needless
+    // geometry rebuilds when the edges array is replaced with new objects for
+    // the same logical edges, and tolerates undefined entries.
     let changed = intersecting.length !== previousIntersecting.length;
     if (!changed) {
       for (let i = 0; i < intersecting.length; i++) {
-        if (intersecting[i] !== previousIntersecting[i]) {
+        if (intersecting[i]?.id !== previousIntersecting[i]?.id) {
           changed = true;
           break;
         }
