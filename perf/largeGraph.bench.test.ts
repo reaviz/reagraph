@@ -91,13 +91,16 @@ function runScenario(nodeCount: number, edgesPerNode: number) {
   api.setNodes(internalNodes);
   api.setEdges(internalEdges);
 
-  console.log(
-    `\n=== ${nodeCount} nodes / ${internalEdges.length} edges ===`
-  );
+  console.log(`\n=== ${nodeCount} nodes / ${internalEdges.length} edges ===`);
 
   // --- 1. Layout transform (rebuild) cost ---
   time('transformGraph (full rebuild)', () => {
-    transformGraph({ graph, layout, sizingType: 'default', defaultNodeSize: 7 });
+    transformGraph({
+      graph,
+      layout,
+      sizingType: 'default',
+      defaultNodeSize: 7
+    });
   });
 
   // --- 2. Per-node lookup the way <Node> resolves its own data ---
