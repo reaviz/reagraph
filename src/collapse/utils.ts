@@ -14,6 +14,13 @@ interface GetVisibleIdsInput {
   collapsedIds: string[];
   nodes: GraphNode[];
   edges: GraphEdge[];
+  /**
+   * Optional prebuilt graphology graph of the FULL node/edge set (e.g. built
+   * once by the caller and reused across collapse/expand interactions).
+   * Must contain the same nodes/edges passed above. Note the store's graph
+   * is NOT suitable here: it holds the post-collapse visible subgraph.
+   */
+  graph?: Graph;
 }
 
 interface GetExpandPathInput {
@@ -124,7 +131,8 @@ function getHiddenChildren({
 export const getVisibleEntities = ({
   collapsedIds,
   nodes,
-  edges
+  edges,
+  graph: providedGraph
 }: GetVisibleIdsInput) => {
   // Nothing collapsed means nothing hidden. This runs on every nodes/edges
   // change, so skip the graph construction entirely in the common case.
@@ -132,10 +140,12 @@ export const getVisibleEntities = ({
     return { visibleNodes: nodes, visibleEdges: edges };
   }
 
-  // Build a graphology graph once (same builder the store uses) so traversal
-  // gets O(degree) neighbor access from its adjacency indices instead of
-  // scanning the edge array per node.
-  const graph = buildGraph(new Graph({ multi: true }), nodes, edges);
+  // Use the caller's prebuilt graph when supplied; otherwise build one
+  // (same builder the store uses) so traversal gets O(degree) neighbor
+  // access from graphology's adjacency indices instead of scanning the
+  // edge array per node.
+  const graph =
+    providedGraph ?? buildGraph(new Graph({ multi: true }), nodes, edges);
   const curHiddenNodes: GraphNode[] = [];
   const curHiddenEdges: GraphEdge[] = [];
 

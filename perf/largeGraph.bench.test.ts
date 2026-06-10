@@ -201,6 +201,21 @@ function runScenario(nodeCount: number, edgesPerNode: number) {
       edges: internalEdges as any
     });
   });
+  // Mirrors useGraph/useCollapse, which build the graph once per data change
+  // and reuse it across collapse/expand interactions.
+  const prebuiltCollapseGraph = buildGraph(
+    new Graph({ multi: true }),
+    internalNodes as any,
+    internalEdges as any
+  );
+  time('getVisibleEntities with reused graph (50 collapsed)', () => {
+    getVisibleEntities({
+      collapsedIds: ids.slice(0, 50),
+      nodes: internalNodes as any,
+      edges: internalEdges as any,
+      graph: prebuiltCollapseGraph
+    });
+  });
   time('collapse visibility filter — Array.includes [old]', () => {
     void internalNodes.filter(node => !hidden.includes(node.id));
   });

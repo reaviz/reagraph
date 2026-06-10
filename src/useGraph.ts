@@ -1,4 +1,5 @@
 import { useThree } from '@react-three/fiber';
+import Graph from 'graphology';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { PerspectiveCamera } from 'three';
 
@@ -93,15 +94,38 @@ export const useGraph = ({
     }
   }, [storedNodes, nodes, clusterAttribute, clusters, setDrags]);
 
+  // Lazily build (and cache) the FULL graph used for collapse traversal.
+  // The store graph can't be used here — it holds the post-collapse visible
+  // subgraph. Caching by nodes/edges identity means repeated collapse/expand
+  // interactions reuse one graph instead of rebuilding it per click, and
+  // graphs that never collapse anything never build it at all.
+  const collapseGraphRef = useRef<{
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    graph: Graph;
+  } | null>(null);
+  const getCollapseGraph = useCallback(() => {
+    const cached = collapseGraphRef.current;
+    if (!cached || cached.nodes !== nodes || cached.edges !== edges) {
+      collapseGraphRef.current = {
+        nodes,
+        edges,
+        graph: buildGraph(new Graph({ multi: true }), nodes, edges)
+      };
+    }
+    return collapseGraphRef.current.graph;
+  }, [nodes, edges]);
+
   // Calculate the visible entities
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
       getVisibleEntities({
         collapsedIds: stateCollapsedNodeIds,
         nodes,
-        edges
+        edges,
+        graph: stateCollapsedNodeIds?.length ? getCollapseGraph() : undefined
       }),
-    [stateCollapsedNodeIds, nodes, edges]
+    [stateCollapsedNodeIds, nodes, edges, getCollapseGraph]
   );
 
   // Store node positions inside drags state

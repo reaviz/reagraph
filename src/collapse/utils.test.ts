@@ -52,6 +52,28 @@ describe('getVisibleEntities', () => {
     expect(ids(visibleEdges)).toEqual(['a->b', 'a->c', 'c->d']);
   });
 
+  test('accepts a prebuilt graph and returns identical results', async () => {
+    const Graph = (await import('graphology')).default;
+    const { buildGraph } = await import('../utils/graph');
+    const nodes = [n('a'), n('b'), n('c'), n('d')];
+    const edges = [e('a', 'b'), e('a', 'c'), e('b', 'd'), e('c', 'd')];
+    const graph = buildGraph(new Graph({ multi: true }), nodes, edges);
+
+    const withGraph = getVisibleEntities({
+      collapsedIds: ['b'],
+      nodes,
+      edges,
+      graph
+    });
+    const withoutGraph = getVisibleEntities({
+      collapsedIds: ['b'],
+      nodes,
+      edges
+    });
+    expect(ids(withGraph.visibleNodes)).toEqual(ids(withoutGraph.visibleNodes));
+    expect(ids(withGraph.visibleEdges)).toEqual(ids(withoutGraph.visibleEdges));
+  });
+
   test('collapsing both parents hides the shared child', () => {
     const nodes = [n('a'), n('b'), n('c'), n('d')];
     const edges = [e('a', 'b'), e('a', 'c'), e('b', 'd'), e('c', 'd')];
