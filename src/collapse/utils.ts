@@ -1,50 +1,11 @@
+import Graph from 'graphology';
+
 import type { GraphEdge, GraphNode } from '../types';
-
-interface Adjacency {
-  /** node id -> nodes's outbound edges */
-  outEdges: Map<string, GraphEdge[]>;
-  /** node id -> node's inbound edges */
-  inEdges: Map<string, GraphEdge[]>;
-  /** node id -> node */
-  nodeMap: Map<string, GraphNode>;
-}
-
-/**
- * Build outbound/inbound adjacency lookups once so traversal can use
- * O(degree) neighbor access instead of scanning the full edge list (O(e))
- * on every step.
- */
-function buildAdjacency(nodes: GraphNode[], edges: GraphEdge[]): Adjacency {
-  const outEdges = new Map<string, GraphEdge[]>();
-  const inEdges = new Map<string, GraphEdge[]>();
-  const nodeMap = new Map<string, GraphNode>();
-
-  for (const node of nodes) {
-    nodeMap.set(node.id, node);
-  }
-
-  for (const edge of edges) {
-    let out = outEdges.get(edge.source);
-    if (!out) {
-      out = [];
-      outEdges.set(edge.source, out);
-    }
-    out.push(edge);
-
-    let inbound = inEdges.get(edge.target);
-    if (!inbound) {
-      inbound = [];
-      inEdges.set(edge.target, inbound);
-    }
-    inbound.push(edge);
-  }
-
-  return { outEdges, inEdges, nodeMap };
-}
+import { buildGraph } from '../utils/graph';
 
 interface GetHiddenChildrenInput {
   nodeId: string;
-  adjacency: Adjacency;
+  graph: Graph;
   currentHiddenNodes: GraphNode[];
   currentHiddenEdges: GraphEdge[];
 }
@@ -62,26 +23,41 @@ interface GetExpandPathInput {
 }
 
 /**
+ * Get a node's outbound edges in O(degree) via graphology's adjacency index.
+ */
+const getOutboundEdges = (graph: Graph, nodeId: string): GraphEdge[] =>
+  graph.hasNode(nodeId)
+    ? graph.mapOutEdges(nodeId, (_key, attributes) => attributes as GraphEdge)
+    : [];
+
+/**
+ * Get a node's inbound edges in O(degree) via graphology's adjacency index.
+ */
+const getInboundEdges = (graph: Graph, nodeId: string): GraphEdge[] =>
+  graph.hasNode(nodeId)
+    ? graph.mapInEdges(nodeId, (_key, attributes) => attributes as GraphEdge)
+    : [];
+
+/**
  * Get the children of a node id that is hidden.
  */
 function getHiddenChildren({
   nodeId,
-  adjacency,
+  graph,
   currentHiddenNodes,
   currentHiddenEdges
 }: GetHiddenChildrenInput) {
-  const { outEdges, inEdges, nodeMap } = adjacency;
   const hiddenNodes: GraphNode[] = [];
   const hiddenEdges: GraphEdge[] = [];
   const curHiddenNodeIds = new Set(currentHiddenNodes.map(n => n.id));
   const curHiddenEdgeIds = new Set(currentHiddenEdges.map(e => e.id));
 
-  const outboundEdges = outEdges.get(nodeId) ?? [];
+  const outboundEdges = getOutboundEdges(graph, nodeId);
   const outboundEdgeNodeIds = outboundEdges.map(l => l.target);
 
   hiddenEdges.push(...outboundEdges);
   for (const outboundEdgeNodeId of outboundEdgeNodeIds) {
-    const incomingEdges = (inEdges.get(outboundEdgeNodeId) ?? []).filter(
+    const incomingEdges = getInboundEdges(graph, outboundEdgeNodeId).filter(
       l => l.source !== nodeId
     );
     let hideNode = false;
@@ -100,13 +76,14 @@ function getHiddenChildren({
     }
     if (hideNode) {
       // Need to hide this node and any children of this node
-      const node = nodeMap.get(outboundEdgeNodeId);
-      if (node) {
-        hiddenNodes.push(node);
+      if (graph.hasNode(outboundEdgeNodeId)) {
+        hiddenNodes.push(
+          graph.getNodeAttributes(outboundEdgeNodeId) as GraphNode
+        );
       }
       const nested = getHiddenChildren({
         nodeId: outboundEdgeNodeId,
-        adjacency,
+        graph,
         currentHiddenEdges: hiddenEdges,
         currentHiddenNodes: hiddenNodes
       });
@@ -149,14 +126,23 @@ export const getVisibleEntities = ({
   nodes,
   edges
 }: GetVisibleIdsInput) => {
-  const adjacency = buildAdjacency(nodes, edges);
+  // Nothing collapsed means nothing hidden. This runs on every nodes/edges
+  // change, so skip the graph construction entirely in the common case.
+  if (!collapsedIds?.length) {
+    return { visibleNodes: nodes, visibleEdges: edges };
+  }
+
+  // Build a graphology graph once (same builder the store uses) so traversal
+  // gets O(degree) neighbor access from its adjacency indices instead of
+  // scanning the edge array per node.
+  const graph = buildGraph(new Graph({ multi: true }), nodes, edges);
   const curHiddenNodes: GraphNode[] = [];
   const curHiddenEdges: GraphEdge[] = [];
 
   for (const collapsedId of collapsedIds) {
     const { hiddenEdges, hiddenNodes } = getHiddenChildren({
       nodeId: collapsedId,
-      adjacency,
+      graph,
       currentHiddenEdges: curHiddenEdges,
       currentHiddenNodes: curHiddenNodes
     });
@@ -184,21 +170,19 @@ export const getExpandPath = ({
   edges,
   visibleEdgeIds
 }: GetExpandPathInput) => {
-  // Build the inbound adjacency + visible set once, then walk it.
-  const inEdges = new Map<string, GraphEdge[]>();
+  // Only edges are available here, so let graphology create the endpoints
+  // implicitly via mergeNode and use its inbound adjacency for the walk.
+  const graph = new Graph({ multi: true });
   for (const edge of edges) {
-    let inbound = inEdges.get(edge.target);
-    if (!inbound) {
-      inbound = [];
-      inEdges.set(edge.target, inbound);
-    }
-    inbound.push(edge);
+    graph.mergeNode(edge.source);
+    graph.mergeNode(edge.target);
+    graph.addEdge(edge.source, edge.target, edge);
   }
   const visibleEdgeIdSet = new Set(visibleEdgeIds);
 
   const walk = (id: string): string[] => {
     const parentIds: string[] = [];
-    const inboundEdges = inEdges.get(id) ?? [];
+    const inboundEdges = getInboundEdges(graph, id);
     const hasVisibleInboundEdge = inboundEdges.some(edge =>
       visibleEdgeIdSet.has(edge.id)
     );

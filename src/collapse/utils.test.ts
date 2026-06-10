@@ -87,4 +87,15 @@ describe('getExpandPath', () => {
     });
     expect(path).toEqual([]);
   });
+
+  test('expands only the first parent path when multiple parents are hidden', () => {
+    // a->c and b->c both hidden: only the first inbound (a) is expanded
+    const edges = [e('a', 'c'), e('b', 'c')];
+    const path = getExpandPath({
+      nodeId: 'c',
+      edges,
+      visibleEdgeIds: []
+    });
+    expect(path).toEqual(['a']);
+  });
 });

@@ -13,6 +13,7 @@
 import Graph from 'graphology';
 import { test } from 'vitest';
 
+import { getVisibleEntities } from '../src/collapse';
 import { createStore } from '../src/store';
 import type { GraphEdge, GraphNode } from '../src/types';
 import { buildGraph, transformGraph } from '../src/utils/graph';
@@ -181,19 +182,24 @@ function runScenario(nodeCount: number, edgesPerNode: number) {
       void internalEdges.filter(l => l.source === id);
     }
   });
-  time('collapse neighbor scan — adjacency map [new]', () => {
-    const outEdges = new Map<string, any[]>();
-    for (const edge of internalEdges) {
-      let out = outEdges.get(edge.source);
-      if (!out) {
-        out = [];
-        outEdges.set(edge.source, out);
-      }
-      out.push(edge);
-    }
+  time('collapse neighbor scan — graphology [new]', () => {
+    // Mirrors the current impl: build the graph once (graphology maintains
+    // adjacency indices), then O(degree) outbound lookups.
+    const g = buildGraph(
+      new Graph({ multi: true }),
+      internalNodes as any,
+      internalEdges as any
+    );
     for (const id of sampleIds) {
-      void (outEdges.get(id) ?? []);
+      void g.mapOutEdges(id, (_k, attr) => attr);
     }
+  });
+  time('getVisibleEntities end-to-end (50 collapsed)', () => {
+    getVisibleEntities({
+      collapsedIds: ids.slice(0, 50),
+      nodes: internalNodes as any,
+      edges: internalEdges as any
+    });
   });
   time('collapse visibility filter — Array.includes [old]', () => {
     void internalNodes.filter(node => !hidden.includes(node.id));
