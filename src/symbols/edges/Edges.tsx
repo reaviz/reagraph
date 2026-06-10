@@ -202,9 +202,16 @@ export const Edges: FC<EdgesProps> = ({
       if (!intersections.length) {
         return [];
       }
-      return intersections.map(intersection =>
-        meshToEdge.get(intersection.object)
-      );
+      // Resolve hits to edges, dropping any that don't map (defensive: keeps
+      // undefined out of the hovered set, event handlers and getGeometry).
+      const hits: Array<InternalGraphEdge> = [];
+      for (const intersection of intersections) {
+        const edge = meshToEdge.get(intersection.object);
+        if (edge) {
+          hits.push(edge);
+        }
+      }
+      return hits;
     },
     [edgeMeshes, meshToEdge]
   );

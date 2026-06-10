@@ -188,6 +188,11 @@ export const createStore = ({
     setNodePosition: (id, position) =>
       set(state => {
         const node = state.nodeMap.get(id);
+        // Guard against a position update for a node that is no longer in the
+        // store (e.g. removed mid-drag) — no-op rather than dereferencing it.
+        if (!node) {
+          return state;
+        }
         const originalVector = getVector(node);
         const newVector = new Vector3(position.x, position.y, position.z);
         const offset = newVector.sub(originalVector);

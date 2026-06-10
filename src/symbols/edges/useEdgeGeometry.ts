@@ -35,6 +35,17 @@ export type UseEdgeGeometry = {
 
 const NULL_GEOMETRY = createNullGeometry();
 
+/**
+ * Upper bound on the per-edge geometry cache. The cache is keyed by endpoint
+ * positions, so during a drag/layout it gains a fresh entry every frame for
+ * every moving edge — without a bound it grows for the lifetime of the
+ * interaction. When the bound is exceeded we drop the cache (entries still
+ * referenced by live meshes survive via those references and are reclaimed by
+ * GC once unreferenced); subsequent renders simply repopulate it. Sized well
+ * above a typical static working set so it only acts as a long-session valve.
+ */
+const MAX_EDGE_GEOMETRY_CACHE_SIZE = 100_000;
+
 export function useEdgeGeometry(
   arrowPlacement: EdgeArrowPosition,
   interpolation: EdgeInterpolation
@@ -58,9 +69,17 @@ export function useEdgeGeometry(
       const geometries: Array<BufferGeometry> = [];
       const cache = geometryCacheRef.current;
 
-      // Pre-compute values outside the loop
-      const { nodes } = stateRef.current;
-      const nodesMap = new Map(nodes.map(node => [node.id, node]));
+      // Bound the position-keyed cache so a long drag/layout can't grow it
+      // without limit. Dropping the map is safe: geometries still referenced
+      // by live meshes stay alive through those references, and the rest are
+      // GC'd. This rarely triggers for static graphs (sized above their
+      // working set) and only repopulates on the next render when it does.
+      if (cache.size > MAX_EDGE_GEOMETRY_CACHE_SIZE) {
+        cache.clear();
+      }
+
+      // Reuse the store's id -> node map instead of rebuilding one every call.
+      const nodesMap = stateRef.current.nodeMap;
 
       // Initialize base arrow geometry if needed
       if (arrowPlacement !== 'none' && !baseArrowGeometryRef.current) {

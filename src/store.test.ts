@@ -42,6 +42,33 @@ describe('store lookup maps', () => {
     expect(nodesWithOutboundEdges.has('c')).toBe(false);
   });
 
+  test('setNodes shrinking removes stale entries from the node map', () => {
+    const store = createStore({});
+    store.getState().setNodes([makeNode('a'), makeNode('b'), makeNode('c')]);
+    // Simulate removing a node (e.g. data change / collapse)
+    store.getState().setNodes([makeNode('a'), makeNode('c')]);
+
+    const { nodeMap } = store.getState();
+    expect(nodeMap.size).toBe(2);
+    expect(nodeMap.has('b')).toBe(false);
+    expect(nodeMap.has('a')).toBe(true);
+  });
+
+  test('setEdges shrinking removes stale entries and updates outbound set', () => {
+    const store = createStore({});
+    store
+      .getState()
+      .setEdges([makeEdge('e1', 'a', 'b'), makeEdge('e2', 'a', 'c')]);
+    // Remove the only edge that gave 'a' an outbound edge via e1, keep e2
+    store.getState().setEdges([makeEdge('e2', 'a', 'c')]);
+
+    const { edgeMap, nodesWithOutboundEdges } = store.getState();
+    expect(edgeMap.has('e1')).toBe(false);
+    expect(edgeMap.has('e2')).toBe(true);
+    expect(nodesWithOutboundEdges.has('a')).toBe(true);
+    expect(nodesWithOutboundEdges.has('b')).toBe(false);
+  });
+
   test('setNodePosition updates the moved node and keeps others stable', () => {
     const store = createStore({});
     const nodes = [makeNode('a', 0, 0), makeNode('b', 10, 10)];
