@@ -1,3 +1,6 @@
+# 4.32.0 - 6/25/26
+- [chore] improve performance
+
 # 4.31.0 - 6/9/26
 - [BREAKING] Upgrade the full dependency & tooling stack (three 0.184, @react-three/fiber 9.6, @react-spring/three 10.0.4, TypeScript 6, Vite 8, Vitest 4, Storybook 10, zustand 5.0.14) and drop the UMD bundle — the package is now ESM-only; `require('reagraph')` still works on Node ≥20.19 / ≥22.13 via require-of-ESM #402
 
