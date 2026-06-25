@@ -155,8 +155,9 @@ export const Edge: FC<EdgeProps> = ({
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
 
   // Edge data
+  const edge = useStore(state => state.edgeMap.get(id));
+  // Needed to compute parallel-edge curve offsets (animated path only).
   const edges = useStore(state => state.edges);
-  const edge = edges.find(e => e.id === id);
   const {
     target,
     source,
@@ -173,8 +174,8 @@ export const Edge: FC<EdgeProps> = ({
   const effectiveSubLabelPlacement =
     edge.subLabelPlacement || subLabelPlacement;
 
-  const from = useStore(store => store.nodes.find(node => node.id === source));
-  const to = useStore(store => store.nodes.find(node => node.id === target));
+  const from = useStore(store => store.nodeMap.get(source));
+  const to = useStore(store => store.nodeMap.get(target));
 
   // Detect self-loop
   const isSelfLoop = from.id === to.id;

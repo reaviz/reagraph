@@ -242,6 +242,10 @@ export function forceInABox() {
     let linkCount = 0;
     if (nodes.length === 0) return;
 
+    // Build an id -> node lookup once instead of scanning the node array for
+    // every link endpoint (was O(links * nodes)).
+    const nodeById = new Map(nodes.map(n => [n.id, n]));
+
     links.forEach(function (link) {
       let source, target;
       if (!nodes) {
@@ -252,11 +256,11 @@ export function forceInABox() {
       target = link.target;
 
       if (typeof link.source !== 'object') {
-        source = nodes.find(n => n.id === link.source);
+        source = nodeById.get(link.source);
       }
 
       if (typeof link.target !== 'object') {
-        target = nodes.find(n => n.id === link.target);
+        target = nodeById.get(link.target);
       }
 
       if (source === undefined || target === undefined) {

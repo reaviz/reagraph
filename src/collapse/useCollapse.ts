@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import type { GraphEdge, GraphNode } from '../types';
 import { getExpandPath, getVisibleEntities } from './utils';
@@ -43,32 +43,36 @@ export const useCollapse = ({
   nodes = [],
   edges = []
 }: UseCollapseProps): CollpaseResult => {
-  const getIsCollapsed = useCallback(
-    (nodeId: string) => {
-      const { visibleNodes } = getVisibleEntities({
+  // Compute visibility once per input change instead of on every call —
+  // getIsCollapsed is typically invoked per node, and each call previously
+  // re-derived the entire visible set (rebuilding the traversal graph).
+  const { visibleNodes, visibleEdges } = useMemo(
+    () =>
+      getVisibleEntities({
         nodes,
         edges,
         collapsedIds: collapsedNodeIds
-      });
-      const visibleNodeIds = visibleNodes.map(n => n.id);
-
-      return !visibleNodeIds.includes(nodeId);
-    },
+      }),
     [collapsedNodeIds, edges, nodes]
+  );
+
+  const visibleNodeIds = useMemo(
+    () => new Set(visibleNodes.map(n => n.id)),
+    [visibleNodes]
+  );
+
+  const getIsCollapsed = useCallback(
+    (nodeId: string) => !visibleNodeIds.has(nodeId),
+    [visibleNodeIds]
   );
 
   const getExpandPathIds = useCallback(
     (nodeId: string) => {
-      const { visibleEdges } = getVisibleEntities({
-        nodes,
-        edges,
-        collapsedIds: collapsedNodeIds
-      });
       const visibleEdgeIds = visibleEdges.map(e => e.id);
 
       return getExpandPath({ nodeId, edges, visibleEdgeIds });
     },
-    [collapsedNodeIds, edges, nodes]
+    [visibleEdges, edges]
   );
 
   return {

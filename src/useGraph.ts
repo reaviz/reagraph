@@ -1,4 +1,5 @@
 import { useThree } from '@react-three/fiber';
+import Graph from 'graphology';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import type { PerspectiveCamera } from 'three';
 
@@ -13,7 +14,10 @@ import type { GraphEdge, GraphNode, InternalGraphNode } from './types';
 import { calculateClusters } from './utils/cluster';
 import { buildGraph, transformGraph } from './utils/graph';
 import type { LabelVisibilityType } from './utils/visibility';
-import { calcLabelVisibility } from './utils/visibility';
+import {
+  calcLabelVisibility,
+  isLabelVisibilityCameraDependent
+} from './utils/visibility';
 
 export interface GraphInputs {
   nodes: GraphNode[];
@@ -68,6 +72,7 @@ export const useGraph = ({
   const camera = useThree(state => state.camera) as PerspectiveCamera;
   const dragRef = useRef<DragReferences>(drags);
   const clustersRef = useRef<any>([]);
+  const prevLabelType = useRef<LabelVisibilityType | undefined>(labelType);
 
   // When a new node is added, remove the dragged position of the cluster nodes to put new node in the right place
   useEffect(() => {
@@ -89,15 +94,38 @@ export const useGraph = ({
     }
   }, [storedNodes, nodes, clusterAttribute, clusters, setDrags]);
 
+  // Lazily build (and cache) the FULL graph used for collapse traversal.
+  // The store graph can't be used here — it holds the post-collapse visible
+  // subgraph. Caching by nodes/edges identity means repeated collapse/expand
+  // interactions reuse one graph instead of rebuilding it per click, and
+  // graphs that never collapse anything never build it at all.
+  const collapseGraphRef = useRef<{
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    graph: Graph;
+  } | null>(null);
+  const getCollapseGraph = useCallback(() => {
+    const cached = collapseGraphRef.current;
+    if (!cached || cached.nodes !== nodes || cached.edges !== edges) {
+      collapseGraphRef.current = {
+        nodes,
+        edges,
+        graph: buildGraph(new Graph({ multi: true }), nodes, edges)
+      };
+    }
+    return collapseGraphRef.current.graph;
+  }, [nodes, edges]);
+
   // Calculate the visible entities
   const { visibleEdges, visibleNodes } = useMemo(
     () =>
       getVisibleEntities({
         collapsedIds: stateCollapsedNodeIds,
         nodes,
-        edges
+        edges,
+        graph: stateCollapsedNodeIds?.length ? getCollapseGraph() : undefined
       }),
-    [stateCollapsedNodeIds, nodes, edges]
+    [stateCollapsedNodeIds, nodes, edges, getCollapseGraph]
   );
 
   // Store node positions inside drags state
@@ -196,25 +224,48 @@ export const useGraph = ({
   }, [clusters]);
 
   useEffect(() => {
-    // When the camera position/zoom changes, update the label visibility
-    const nodes = stateNodes.map(node => ({
-      ...node,
-      labelVisible: calcLabelVisibility({
-        nodeCount: stateNodes?.length,
-        labelType,
-        camera,
-        nodePosition: node?.position
-      })('node', node?.size)
-    }));
+    const labelTypeChanged = prevLabelType.current !== labelType;
+    prevLabelType.current = labelType;
 
-    // Determine if the label visibility has changed
-    const isVisibilityUpdated = nodes.some(
-      (node, i) => node.labelVisible !== stateNodes[i].labelVisible
-    );
+    // Camera position/zoom only affects label visibility in 'auto' mode
+    // (every other mode is always-on, always-off, or shape-gated and so is
+    // camera-independent). For those modes we still need to recompute when
+    // the labelType prop itself changes (e.g. 'all' -> 'none' at runtime),
+    // but we can skip the work on pure camera moves. This avoids an O(n)
+    // pass over every node on every camera frame.
+    if (!isLabelVisibilityCameraDependent(labelType) && !labelTypeChanged) {
+      return;
+    }
+
+    // First compute just the booleans (cheap) and only allocate a fresh
+    // node array when something actually changed — this effect fires on
+    // every camera move, so avoiding N object spreads per frame matters
+    // a lot on large graphs.
+    const getVisibility = calcLabelVisibility({
+      nodeCount: stateNodes?.length,
+      labelType,
+      camera
+    });
+
+    let isVisibilityUpdated = false;
+    const nextVisibility = new Array(stateNodes.length);
+    for (let i = 0; i < stateNodes.length; i++) {
+      const node = stateNodes[i];
+      const labelVisible = getVisibility('node', node?.size, node?.position);
+      nextVisibility[i] = labelVisible;
+      if (labelVisible !== node.labelVisible) {
+        isVisibilityUpdated = true;
+      }
+    }
 
     // Update the nodes if the label visibility has changed
     if (isVisibilityUpdated) {
-      setNodes(nodes);
+      setNodes(
+        stateNodes.map((node, i) => ({
+          ...node,
+          labelVisible: nextVisibility[i]
+        }))
+      );
     }
   }, [camera, camera.zoom, camera.position.z, setNodes, stateNodes, labelType]);
 

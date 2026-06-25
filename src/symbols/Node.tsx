@@ -134,8 +134,10 @@ export const Node: FC<NodeProps> = ({
 }) => {
   const cameraControls = useCameraControls();
   const theme = useStore(state => state.theme);
-  const node = useStore(state => state.nodes.find(n => n.id === id));
-  const edges = useStore(state => state.edges);
+  const node = useStore(state => state.nodeMap.get(id));
+  const hasOutboundEdges = useStore(state =>
+    state.nodesWithOutboundEdges.has(id)
+  );
   const draggingIds = useStore(state => state.draggingIds);
   const collapsedNodeIds = useStore(state => state.collapsedNodeIds);
   const addDraggingId = useStore(state => state.addDraggingId);
@@ -175,10 +177,8 @@ export const Node: FC<NodeProps> = ({
 
   const canCollapse = useMemo(() => {
     // If the node has outgoing edges, it can collapse via context menu
-    const outboundLinks = edges.filter(l => l.source === id);
-
-    return outboundLinks.length > 0 || isCollapsed;
-  }, [edges, id, isCollapsed]);
+    return hasOutboundEdges || isCollapsed;
+  }, [hasOutboundEdges, isCollapsed]);
 
   const onCollapse = useCallback(() => {
     if (canCollapse) {

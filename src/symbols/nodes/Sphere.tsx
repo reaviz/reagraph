@@ -1,12 +1,22 @@
 import { a, useSpring } from '@react-spring/three';
 import type { FC } from 'react';
-import React, { useMemo } from 'react';
-import { Color, DoubleSide } from 'three';
+import React, { useEffect, useMemo, useRef } from 'react';
+import type { MeshPhongMaterial } from 'three';
+import { Color, DoubleSide, SphereGeometry } from 'three';
 
 import { useStore } from '../../store';
 import type { NodeRendererProps } from '../../types';
 import { animationConfig } from '../../utils/animation';
 import { Ring } from '../Ring';
+
+// All default sphere nodes use an identical unit-sphere geometry that is
+// scaled per-node by the mesh transform, so we share a single geometry
+// instance instead of allocating one BufferGeometry per node. On large
+// graphs this avoids tens/hundreds of MB of duplicated GPU buffers.
+// `dispose={null}` on the mesh keeps R3F from disposing this shared
+// geometry when an individual node unmounts (we dispose the per-node
+// material manually instead).
+const SPHERE_GEOMETRY = new SphereGeometry(1, 25, 25);
 
 export const Sphere: FC<NodeRendererProps> = ({
   color,
@@ -34,11 +44,21 @@ export const Sphere: FC<NodeRendererProps> = ({
   const normalizedColor = useMemo(() => new Color(color), [color]);
   const theme = useStore(state => state.theme);
 
+  // The geometry is shared (dispose={null}), so dispose the per-node
+  // material ourselves when the node unmounts to avoid leaking it.
+  const materialRef = useRef<MeshPhongMaterial | null>(null);
+  useEffect(() => () => materialRef.current?.dispose(), []);
+
   return (
     <>
-      <a.mesh userData={{ id, type: 'node' }} scale={scale as any}>
-        <sphereGeometry attach="geometry" args={[1, 25, 25]} />
+      <a.mesh
+        userData={{ id, type: 'node' }}
+        scale={scale as any}
+        geometry={SPHERE_GEOMETRY}
+        dispose={null}
+      >
         <a.meshPhongMaterial
+          ref={materialRef as any}
           attach="material"
           side={DoubleSide}
           transparent={true}
@@ -49,12 +69,19 @@ export const Sphere: FC<NodeRendererProps> = ({
           emissiveIntensity={0.7}
         />
       </a.mesh>
-      <Ring
-        opacity={selected ? 0.5 : 0}
-        size={size}
-        animated={animated}
-        color={selected ? theme.ring.activeFill : theme.ring.fill}
-      />
+      {/* Only mount the selection ring (and its per-frame Billboard) when
+          the node is actually selected. The ring was already invisible
+          (opacity 0) when unselected, so this preserves the visible result
+          while removing one camera-facing Billboard per unselected node —
+          a large per-frame win on big graphs. */}
+      {selected && (
+        <Ring
+          opacity={0.5}
+          size={size}
+          animated={animated}
+          color={theme.ring.activeFill}
+        />
+      )}
     </>
   );
 };
